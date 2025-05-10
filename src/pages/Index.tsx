@@ -1,17 +1,13 @@
-
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
 const Index = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  return (
-    <div className="overflow-x-hidden">
+  return <div className="overflow-x-hidden">
       <Hero />
       
       <AnimatedSection className="section bg-white">
@@ -115,16 +111,12 @@ const Index = () => {
                 </Button>
               </Link>
               <a href="mailto:info@asentio.com">
-                <Button size="lg" variant="outline" className="border-asentio-blue text-asentio-blue hover:bg-asentio-blue/10">
-                  info@asentio.com
-                </Button>
+                
               </a>
             </div>
           </div>
         </div>
       </AnimatedSection>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
