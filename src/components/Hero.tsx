@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const Hero = () => {
-  return <section className="relative bg-gradient-to-r from-asentio-lightgray to-white min-h-screen flex items-center pt-20">
+  return <section className="relative bg-gradient-to-r from-gray-100 to-asentio-lightgray min-h-screen flex items-center pt-20">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6 max-w-lg">
