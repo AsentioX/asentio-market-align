@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -182,6 +181,66 @@ const Services = () => {
                     </div>
                     <div className="bg-white h-16 rounded-lg shadow-sm flex items-center justify-center">
                       <div className="h-6 w-3/4 bg-asentio-blue/20 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="inline-block bg-asentio-blue/10 text-asentio-blue px-4 py-1 rounded-full text-sm font-medium mb-4">
+                    Core Service
+                  </div>
+                  <h2 className="text-3xl font-bold mb-6">Cross-Border Partnership Enablement</h2>
+                  <ul className="space-y-4 text-gray-700">
+                    <li className="flex items-start">
+                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
+                        <span className="text-white text-xs">✓</span>
+                      </span>
+                      <span>Help U.S. companies source or collaborate with Chinese electronics brands</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
+                        <span className="text-white text-xs">✓</span>
+                      </span>
+                      <span>Cultural and operational translation to reduce friction</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
+                        <span className="text-white text-xs">✓</span>
+                      </span>
+                      <span>Strategic due diligence and alignment planning</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
+                        <span className="text-white text-xs">✓</span>
+                      </span>
+                      <span>Ongoing partnership management and optimization</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-asentio-lightgray rounded-lg p-8">
+                  <h3 className="text-xl font-semibold mb-4">For U.S. Companies</h3>
+                  <p className="text-gray-700 mb-6">
+                    We guide U.S. companies through the complexities of sourcing from and partnering with Chinese manufacturers. Our bicultural expertise helps bridge gaps in communication, expectations, and business practices to create smooth, successful partnerships.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                      <div className="h-12 flex items-center justify-center">
+                        <span className="text-asentio-blue text-2xl">合作</span>
+                      </div>
+                      <div className="h-0.5 w-1/2 mx-auto bg-asentio-red my-2"></div>
+                      <div className="h-12 flex items-center justify-center">
+                        <span className="text-asentio-blue text-md">Partnership</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="h-6 w-6 mx-auto border-2 border-asentio-blue rounded-full flex items-center justify-center">
+                          <div className="h-4 w-4 bg-asentio-blue rounded-full"></div>
+                        </div>
+                        <p className="text-sm text-gray-700 mt-2">Strategic Alignment</p>
+                      </div>
                     </div>
                   </div>
                 </div>

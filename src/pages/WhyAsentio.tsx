@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -31,8 +30,11 @@ const WhyAsentio = () => {
                 <p className="text-lg text-gray-700 mb-6">
                   While marketing agencies focus on promotion and visibility, Asentio goes deeper to ensure your products are fundamentally aligned with U.S. consumer expectations before marketing begins.
                 </p>
-                <p className="text-lg text-gray-700">
+                <p className="text-lg text-gray-700 mb-6">
                   We provide strategic guidance on product development, feature prioritization, user experience, and market positioning—ensuring your products are optimized for success from the ground up.
+                </p>
+                <p className="text-lg text-gray-700">
+                  Our team has successfully helped U.S. and Chinese companies align on product, process, and partnership. We understand the risk of misalignment — and how to prevent it.
                 </p>
               </div>
               <div className="bg-asentio-lightgray rounded-lg p-8">
@@ -57,7 +59,7 @@ const WhyAsentio = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg">Specialized Focus</h4>
-                      <p className="text-gray-700">We concentrate exclusively on Chinese consumer electronics brands entering the U.S. market—this is our expertise, not one of many services.</p>
+                      <p className="text-gray-700">We concentrate exclusively on Chinese-American consumer electronics partnerships—this is our expertise, not one of many services.</p>
                     </div>
                   </div>
                 </div>

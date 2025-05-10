@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 const Hero = () => {
@@ -6,10 +7,10 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6 max-w-lg">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Aligning Chinese Innovation with U.S. Market Expectations
+              Aligning Chinese Innovation with U.S. Market Expectations — and Vice Versa
             </h1>
             <p className="text-xl text-gray-700">
-              Asentio helps Chinese consumer electronics brands find product-market fit in the U.S.
+              Asentio helps Chinese consumer electronics brands succeed in the U.S., and enables U.S. companies to build meaningful partnerships with Chinese manufacturers.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/contact">

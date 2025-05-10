@@ -34,8 +34,11 @@ const About = () => {
                 <p className="text-lg text-gray-700 mb-4">
                   Founded by experts with deep experience in both Chinese manufacturing expertise and U.S. market knowledge, we provide the crucial insights that help products succeed across cultures.
                 </p>
-                <p className="text-lg text-gray-700">
+                <p className="text-lg text-gray-700 mb-4">
                   Our team combines technical understanding with market savvy to ensure your products resonate with American consumers while maintaining your brand's unique value proposition.
+                </p>
+                <p className="text-lg text-gray-700">
+                  We also support U.S. brands seeking to partner with or source from Chinese companies, bridging cultural and strategic gaps on both sides.
                 </p>
               </div>
               <div className="bg-asentio-lightgray p-8 rounded-lg">
