@@ -1,16 +1,12 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-
 const Hero = () => {
   return <section className="relative bg-gradient-to-r from-asentio-lightgray to-white min-h-screen flex items-center pt-20">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6 max-w-lg">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Aligning Chinese Innovation with U.S. Market Expectations — and Vice Versa
-            </h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Aligning Chinese Innovation with U.S. Market Expectations</h1>
             <p className="text-xl text-gray-700">
               Asentio helps Chinese consumer electronics brands succeed in the U.S., and enables U.S. companies to build meaningful partnerships with Chinese manufacturers.
             </p>
@@ -34,12 +30,8 @@ const Hero = () => {
                   <div className="w-4 h-4 rounded-full bg-asentio-red mr-4"></div>
                   <div className="w-4 h-4 rounded-full bg-asentio-blue"></div>
                 </div>
-                <AspectRatio ratio={16/9} className="bg-muted rounded-md overflow-hidden">
-                  <img 
-                    src="/lovable-uploads/2f907b18-2313-44e0-9543-44aea420eb64.png" 
-                    alt="Shanghai and New York skylines representing US-China partnership" 
-                    className="object-cover w-full h-full"
-                  />
+                <AspectRatio ratio={16 / 9} className="bg-muted rounded-md overflow-hidden">
+                  <img src="/lovable-uploads/2f907b18-2313-44e0-9543-44aea420eb64.png" alt="Shanghai and New York skylines representing US-China partnership" className="object-cover w-full h-full" />
                 </AspectRatio>
                 <div className="flex items-center justify-between mt-4">
                   <div className="h-6 w-24 bg-gray-100 rounded"></div>
