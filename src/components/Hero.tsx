@@ -1,8 +1,6 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-
 const Hero = () => {
   return <section className="relative bg-gradient-to-r from-gray-100 to-asentio-lightgray min-h-screen flex items-center pt-20">
       <div className="container mx-auto">
@@ -33,7 +31,7 @@ const Hero = () => {
                   <div className="w-4 h-4 rounded-full bg-asentio-blue"></div>
                 </div>
                 <AspectRatio ratio={16 / 9} className="bg-muted rounded-md overflow-hidden">
-                  <img src="/lovable-uploads/8144692c-eb5d-442b-93c2-09de4bbeaaba.png" alt="Person smiling while looking at a device with blue light" className="object-cover w-full h-full" />
+                  <img alt="Person smiling while looking at a device with blue light" className="object-cover w-full h-full" src="/lovable-uploads/290120a4-5e56-4a18-8887-0f4647623e7d.png" />
                 </AspectRatio>
                 <div className="flex items-center justify-between mt-4">
                   <div className="h-6 w-24 bg-gray-100 rounded"></div>
@@ -47,5 +45,4 @@ const Hero = () => {
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent"></div>
     </section>;
 };
-
 export default Hero;
