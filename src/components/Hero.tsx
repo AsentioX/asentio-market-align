@@ -34,7 +34,7 @@ const Hero = () => {
                   <img alt="Person smiling while looking at a device with blue light" className="object-cover w-full h-full" src="/lovable-uploads/290120a4-5e56-4a18-8887-0f4647623e7d.png" />
                 </AspectRatio>
                 <div className="h-5 w-20 rounded bg-slate-200">
-                  <div className="h-6 w-18 rounded bg-slate-400"></div>
+                  <div className="h-5 w-20 rounded bg-slate-200\nflex items-center mb-4"></div>
                   
                 </div>
               </div>
