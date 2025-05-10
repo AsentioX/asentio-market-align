@@ -1,6 +1,8 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+
 const Hero = () => {
   return <section className="relative bg-gradient-to-r from-asentio-lightgray to-white min-h-screen flex items-center pt-20">
       <div className="container mx-auto">
@@ -27,18 +29,21 @@ const Hero = () => {
             <div className="relative">
               <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-20 h-20 bg-asentio-red rounded-full opacity-20"></div>
               <div className="absolute -right-10 top-10 w-32 h-32 bg-asentio-blue rounded-full opacity-10"></div>
-              <div className="relative z-10 bg-white p-6 shadow-xl rounded-lg border border-gray-200">
+              <div className="relative z-10 bg-white p-6 shadow-xl rounded-lg border border-gray-200 overflow-hidden">
                 <div className="flex items-center mb-4">
                   <div className="w-4 h-4 rounded-full bg-asentio-red mr-4"></div>
                   <div className="w-4 h-4 rounded-full bg-asentio-blue"></div>
                 </div>
-                <div className="space-y-4">
-                  <div className="h-6 bg-gray-100 rounded"></div>
-                  <div className="h-32 bg-gradient-to-r from-asentio-blue/5 to-asentio-red/5 rounded"></div>
-                  <div className="flex items-center justify-between">
-                    <div className="h-6 w-24 bg-gray-100 rounded"></div>
-                    <div className="h-8 w-20 bg-asentio-blue rounded"></div>
-                  </div>
+                <AspectRatio ratio={16/9} className="bg-muted rounded-md overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/2f907b18-2313-44e0-9543-44aea420eb64.png" 
+                    alt="Shanghai and New York skylines representing US-China partnership" 
+                    className="object-cover w-full h-full"
+                  />
+                </AspectRatio>
+                <div className="flex items-center justify-between mt-4">
+                  <div className="h-6 w-24 bg-gray-100 rounded"></div>
+                  <div className="h-8 w-20 bg-asentio-blue rounded"></div>
                 </div>
               </div>
             </div>
