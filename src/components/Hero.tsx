@@ -35,7 +35,7 @@ const Hero = () => {
                 </AspectRatio>
                 <div className="flex items-center justify-between mt-4">
                   <div className="h-6 w-88 bg-gray-100 rounded"></div>
-                  <div className="h-8 w-20 bg-asentio-blue rounded"></div>
+                  <div className="h-5 w-20 rounded bg-slate-200"></div>
                 </div>
               </div>
             </div>
