@@ -1,22 +1,33 @@
+
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+
 const About = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  return <div className="pt-20">
-      <section className="bg-asentio-blue text-white py-24">
-        <div className="container mx-auto">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">About Asentio</h1>
-            <p className="text-xl">
-              We help Chinese consumer electronics brands achieve product-market fit in the United States through strategic guidance and cross-cultural expertise.
-            </p>
+  
+  return <div className="pt-0">
+      {/* Golden Gate Bridge Banner */}
+      <div className="w-full relative">
+        <div className="w-full h-[40vh] overflow-hidden">
+          <img 
+            src="https://cdn.britannica.com/95/94195-050-FCBF777E/Golden-Gate-Bridge-San-Francisco.jpg" 
+            alt="Golden Gate Bridge in San Francisco" 
+            className="w-full h-full object-cover" 
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">About Asentio</h1>
+              <p className="text-xl text-white max-w-3xl mx-auto px-4">
+                We help Chinese consumer electronics brands achieve product-market fit in the United States through strategic guidance and cross-cultural expertise.
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <AnimatedSection className="section bg-white">
         <div className="container mx-auto">
@@ -60,18 +71,6 @@ const About = () => {
           </div>
         </div>
       </AnimatedSection>
-
-      {/* Golden Gate Bridge Image Section */}
-      <div className="w-full bg-asentio-lightgray py-8">
-        <div className="container mx-auto">
-          <div className="max-w-5xl mx-auto overflow-hidden rounded-lg shadow-lg">
-            <img alt="Golden Gate Bridge in San Francisco" src="https://cdn.britannica.com/95/94195-050-FCBF777E/Golden-Gate-Bridge-San-Francisco.jpg" className="w-full h-auto object-fill" />
-            <div className="p-4 bg-white text-center">
-              <p className="text-sm text-gray-600 italic">Connecting cultures and businesses across the Pacific, just like the Golden Gate connects San Francisco.</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <AnimatedSection className="section bg-asentio-lightgray">
         <div className="container mx-auto">
