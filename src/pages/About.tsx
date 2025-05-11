@@ -1,16 +1,12 @@
-
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
 const About = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  return (
-    <div className="pt-20">
+  return <div className="pt-20">
       <section className="bg-asentio-blue text-white py-24">
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto">
@@ -69,11 +65,7 @@ const About = () => {
       <div className="w-full bg-asentio-lightgray py-8">
         <div className="container mx-auto">
           <div className="max-w-5xl mx-auto overflow-hidden rounded-lg shadow-lg">
-            <img 
-              src="/lovable-uploads/8144692c-eb5d-442b-93c2-09de4bbeaaba.png" 
-              alt="Golden Gate Bridge in San Francisco" 
-              className="w-full h-auto object-cover"
-            />
+            <img alt="Golden Gate Bridge in San Francisco" src="https://cdn.britannica.com/95/94195-050-FCBF777E/Golden-Gate-Bridge-San-Francisco.jpg" className="w-full h-auto object-fill" />
             <div className="p-4 bg-white text-center">
               <p className="text-sm text-gray-600 italic">Connecting cultures and businesses across the Pacific, just like the Golden Gate connects San Francisco.</p>
             </div>
@@ -127,8 +119,6 @@ const About = () => {
           </div>
         </div>
       </AnimatedSection>
-    </div>
-  );
+    </div>;
 };
-
 export default About;
