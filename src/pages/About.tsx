@@ -12,7 +12,7 @@ const About = () => {
   return <div className="pt-0">
       {/* Golden Gate Bridge Banner */}
       <div className="w-full relative">
-        <div className="w-full h-[40vh] overflow-hidden">
+        <div className="w-full h-[28vh] overflow-hidden">
           <img 
             src="public/lovable-uploads/7a7083c6-7b1a-4a24-ab9e-abff0ce12dfb.png" 
             alt="Golden Gate Bridge in San Francisco" 
