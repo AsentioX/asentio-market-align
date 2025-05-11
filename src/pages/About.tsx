@@ -14,7 +14,7 @@ const About = () => {
       <div className="w-full relative">
         <div className="w-full h-[40vh] overflow-hidden">
           <img 
-            src="public/lovable-uploads/aba25230-f0d8-4342-919c-5b52eac07f0f.png" 
+            src="public/lovable-uploads/7a7083c6-7b1a-4a24-ab9e-abff0ce12dfb.png" 
             alt="Golden Gate Bridge in San Francisco" 
             className="w-full h-full object-cover" 
           />
