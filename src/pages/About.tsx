@@ -1,26 +1,19 @@
-
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
 const About = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
   return <div className="pt-0">
       {/* Golden Gate Bridge Banner */}
       <div className="w-full relative">
         <div className="w-full h-[28vh] overflow-hidden">
-          <img 
-            src="public/lovable-uploads/7a7083c6-7b1a-4a24-ab9e-abff0ce12dfb.png" 
-            alt="Golden Gate Bridge in San Francisco" 
-            className="w-full h-full object-cover" 
-          />
+          <img src="public/lovable-uploads/7a7083c6-7b1a-4a24-ab9e-abff0ce12dfb.png" alt="Golden Gate Bridge in San Francisco" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
             <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">About Asentio</h1>
+              
               <p className="text-xl text-white max-w-3xl mx-auto px-4">
                 We help Chinese consumer electronics brands achieve product-market fit in the United States through strategic guidance and cross-cultural expertise.
               </p>
