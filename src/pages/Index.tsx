@@ -52,9 +52,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  A Strategic Partner, Not Just a Marketing Agency
-                </h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">A Strategic Partner</h2>
                 <p className="text-lg mb-6">
                   Asentio combines deep market knowledge with cross-cultural expertise to help your brand navigate the crucial product-market fit challenges in the U.S.
                 </p>
