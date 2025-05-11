@@ -65,6 +65,22 @@ const About = () => {
         </div>
       </AnimatedSection>
 
+      {/* Golden Gate Bridge Image Section */}
+      <div className="w-full bg-asentio-lightgray py-8">
+        <div className="container mx-auto">
+          <div className="max-w-5xl mx-auto overflow-hidden rounded-lg shadow-lg">
+            <img 
+              src="/lovable-uploads/8144692c-eb5d-442b-93c2-09de4bbeaaba.png" 
+              alt="Golden Gate Bridge in San Francisco" 
+              className="w-full h-auto object-cover"
+            />
+            <div className="p-4 bg-white text-center">
+              <p className="text-sm text-gray-600 italic">Connecting cultures and businesses across the Pacific, just like the Golden Gate connects San Francisco.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <AnimatedSection className="section bg-asentio-lightgray">
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto">
