@@ -6,10 +6,8 @@ const Hero = () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6 max-w-lg">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Translating Innovation Between China and the U.S.</h1>
-            <p className="text-xl text-gray-700">
-              Asentio helps Chinese consumer electronics brands succeed in the U.S., and enables U.S. companies to build meaningful partnerships with Chinese manufacturers.
-            </p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Translating Innovations for the US Market</h1>
+            <p className="text-xl text-gray-700">Building meaningful partnerships between manufacturers and US consumers.</p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/contact">
                 <Button size="lg" className="bg-asentio-blue hover:bg-asentio-blue/90 text-white px-8">
