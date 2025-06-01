@@ -1,5 +1,4 @@
 
-
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -10,7 +9,11 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">asentio<span className="text-asentio-red">.</span></h3>
+            <img 
+              src="/lovable-uploads/b5450487-8c58-44de-9220-f91554baccad.png" 
+              alt="asentio logo" 
+              className="h-8 mb-4 brightness-0 invert"
+            />
             <p className="text-gray-300 mb-4">
               Aligning Chinese Innovation with U.S. Market Expectations
             </p>
@@ -62,4 +65,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
