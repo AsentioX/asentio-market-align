@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -308,3 +309,4 @@ const Services = () => {
 };
 
 export default Services;
+

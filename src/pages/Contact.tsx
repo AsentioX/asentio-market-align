@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +34,7 @@ const Contact = () => {
     setTimeout(() => {
       toast({
         title: "Message sent",
-        description: "Thank you for contacting Asentio. We'll be in touch soon.",
+        description: "Thank you for contacting asentio. We'll be in touch soon.",
       });
       setFormData({
         name: "",
@@ -65,7 +66,7 @@ const Contact = () => {
               <div>
                 <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
                 <p className="text-lg text-gray-700 mb-8">
-                  Ready to explore how Asentio can help your brand achieve product-market fit in the U.S.? We're here to answer your questions and discuss your specific needs.
+                  Ready to explore how asentio can help your brand achieve product-market fit in the U.S.? We're here to answer your questions and discuss your specific needs.
                 </p>
                 
                 <div className="space-y-6">
@@ -194,3 +195,4 @@ const Contact = () => {
 };
 
 export default Contact;
+

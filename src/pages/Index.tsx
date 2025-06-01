@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -54,11 +55,11 @@ const Index = () => {
               <div>
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">A Strategic Partner</h2>
                 <p className="text-lg mb-6">
-                  Asentio combines deep market knowledge with cross-cultural expertise to help your brand navigate the crucial product-market fit challenges in the U.S.
+                  asentio combines deep market knowledge with cross-cultural expertise to help your brand navigate the crucial product-market fit challenges in the U.S.
                 </p>
                 <Link to="/why-asentio">
                   <Button className="bg-white text-asentio-blue hover:bg-white/90">
-                    Why Choose Asentio
+                    Why Choose asentio
                   </Button>
                 </Link>
               </div>

@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -13,7 +14,7 @@ const WhyAsentio = () => {
       <section className="bg-asentio-blue text-white py-24">
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Why Asentio</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Why asentio</h1>
             <p className="text-xl">
               Your strategic partner for navigating the U.S. consumer electronics market.
             </p>
@@ -28,7 +29,7 @@ const WhyAsentio = () => {
               <div>
                 <h2 className="text-3xl font-bold mb-6">Strategic Partner, Not Just a Marketing Agency</h2>
                 <p className="text-lg text-gray-700 mb-6">
-                  While marketing agencies focus on promotion and visibility, Asentio goes deeper to ensure your products are fundamentally aligned with U.S. consumer expectations before marketing begins.
+                  While marketing agencies focus on promotion and visibility, asentio goes deeper to ensure your products are fundamentally aligned with U.S. consumer expectations before marketing begins.
                 </p>
                 <p className="text-lg text-gray-700 mb-6">
                   We provide strategic guidance on product development, feature prioritization, user experience, and market positioning—ensuring your products are optimized for success from the ground up.
@@ -38,7 +39,7 @@ const WhyAsentio = () => {
                 </p>
               </div>
               <div className="bg-asentio-lightgray rounded-lg p-8">
-                <h3 className="text-xl font-semibold mb-6">The Asentio Difference:</h3>
+                <h3 className="text-xl font-semibold mb-6">The asentio Difference:</h3>
                 <div className="space-y-6">
                   <div className="flex items-start">
                     <div className="w-10 h-10 bg-asentio-blue rounded-full flex items-center justify-center text-white mr-4 mt-1 flex-shrink-0">
@@ -214,7 +215,7 @@ const WhyAsentio = () => {
       <AnimatedSection className="section bg-asentio-lightgray">
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to Partner with Asentio?</h2>
+            <h2 className="text-3xl font-bold mb-6">Ready to Partner with asentio?</h2>
             <p className="text-xl text-gray-700 mb-8">
               Take the first step toward achieving product-market fit in the U.S. consumer electronics market.
             </p>
@@ -231,3 +232,4 @@ const WhyAsentio = () => {
 };
 
 export default WhyAsentio;
+

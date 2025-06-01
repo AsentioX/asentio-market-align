@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -27,7 +28,7 @@ const About = () => {
               <div>
                 <h2 className="text-3xl font-bold mb-6">Who We Are</h2>
                 <p className="text-lg text-gray-700 mb-4">
-                  Asentio is a specialized consultancy bridging the gap between Chinese innovation and U.S. consumer expectations in the electronics market.
+                  asentio is a specialized consultancy bridging the gap between Chinese innovation and U.S. consumer expectations in the electronics market.
                 </p>
                 <p className="text-lg text-gray-700 mb-4">
                   Founded by experts with deep experience in both Chinese manufacturing expertise and U.S. market knowledge, we provide the crucial insights that help products succeed across cultures.
@@ -41,7 +42,7 @@ const About = () => {
               </div>
               <div className="bg-asentio-lightgray p-8 rounded-lg">
                 <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-asentio-blue rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">A</div>
+                  <div className="w-12 h-12 bg-asentio-blue rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">a</div>
                   <h3 className="text-2xl font-bold">Our Mission</h3>
                 </div>
                 <p className="text-gray-700 mb-6">
@@ -77,12 +78,12 @@ const About = () => {
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-xl font-semibold mb-4 text-asentio-blue">Our Approach</h3>
                 <p className="text-gray-700">
-                  Asentio provides the critical cross-cultural bridge, combining deep knowledge of Chinese manufacturing capabilities with nuanced understanding of U.S. consumer expectations. We help you adapt strategically without losing your brand's core identity and strengths.
+                  asentio provides the critical cross-cultural bridge, combining deep knowledge of Chinese manufacturing capabilities with nuanced understanding of U.S. consumer expectations. We help you adapt strategically without losing your brand's core identity and strengths.
                 </p>
               </div>
             </div>
             <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold mb-4 text-asentio-blue">The Asentio Difference</h3>
+              <h3 className="text-xl font-semibold mb-4 text-asentio-blue">The asentio Difference</h3>
               <p className="text-gray-700 mb-4">
                 Unlike general marketing agencies, we specialize exclusively in helping Chinese consumer electronics brands navigate the U.S. market. Our team has lived and worked extensively in both China and the United States, giving us a unique perspective on the challenges and opportunities.
               </p>

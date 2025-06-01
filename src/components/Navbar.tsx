@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <span className="text-2xl font-bold text-asentio-blue">
-            Asentio<span className="text-asentio-red">.</span>
+            asentio<span className="text-asentio-red">.</span>
           </span>
         </Link>
 
@@ -62,7 +63,7 @@ const Navbar = () => {
               Services
             </Link>
             <Link to="/why-asentio" className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4" onClick={() => setMobileMenuOpen(false)}>
-              Why Asentio
+              Why asentio
             </Link>
             <Link to="/contact" className="bg-asentio-blue text-white py-2 px-4 rounded" onClick={() => setMobileMenuOpen(false)}>
               Contact Us

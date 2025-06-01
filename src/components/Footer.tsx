@@ -1,4 +1,5 @@
 
+
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -9,12 +10,12 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">Asentio<span className="text-asentio-red">.</span></h3>
+            <h3 className="text-xl font-bold mb-4">asentio<span className="text-asentio-red">.</span></h3>
             <p className="text-gray-300 mb-4">
               Aligning Chinese Innovation with U.S. Market Expectations
             </p>
             <p className="text-gray-300">
-              © {currentYear} Asentio. All rights reserved.
+              © {currentYear} asentio. All rights reserved.
             </p>
           </div>
           
@@ -38,7 +39,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/why-asentio" className="text-gray-300 hover:text-white transition-colors">
-                  Why Asentio
+                  Why asentio
                 </Link>
               </li>
               <li>
@@ -61,3 +62,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
