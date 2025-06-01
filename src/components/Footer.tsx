@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <img 
-              src="/lovable-uploads/b5450487-8c58-44de-9220-f91554baccad.png" 
+              src="/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" 
               alt="asentio logo" 
               className="h-8 mb-4 brightness-0 invert"
             />

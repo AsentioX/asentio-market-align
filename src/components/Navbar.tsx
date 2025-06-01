@@ -28,7 +28,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img 
-            src="/lovable-uploads/b5450487-8c58-44de-9220-f91554baccad.png" 
+            src="/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" 
             alt="asentio logo" 
             className="h-8"
           />
