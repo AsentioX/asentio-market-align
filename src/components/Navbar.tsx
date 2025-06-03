@@ -3,10 +3,13 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "./LanguageToggle";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,18 +40,21 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           <Link to="/" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
-            Home
+            {t('nav.home')}
           </Link>
           <Link to="/about" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
-            About
+            {t('nav.about')}
           </Link>
           <Link to="/services" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
-            Services
+            {t('nav.services')}
           </Link>
-          <Link to="/why-asentio" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">Why Us</Link>
+          <Link to="/why-asentio" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
+            {t('nav.why')}
+          </Link>
+          <LanguageToggle />
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
-              Contact Us
+              {t('nav.contact')}
             </Button>
           </Link>
         </nav>
@@ -71,35 +77,38 @@ const Navbar = () => {
               className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Home
+              {t('nav.home')}
             </Link>
             <Link
               to="/about"
               className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
               onClick={() => setMobileMenuOpen(false)}
             >
-              About
+              {t('nav.about')}
             </Link>
             <Link
               to="/services"
               className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Services
+              {t('nav.services')}
             </Link>
             <Link
               to="/why-asentio"
               className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Why asentio
+              {t('nav.why')}
             </Link>
+            <div className="px-4">
+              <LanguageToggle />
+            </div>
             <Link
               to="/contact"
-              className="bg-asentio-blue text-white py-2 px-4 rounded"
+              className="bg-asentio-blue text-white py-2 px-4 rounded mx-4"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Contact Us
+              {t('nav.contact')}
             </Link>
           </div>
         </div>

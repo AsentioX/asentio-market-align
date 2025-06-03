@@ -1,8 +1,10 @@
 
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useLanguage();
   
   return (
     <footer className="bg-asentio-blue text-white py-12">
@@ -15,46 +17,46 @@ const Footer = () => {
               className="h-8 mb-4 brightness-0 invert"
             />
             <p className="text-gray-300 mb-4">
-              Aligning Chinese Innovation with U.S. Market Expectations
+              {t('footer.tagline')}
             </p>
             <p className="text-gray-300">
-              © {currentYear} asentio. All rights reserved.
+              © {currentYear} asentio. {t('footer.copyright')}
             </p>
           </div>
           
           <div>
-            <h4 className="text-lg font-medium mb-4">Quick Links</h4>
+            <h4 className="text-lg font-medium mb-4">{t('footer.quicklinks')}</h4>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-gray-300 hover:text-white transition-colors">
-                  Home
+                  {t('nav.home')}
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
-                  About
+                  {t('nav.about')}
                 </Link>
               </li>
               <li>
                 <Link to="/services" className="text-gray-300 hover:text-white transition-colors">
-                  Services
+                  {t('nav.services')}
                 </Link>
               </li>
               <li>
                 <Link to="/why-asentio" className="text-gray-300 hover:text-white transition-colors">
-                  Why asentio
+                  {t('footer.whyus')}
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-gray-300 hover:text-white transition-colors">
-                  Contact
+                  {t('footer.contact')}
                 </Link>
               </li>
             </ul>
           </div>
           
           <div>
-            <h4 className="text-lg font-medium mb-4">Contact</h4>
+            <h4 className="text-lg font-medium mb-4">{t('footer.contact')}</h4>
             <p className="text-gray-300 mb-2">info@asentio.com</p>
             <p className="text-gray-300">www.asentio.com</p>
           </div>

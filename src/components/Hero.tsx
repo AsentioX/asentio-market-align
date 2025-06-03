@@ -2,17 +2,26 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useLanguage } from "@/contexts/LanguageContext";
+
 const Hero = () => {
-  return <section className="relative bg-gradient-to-r from-gray-100 to-asentio-lightgray min-h-screen flex items-center pt-20">
+  const { t } = useLanguage();
+
+  return (
+    <section className="relative bg-gradient-to-r from-gray-100 to-asentio-lightgray min-h-screen flex items-center pt-20">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6 max-w-lg">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Translating Innovations for the US Market</h1>
-            <p className="text-xl text-gray-700">Building meaningful partnerships between manufacturers and US consumers.</p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              {t('hero.title')}
+            </h1>
+            <p className="text-xl text-gray-700">
+              {t('hero.subtitle')}
+            </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/contact">
                 <Button size="lg" className="bg-asentio-blue hover:bg-asentio-blue/90 text-white px-8">
-                  Talk to Us
+                  {t('hero.cta')}
                 </Button>
               </Link>
               <a href="mailto:info@asentio.com">
@@ -42,6 +51,8 @@ const Hero = () => {
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent"></div>
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;
