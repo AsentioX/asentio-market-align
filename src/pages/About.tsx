@@ -26,9 +26,7 @@ const About = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold mb-6">Who We Are</h2>
-                <p className="text-lg text-gray-700 mb-4">
-                  asentio is a specialized consultancy bridging the gap between Chinese innovation and U.S. consumer expectations in the electronics market.
-                </p>
+                <p className="text-lg text-gray-700 mb-4">Asentio is a strategic consultancy bridging the gap between global innovations and the U.S. consumer market.</p>
                 <p className="text-lg text-gray-700 mb-4">
                   Founded by experts with deep experience in both Chinese manufacturing expertise and U.S. market knowledge, we provide the crucial insights that help products succeed across cultures.
                 </p>
