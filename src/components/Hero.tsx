@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useLanguage } from "@/contexts/LanguageContext";
+
 const Hero = () => {
-  const {
-    t
-  } = useLanguage();
-  return <section className="relative bg-gradient-to-r from-gray-100 to-asentio-lightgray min-h-screen flex items-center pt-20 py-[40px]">
+  const { t } = useLanguage();
+
+  return (
+    <section className="relative bg-gradient-to-r from-gray-100 to-asentio-lightgray min-h-[67vh] flex items-center pt-20 py-[40px]">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6 max-w-lg">
@@ -49,6 +50,8 @@ const Hero = () => {
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent"></div>
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;
