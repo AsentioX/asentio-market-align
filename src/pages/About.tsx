@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -11,7 +10,7 @@ const About = () => {
       {/* Golden Gate Bridge Banner */}
       <div className="w-full relative">
         <div className="w-full h-[28vh] overflow-hidden">
-          <img src="public/lovable-uploads/7a7083c6-7b1a-4a24-ab9e-abff0ce12dfb.png" alt="Golden Gate Bridge in San Francisco" className="w-full h-full object-cover" />
+          <img alt="Golden Gate Bridge in San Francisco" className="w-full h-full object-cover" src="/lovable-uploads/c5820e67-b1e2-42b5-9be4-c56123dc7c00.png" />
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
             <div className="text-center">
               
