@@ -48,9 +48,6 @@ const Navbar = () => {
           <Link to="/services" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
             {t('nav.services')}
           </Link>
-          <Link to="/why-asentio" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
-            {t('nav.why')}
-          </Link>
           <LanguageToggle />
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
@@ -92,13 +89,6 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               {t('nav.services')}
-            </Link>
-            <Link
-              to="/why-asentio"
-              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.why')}
             </Link>
             <div className="px-4">
               <LanguageToggle />

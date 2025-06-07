@@ -43,11 +43,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/why-asentio" className="text-gray-300 hover:text-white transition-colors">
-                  {t('footer.whyus')}
-                </Link>
-              </li>
-              <li>
                 <Link to="/contact" className="text-gray-300 hover:text-white transition-colors">
                   {t('footer.contact')}
                 </Link>

@@ -63,9 +63,9 @@ const Index = () => {
                 <p className="text-lg mb-6">
                   {t('partner.desc')}
                 </p>
-                <Link to="/why-asentio">
+                <Link to="/services">
                   <Button className="bg-white text-asentio-blue hover:bg-white/90">
-                    {t('partner.cta')}
+                    {t('expertise.learn')}
                   </Button>
                 </Link>
               </div>
