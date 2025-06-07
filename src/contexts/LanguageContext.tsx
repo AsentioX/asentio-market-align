@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type Language = 'en' | 'zh';
@@ -50,7 +49,7 @@ const translations = {
     'cta.contact': 'Contact Us',
     
     // Footer
-    'footer.tagline': 'Aligning Chinese Innovation with U.S. Market Expectations',
+    'footer.tagline': 'Aligning Global Innovations with US Market Expectations',
     'footer.copyright': 'All rights reserved.',
     'footer.quicklinks': 'Quick Links',
     'footer.contact': 'Contact',
