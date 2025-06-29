@@ -26,36 +26,38 @@ const Services = () => {
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 gap-16">
+              
+              {/* Product Strategy & Market Fit */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
                   <div className="inline-block bg-asentio-blue/10 text-asentio-blue px-4 py-1 rounded-full text-sm font-medium mb-4">
                     Core Service
                   </div>
-                  <h2 className="text-3xl font-bold mb-6">Product-Market Fit Assessment</h2>
+                  <h2 className="text-3xl font-bold mb-6">Product Strategy & Market Fit</h2>
                   <ul className="space-y-4 text-gray-700">
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Comprehensive analysis of your product's market potential in the U.S.</span>
+                      <span>Heuristic UX/UI evaluations for U.S. users</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Competitive landscape evaluation and positioning strategy</span>
+                      <span>Industrial design and packaging reviews</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Feature prioritization based on U.S. consumer preferences</span>
+                      <span>Cultural fit analysis to adapt branding and messaging</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Price point optimization for maximum market penetration</span>
+                      <span>Competitive benchmarking</span>
                     </li>
                   </ul>
                 </div>
@@ -75,20 +77,21 @@ const Services = () => {
                 </div>
               </div>
 
+              {/* Go-to-Market & Sales Enablement */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="order-2 md:order-1 bg-asentio-lightgray rounded-lg p-8">
                   <h3 className="text-xl font-semibold mb-4">What We Deliver</h3>
                   <p className="text-gray-700 mb-6">
-                    A comprehensive localization strategy that addresses language, cultural references, user experience design, packaging, and documentation. We help you maintain brand consistency while adapting to U.S. consumer expectations.
+                    A comprehensive go-to-market strategy that addresses distribution channels, sales processes, partnership opportunities, and market entry tactics tailored to your specific product and target audience.
                   </p>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-lg shadow-sm text-center">
                       <div className="h-12 flex items-center justify-center">
-                        <span className="text-asentio-blue text-2xl">美国</span>
+                        <span className="text-asentio-blue text-2xl">市场</span>
                       </div>
                       <div className="h-0.5 w-1/2 mx-auto bg-asentio-red my-2"></div>
                       <div className="h-12 flex items-center justify-center">
-                        <span className="text-asentio-blue text-2xl">USA</span>
+                        <span className="text-asentio-blue text-2xl">Market</span>
                       </div>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-center">
@@ -96,7 +99,7 @@ const Services = () => {
                         <div className="h-6 w-6 mx-auto border-2 border-asentio-blue rounded-full flex items-center justify-center">
                           <div className="h-4 w-4 bg-asentio-blue rounded-full"></div>
                         </div>
-                        <p className="text-sm text-gray-700 mt-2">User Experience</p>
+                        <p className="text-sm text-gray-700 mt-2">Strategy</p>
                       </div>
                     </div>
                   </div>
@@ -105,73 +108,68 @@ const Services = () => {
                   <div className="inline-block bg-asentio-blue/10 text-asentio-blue px-4 py-1 rounded-full text-sm font-medium mb-4">
                     Core Service
                   </div>
-                  <h2 className="text-3xl font-bold mb-6">Localization Advisory</h2>
+                  <h2 className="text-3xl font-bold mb-6">Go-to-Market & Sales Enablement</h2>
                   <ul className="space-y-4 text-gray-700">
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>UI/UX adaptation for American user preferences</span>
+                      <span>Consumer and enterprise GTM strategy and execution</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Brand messaging and positioning refinement</span>
+                      <span>Channel development: retail, distributor, and direct sales</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Product packaging and documentation optimization</span>
+                      <span>Strategic partnership identification and engagement</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Customer support strategy for U.S. expectations</span>
+                      <span>Trade show and event strategy</span>
                     </li>
                   </ul>
                 </div>
               </div>
 
+              {/* Branding & Communication */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
                   <div className="inline-block bg-asentio-blue/10 text-asentio-blue px-4 py-1 rounded-full text-sm font-medium mb-4">
                     Core Service
                   </div>
-                  <h2 className="text-3xl font-bold mb-6">Channel Strategy Insights</h2>
+                  <h2 className="text-3xl font-bold mb-6">Branding & Communication</h2>
                   <ul className="space-y-4 text-gray-700">
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Optimal distribution channel selection and prioritization</span>
+                      <span>Positioning and messaging tailored to Western audiences</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>E-commerce strategy and marketplace optimization</span>
+                      <span>Visual identity consulting</span>
                     </li>
                     <li className="flex items-start">
                       <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
                         <span className="text-white text-xs">✓</span>
                       </span>
-                      <span>Retail relationship guidance and negotiation strategy</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-white text-xs">✓</span>
-                      </span>
-                      <span>Pricing and promotion structure across channels</span>
+                      <span>Launch narrative and marketing content support</span>
                     </li>
                   </ul>
                 </div>
                 <div className="bg-asentio-lightgray rounded-lg p-8">
                   <h3 className="text-xl font-semibold mb-4">Our Network</h3>
                   <p className="text-gray-700 mb-6">
-                    Leverage our established relationships with key U.S. retail buyers, e-commerce platforms, and distribution partners. We help you navigate complex channel decisions with insider knowledge and strategic guidance.
+                    Leverage our established relationships with key U.S. marketing partners, creative agencies, and communication channels. We help you craft compelling brand narratives that resonate with American audiences.
                   </p>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="bg-white h-16 rounded-lg shadow-sm flex items-center justify-center">
@@ -187,65 +185,6 @@ const Services = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <div className="inline-block bg-asentio-blue/10 text-asentio-blue px-4 py-1 rounded-full text-sm font-medium mb-4">
-                    Core Service
-                  </div>
-                  <h2 className="text-3xl font-bold mb-6">Cross-Border Partnership Enablement</h2>
-                  <ul className="space-y-4 text-gray-700">
-                    <li className="flex items-start">
-                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-white text-xs">✓</span>
-                      </span>
-                      <span>Help U.S. companies source or collaborate with Chinese electronics brands</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-white text-xs">✓</span>
-                      </span>
-                      <span>Cultural and operational translation to reduce friction</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-white text-xs">✓</span>
-                      </span>
-                      <span>Strategic due diligence and alignment planning</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-white text-xs">✓</span>
-                      </span>
-                      <span>Ongoing partnership management and optimization</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="bg-asentio-lightgray rounded-lg p-8">
-                  <h3 className="text-xl font-semibold mb-4">For U.S. Companies</h3>
-                  <p className="text-gray-700 mb-6">
-                    We guide U.S. companies through the complexities of sourcing from and partnering with Chinese manufacturers. Our bicultural expertise helps bridge gaps in communication, expectations, and business practices to create smooth, successful partnerships.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white p-4 rounded-lg shadow-sm text-center">
-                      <div className="h-12 flex items-center justify-center">
-                        <span className="text-asentio-blue text-2xl">合作</span>
-                      </div>
-                      <div className="h-0.5 w-1/2 mx-auto bg-asentio-red my-2"></div>
-                      <div className="h-12 flex items-center justify-center">
-                        <span className="text-asentio-blue text-md">Partnership</span>
-                      </div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="h-6 w-6 mx-auto border-2 border-asentio-blue rounded-full flex items-center justify-center">
-                          <div className="h-4 w-4 bg-asentio-blue rounded-full"></div>
-                        </div>
-                        <p className="text-sm text-gray-700 mt-2">Strategic Alignment</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -309,4 +248,3 @@ const Services = () => {
 };
 
 export default Services;
-

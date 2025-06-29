@@ -39,13 +39,13 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
+          <Link to="/" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
             {t('nav.home')}
           </Link>
-          <Link to="/about" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
+          <Link to="/about" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
             {t('nav.about')}
           </Link>
-          <Link to="/services" className="text-gray-700 hover:text-asentio-blue transition-colors font-medium">
+          <Link to="/services" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
             {t('nav.services')}
           </Link>
           <LanguageToggle />
@@ -58,7 +58,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-gray-700 p-2"
+          className={`md:hidden p-2 ${isScrolled ? "text-gray-700" : "text-gray-300"}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
