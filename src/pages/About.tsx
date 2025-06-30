@@ -58,9 +58,9 @@ const About = () => {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="order-2 lg:order-1">
-                <h2 className="text-3xl font-bold mb-6">Jon Li</h2>
+                <h2 className="text-3xl font-bold mb-6">Leadership</h2>
                 <p className="text-lg text-gray-700">
-                  Jon is a product of North Carolina and New England. He has over 15 years of experience spanning both the U.S. and China. He combines deep product design and technology expertise with cross-cultural insight.
+                  Jon Li grew up in North Carolina, studied in Boston, then worked in New Jersey before getting posted to China. He has over 20 years of experience spanning both U.S. and Chinese markets. He combines deep product design and technology expertise with cross-cultural insight.
                 </p>
               </div>
               <div className="order-1 lg:order-2">
