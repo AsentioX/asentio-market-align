@@ -3,8 +3,11 @@ import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const About = () => {
+  const { t } = useLanguage();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -22,7 +25,7 @@ const About = () => {
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
             <div className="text-center">
               <p className="text-xl text-white max-w-3xl mx-auto px-4">
-                We help consumer electronics brands achieve product-market fit in the United States through strategic guidance and cross-cultural expertise.
+                {t('about.banner.text')}
               </p>
             </div>
           </div>
@@ -34,18 +37,18 @@ const About = () => {
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 gap-12">
               <div>
-                <h2 className="text-3xl font-bold mb-6">Who We Are</h2>
+                <h2 className="text-3xl font-bold mb-6">{t('about.who.title')}</h2>
                 <p className="text-lg text-gray-700 mb-4">
-                  Asentio is a cross-border strategic consultancy that helps international technology companies succeed in the U.S. market.
+                  {t('about.who.p1')}
                 </p>
                 <p className="text-lg text-gray-700 mb-4">
-                  Founded by professionals with deep experience in both Chinese and American markets, we specialize in translating global innovation into local success.
+                  {t('about.who.p2')}
                 </p>
                 <p className="text-lg text-gray-700 mb-4">
-                  Our team blends technical expertise with cultural and market insight to ensure your product resonates with U.S. consumer and customers - without losing the essence of your brand.
+                  {t('about.who.p3')}
                 </p>
                 <p className="text-lg text-gray-700">
-                  We also work with U.S. companies looking to collaborate with or source from China, bridging strategic and cultural gaps to create lasting partnerships.
+                  {t('about.who.p4')}
                 </p>
               </div>
             </div>
@@ -58,9 +61,9 @@ const About = () => {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="order-2 lg:order-1">
-                <h2 className="text-3xl font-bold mb-6">Leadership</h2>
+                <h2 className="text-3xl font-bold mb-6">{t('about.leadership.title')}</h2>
                 <p className="text-lg text-gray-700">
-                  Jon Li grew up in North Carolina, studied in Boston, then worked in New Jersey before getting posted to China. He has over 20 years of experience spanning both U.S. and Chinese markets. He combines deep product design and technology expertise with cross-cultural insight.
+                  {t('about.leadership.desc')}
                 </p>
               </div>
               <div className="order-1 lg:order-2">
@@ -78,13 +81,13 @@ const About = () => {
       <AnimatedSection className="section bg-white">
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to bridge the gap?</h2>
+            <h2 className="text-3xl font-bold mb-6">{t('about.cta.title')}</h2>
             <p className="text-xl text-gray-700 mb-8">
-              Let's discuss how our expertise can help your brand succeed in the U.S. market.
+              {t('about.cta.desc')}
             </p>
             <Link to="/contact">
               <Button size="lg" className="bg-asentio-blue hover:bg-asentio-blue/90">
-                Get in Touch
+                {t('about.cta.button')}
               </Button>
             </Link>
           </div>

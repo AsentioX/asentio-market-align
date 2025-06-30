@@ -5,46 +5,49 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Target, Rocket, MessageSquare, TrendingUp, Users, Lightbulb } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Services = () => {
+  const { t } = useLanguage();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const services = [
     {
-      title: "Product Strategy & Market Fit",
+      title: t('services.product.title'),
       icon: Target,
       color: "bg-blue-50 border-blue-200",
       iconColor: "text-blue-600",
       items: [
-        "Heuristic UX/UI evaluations for U.S. users",
-        "Industrial design and packaging reviews",
-        "Cultural fit analysis to adapt branding and messaging",
-        "Competitive benchmarking"
+        t('services.product.item1'),
+        t('services.product.item2'),
+        t('services.product.item3'),
+        t('services.product.item4')
       ]
     },
     {
-      title: "Go-to-Market & Sales Enablement",
+      title: t('services.gtm.title'),
       icon: Rocket,
       color: "bg-green-50 border-green-200",
       iconColor: "text-green-600",
       items: [
-        "Consumer and enterprise GTM strategy and execution",
-        "Channel development: retail, distributor, and direct sales",
-        "Strategic partnership identification and engagement",
-        "Trade show and event strategy"
+        t('services.gtm.item1'),
+        t('services.gtm.item2'),
+        t('services.gtm.item3'),
+        t('services.gtm.item4')
       ]
     },
     {
-      title: "Branding & Communication",
+      title: t('services.branding.title'),
       icon: MessageSquare,
       color: "bg-purple-50 border-purple-200",
       iconColor: "text-purple-600",
       items: [
-        "Positioning and messaging tailored to Western audiences",
-        "Visual identity consulting",
-        "Launch narrative and marketing content support"
+        t('services.branding.item1'),
+        t('services.branding.item2'),
+        t('services.branding.item3')
       ]
     }
   ];
@@ -52,26 +55,26 @@ const Services = () => {
   const processSteps = [
     {
       number: "01",
-      title: "Discovery",
-      description: "In-depth analysis of your product and business objectives",
+      title: t('services.process.discovery.title'),
+      description: t('services.process.discovery.desc'),
       icon: Lightbulb
     },
     {
       number: "02",
-      title: "Assessment",
-      description: "Market evaluation and competitive positioning analysis",
+      title: t('services.process.assessment.title'),
+      description: t('services.process.assessment.desc'),
       icon: TrendingUp
     },
     {
       number: "03",
-      title: "Strategy",
-      description: "Customized recommendations and action plan development",
+      title: t('services.process.strategy.title'),
+      description: t('services.process.strategy.desc'),
       icon: Target
     },
     {
       number: "04",
-      title: "Implementation",
-      description: "Ongoing guidance and support during execution",
+      title: t('services.process.implementation.title'),
+      description: t('services.process.implementation.desc'),
       icon: Users
     }
   ];
@@ -84,10 +87,10 @@ const Services = () => {
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              Our <span className="text-blue-200">Services</span>
+              {t('services.hero.title')} <span className="text-blue-200">{t('services.hero.title.highlight')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
-              Strategic guidance to help Chinese consumer electronics brands succeed in the U.S. market.
+              {t('services.hero.subtitle')}
             </p>
           </div>
         </div>
@@ -98,9 +101,9 @@ const Services = () => {
         <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">What We Do</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('services.what.title')}</h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Comprehensive solutions designed to bridge the gap between global innovation and local market success
+                {t('services.what.subtitle')}
               </p>
             </div>
             
@@ -135,9 +138,9 @@ const Services = () => {
         <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Process</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('services.process.title')}</h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                A proven methodology that transforms market challenges into strategic opportunities
+                {t('services.process.subtitle')}
               </p>
             </div>
             
@@ -167,14 +170,14 @@ const Services = () => {
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Transform Your <span className="text-blue-200">U.S. Market Approach?</span>
+              {t('services.cta.title')} <span className="text-blue-200">{t('services.cta.title.highlight')}</span>
             </h2>
             <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed">
-              Contact us today to discuss how our services can help your brand succeed in the American market.
+              {t('services.cta.subtitle')}
             </p>
             <Link to="/contact">
               <Button size="lg" className="bg-white text-asentio-blue hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                Start the Conversation
+                {t('services.cta.button')}
               </Button>
             </Link>
           </div>
