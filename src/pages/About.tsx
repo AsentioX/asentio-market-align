@@ -53,6 +53,29 @@ const About = () => {
         </div>
       </AnimatedSection>
 
+      <AnimatedSection className="section bg-gray-50">
+        <div className="container mx-auto">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="order-2 lg:order-1">
+                <h2 className="text-3xl font-bold mb-6">Leadership</h2>
+                <h3 className="text-xl font-semibold text-asentio-blue mb-4">Jon Li</h3>
+                <p className="text-lg text-gray-700">
+                  Jon Li is a product of Detroit and North Carolina. He has over 15 years of experience spanning both the U.S. and China. He combines deep product expertise with cross-cultural insight.
+                </p>
+              </div>
+              <div className="order-1 lg:order-2">
+                <img 
+                  src="/lovable-uploads/8a95cdac-ce43-4150-b29a-a16818c5bc00.png" 
+                  alt="Jon Li presenting at a conference" 
+                  className="w-full h-auto rounded-lg shadow-lg"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </AnimatedSection>
+
       <AnimatedSection className="section bg-white">
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
