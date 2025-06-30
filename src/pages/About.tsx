@@ -42,7 +42,7 @@ const About = () => {
                   Founded by professionals with deep experience in both Chinese and American markets, we specialize in translating global innovation into local success.
                 </p>
                 <p className="text-lg text-gray-700 mb-4">
-                  Our team blends technical expertise with cultural and commercial insight to ensure your product resonates with U.S. customers—without losing the essence of your brand.
+                  Our team blends technical expertise with cultural and market insight to ensure your product resonates with U.S. consumer and customers - without losing the essence of your brand.
                 </p>
                 <p className="text-lg text-gray-700">
                   We also work with U.S. companies looking to collaborate with or source from China, bridging strategic and cultural gaps to create lasting partnerships.
