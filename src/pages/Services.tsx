@@ -1,170 +1,179 @@
+
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, Target, Rocket, MessageSquare, TrendingUp, Users, Lightbulb } from "lucide-react";
 
 const Services = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  const services = [
+    {
+      title: "Product Strategy & Market Fit",
+      icon: Target,
+      color: "bg-blue-50 border-blue-200",
+      iconColor: "text-blue-600",
+      items: [
+        "Heuristic UX/UI evaluations for U.S. users",
+        "Industrial design and packaging reviews",
+        "Cultural fit analysis to adapt branding and messaging",
+        "Competitive benchmarking"
+      ]
+    },
+    {
+      title: "Go-to-Market & Sales Enablement",
+      icon: Rocket,
+      color: "bg-green-50 border-green-200",
+      iconColor: "text-green-600",
+      items: [
+        "Consumer and enterprise GTM strategy and execution",
+        "Channel development: retail, distributor, and direct sales",
+        "Strategic partnership identification and engagement",
+        "Trade show and event strategy"
+      ]
+    },
+    {
+      title: "Branding & Communication",
+      icon: MessageSquare,
+      color: "bg-purple-50 border-purple-200",
+      iconColor: "text-purple-600",
+      items: [
+        "Positioning and messaging tailored to Western audiences",
+        "Visual identity consulting",
+        "Launch narrative and marketing content support"
+      ]
+    }
+  ];
+
+  const processSteps = [
+    {
+      number: "01",
+      title: "Discovery",
+      description: "In-depth analysis of your product and business objectives",
+      icon: Lightbulb
+    },
+    {
+      number: "02",
+      title: "Assessment",
+      description: "Market evaluation and competitive positioning analysis",
+      icon: TrendingUp
+    },
+    {
+      number: "03",
+      title: "Strategy",
+      description: "Customized recommendations and action plan development",
+      icon: Target
+    },
+    {
+      number: "04",
+      title: "Implementation",
+      description: "Ongoing guidance and support during execution",
+      icon: Users
+    }
+  ];
+
   return (
     <div className="pt-20">
-      <section className="bg-asentio-blue text-white py-24">
-        <div className="container mx-auto">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Services</h1>
-            <p className="text-xl">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-asentio-blue to-blue-800 text-white py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="container mx-auto relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+              Our <span className="text-blue-200">Services</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
               Strategic guidance to help Chinese consumer electronics brands succeed in the U.S. market.
             </p>
           </div>
         </div>
       </section>
 
-      <AnimatedSection className="section bg-white">
+      {/* Services Cards */}
+      <AnimatedSection className="section bg-gray-50">
         <div className="container mx-auto">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 gap-16">
-              
-              {/* Product Strategy & Market Fit */}
-              <div>
-                <h2 className="text-3xl font-bold mb-6">Product Strategy & Market Fit</h2>
-                <ul className="space-y-4 text-gray-700">
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Heuristic UX/UI evaluations for U.S. users</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Industrial design and packaging reviews</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Cultural fit analysis to adapt branding and messaging</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Competitive benchmarking</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Go-to-Market & Sales Enablement */}
-              <div>
-                <h2 className="text-3xl font-bold mb-6">Go-to-Market & Sales Enablement</h2>
-                <ul className="space-y-4 text-gray-700">
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Consumer and enterprise GTM strategy and execution</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Channel development: retail, distributor, and direct sales</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Strategic partnership identification and engagement</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Trade show and event strategy</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Branding & Communication */}
-              <div>
-                <h2 className="text-3xl font-bold mb-6">Branding & Communication</h2>
-                <ul className="space-y-4 text-gray-700">
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Positioning and messaging tailored to Western audiences</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Visual identity consulting</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="h-5 w-5 bg-asentio-blue rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </span>
-                    <span>Launch narrative and marketing content support</span>
-                  </li>
-                </ul>
-              </div>
-
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">What We Do</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Comprehensive solutions designed to bridge the gap between global innovation and local market success
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {services.map((service, index) => (
+                <Card key={index} className={`${service.color} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}>
+                  <CardHeader className="text-center pb-4">
+                    <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-white shadow-lg flex items-center justify-center`}>
+                      <service.icon className={`h-8 w-8 ${service.iconColor}`} />
+                    </div>
+                    <CardTitle className="text-xl font-bold text-gray-900">{service.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3">
+                      {service.items.map((item, itemIndex) => (
+                        <li key={itemIndex} className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-700 leading-relaxed">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </div>
       </AnimatedSection>
 
-      <AnimatedSection className="section bg-asentio-blue text-white">
+      {/* Process Section */}
+      <AnimatedSection className="section bg-white">
         <div className="container mx-auto">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Our Consulting Process</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="p-4">
-                <div className="w-12 h-12 bg-white text-asentio-blue rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
-                <h3 className="text-lg font-semibold mb-2">Discovery</h3>
-                <p className="text-sm text-white/80">
-                  In-depth analysis of your product and business objectives
-                </p>
-              </div>
-              <div className="p-4">
-                <div className="w-12 h-12 bg-white text-asentio-blue rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
-                <h3 className="text-lg font-semibold mb-2">Assessment</h3>
-                <p className="text-sm text-white/80">
-                  Market evaluation and competitive positioning analysis
-                </p>
-              </div>
-              <div className="p-4">
-                <div className="w-12 h-12 bg-white text-asentio-blue rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
-                <h3 className="text-lg font-semibold mb-2">Strategy</h3>
-                <p className="text-sm text-white/80">
-                  Customized recommendations and action plan development
-                </p>
-              </div>
-              <div className="p-4">
-                <div className="w-12 h-12 bg-white text-asentio-blue rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">4</div>
-                <h3 className="text-lg font-semibold mb-2">Implementation</h3>
-                <p className="text-sm text-white/80">
-                  Ongoing guidance and support during execution
-                </p>
-              </div>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Process</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                A proven methodology that transforms market challenges into strategic opportunities
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {processSteps.map((step, index) => (
+                <div key={index} className="text-center group">
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-r from-asentio-blue to-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                      {step.number}
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                      <step.icon className="h-6 w-6 text-asentio-blue" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </AnimatedSection>
 
-      <AnimatedSection className="section bg-white">
-        <div className="container mx-auto">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to transform your U.S. market approach?</h2>
-            <p className="text-xl text-gray-700 mb-8">
-              Contact us today to discuss how our services can help your brand succeed.
+      {/* CTA Section */}
+      <AnimatedSection className="section bg-gradient-to-r from-asentio-blue via-blue-700 to-blue-800 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="container mx-auto relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Ready to Transform Your <span className="text-blue-200">U.S. Market Approach?</span>
+            </h2>
+            <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed">
+              Contact us today to discuss how our services can help your brand succeed in the American market.
             </p>
             <Link to="/contact">
-              <Button size="lg" className="bg-asentio-blue hover:bg-asentio-blue/90">
+              <Button size="lg" className="bg-white text-asentio-blue hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
                 Start the Conversation
               </Button>
             </Link>
