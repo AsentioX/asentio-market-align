@@ -55,7 +55,7 @@ const ExperienceFramework = () => {
     },
   ];
 
-  // Circle positions
+  // Circle positions (percentage-based for tooltip positioning)
   const circleRadius = 50;
   const centerX = 250;
   const centerY = 250;
@@ -75,6 +75,52 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
+  // Get tooltip position based on circle index
+  const getTooltipPosition = (index: number) => {
+    const pos = getCirclePosition(index);
+    // Convert SVG coordinates to percentage
+    const xPercent = (pos.x / 500) * 100;
+    const yPercent = (pos.y / 500) * 100;
+    
+    // Determine which side to show tooltip
+    // Top circle (index 0) - show below
+    // Top-right (index 1) - show right
+    // Bottom-right (index 2) - show right
+    // Bottom (index 3) - show below
+    // Left (index 4) - show left
+    
+    let translateX = '0%';
+    let translateY = '0%';
+    let left = `${xPercent}%`;
+    let top = `${yPercent}%`;
+    
+    switch (index) {
+      case 0: // Top - show to the right
+        translateX = '10%';
+        translateY = '-50%';
+        break;
+      case 1: // Top-right - show to the right
+        translateX = '15%';
+        translateY = '-30%';
+        break;
+      case 2: // Bottom-right - show to the right
+        translateX = '15%';
+        translateY = '-50%';
+        break;
+      case 3: // Bottom - show above
+        translateX = '-50%';
+        translateY = '-120%';
+        left = `${xPercent}%`;
+        break;
+      case 4: // Left - show to the left
+        translateX = '-115%';
+        translateY = '-50%';
+        break;
+    }
+    
+    return { left, top, transform: `translate(${translateX}, ${translateY})` };
+  };
+
   return (
     <div className="space-y-12">
       {/* Header */}
@@ -85,7 +131,7 @@ const ExperienceFramework = () => {
         </p>
       </div>
 
-      {/* Centered Circles with Center Description */}
+      {/* Centered Circles with Hover Tooltips */}
       <div className="flex justify-center">
         <div className="relative w-full max-w-[500px] aspect-square">
           <svg viewBox="0 0 500 500" className="w-full h-full">
@@ -152,49 +198,50 @@ const ExperienceFramework = () => {
                 </g>
               );
             })}
+
+            {/* Center label */}
+            <text
+              x={centerX}
+              y={centerY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="#94a3b8"
+              className="text-xs font-medium pointer-events-none"
+            >
+              JOURNEY
+            </text>
           </svg>
 
-          {/* Center Content - positioned absolutely in the middle */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[180px] h-[180px] flex items-center justify-center">
-              {activeStep !== null ? (
-                <div className="text-center p-3 animate-fade-in">
-                  <h3 className="text-lg font-bold text-asentio-blue mb-1">
-                    {steps[activeStep].label}
-                  </h3>
-                  <p className="text-xs text-gray-600 leading-tight">
-                    {steps[activeStep].objective}
-                  </p>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
-                    Hover to explore
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Detailed info below on hover */}
-      {activeStep !== null && (
-        <div className="max-w-2xl mx-auto animate-fade-in">
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-            <div className="space-y-2 text-gray-600 text-sm">
-              <p><span className="font-semibold text-gray-800">Focus:</span> {steps[activeStep].keyFocus}</p>
-              <p><span className="font-semibold text-gray-800">Channels:</span> {steps[activeStep].channels}</p>
-              <p><span className="font-semibold text-gray-800">Touchpoints:</span> {steps[activeStep].touchpoints}</p>
-              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-blue-800 text-sm">
-                  <span className="font-semibold">💡 Tip:</span> {steps[activeStep].strategyTip}
+          {/* Floating Tooltip */}
+          {activeStep !== null && (
+            <div 
+              className="absolute z-50 w-80 bg-white rounded-xl shadow-xl border border-gray-200 p-5 animate-fade-in pointer-events-none"
+              style={getTooltipPosition(activeStep)}
+            >
+              <div className="space-y-2 text-sm text-gray-600">
+                <p>
+                  <span className="font-semibold text-gray-800">Focus:</span>{' '}
+                  {steps[activeStep].keyFocus}
                 </p>
+                <p>
+                  <span className="font-semibold text-gray-800">Channels:</span>{' '}
+                  {steps[activeStep].channels}
+                </p>
+                <p>
+                  <span className="font-semibold text-gray-800">Touchpoints:</span>{' '}
+                  {steps[activeStep].touchpoints}
+                </p>
+                <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-blue-700 text-sm">
+                    <span className="font-semibold">💡 Tip:</span>{' '}
+                    {steps[activeStep].strategyTip}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
