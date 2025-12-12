@@ -117,10 +117,10 @@ const FloatingObjects = () => {
   const [objects, setObjects] = useState<FloatingObject[]>([]);
   const [idCounter, setIdCounter] = useState(0);
 
-  const createObject = useCallback((specificType?: string) => {
+  const createObject = useCallback((specificType?: string, bypassLimit = false) => {
     setObjects(prev => {
-      // Don't add if we're at max capacity
-      if (prev.length >= MAX_OBJECTS) return prev;
+      // Don't add if we're at max capacity (unless user initiated)
+      if (!bypassLimit && prev.length >= MAX_OBJECTS) return prev;
       
       const type = specificType || objectTypes[Math.floor(Math.random() * objectTypes.length)];
       const startSide = sides[Math.floor(Math.random() * sides.length)];
@@ -161,7 +161,7 @@ const FloatingObjects = () => {
       
       const keyNumber = parseInt(e.key);
       if (keyNumber >= 1 && keyNumber <= 7) {
-        createObject(objectTypes[keyNumber - 1]);
+        createObject(objectTypes[keyNumber - 1], true); // bypass limit for user-initiated spawns
       }
     };
 
@@ -195,7 +195,7 @@ const FloatingObjects = () => {
       {objects.map(obj => (
         <div
           key={obj.id}
-          className="absolute text-asentio-blue/40"
+          className="absolute text-asentio-blue/80"
           style={{
             width: obj.size,
             height: obj.size,
