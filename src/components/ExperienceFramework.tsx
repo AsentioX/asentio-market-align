@@ -75,50 +75,13 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
-  // Get tooltip position based on circle index
-  const getTooltipPosition = (index: number) => {
-    const pos = getCirclePosition(index);
-    // Convert SVG coordinates to percentage
-    const xPercent = (pos.x / 500) * 100;
-    const yPercent = (pos.y / 500) * 100;
-    
-    // Determine which side to show tooltip
-    // Top circle (index 0) - show below
-    // Top-right (index 1) - show right
-    // Bottom-right (index 2) - show right
-    // Bottom (index 3) - show below
-    // Left (index 4) - show left
-    
-    let translateX = '0%';
-    let translateY = '0%';
-    let left = `${xPercent}%`;
-    let top = `${yPercent}%`;
-    
-    switch (index) {
-      case 0: // Top - show to the right
-        translateX = '10%';
-        translateY = '-50%';
-        break;
-      case 1: // Top-right - show to the right
-        translateX = '15%';
-        translateY = '-30%';
-        break;
-      case 2: // Bottom-right - show to the right
-        translateX = '15%';
-        translateY = '-50%';
-        break;
-      case 3: // Bottom - show above
-        translateX = '-50%';
-        translateY = '-120%';
-        left = `${xPercent}%`;
-        break;
-      case 4: // Left - show to the left
-        translateX = '-115%';
-        translateY = '-50%';
-        break;
-    }
-    
-    return { left, top, transform: `translate(${translateX}, ${translateY})` };
+  // Tooltip is always positioned to the left of the diagram
+  const getTooltipPosition = () => {
+    return { 
+      right: 'calc(100% + 24px)', 
+      top: '50%', 
+      transform: 'translateY(-50%)' 
+    };
   };
 
   return (
@@ -227,7 +190,7 @@ const ExperienceFramework = () => {
           {activeStep !== null && (
             <div 
               className="absolute z-50 w-80 bg-white rounded-xl shadow-xl border border-gray-200 p-5 animate-fade-in pointer-events-none"
-              style={getTooltipPosition(activeStep)}
+              style={getTooltipPosition()}
             >
               <div className="space-y-2 text-sm text-gray-600">
                 <p>
