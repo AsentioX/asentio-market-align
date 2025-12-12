@@ -69,7 +69,7 @@ const WorldTimeMarquee = () => {
   ));
 
   return (
-    <div className="w-full overflow-hidden bg-background/50 backdrop-blur-sm border-y border-border/30 py-3">
+    <div className="w-full overflow-hidden bg-background/50 backdrop-blur-sm border-y border-border/30 py-3 mt-[120px]">
       <div className="animate-marquee whitespace-nowrap inline-flex">
         {marqueeContent}
         {marqueeContent}
