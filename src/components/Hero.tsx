@@ -18,12 +18,38 @@ const services = [
 const Hero = () => {
   const { t } = useLanguage();
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+  const [isFlashing, setIsFlashing] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentServiceIndex(prev => (prev + 1) % services.length);
-    }, 5000);
-    return () => clearInterval(interval);
+    let flashCount = 0;
+    let timeoutId: NodeJS.Timeout;
+
+    const getRandomIndex = (excludeIndex?: number) => {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * services.length);
+      } while (newIndex === excludeIndex);
+      return newIndex;
+    };
+
+    const runCycle = () => {
+      // Flash phase: 5 random items at 1 second each
+      if (flashCount < 5) {
+        setIsFlashing(true);
+        setCurrentServiceIndex(prev => getRandomIndex(prev));
+        flashCount++;
+        timeoutId = setTimeout(runCycle, 1000);
+      } else {
+        // Hold phase: stay on current for 5 seconds
+        setIsFlashing(false);
+        flashCount = 0;
+        timeoutId = setTimeout(runCycle, 5000);
+      }
+    };
+
+    runCycle();
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return (
