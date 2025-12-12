@@ -116,35 +116,46 @@ const WorldTimeMarquee = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const marqueeContent = cities.map((city) => {
+  // Generate city items with individual backgrounds
+  const generateCityItem = (city: CityTime, index: number, keyPrefix: string) => {
     const hour = getHourInTimezone(city.timezone);
     const isDay = isDaylight(hour);
     
+    // Calculate background color based on time of day
+    let bgColor: string;
+    if (isDay) {
+      const distanceFromNoon = Math.abs(12 - hour);
+      const intensity = 1 - (distanceFromNoon / 6);
+      bgColor = `hsla(45, 80%, ${55 + intensity * 15}%, 0.5)`;
+    } else {
+      const adjustedHour = hour >= 18 ? hour - 18 : hour + 6;
+      const distanceFromMidnight = Math.abs(6 - adjustedHour);
+      const intensity = 1 - (distanceFromMidnight / 6);
+      bgColor = `hsla(230, 60%, ${15 + intensity * 10}%, 0.7)`;
+    }
+    
     return (
-      <span key={city.name} className="inline-flex items-center gap-2 mx-8">
+      <span 
+        key={`${keyPrefix}-${city.name}`} 
+        className="inline-flex items-center gap-2 px-6 py-1"
+        style={{ backgroundColor: bgColor }}
+      >
         <span className="text-xl">{city.flag}</span>
-        <span className={`font-medium ${isDay ? 'text-foreground' : 'text-foreground/90'}`}>
+        <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
           {city.name}
         </span>
-        <span className={`font-mono ${isDay ? 'text-amber-700 dark:text-amber-400' : 'text-blue-300'}`}>
+        <span className={`font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
           {times[city.name] || '--:--'}
         </span>
       </span>
     );
-  });
+  };
 
   return (
-    <div 
-      className="w-full overflow-hidden backdrop-blur-md border-y border-border/20 py-3 mt-[120px]"
-      style={{
-        background: gradientStops 
-          ? `linear-gradient(90deg, ${gradientStops})` 
-          : 'hsla(230, 30%, 20%, 0.5)'
-      }}
-    >
+    <div className="w-full overflow-hidden backdrop-blur-md border-y border-border/20 mt-[120px]">
       <div className="animate-marquee whitespace-nowrap inline-flex">
-        {marqueeContent}
-        {marqueeContent}
+        {cities.map((city, index) => generateCityItem(city, index, 'first'))}
+        {cities.map((city, index) => generateCityItem(city, index, 'second'))}
       </div>
     </div>
   );
