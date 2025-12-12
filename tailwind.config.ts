@@ -231,6 +231,15 @@ export default {
 					}
 				}
 			},
+			'marquee': {
+				'0%': {
+					transform: 'translateX(0)'
+				},
+				'100%': {
+					transform: 'translateX(-50%)'
+				}
+			}
+			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
@@ -245,7 +254,8 @@ export default {
 				'undulate-1': 'undulate-1 12s ease-in-out infinite',
 				'undulate-2': 'undulate-2 15s ease-in-out infinite',
 				'undulate-3': 'undulate-3 18s ease-in-out infinite',
-				'orbit-3d': 'orbit-3d 20s linear infinite'
+				'orbit-3d': 'orbit-3d 20s linear infinite',
+				'marquee': 'marquee 60s linear infinite'
 			}
 		}
 	},
