@@ -57,9 +57,9 @@ const ExperienceFramework = () => {
 
   // Circle positions
   const circleRadius = 50;
-  const centerX = 200;
-  const centerY = 200;
-  const orbitRadius = 130;
+  const centerX = 250;
+  const centerY = 250;
+  const orbitRadius = 160;
 
   const getCirclePosition = (index: number) => {
     const angle = (index * 72 - 90) * (Math.PI / 180);
@@ -75,10 +75,6 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
-  const handleStepClick = (index: number) => {
-    setActiveStep(activeStep === index ? null : index);
-  };
-
   return (
     <div className="space-y-12">
       {/* Header */}
@@ -89,10 +85,10 @@ const ExperienceFramework = () => {
         </p>
       </div>
 
-      {/* Centered Circles */}
+      {/* Centered Circles with Center Description */}
       <div className="flex justify-center">
-        <div className="relative w-full max-w-[400px] aspect-square">
-          <svg viewBox="0 0 400 400" className="w-full h-full">
+        <div className="relative w-full max-w-[500px] aspect-square">
+          <svg viewBox="0 0 500 500" className="w-full h-full">
             {/* Connection lines */}
             {steps.map((_, index) => (
               <path
@@ -117,7 +113,8 @@ const ExperienceFramework = () => {
                 <g 
                   key={step.label}
                   className="cursor-pointer"
-                  onClick={() => handleStepClick(index)}
+                  onMouseEnter={() => setActiveStep(index)}
+                  onMouseLeave={() => setActiveStep(null)}
                 >
                   {isActive && (
                     <circle
@@ -138,7 +135,7 @@ const ExperienceFramework = () => {
                     fill={isActive ? '#0A2342' : '#e2e8f0'}
                     stroke="#0A2342"
                     strokeWidth="2"
-                    className="transition-all duration-300 hover:fill-[#1a3a5c]"
+                    className="transition-all duration-300"
                   />
                   
                   <text
@@ -155,51 +152,48 @@ const ExperienceFramework = () => {
                 </g>
               );
             })}
-
-            {/* Center label */}
-            <text
-              x={centerX}
-              y={centerY}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="#64748b"
-              className="text-xs font-medium pointer-events-none"
-            >
-              JOURNEY
-            </text>
           </svg>
+
+          {/* Center Content - positioned absolutely in the middle */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[180px] h-[180px] flex items-center justify-center">
+              {activeStep !== null ? (
+                <div className="text-center p-3 animate-fade-in">
+                  <h3 className="text-lg font-bold text-asentio-blue mb-1">
+                    {steps[activeStep].label}
+                  </h3>
+                  <p className="text-xs text-gray-600 leading-tight">
+                    {steps[activeStep].objective}
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                    Hover to explore
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Description - only shown when a stage is selected */}
+      {/* Detailed info below on hover */}
       {activeStep !== null && (
         <div className="max-w-2xl mx-auto animate-fade-in">
-          <div className="bg-gray-50 border-2 border-asentio-blue/20 rounded-xl p-6">
-            <h3 className="text-2xl font-bold text-asentio-blue mb-3">
-              {steps[activeStep].label}
-            </h3>
-            <p className="text-lg text-gray-700 font-medium mb-4">
-              {steps[activeStep].objective}
-            </p>
-            <div className="space-y-2 text-gray-600">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+            <div className="space-y-2 text-gray-600 text-sm">
               <p><span className="font-semibold text-gray-800">Focus:</span> {steps[activeStep].keyFocus}</p>
               <p><span className="font-semibold text-gray-800">Channels:</span> {steps[activeStep].channels}</p>
               <p><span className="font-semibold text-gray-800">Touchpoints:</span> {steps[activeStep].touchpoints}</p>
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-blue-800">
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-blue-800 text-sm">
                   <span className="font-semibold">💡 Tip:</span> {steps[activeStep].strategyTip}
                 </p>
               </div>
             </div>
           </div>
         </div>
-      )}
-
-      {/* Hint text when nothing selected */}
-      {activeStep === null && (
-        <p className="text-center text-gray-500 text-sm">
-          Click on a stage to learn more
-        </p>
       )}
     </div>
   );
