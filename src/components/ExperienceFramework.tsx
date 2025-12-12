@@ -93,8 +93,8 @@ const ExperienceFramework = () => {
         return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-60%, -50%)' };
       case 3: // Bottom-left (Use)
         return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-200%, -50%)' };
-      case 4: // Left (Reflect)
-        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-195%, -80%)' };
+      case 4: // Left (Reflect) - anchor to top right corner
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-110%, -10%)' };
       default:
         return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-130%, -50%)' };
     }
