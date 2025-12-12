@@ -126,6 +126,11 @@ const WorldTimeMarquee = () => {
   const [cityData, setCityData] = useState<Record<string, CityData>>({});
   const [weatherData, setWeatherData] = useState<Record<string, WeatherData>>({});
   const [gradientStops, setGradientStops] = useState<string>('');
+  const [unit, setUnit] = useState<'C' | 'F'>('C');
+
+  // Convert Celsius to Fahrenheit
+  const toFahrenheit = (celsius: number) => Math.round((celsius * 9/5) + 32);
+  const getTemp = (celsius: number) => unit === 'C' ? celsius : toFahrenheit(celsius);
 
   // Fetch weather data from edge function
   useEffect(() => {
@@ -306,7 +311,7 @@ const WorldTimeMarquee = () => {
           </span>
           {weather && (
             <span className={`text-sm font-semibold ${isDay ? 'text-slate-700' : 'text-blue-100'}`}>
-              {weather.temp}°C
+              {getTemp(weather.temp)}°{unit}
             </span>
           )}
         </span>
@@ -361,24 +366,36 @@ const WorldTimeMarquee = () => {
   };
 
   return (
-    <div 
-      ref={containerRef}
-      className="w-full overflow-x-auto backdrop-blur-md border-y border-border/20 mt-[120px] cursor-grab active:cursor-grabbing scrollbar-hide"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-    >
-      <div 
-        ref={contentRef}
-        className={`whitespace-nowrap inline-flex ${isDragging ? '' : 'animate-marquee'}`}
+    <div className="relative mt-[120px]">
+      {/* Temperature unit toggle */}
+      <button
+        onClick={() => setUnit(u => u === 'C' ? 'F' : 'C')}
+        className="absolute -top-8 right-4 z-10 flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm border border-border/30 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
       >
-        {cities.map((city, index) => generateCityItem(city, index, 'first', cities))}
-        {cities.map((city, index) => generateCityItem(city, index, 'second', cities))}
+        <span className={unit === 'C' ? 'text-foreground' : 'text-muted-foreground/50'}>°C</span>
+        <span className="text-muted-foreground/30">/</span>
+        <span className={unit === 'F' ? 'text-foreground' : 'text-muted-foreground/50'}>°F</span>
+      </button>
+      
+      <div 
+        ref={containerRef}
+        className="w-full overflow-x-auto backdrop-blur-md border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        <div 
+          ref={contentRef}
+          className={`whitespace-nowrap inline-flex ${isDragging ? '' : 'animate-marquee'}`}
+        >
+          {cities.map((city, index) => generateCityItem(city, index, 'first', cities))}
+          {cities.map((city, index) => generateCityItem(city, index, 'second', cities))}
+        </div>
       </div>
     </div>
   );
