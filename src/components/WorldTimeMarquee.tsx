@@ -1,9 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CityTime {
   name: string;
   timezone: string;
   flag: string;
+}
+
+interface WeatherData {
+  temp: number;
+  icon: string;
+  code: number;
 }
 
 // Cities sorted by UTC offset (west to east)
@@ -50,7 +57,7 @@ const getHourInTimezone = (timezone: string): number => {
 // Calculate if it's day or night (6am-6pm = day)
 const isDaylight = (hour: number): boolean => hour >= 6 && hour < 18;
 
-// Get weather icon based on time of day
+// Get weather icon based on time of day (fallback when no API data)
 const getWeatherIcon = (hour: number): string => {
   if (hour >= 6 && hour < 8) return '🌅'; // Sunrise
   if (hour >= 8 && hour < 17) return '☀️'; // Day sun
@@ -67,7 +74,31 @@ interface CityData {
 
 const WorldTimeMarquee = () => {
   const [cityData, setCityData] = useState<Record<string, CityData>>({});
+  const [weatherData, setWeatherData] = useState<Record<string, WeatherData>>({});
   const [gradientStops, setGradientStops] = useState<string>('');
+
+  // Fetch weather data from edge function
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-weather');
+        if (error) {
+          console.error('Error fetching weather:', error);
+          return;
+        }
+        if (data?.weather) {
+          setWeatherData(data.weather);
+        }
+      } catch (err) {
+        console.error('Failed to fetch weather:', err);
+      }
+    };
+
+    fetchWeather();
+    // Refresh weather every 10 minutes
+    const weatherInterval = setInterval(fetchWeather, 600000);
+    return () => clearInterval(weatherInterval);
+  }, []);
 
   useEffect(() => {
     const updateTimes = () => {
@@ -202,6 +233,7 @@ const WorldTimeMarquee = () => {
     const nextColor = getSkyColor(nextHour);
     
     const data = cityData[city.name];
+    const weather = weatherData[city.name];
     
     return (
       <span 
@@ -216,7 +248,12 @@ const WorldTimeMarquee = () => {
           <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
             {city.name}
           </span>
-          <span className="text-lg">{getWeatherIcon(hour)}</span>
+          <span className="text-lg">{weather?.icon || getWeatherIcon(hour)}</span>
+          {weather && (
+            <span className={`text-sm font-semibold ${isDay ? 'text-slate-700' : 'text-blue-100'}`}>
+              {weather.temp}°C
+            </span>
+          )}
         </span>
         <span className={`text-sm font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
           {data ? `${data.date}·${data.dayOfWeek}·${data.time}` : '--·--·--:--'}

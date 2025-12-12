@@ -1,1 +1,4 @@
 project_id = "dkevotcfufurdbocjesa"
+
+[functions.get-weather]
+verify_jwt = false
