@@ -98,40 +98,52 @@ const ExperienceFramework = () => {
                   </g>;
             })}
             </svg>
+
+            {/* Center Content - description in the middle */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[160px] h-[160px] flex items-center justify-center">
+                {activeStep !== null ? (
+                  <div className="text-center p-2 animate-fade-in">
+                    <h3 className="text-base font-bold text-asentio-blue mb-1">
+                      {steps[activeStep].label}
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-tight">
+                      {steps[activeStep].objective}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                      Hover to explore
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Content - Right side */}
         <div className="flex-1 flex items-center min-h-[350px]">
-          <div className={`w-full transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-0'}`}>
-            {activeStep !== null ? (
-              <div className="space-y-4 animate-fade-in">
-                <h3 className="text-2xl font-bold text-asentio-blue">
-                  {steps[activeStep].label}
-                </h3>
-                <p className="text-gray-700 text-lg">{steps[activeStep].objective}</p>
-                <div className="space-y-3 pt-2">
-                  <div>
-                    <span className="font-semibold text-gray-800">Focus:</span>{' '}
-                    <span className="text-gray-600">{steps[activeStep].keyFocus}</span>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-800">Channels:</span>{' '}
-                    <span className="text-gray-600">{steps[activeStep].channels}</span>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-800">Touchpoints:</span>{' '}
-                    <span className="text-gray-600">{steps[activeStep].touchpoints}</span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center lg:text-left">
-                <p className="text-gray-400 font-medium uppercase tracking-wider">
-                  Hover over a stage to explore
-                </p>
-              </div>
-            )}
+          <div className="w-full space-y-4">
+            <div>
+              <h4 className="font-semibold text-gray-800 text-lg mb-1">Focus</h4>
+              <p className={`text-gray-600 transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
+                {activeStep !== null ? steps[activeStep].keyFocus : 'Hover over a stage to see details'}
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-800 text-lg mb-1">Channels</h4>
+              <p className={`text-gray-600 transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
+                {activeStep !== null ? steps[activeStep].channels : 'Hover over a stage to see details'}
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-800 text-lg mb-1">Touchpoints</h4>
+              <p className={`text-gray-600 transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
+                {activeStep !== null ? steps[activeStep].touchpoints : 'Hover over a stage to see details'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
