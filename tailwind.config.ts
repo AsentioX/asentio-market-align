@@ -101,26 +101,50 @@ export default {
 				},
 				'undulate-1': {
 					'0%, 100%': {
-						transform: 'translateY(0px)'
+						transform: 'translate(0px, 0px)'
 					},
-					'50%': {
-						transform: 'translateY(-8px)'
+					'20%': {
+						transform: 'translate(5px, -8px)'
+					},
+					'40%': {
+						transform: 'translate(-6px, 3px)'
+					},
+					'60%': {
+						transform: 'translate(4px, 6px)'
+					},
+					'80%': {
+						transform: 'translate(-3px, -4px)'
 					}
 				},
 				'undulate-2': {
 					'0%, 100%': {
-						transform: 'translateY(0px)'
+						transform: 'translate(0px, 0px)'
 					},
-					'50%': {
-						transform: 'translateY(6px)'
+					'15%': {
+						transform: 'translate(-7px, 4px)'
+					},
+					'35%': {
+						transform: 'translate(3px, -6px)'
+					},
+					'55%': {
+						transform: 'translate(-4px, -3px)'
+					},
+					'75%': {
+						transform: 'translate(6px, 5px)'
 					}
 				},
 				'undulate-3': {
 					'0%, 100%': {
-						transform: 'translateY(0px)'
+						transform: 'translate(0px, 0px)'
+					},
+					'25%': {
+						transform: 'translate(4px, 7px)'
 					},
 					'50%': {
-						transform: 'translateY(-5px)'
+						transform: 'translate(-5px, -4px)'
+					},
+					'75%': {
+						transform: 'translate(6px, -5px)'
 					}
 				},
 				'fade-in': {
