@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
+import FloatingObjects from "@/components/FloatingObjects";
 import { ArrowRight, CheckCircle2, Globe, Zap, Target } from "lucide-react";
 
 const Index = () => {
@@ -34,7 +35,9 @@ const Index = () => {
   ];
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden relative">
+      <FloatingObjects />
+      
       {/* World Time Marquee */}
       <WorldTimeMarquee />
       
