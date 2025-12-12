@@ -75,46 +75,39 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
-  // Get tooltip position based on circle index
+  // Get tooltip position based on circle index - positioned outside the circle arrangement
   const getTooltipPosition = (index: number) => {
     const pos = getCirclePosition(index);
     // Convert SVG coordinates to percentage
     const xPercent = (pos.x / 500) * 100;
     const yPercent = (pos.y / 500) * 100;
     
-    // Determine which side to show tooltip
-    // Top circle (index 0) - show below
-    // Top-right (index 1) - show right
-    // Bottom-right (index 2) - show right
-    // Bottom (index 3) - show below
-    // Left (index 4) - show left
-    
+    // Position tooltips outside the circle arrangement
     let translateX = '0%';
     let translateY = '0%';
     let left = `${xPercent}%`;
     let top = `${yPercent}%`;
     
     switch (index) {
-      case 0: // Top - show to the right
-        translateX = '10%';
-        translateY = '-50%';
+      case 0: // Top - show above
+        translateX = '-50%';
+        translateY = '-110%';
         break;
-      case 1: // Top-right - show to the right
-        translateX = '15%';
-        translateY = '-30%';
+      case 1: // Top-right - show to the right and up
+        translateX = '20%';
+        translateY = '-80%';
         break;
       case 2: // Bottom-right - show to the right
-        translateX = '15%';
-        translateY = '-50%';
+        translateX = '20%';
+        translateY = '0%';
         break;
-      case 3: // Bottom - show above
+      case 3: // Bottom - show below
         translateX = '-50%';
-        translateY = '-120%';
-        left = `${xPercent}%`;
+        translateY = '20%';
         break;
       case 4: // Left - show to the left
-        translateX = '-115%';
-        translateY = '-50%';
+        translateX = '-120%';
+        translateY = '-20%';
         break;
     }
     
