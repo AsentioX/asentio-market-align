@@ -193,7 +193,7 @@ const Services = () => {
       </AnimatedSection>
 
       {/* Experience Framework Section */}
-      <AnimatedSection className="section bg-gray-50">
+      <AnimatedSection className="section bg-blue-50">
         <div className="container mx-auto">
           <div className="max-w-7xl mx-auto">
             <ExperienceFramework />
