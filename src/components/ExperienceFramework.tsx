@@ -205,7 +205,7 @@ const ExperienceFramework = () => {
           {/* Floating Tooltip */}
           {activeStep !== null && (
             <div 
-              className="absolute z-50 w-80 bg-white rounded-xl shadow-xl border border-gray-200 p-5 animate-fade-in pointer-events-none"
+              className="absolute z-50 w-96 bg-white rounded-xl shadow-xl border border-gray-200 p-5 animate-fade-in pointer-events-none"
               style={getTooltipPosition(activeStep)}
             >
               <div className="space-y-2 text-sm text-gray-600">
