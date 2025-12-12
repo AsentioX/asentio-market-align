@@ -1,6 +1,7 @@
 
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
+import ExperienceFramework from "@/components/ExperienceFramework";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -142,6 +143,11 @@ const Services = () => {
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 {t('services.process.subtitle')}
               </p>
+            </div>
+
+            {/* Experience Framework */}
+            <div className="mb-20">
+              <ExperienceFramework />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
