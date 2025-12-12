@@ -126,12 +126,12 @@ const WorldTimeMarquee = () => {
     if (isDay) {
       const distanceFromNoon = Math.abs(12 - hour);
       const intensity = 1 - (distanceFromNoon / 6);
-      bgColor = `hsla(45, 80%, ${55 + intensity * 15}%, 0.5)`;
+      bgColor = `hsla(45, 80%, ${55 + intensity * 15}%, 0.25)`;
     } else {
       const adjustedHour = hour >= 18 ? hour - 18 : hour + 6;
       const distanceFromMidnight = Math.abs(6 - adjustedHour);
       const intensity = 1 - (distanceFromMidnight / 6);
-      bgColor = `hsla(230, 60%, ${15 + intensity * 10}%, 0.7)`;
+      bgColor = `hsla(230, 60%, ${15 + intensity * 10}%, 0.35)`;
     }
     
     return (
