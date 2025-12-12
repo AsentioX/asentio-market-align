@@ -64,84 +64,75 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
-  return <div className="space-y-4">
+  return <div className="space-y-6">
       {/* Header */}
       <div className="text-center max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">How We Do It </h2>
-        <p className="text-lg text-gray-600 leading-relaxed">The Consumer Experience Framework is holistic model that maps the emotional and behavioral journey a consumer goes through with a product or brand.<strong>emotional and behavioral journey</strong> a consumer goes through with a product or brand.
+        <h2 className="text-3xl font-bold text-gray-900 mb-3">How We Do It</h2>
+        <p className="text-lg text-gray-600 leading-relaxed">The Consumer Experience Framework is holistic model that maps the <strong>emotional and behavioral journey</strong> a consumer goes through with a product or brand.
         </p>
       </div>
 
-      {/* Centered Circles */}
-      <div className="flex justify-center">
-        <div className="relative w-full max-w-[400px] aspect-square">
-          <svg viewBox="0 0 500 500" className="w-full h-full">
-            {/* Connection lines */}
-            {steps.map((_, index) => <path key={`line-${index}`} d={getConnectionPath(index, (index + 1) % 5)} stroke={activeStep !== null && (activeStep === index || activeStep === (index + 1) % 5) ? "#0A2342" : "#cbd5e1"} strokeWidth="2" fill="none" strokeDasharray="6 4" className="transition-all duration-300" />)}
+      {/* Circles Left + Content Right */}
+      <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+        {/* Circles - Left side */}
+        <div className="flex-shrink-0">
+          <div className="relative w-[350px] aspect-square">
+            <svg viewBox="0 0 500 500" className="w-full h-full">
+              {/* Connection lines */}
+              {steps.map((_, index) => <path key={`line-${index}`} d={getConnectionPath(index, (index + 1) % 5)} stroke={activeStep !== null && (activeStep === index || activeStep === (index + 1) % 5) ? "#0A2342" : "#cbd5e1"} strokeWidth="2" fill="none" strokeDasharray="6 4" className="transition-all duration-300" />)}
 
-            {/* Circles */}
-            {steps.map((step, index) => {
-            const pos = getCirclePosition(index);
-            const isActive = activeStep === index;
-            return <g key={step.label} className="cursor-pointer" onMouseEnter={() => setActiveStep(index)} onMouseLeave={() => setActiveStep(null)}>
-                  {isActive && <circle cx={pos.x} cy={pos.y} r={circleRadius + 6} fill="none" stroke="#0A2342" strokeWidth="3" opacity="0.4" />}
-                  
-                  <circle cx={pos.x} cy={pos.y} r={circleRadius} fill={isActive ? '#0A2342' : '#e2e8f0'} stroke="#0A2342" strokeWidth="2" className="transition-all duration-300" />
-                  
-                  <text x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle" fill={isActive ? '#ffffff' : '#0A2342'} className="text-sm font-semibold pointer-events-none select-none transition-all duration-300" style={{
-                fontFamily: 'system-ui, sans-serif'
-              }}>
-                    {step.label}
-                  </text>
-                </g>;
-          })}
-
-          </svg>
-
-          {/* Center Content - positioned absolutely in the middle */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[180px] h-[180px] flex items-center justify-center">
-              {activeStep !== null ? <div className="text-center p-3 animate-fade-in">
-                  <h3 className="text-lg font-bold text-asentio-blue mb-1">
-                    {steps[activeStep].label}
-                  </h3>
-                  <p className="text-xs text-gray-600 leading-tight">
-                    {steps[activeStep].objective}
-                  </p>
-                </div> : <div className="text-center">
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
-                    Hover to explore
-                  </p>
-                </div>}
-            </div>
+              {/* Circles */}
+              {steps.map((step, index) => {
+              const pos = getCirclePosition(index);
+              const isActive = activeStep === index;
+              return <g key={step.label} className="cursor-pointer" onMouseEnter={() => setActiveStep(index)} onMouseLeave={() => setActiveStep(null)}>
+                    {isActive && <circle cx={pos.x} cy={pos.y} r={circleRadius + 6} fill="none" stroke="#0A2342" strokeWidth="3" opacity="0.4" />}
+                    
+                    <circle cx={pos.x} cy={pos.y} r={circleRadius} fill={isActive ? '#0A2342' : '#e2e8f0'} stroke="#0A2342" strokeWidth="2" className="transition-all duration-300" />
+                    
+                    <text x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle" fill={isActive ? '#ffffff' : '#0A2342'} className="text-sm font-semibold pointer-events-none select-none transition-all duration-300" style={{
+                  fontFamily: 'system-ui, sans-serif'
+                }}>
+                      {step.label}
+                    </text>
+                  </g>;
+            })}
+            </svg>
           </div>
         </div>
-      </div>
 
-      {/* Hover Tooltip - Centered below circles */}
-      <div className="flex justify-center -mt-6">
-        <div className={`w-full max-w-3xl bg-white rounded-xl shadow-xl border border-gray-200 p-4 transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-0'}`} style={{ minHeight: '120px' }}>
-          {activeStep !== null && (
-            <div className="space-y-3 text-base text-gray-600 animate-fade-in">
-              <h3 className="text-xl font-bold text-asentio-blue text-center mb-4">
-                {steps[activeStep].label}: {steps[activeStep].objective}
-              </h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                <p>
-                  <span className="font-semibold text-gray-800">Focus:</span>{' '}
-                  {steps[activeStep].keyFocus}
-                </p>
-                <p>
-                  <span className="font-semibold text-gray-800">Channels:</span>{' '}
-                  {steps[activeStep].channels}
-                </p>
-                <p>
-                  <span className="font-semibold text-gray-800">Touchpoints:</span>{' '}
-                  {steps[activeStep].touchpoints}
+        {/* Content - Right side */}
+        <div className="flex-1 flex items-center min-h-[350px]">
+          <div className={`w-full transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-0'}`}>
+            {activeStep !== null ? (
+              <div className="space-y-4 animate-fade-in">
+                <h3 className="text-2xl font-bold text-asentio-blue">
+                  {steps[activeStep].label}
+                </h3>
+                <p className="text-gray-700 text-lg">{steps[activeStep].objective}</p>
+                <div className="space-y-3 pt-2">
+                  <div>
+                    <span className="font-semibold text-gray-800">Focus:</span>{' '}
+                    <span className="text-gray-600">{steps[activeStep].keyFocus}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-800">Channels:</span>{' '}
+                    <span className="text-gray-600">{steps[activeStep].channels}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-800">Touchpoints:</span>{' '}
+                    <span className="text-gray-600">{steps[activeStep].touchpoints}</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center lg:text-left">
+                <p className="text-gray-400 font-medium uppercase tracking-wider">
+                  Hover over a stage to explore
                 </p>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>;
