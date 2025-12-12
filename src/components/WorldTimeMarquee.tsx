@@ -246,32 +246,29 @@ const WorldTimeMarquee = () => {
     return (
       <span 
         key={`locked-${city.name}`} 
-        className="inline-flex flex-col items-center px-6 py-2 cursor-pointer hover:opacity-80 transition-opacity relative"
-        style={{ 
-          background: currentColor
-        }}
+        className="inline-flex flex-col items-center px-6 py-2 cursor-pointer hover:opacity-80 transition-opacity relative bg-black"
         onClick={() => toggleCityLock(city.name)}
       >
         {/* Lock indicator */}
         <span className="absolute top-1 right-1 text-xs opacity-60">🔒</span>
         <span className="flex items-center gap-2">
           <span className="text-xl">{city.flag}</span>
-          <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
+          <span className="font-medium text-white">
             {city.name}
           </span>
-          <span className={isDay ? 'text-amber-600' : 'text-blue-200'}>
+          <span className="text-blue-200">
             {weather 
               ? <WeatherIcon code={weather.code} isDay={weather.isDay} className="w-5 h-5" />
               : <FallbackWeatherIcon isDay={isDay} className="w-5 h-5" />
             }
           </span>
           {weather && (
-            <span className={`text-sm font-semibold ${isDay ? 'text-slate-700' : 'text-blue-100'}`}>
+            <span className="text-sm font-semibold text-blue-100">
               {getTemp(weather.temp)}°{unit}
             </span>
           )}
         </span>
-        <span className={`text-sm font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
+        <span className="text-sm font-mono text-blue-200">
           {data ? `${data.date}·${data.dayOfWeek}·${data.time}` : '--·--·--:--'}
         </span>
       </span>
@@ -297,30 +294,34 @@ const WorldTimeMarquee = () => {
     return (
       <span 
         key={`${keyPrefix}-${city.name}`} 
-        className={`inline-flex flex-col items-center px-6 py-2 cursor-pointer transition-all ${isLocked ? 'opacity-40' : 'hover:opacity-80'}`}
-        style={{ 
-          background: `linear-gradient(to right, ${currentColor} 0%, ${currentColor} 40%, ${nextColor} 100%)`
-        }}
+        className={`relative inline-flex flex-col items-center px-6 py-2 pt-4 cursor-pointer transition-all bg-black ${isLocked ? 'opacity-40' : 'hover:opacity-80'}`}
         onClick={() => toggleCityLock(city.name)}
       >
-        <span className="flex items-center gap-2">
+        {/* Color gradient bar at top */}
+        <span 
+          className="absolute top-0 left-0 right-0 h-[10px]"
+          style={{ 
+            background: `linear-gradient(to right, ${currentColor.replace(/[\d.]+\)$/, '1)')} 0%, ${currentColor.replace(/[\d.]+\)$/, '1)')} 40%, ${nextColor.replace(/[\d.]+\)$/, '1)')} 100%)`
+          }}
+        />
+        <span className="flex items-center gap-2 mt-1">
           <span className="text-xl">{city.flag}</span>
-          <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
+          <span className="font-medium text-white">
             {city.name}
           </span>
-          <span className={isDay ? 'text-amber-600' : 'text-blue-200'}>
+          <span className="text-blue-200">
             {weather 
               ? <WeatherIcon code={weather.code} isDay={weather.isDay} className="w-5 h-5" />
               : <FallbackWeatherIcon isDay={isDay} className="w-5 h-5" />
             }
           </span>
           {weather && (
-            <span className={`text-sm font-semibold ${isDay ? 'text-slate-700' : 'text-blue-100'}`}>
+            <span className="text-sm font-semibold text-blue-100">
               {getTemp(weather.temp)}°{unit}
             </span>
           )}
         </span>
-        <span className={`text-sm font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
+        <span className="text-sm font-mono text-blue-200">
           {data ? `${data.date}·${data.dayOfWeek}·${data.time}` : '--·--·--:--'}
         </span>
       </span>
@@ -399,7 +400,7 @@ const WorldTimeMarquee = () => {
         
         {/* Locked cities on the left */}
         {lockedCityObjects.length > 0 && (
-          <div className="flex-shrink-0 flex border-r border-border/30 backdrop-blur-md relative z-0">
+          <div className="flex-shrink-0 flex border-r border-border/30 bg-black relative z-0">
             {lockedCityObjects.map(city => generateLockedCityItem(city))}
           </div>
         )}
@@ -407,7 +408,7 @@ const WorldTimeMarquee = () => {
         {/* Scrolling marquee */}
         <div 
           ref={containerRef}
-          className="flex-1 overflow-x-auto backdrop-blur-md border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide relative z-0"
+          className="flex-1 overflow-x-auto bg-black border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide relative z-0"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
