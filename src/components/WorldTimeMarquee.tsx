@@ -70,10 +70,24 @@ const WorldTimeMarquee = () => {
   const [weatherData, setWeatherData] = useState<Record<string, WeatherData>>({});
   const [gradientStops, setGradientStops] = useState<string>('');
   const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [lockedCities, setLockedCities] = useState<string[]>([]);
 
   // Convert Celsius to Fahrenheit
   const toFahrenheit = (celsius: number) => Math.round((celsius * 9/5) + 32);
   const getTemp = (celsius: number) => unit === 'C' ? celsius : toFahrenheit(celsius);
+
+  // Toggle city lock
+  const toggleCityLock = (cityName: string) => {
+    setLockedCities(prev => {
+      if (prev.includes(cityName)) {
+        // Unlock: remove from array
+        return prev.filter(name => name !== cityName);
+      } else {
+        // Lock: add to array
+        return [...prev, cityName];
+      }
+    });
+  };
 
   // Fetch weather data from edge function
   useEffect(() => {
@@ -218,11 +232,55 @@ const WorldTimeMarquee = () => {
     return `hsla(${230 + progress * 10}, ${40 + progress * 10}%, ${12 + progress * 5}%, 0.45)`;
   };
 
+  // Generate city item for locked section
+  const generateLockedCityItem = (city: CityTime) => {
+    const hour = getHourInTimezone(city.timezone);
+    const isDay = isDaylight(hour);
+    const currentColor = getSkyColor(hour);
+    const data = cityData[city.name];
+    const weather = weatherData[city.name];
+    
+    return (
+      <span 
+        key={`locked-${city.name}`} 
+        className="inline-flex flex-col items-center px-6 py-2 cursor-pointer hover:opacity-80 transition-opacity relative"
+        style={{ 
+          background: currentColor
+        }}
+        onClick={() => toggleCityLock(city.name)}
+      >
+        {/* Lock indicator */}
+        <span className="absolute top-1 right-1 text-xs opacity-60">🔒</span>
+        <span className="flex items-center gap-2">
+          <span className="text-xl">{city.flag}</span>
+          <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
+            {city.name}
+          </span>
+          <span className={isDay ? 'text-amber-600' : 'text-blue-200'}>
+            {weather 
+              ? <WeatherIcon code={weather.code} isDay={weather.isDay} className="w-5 h-5" />
+              : <FallbackWeatherIcon isDay={isDay} className="w-5 h-5" />
+            }
+          </span>
+          {weather && (
+            <span className={`text-sm font-semibold ${isDay ? 'text-slate-700' : 'text-blue-100'}`}>
+              {getTemp(weather.temp)}°{unit}
+            </span>
+          )}
+        </span>
+        <span className={`text-sm font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
+          {data ? `${data.date}·${data.dayOfWeek}·${data.time}` : '--·--·--:--'}
+        </span>
+      </span>
+    );
+  };
+
   // Generate city items with blended gradient backgrounds
   const generateCityItem = (city: CityTime, index: number, keyPrefix: string, allCities: CityTime[]) => {
     const hour = getHourInTimezone(city.timezone);
     const isDay = isDaylight(hour);
     const currentColor = getSkyColor(hour);
+    const isLocked = lockedCities.includes(city.name);
     
     // Get next city's color for gradient blending
     const nextIndex = (index + 1) % allCities.length;
@@ -236,10 +294,11 @@ const WorldTimeMarquee = () => {
     return (
       <span 
         key={`${keyPrefix}-${city.name}`} 
-        className="inline-flex flex-col items-center px-6 py-2"
+        className={`inline-flex flex-col items-center px-6 py-2 cursor-pointer transition-all ${isLocked ? 'opacity-40' : 'hover:opacity-80'}`}
         style={{ 
           background: `linear-gradient(to right, ${currentColor} 0%, ${currentColor} 40%, ${nextColor} 100%)`
         }}
+        onClick={() => toggleCityLock(city.name)}
       >
         <span className="flex items-center gap-2">
           <span className="text-xl">{city.flag}</span>
@@ -308,6 +367,11 @@ const WorldTimeMarquee = () => {
     setIsDragging(false);
   };
 
+  // Get locked city objects
+  const lockedCityObjects = lockedCities
+    .map(name => cities.find(c => c.name === name))
+    .filter((c): c is CityTime => c !== undefined);
+
   return (
     <div className="relative mt-[120px]">
       {/* Temperature unit toggle */}
@@ -320,24 +384,34 @@ const WorldTimeMarquee = () => {
         <span className={unit === 'F' ? 'text-foreground' : 'text-muted-foreground/50'}>°F</span>
       </button>
       
-      <div 
-        ref={containerRef}
-        className="w-full overflow-x-auto backdrop-blur-md border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
+      <div className="flex">
+        {/* Locked cities on the left */}
+        {lockedCityObjects.length > 0 && (
+          <div className="flex-shrink-0 flex border-r border-border/30 backdrop-blur-md">
+            {lockedCityObjects.map(city => generateLockedCityItem(city))}
+          </div>
+        )}
+        
+        {/* Scrolling marquee */}
         <div 
-          ref={contentRef}
-          className={`whitespace-nowrap inline-flex ${isDragging ? '' : 'animate-marquee'}`}
+          ref={containerRef}
+          className="flex-1 overflow-x-auto backdrop-blur-md border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {cities.map((city, index) => generateCityItem(city, index, 'first', cities))}
-          {cities.map((city, index) => generateCityItem(city, index, 'second', cities))}
+          <div 
+            ref={contentRef}
+            className={`whitespace-nowrap inline-flex ${isDragging ? '' : 'animate-marquee'}`}
+          >
+            {cities.map((city, index) => generateCityItem(city, index, 'first', cities))}
+            {cities.map((city, index) => generateCityItem(city, index, 'second', cities))}
+          </div>
         </div>
       </div>
     </div>
