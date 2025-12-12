@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -5,8 +6,25 @@ import ARBackground from "./ARBackground";
 import TopographicPattern from "./TopographicPattern";
 import GlobeGraphic from "./GlobeGraphic";
 
+const services = [
+  "Product Strategy",
+  "Go-To-Market",
+  "Brand Positioning",
+  "US Market Entry",
+  "Consumer Insights",
+  "Channel Strategy",
+];
+
 const Hero = () => {
   const { t } = useLanguage();
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentServiceIndex(prev => (prev + 1) % services.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="relative bg-background min-h-[80vh] flex items-center pt-12 pb-16 overflow-hidden">
@@ -23,10 +41,10 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Content */}
           <div className="space-y-8 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-full">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-full overflow-hidden">
               <span className="w-2 h-2 bg-asentio-red rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
-                Global Advisory
+              <span className="text-sm font-medium text-muted-foreground tracking-wide uppercase transition-all duration-500">
+                {services[currentServiceIndex]}
               </span>
             </div>
             
