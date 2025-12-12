@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
+import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { ArrowRight, CheckCircle2, Globe, Zap, Target } from "lucide-react";
 
 const Index = () => {
@@ -35,6 +36,9 @@ const Index = () => {
   return (
     <div className="overflow-x-hidden">
       <Hero />
+      
+      {/* World Time Marquee */}
+      <WorldTimeMarquee />
       
       {/* Expertise Section */}
       <AnimatedSection className="py-24 bg-background relative">
