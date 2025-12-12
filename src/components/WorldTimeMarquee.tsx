@@ -50,6 +50,15 @@ const getHourInTimezone = (timezone: string): number => {
 // Calculate if it's day or night (6am-6pm = day)
 const isDaylight = (hour: number): boolean => hour >= 6 && hour < 18;
 
+// Get weather icon based on time of day
+const getWeatherIcon = (hour: number): string => {
+  if (hour >= 6 && hour < 8) return '🌅'; // Sunrise
+  if (hour >= 8 && hour < 17) return '☀️'; // Day sun
+  if (hour >= 17 && hour < 19) return '🌇'; // Sunset
+  if (hour >= 19 && hour < 21) return '🌆'; // Dusk
+  return '🌙'; // Night moon
+};
+
 interface CityData {
   time: string;
   date: string;
@@ -207,6 +216,7 @@ const WorldTimeMarquee = () => {
           <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
             {city.name}
           </span>
+          <span className="text-lg">{getWeatherIcon(hour)}</span>
         </span>
         <span className={`text-sm font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
           {data ? `${data.date}·${data.dayOfWeek}·${data.time}` : '--·--·--:--'}
