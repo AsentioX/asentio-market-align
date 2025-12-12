@@ -195,7 +195,7 @@ const FloatingObjects = () => {
       {objects.map(obj => (
         <div
           key={obj.id}
-          className="absolute text-asentio-blue/15"
+          className="absolute text-asentio-blue/40"
           style={{
             width: obj.size,
             height: obj.size,
