@@ -32,9 +32,6 @@ const ARBackground = () => {
         <path d="M20 55 L5 55 L5 40" className="stroke-asentio-red" strokeWidth="2" strokeLinecap="round" />
       </svg>
 
-      {/* Scanning Line */}
-      <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-asentio-red/20 to-transparent animate-scan-line" />
-
       {/* Floating Grid Pattern */}
       <svg
         className="absolute bottom-20 right-10 w-80 h-80 opacity-[0.05] animate-drift"
