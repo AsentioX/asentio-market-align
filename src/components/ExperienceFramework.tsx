@@ -106,7 +106,7 @@ const ExperienceFramework = () => {
       <div className="text-center max-w-4xl mx-auto">
         <h2 className="text-4xl font-bold text-gray-900 mb-6">Consumer Experience Framework</h2>
         <p className="text-xl text-gray-600 leading-relaxed">
-          The <strong>consumer experience framework</strong> — <em>Aware → Arouse → Acquire → Use → Reflect</em> — is a holistic model that maps the <strong>emotional and behavioral journey</strong> a consumer goes through with a product or brand.
+          A holistic model that maps the <strong>emotional and behavioral journey</strong> a consumer goes through with a product or brand.
         </p>
       </div>
 
