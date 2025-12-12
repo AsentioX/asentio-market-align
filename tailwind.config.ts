@@ -197,6 +197,14 @@ export default {
 					'100%': {
 						transform: 'translateY(500%)'
 					}
+				},
+				'orbit-3d': {
+					'0%': {
+						transform: 'rotateX(70deg) rotateZ(0deg)'
+					},
+					'100%': {
+						transform: 'rotateX(70deg) rotateZ(360deg)'
+					}
 				}
 			},
 			animation: {
@@ -212,7 +220,8 @@ export default {
 				'data-stream': 'data-stream 15s linear infinite',
 				'undulate-1': 'undulate-1 12s ease-in-out infinite',
 				'undulate-2': 'undulate-2 15s ease-in-out infinite',
-				'undulate-3': 'undulate-3 18s ease-in-out infinite'
+				'undulate-3': 'undulate-3 18s ease-in-out infinite',
+				'orbit-3d': 'orbit-3d 20s linear infinite'
 			}
 		}
 	},
