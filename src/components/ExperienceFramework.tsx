@@ -73,7 +73,7 @@ const ExperienceFramework = () => {
       </div>
 
       {/* Circles Left + Content Right */}
-      <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+      <div className="flex flex-col lg:flex-row items-center lg:items-center justify-center gap-8">
         {/* Circles - Left side */}
         <div className="flex-shrink-0">
           <div className="relative w-[350px] aspect-square">
