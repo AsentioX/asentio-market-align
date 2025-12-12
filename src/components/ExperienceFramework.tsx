@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Target, Users, Palette, Rocket, MessageCircle } from 'lucide-react';
 
 interface FrameworkStep {
   label: string;
@@ -54,14 +53,6 @@ const ExperienceFramework = () => {
       touchpoints: 'Follow-up surveys, user forums, case studies',
       strategyTip: "Help users internalize the value (\"I'm glad I bought this\") and express it (\"I want to tell others\").",
     },
-  ];
-
-  const useCases = [
-    { icon: Target, label: 'Consumer product strategy' },
-    { icon: Palette, label: 'Experience design (UX/UI)' },
-    { icon: Rocket, label: 'Go-to-market planning' },
-    { icon: MessageCircle, label: 'Brand storytelling' },
-    { icon: Users, label: 'User onboarding flows' },
   ];
 
   // Circle positions
@@ -216,28 +207,6 @@ const ExperienceFramework = () => {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Why This Framework Matters */}
-      <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-8 md:p-10">
-        <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            🧭 Why This Framework Matters
-          </h3>
-          <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-            It reminds teams that <strong>product success isn't just about functionality</strong> — it's about shaping a <em>complete emotional journey</em>, from first discovery to long-term loyalty.
-          </p>
-          
-          <p className="text-gray-600 mb-4 font-medium">This model is especially useful for:</p>
-          <div className="flex flex-wrap gap-3">
-            {useCases.map((useCase, index) => (
-              <div key={index} className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100">
-                <useCase.icon className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                <span className="text-gray-700 text-sm font-medium">{useCase.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
