@@ -384,10 +384,19 @@ const WorldTimeMarquee = () => {
         <span className={unit === 'F' ? 'text-foreground' : 'text-muted-foreground/50'}>°F</span>
       </button>
       
-      <div className="flex">
+      <div className="flex relative">
+        {/* Subtle noise texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none z-10"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat',
+          }}
+        />
+        
         {/* Locked cities on the left */}
         {lockedCityObjects.length > 0 && (
-          <div className="flex-shrink-0 flex border-r border-border/30 backdrop-blur-md">
+          <div className="flex-shrink-0 flex border-r border-border/30 backdrop-blur-md relative z-0">
             {lockedCityObjects.map(city => generateLockedCityItem(city))}
           </div>
         )}
@@ -395,7 +404,7 @@ const WorldTimeMarquee = () => {
         {/* Scrolling marquee */}
         <div 
           ref={containerRef}
-          className="flex-1 overflow-x-auto backdrop-blur-md border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide"
+          className="flex-1 overflow-x-auto backdrop-blur-md border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide relative z-0"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
