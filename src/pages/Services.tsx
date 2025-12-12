@@ -134,6 +134,15 @@ const Services = () => {
         </div>
       </AnimatedSection>
 
+      {/* Experience Framework Section */}
+      <AnimatedSection className="section bg-gray-50">
+        <div className="container mx-auto">
+          <div className="max-w-7xl mx-auto">
+            <ExperienceFramework />
+          </div>
+        </div>
+      </AnimatedSection>
+
       {/* Process Section */}
       <AnimatedSection className="section bg-white">
         <div className="container mx-auto">
@@ -143,11 +152,6 @@ const Services = () => {
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 {t('services.process.subtitle')}
               </p>
-            </div>
-
-            {/* Experience Framework */}
-            <div className="mb-20">
-              <ExperienceFramework />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
