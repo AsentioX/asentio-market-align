@@ -13,6 +13,33 @@ interface FloatingObject {
 }
 
 const icons: Record<string, JSX.Element> = {
+  astronaut: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Helmet */}
+      <circle cx="32" cy="16" r="10" />
+      <path d="M26 16 Q26 12 32 12 Q38 12 38 16 Q38 20 32 20 Q26 20 26 16" />
+      {/* Visor reflection */}
+      <path d="M28 14 L30 12" />
+      {/* Body/Torso */}
+      <path d="M24 26 L24 40 L40 40 L40 26 Q40 22 32 22 Q24 22 24 26" />
+      {/* Backpack */}
+      <rect x="40" y="26" width="6" height="12" rx="1" />
+      {/* Left arm */}
+      <path d="M24 28 L16 32 L14 40" />
+      <circle cx="14" cy="42" r="3" />
+      {/* Right arm */}
+      <path d="M40 28 L48 24 L52 28" />
+      <circle cx="52" cy="30" r="3" />
+      {/* Left leg */}
+      <path d="M26 40 L24 52 L22 56" />
+      <ellipse cx="21" cy="58" rx="4" ry="2" />
+      {/* Right leg */}
+      <path d="M38 40 L40 52 L42 56" />
+      <ellipse cx="43" cy="58" rx="4" ry="2" />
+      {/* Belt */}
+      <line x1="24" y1="38" x2="40" y2="38" />
+    </svg>
+  ),
   satellite: (
     <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="24" y="24" width="16" height="16" rx="2" />
@@ -89,7 +116,7 @@ const icons: Record<string, JSX.Element> = {
   ),
 };
 
-const objectTypes = ['satellite', 'shuttle', 'saucer', 'comet', 'robot', 'car', 'phone'];
+const objectTypes = ['astronaut', 'satellite', 'shuttle', 'saucer', 'comet', 'robot', 'car', 'phone'];
 
 const getRandomEdgePosition = (side: 'left' | 'right' | 'top' | 'bottom') => {
   switch (side) {
@@ -160,7 +187,7 @@ const FloatingObjects = () => {
       }
       
       const keyNumber = parseInt(e.key);
-      if (keyNumber >= 1 && keyNumber <= 7) {
+      if (keyNumber >= 1 && keyNumber <= 8) {
         createObject(objectTypes[keyNumber - 1], true); // bypass limit for user-initiated spawns
       }
     };
