@@ -4,9 +4,9 @@ import AnimatedSection from "@/components/AnimatedSection";
 import ExperienceFramework from "@/components/ExperienceFramework";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Target, Rocket, MessageSquare, TrendingUp, Users, Lightbulb } from "lucide-react";
+import { CheckCircle, Target, Rocket, MessageSquare, TrendingUp, Users, Lightbulb, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import TopographicPattern from "@/components/TopographicPattern";
 
 const Services = () => {
   const { t } = useLanguage();
@@ -51,8 +51,6 @@ const Services = () => {
     {
       title: t('services.product.title'),
       icon: Target,
-      color: "bg-blue-50 border-blue-200",
-      iconColor: "text-blue-600",
       items: [
         t('services.product.item1'),
         t('services.product.item2'),
@@ -63,8 +61,6 @@ const Services = () => {
     {
       title: t('services.gtm.title'),
       icon: Rocket,
-      color: "bg-green-50 border-green-200",
-      iconColor: "text-green-600",
       items: [
         t('services.gtm.item1'),
         t('services.gtm.item2'),
@@ -75,8 +71,6 @@ const Services = () => {
     {
       title: t('services.branding.title'),
       icon: MessageSquare,
-      color: "bg-purple-50 border-purple-200",
-      iconColor: "text-purple-600",
       items: [
         t('services.branding.item1'),
         t('services.branding.item2'),
@@ -113,13 +107,17 @@ const Services = () => {
   ];
 
   return (
-    <div className="pt-20">
+    <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-asentio-blue to-blue-800 text-white py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
+      <section className="bg-asentio-blue text-white py-24 relative overflow-hidden">
+        <TopographicPattern variant="dark" className="opacity-100" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-asentio-red/5 rounded-full blur-2xl" />
+        
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               {t('services.hero.title')} <span className="text-blue-200">{t('services.hero.title.highlight')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
@@ -130,12 +128,17 @@ const Services = () => {
       </section>
 
       {/* Services Cards */}
-      <AnimatedSection className="section bg-gray-50">
-        <div className="container mx-auto">
+      <AnimatedSection className="py-24 bg-background relative">
+        <TopographicPattern className="opacity-30" />
+        
+        <div className="container mx-auto relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('services.what.title')}</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                {t('services.what.title')}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 {t('services.what.subtitle')}
               </p>
             </div>
@@ -146,45 +149,48 @@ const Services = () => {
                 const showQuote = hoveredIndex !== null && hoveredIndex !== index;
                 
                 return (
-                  <Card 
+                  <div 
                     key={index} 
-                    className={`${service.color} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}
+                    className="group relative bg-card p-8 rounded-xl border border-border hover:border-asentio-red/30 transition-all duration-300 hover:shadow-xl hover:shadow-asentio-red/5"
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
-                    <CardHeader className="text-center pb-4">
-                      <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-white shadow-lg flex items-center justify-center`}>
-                        <service.icon className={`h-8 w-8 ${service.iconColor}`} />
+                    <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red rounded-l-xl transition-all duration-300 group-hover:h-full" />
+                    
+                    <div className="text-center pb-4">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-asentio-blue/10 rounded-lg flex items-center justify-center group-hover:bg-asentio-red/10 transition-colors">
+                        <service.icon className="h-8 w-8 text-asentio-blue group-hover:text-asentio-red transition-colors" />
                       </div>
-                      <CardTitle className="text-xl font-bold text-gray-900">{service.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="transition-all duration-300">
+                      <h3 className="text-xl font-bold text-foreground">{service.title}</h3>
+                    </div>
+                    
+                    <div className="transition-all duration-300">
                       {/* Show items when hovered */}
                       <div className={`grid transition-all duration-300 ${isHovered ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                         <div className="overflow-hidden">
-                          <ul className="space-y-3">
+                          <ul className="space-y-3 pt-4">
                             {service.items.map((item, itemIndex) => (
                               <li key={itemIndex} className="flex items-start">
-                                <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                                <span className="text-gray-700 leading-relaxed">{item}</span>
+                                <CheckCircle className="h-5 w-5 text-asentio-red mr-3 mt-0.5 flex-shrink-0" />
+                                <span className="text-muted-foreground leading-relaxed">{item}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                       </div>
-                      {/* Show quote when another card is hovered (not this one) */}
+                      {/* Show quote when another card is hovered */}
                       {!isHovered && (
                         <div className={`grid transition-all duration-300 ${showQuote ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                           <div className="overflow-hidden">
                             <div className="text-center py-6 px-2 flex flex-col items-center justify-center">
-                              <p className="text-gray-500 italic text-sm leading-relaxed">"{quotes[index][quoteIndices[index]].text}"</p>
-                              <p className="text-gray-400 text-xs mt-2">— {quotes[index][quoteIndices[index]].author}</p>
+                              <p className="text-muted-foreground italic text-sm leading-relaxed">"{quotes[index][quoteIndices[index]].text}"</p>
+                              <p className="text-muted-foreground/60 text-xs mt-2">— {quotes[index][quoteIndices[index]].author}</p>
                             </div>
                           </div>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 );
               })}
             </div>
@@ -193,8 +199,10 @@ const Services = () => {
       </AnimatedSection>
 
       {/* Experience Framework Section */}
-      <AnimatedSection className="section bg-blue-50">
-        <div className="container mx-auto">
+      <AnimatedSection className="py-24 bg-muted relative">
+        <TopographicPattern className="opacity-20" />
+        
+        <div className="container mx-auto relative z-10">
           <div className="max-w-7xl mx-auto">
             <ExperienceFramework />
           </div>
@@ -202,29 +210,34 @@ const Services = () => {
       </AnimatedSection>
 
       {/* Process Section */}
-      <AnimatedSection className="section bg-white">
-        <div className="container mx-auto">
+      <AnimatedSection className="py-24 bg-background relative">
+        <TopographicPattern className="opacity-30" />
+        
+        <div className="container mx-auto relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('services.process.title')}</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                {t('services.process.title')}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 {t('services.process.subtitle')}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {processSteps.map((step, index) => (
-                <div key={index} className="text-center group">
+                <div key={index} className="group text-center">
                   <div className="relative mb-6">
-                    <div className="w-20 h-20 mx-auto bg-gradient-to-r from-asentio-blue to-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                    <div className="w-20 h-20 mx-auto bg-asentio-blue rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg group-hover:shadow-xl group-hover:shadow-asentio-blue/20 transition-all duration-300">
                       {step.number}
                     </div>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
-                      <step.icon className="h-6 w-6 text-asentio-blue" />
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-card rounded-full flex items-center justify-center border border-border group-hover:border-asentio-red/30 transition-colors">
+                      <step.icon className="h-6 w-6 text-asentio-blue group-hover:text-asentio-red transition-colors" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                  <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                 </div>
               ))}
             </div>
@@ -233,19 +246,27 @@ const Services = () => {
       </AnimatedSection>
 
       {/* CTA Section */}
-      <AnimatedSection className="section bg-gradient-to-r from-asentio-blue via-blue-700 to-blue-800 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
+      <AnimatedSection className="py-24 bg-asentio-blue text-white relative overflow-hidden">
+        <TopographicPattern variant="dark" className="opacity-100" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-asentio-red/5 rounded-full blur-2xl" />
+        
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               {t('services.cta.title')} <span className="text-blue-200">{t('services.cta.title.highlight')}</span>
             </h2>
             <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed">
               {t('services.cta.subtitle')}
             </p>
             <Link to="/contact">
-              <Button size="lg" className="bg-white text-asentio-blue hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+              <Button 
+                size="lg" 
+                className="bg-background text-asentio-blue hover:bg-background/90 px-10 py-6 text-base font-medium shadow-lg transition-all hover:shadow-xl"
+              >
                 {t('services.cta.button')}
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
           </div>
