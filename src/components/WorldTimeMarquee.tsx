@@ -261,7 +261,7 @@ const WorldTimeMarquee = () => {
   return (
     <div 
       ref={containerRef}
-      className="w-full overflow-x-auto backdrop-blur-md border-y border-border/20 mt-[120px] cursor-grab active:cursor-grabbing scrollbar-hide"
+      className="w-full overflow-x-auto backdrop-blur-md border-y border-border/20 mt-[60px] cursor-grab active:cursor-grabbing scrollbar-hide"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
