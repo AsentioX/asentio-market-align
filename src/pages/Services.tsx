@@ -172,15 +172,17 @@ const Services = () => {
                           </ul>
                         </div>
                       </div>
-                      {/* Show quote when another card is hovered */}
-                      <div className={`grid transition-all duration-300 ${showQuote ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                        <div className="overflow-hidden flex items-center justify-center min-h-[120px]">
-                          <div className="text-center py-4 px-2 flex flex-col items-center justify-center h-full">
-                            <p className="text-gray-500 italic text-sm leading-relaxed">"{quotes[index][quoteIndices[index]].text}"</p>
-                            <p className="text-gray-400 text-xs mt-2">— {quotes[index][quoteIndices[index]].author}</p>
+                      {/* Show quote when another card is hovered (not this one) */}
+                      {!isHovered && (
+                        <div className={`grid transition-all duration-300 ${showQuote ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                          <div className="overflow-hidden">
+                            <div className="text-center py-6 px-2 flex flex-col items-center justify-center">
+                              <p className="text-gray-500 italic text-sm leading-relaxed">"{quotes[index][quoteIndices[index]].text}"</p>
+                              <p className="text-gray-400 text-xs mt-2">— {quotes[index][quoteIndices[index]].author}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </CardContent>
                   </Card>
                 );
