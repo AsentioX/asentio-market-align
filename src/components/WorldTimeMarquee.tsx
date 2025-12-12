@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import WeatherIcon, { FallbackWeatherIcon } from './WeatherIcon';
+import marqueeTexture from '@/assets/marquee-texture.png';
 
 interface CityTime {
   name: string;
@@ -402,13 +403,15 @@ const WorldTimeMarquee = () => {
         </button>
       </div>
       
-      <div className="flex relative">
-        {/* Subtle noise texture overlay */}
+      <div className="flex relative overflow-hidden">
+        {/* Wave dot texture background */}
         <div 
-          className="absolute inset-0 opacity-[0.03] pointer-events-none z-10"
+          className="absolute inset-0 opacity-40 pointer-events-none z-0"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
+            backgroundImage: `url(${marqueeTexture})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'repeat-x',
           }}
         />
         
