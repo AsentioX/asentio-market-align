@@ -78,22 +78,6 @@ const About = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {/* Chester */}
-              <div className="group relative bg-card p-8 rounded-xl border border-border hover:border-asentio-red/30 transition-all duration-300 hover:shadow-xl hover:shadow-asentio-red/5">
-                <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red rounded-l-xl transition-all duration-300 group-hover:h-full" />
-                <div className="flex flex-col items-center text-center">
-                  <img 
-                    src={chesterImg} 
-                    alt="Chester Mui" 
-                    className="w-40 h-40 rounded-full object-cover shadow-lg mb-6 ring-4 ring-background"
-                  />
-                  <h3 className="text-xl font-semibold mb-3 text-foreground">Chester Mui</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {t('about.team.chester')}
-                  </p>
-                </div>
-              </div>
-              
               {/* Jon */}
               <div className="group relative bg-card p-8 rounded-xl border border-border hover:border-asentio-red/30 transition-all duration-300 hover:shadow-xl hover:shadow-asentio-red/5">
                 <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red rounded-l-xl transition-all duration-300 group-hover:h-full" />
@@ -106,6 +90,22 @@ const About = () => {
                   <h3 className="text-xl font-semibold mb-3 text-foreground">Jon Li</h3>
                   <p className="text-muted-foreground leading-relaxed">
                     {t('about.team.jon')}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Chester */}
+              <div className="group relative bg-card p-8 rounded-xl border border-border hover:border-asentio-red/30 transition-all duration-300 hover:shadow-xl hover:shadow-asentio-red/5">
+                <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red rounded-l-xl transition-all duration-300 group-hover:h-full" />
+                <div className="flex flex-col items-center text-center">
+                  <img 
+                    src={chesterImg} 
+                    alt="Chester Mui" 
+                    className="w-40 h-40 rounded-full object-cover shadow-lg mb-6 ring-4 ring-background"
+                  />
+                  <h3 className="text-xl font-semibold mb-3 text-foreground">Chester Mui</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {t('about.team.chester')}
                   </p>
                 </div>
               </div>
