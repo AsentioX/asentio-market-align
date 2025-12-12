@@ -50,24 +50,47 @@ const getHourInTimezone = (timezone: string): number => {
 // Calculate if it's day or night (6am-6pm = day)
 const isDaylight = (hour: number): boolean => hour >= 6 && hour < 18;
 
+interface CityData {
+  time: string;
+  date: string;
+  dayOfWeek: string;
+}
+
 const WorldTimeMarquee = () => {
-  const [times, setTimes] = useState<Record<string, string>>({});
+  const [cityData, setCityData] = useState<Record<string, CityData>>({});
   const [gradientStops, setGradientStops] = useState<string>('');
 
   useEffect(() => {
     const updateTimes = () => {
-      const newTimes: Record<string, string> = {};
+      const newCityData: Record<string, CityData> = {};
       const stops: string[] = [];
       
       cities.forEach((city, index) => {
         const now = new Date();
-        const formatter = new Intl.DateTimeFormat('en-US', {
+        
+        const timeFormatter = new Intl.DateTimeFormat('en-US', {
           timeZone: city.timezone,
           hour: '2-digit',
           minute: '2-digit',
           hour12: true,
         });
-        newTimes[city.name] = formatter.format(now);
+        
+        const dateFormatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: city.timezone,
+          month: 'short',
+          day: 'numeric',
+        });
+        
+        const dayFormatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: city.timezone,
+          weekday: 'short',
+        });
+        
+        newCityData[city.name] = {
+          time: timeFormatter.format(now),
+          date: dateFormatter.format(now),
+          dayOfWeek: dayFormatter.format(now),
+        };
         
         // Calculate gradient stop based on daylight
         const hour = getHourInTimezone(city.timezone);
@@ -108,7 +131,7 @@ const WorldTimeMarquee = () => {
       });
       
       setGradientStops([...stops, ...secondHalfStops].join(', '));
-      setTimes(newTimes);
+      setCityData(newCityData);
     };
 
     updateTimes();
@@ -170,20 +193,24 @@ const WorldTimeMarquee = () => {
     const nextHour = getHourInTimezone(nextCity.timezone);
     const nextColor = getSkyColor(nextHour);
     
+    const data = cityData[city.name];
+    
     return (
       <span 
         key={`${keyPrefix}-${city.name}`} 
-        className="inline-flex items-center gap-2 px-6 py-1"
+        className="inline-flex flex-col items-center px-6 py-2"
         style={{ 
           background: `linear-gradient(to right, ${currentColor} 0%, ${currentColor} 40%, ${nextColor} 100%)`
         }}
       >
-        <span className="text-xl">{city.flag}</span>
-        <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
-          {city.name}
+        <span className="flex items-center gap-2">
+          <span className="text-xl">{city.flag}</span>
+          <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
+            {city.name}
+          </span>
         </span>
-        <span className={`font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
-          {times[city.name] || '--:--'}
+        <span className={`text-sm font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
+          {data ? `${data.date} · ${data.dayOfWeek} · ${data.time}` : '-- · -- · --:--'}
         </span>
       </span>
     );
