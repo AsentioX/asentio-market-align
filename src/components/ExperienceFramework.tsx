@@ -199,18 +199,29 @@ const ExperienceFramework = () => {
               );
             })}
 
-            {/* Center label */}
-            <text
-              x={centerX}
-              y={centerY}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="#94a3b8"
-              className="text-xs font-medium pointer-events-none"
-            >
-              JOURNEY
-            </text>
           </svg>
+
+          {/* Center Content - positioned absolutely in the middle */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[180px] h-[180px] flex items-center justify-center">
+              {activeStep !== null ? (
+                <div className="text-center p-3 animate-fade-in">
+                  <h3 className="text-lg font-bold text-asentio-blue mb-1">
+                    {steps[activeStep].label}
+                  </h3>
+                  <p className="text-xs text-gray-600 leading-tight">
+                    {steps[activeStep].objective}
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                    Hover to explore
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Floating Tooltip */}
           {activeStep !== null && (
