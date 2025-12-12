@@ -85,8 +85,8 @@ const ExperienceFramework = () => {
     // Position tooltip based on which circle is active
     // Avoid covering the center by pushing tooltips outward
     switch (index) {
-      case 0: // Top (Aware) - show above
-        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-50%, -130%)' };
+      case 0: // Top (Aware) - show to the right
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(20%, -80%)' };
       case 1: // Top-right (Arouse) - show to the right
         return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(20%, -50%)' };
       case 2: // Bottom-right (Acquire) - show to the right
