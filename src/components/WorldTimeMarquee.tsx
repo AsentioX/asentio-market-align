@@ -77,7 +77,6 @@ const WorldTimeMarquee = () => {
         
         const dateFormatter = new Intl.DateTimeFormat('en-US', {
           timeZone: city.timezone,
-          month: 'short',
           day: 'numeric',
         });
         
@@ -210,7 +209,7 @@ const WorldTimeMarquee = () => {
           </span>
         </span>
         <span className={`text-sm font-mono ${isDay ? 'text-amber-800' : 'text-blue-200'}`}>
-          {data ? `${data.date} · ${data.dayOfWeek} · ${data.time}` : '-- · -- · --:--'}
+          {data ? `${data.date}·${data.dayOfWeek}·${data.time}` : '--·--·--:--'}
         </span>
       </span>
     );
