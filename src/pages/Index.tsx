@@ -35,10 +35,10 @@ const Index = () => {
 
   return (
     <div className="overflow-x-hidden">
-      <Hero />
-      
       {/* World Time Marquee */}
       <WorldTimeMarquee />
+      
+      <Hero />
       
       {/* Expertise Section */}
       <AnimatedSection className="py-24 bg-background relative">
