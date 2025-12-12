@@ -190,46 +190,49 @@ const WorldTimeMarquee = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Get sky color based on hour (0-23)
+  // Get sky color based on hour (0-23) - using sunset palette
   const getSkyColor = (hour: number): string => {
-    // Pre-dawn (4-6): deep purple transitioning to pink
+    // Deep night (0-4): Deep blue/navy from top of palette
+    if (hour >= 0 && hour < 4) {
+      return `hsla(225, 55%, 18%, 0.5)`;
+    }
+    // Pre-dawn (4-6): Deep purple-blue transitioning to magenta
     if (hour >= 4 && hour < 6) {
       const progress = (hour - 4) / 2;
-      return `hsla(${280 - progress * 40}, ${50 + progress * 30}%, ${20 + progress * 25}%, 0.35)`;
+      return `hsla(${260 - progress * 30}, ${45 + progress * 20}%, ${22 + progress * 15}%, 0.45)`;
     }
-    // Sunrise (6-8): pink/orange
+    // Sunrise (6-8): Magenta/pink to warm orange
     if (hour >= 6 && hour < 8) {
       const progress = (hour - 6) / 2;
-      return `hsla(${30 + progress * 15}, ${80 - progress * 10}%, ${55 + progress * 15}%, 0.3)`;
+      return `hsla(${330 - progress * 300}, ${70 + progress * 15}%, ${40 + progress * 20}%, 0.4)`;
     }
-    // Morning (8-11): warm light blue/yellow
+    // Morning (8-11): Warm amber/orange
     if (hour >= 8 && hour < 11) {
       const progress = (hour - 8) / 3;
-      return `hsla(${45 - progress * 5}, ${70 - progress * 20}%, ${70 + progress * 10}%, 0.25)`;
+      return `hsla(${35 + progress * 10}, ${75 - progress * 15}%, ${55 + progress * 15}%, 0.35)`;
     }
-    // Midday (11-14): bright sky blue
+    // Midday (11-14): Light warm amber
     if (hour >= 11 && hour < 14) {
-      return `hsla(200, 60%, 75%, 0.2)`;
+      return `hsla(45, 60%, 70%, 0.3)`;
     }
-    // Afternoon (14-17): warm golden
+    // Afternoon (14-17): Golden amber
     if (hour >= 14 && hour < 17) {
       const progress = (hour - 14) / 3;
-      return `hsla(${45 - progress * 10}, ${60 + progress * 20}%, ${70 - progress * 10}%, 0.25)`;
+      return `hsla(${40 - progress * 10}, ${65 + progress * 15}%, ${65 - progress * 10}%, 0.35)`;
     }
-    // Sunset (17-19): orange/red
+    // Sunset (17-19): Deep orange to magenta/pink
     if (hour >= 17 && hour < 19) {
       const progress = (hour - 17) / 2;
-      return `hsla(${30 - progress * 20}, ${80 + progress * 10}%, ${50 - progress * 15}%, 0.35)`;
+      return `hsla(${30 - progress * 330}, ${80 + progress * 5}%, ${50 - progress * 10}%, 0.45)`;
     }
-    // Dusk (19-21): purple/blue
+    // Dusk (19-21): Magenta to deep purple
     if (hour >= 19 && hour < 21) {
       const progress = (hour - 19) / 2;
-      return `hsla(${260 + progress * 20}, ${50 - progress * 10}%, ${30 - progress * 10}%, 0.4)`;
+      return `hsla(${300 - progress * 40}, ${50 - progress * 10}%, ${35 - progress * 10}%, 0.5)`;
     }
-    // Night (21-4): deep navy/dark blue
-    const nightHour = hour >= 21 ? hour - 21 : hour + 3;
-    const progress = nightHour / 7;
-    return `hsla(${230 + progress * 10}, ${40 + progress * 10}%, ${12 + progress * 5}%, 0.45)`;
+    // Night (21-24): Deep purple to navy blue
+    const nightProgress = (hour - 21) / 3;
+    return `hsla(${260 - nightProgress * 35}, ${45 - nightProgress * 5}%, ${22 - nightProgress * 4}%, 0.5)`;
   };
 
   // Generate city item for locked section
