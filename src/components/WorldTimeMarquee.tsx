@@ -406,7 +406,7 @@ const WorldTimeMarquee = () => {
       <div className="flex relative overflow-hidden">
         {/* Wave dot texture background */}
         <div 
-          className="absolute inset-0 opacity-40 pointer-events-none z-0"
+          className="absolute inset-0 opacity-60 pointer-events-none z-0"
           style={{
             backgroundImage: `url(${marqueeTexture})`,
             backgroundSize: 'cover',
