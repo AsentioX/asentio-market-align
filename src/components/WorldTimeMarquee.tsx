@@ -158,17 +158,25 @@ const WorldTimeMarquee = () => {
     return `hsla(${230 + progress * 10}, ${40 + progress * 10}%, ${12 + progress * 5}%, 0.45)`;
   };
 
-  // Generate city items with individual backgrounds
-  const generateCityItem = (city: CityTime, index: number, keyPrefix: string) => {
+  // Generate city items with blended gradient backgrounds
+  const generateCityItem = (city: CityTime, index: number, keyPrefix: string, allCities: CityTime[]) => {
     const hour = getHourInTimezone(city.timezone);
     const isDay = isDaylight(hour);
-    const bgColor = getSkyColor(hour);
+    const currentColor = getSkyColor(hour);
+    
+    // Get next city's color for gradient blending
+    const nextIndex = (index + 1) % allCities.length;
+    const nextCity = allCities[nextIndex];
+    const nextHour = getHourInTimezone(nextCity.timezone);
+    const nextColor = getSkyColor(nextHour);
     
     return (
       <span 
         key={`${keyPrefix}-${city.name}`} 
         className="inline-flex items-center gap-2 px-6 py-1"
-        style={{ backgroundColor: bgColor }}
+        style={{ 
+          background: `linear-gradient(to right, ${currentColor} 0%, ${currentColor} 40%, ${nextColor} 100%)`
+        }}
       >
         <span className="text-xl">{city.flag}</span>
         <span className={`font-medium ${isDay ? 'text-slate-800' : 'text-white'}`}>
@@ -184,8 +192,8 @@ const WorldTimeMarquee = () => {
   return (
     <div className="w-full overflow-hidden backdrop-blur-md border-y border-border/20 mt-[120px]">
       <div className="animate-marquee whitespace-nowrap inline-flex">
-        {cities.map((city, index) => generateCityItem(city, index, 'first'))}
-        {cities.map((city, index) => generateCityItem(city, index, 'second'))}
+        {cities.map((city, index) => generateCityItem(city, index, 'first', cities))}
+        {cities.map((city, index) => generateCityItem(city, index, 'second', cities))}
       </div>
     </div>
   );
