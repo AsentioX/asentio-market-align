@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Sun, Moon, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog, Wind, CloudSun, CloudMoon, Snowflake, CloudDrizzle } from 'lucide-react';
+import WeatherIcon, { FallbackWeatherIcon } from './WeatherIcon';
 
 interface CityTime {
   name: string;
@@ -58,63 +58,6 @@ const getHourInTimezone = (timezone: string): number => {
 
 // Calculate if it's day or night (6am-6pm = day)
 const isDaylight = (hour: number): boolean => hour >= 6 && hour < 18;
-
-// Get weather icon component based on WMO weather code
-const getWeatherIconComponent = (code: number, isDay: boolean, className: string) => {
-  // WMO Weather interpretation codes
-  // 0: Clear sky
-  if (code === 0) {
-    return isDay ? <Sun className={className} /> : <Moon className={className} />;
-  }
-  // 1-3: Partly cloudy
-  if (code <= 3) {
-    return isDay ? <CloudSun className={className} /> : <CloudMoon className={className} />;
-  }
-  // 45, 48: Fog
-  if (code === 45 || code === 48) {
-    return <CloudFog className={className} />;
-  }
-  // 51, 53, 55: Drizzle
-  if (code >= 51 && code <= 55) {
-    return <CloudDrizzle className={className} />;
-  }
-  // 56, 57: Freezing drizzle
-  if (code === 56 || code === 57) {
-    return <Snowflake className={className} />;
-  }
-  // 61, 63, 65: Rain
-  if (code >= 61 && code <= 65) {
-    return <CloudRain className={className} />;
-  }
-  // 66, 67: Freezing rain
-  if (code === 66 || code === 67) {
-    return <CloudSnow className={className} />;
-  }
-  // 71, 73, 75, 77: Snow
-  if (code >= 71 && code <= 77) {
-    return <CloudSnow className={className} />;
-  }
-  // 80, 81, 82: Rain showers
-  if (code >= 80 && code <= 82) {
-    return <CloudRain className={className} />;
-  }
-  // 85, 86: Snow showers
-  if (code === 85 || code === 86) {
-    return <CloudSnow className={className} />;
-  }
-  // 95, 96, 99: Thunderstorm
-  if (code >= 95) {
-    return <CloudLightning className={className} />;
-  }
-  // Default
-  return isDay ? <Sun className={className} /> : <Moon className={className} />;
-};
-
-// Fallback icon based on time (when no API data)
-const getFallbackIcon = (hour: number, className: string) => {
-  const isDay = hour >= 6 && hour < 18;
-  return isDay ? <Sun className={className} /> : <Moon className={className} />;
-};
 
 interface CityData {
   time: string;
@@ -305,8 +248,8 @@ const WorldTimeMarquee = () => {
           </span>
           <span className={isDay ? 'text-amber-600' : 'text-blue-200'}>
             {weather 
-              ? getWeatherIconComponent(weather.code, weather.isDay, 'w-5 h-5') 
-              : getFallbackIcon(hour, 'w-5 h-5')
+              ? <WeatherIcon code={weather.code} isDay={weather.isDay} className="w-5 h-5" />
+              : <FallbackWeatherIcon isDay={isDay} className="w-5 h-5" />
             }
           </span>
           {weather && (
