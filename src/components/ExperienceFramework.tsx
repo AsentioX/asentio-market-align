@@ -16,81 +16,121 @@ const ExperienceFramework = () => {
     { label: 'reflect', description: 'Gather insights and feedback for continuous improvement' },
   ];
 
-  // Pentagon vertices (clockwise from top-left)
-  // Outer pentagon points
-  const outerPoints = [
-    { x: 200, y: 30 },   // top-left (aware)
-    { x: 370, y: 30 },   // top-right (arouse)
-    { x: 450, y: 200 },  // right (acquire)
-    { x: 285, y: 350 },  // bottom (use)
-    { x: 120, y: 200 },  // left (reflect)
-  ];
+  // Circle positions arranged in a pentagon pattern
+  const circleRadius = 55;
+  const centerX = 200;
+  const centerY = 200;
+  const orbitRadius = 120;
 
-  // Inner pentagon points (smaller, creates the hollow center)
-  const innerPoints = [
-    { x: 230, y: 120 },  // top-left
-    { x: 340, y: 120 },  // top-right
-    { x: 380, y: 200 },  // right
-    { x: 285, y: 270 },  // bottom
-    { x: 190, y: 200 },  // left
-  ];
+  // Calculate positions for 5 circles in a pentagon arrangement
+  const getCirclePosition = (index: number) => {
+    // Start from top and go clockwise
+    const angle = (index * 72 - 90) * (Math.PI / 180);
+    return {
+      x: centerX + orbitRadius * Math.cos(angle),
+      y: centerY + orbitRadius * Math.sin(angle),
+    };
+  };
 
-  // Label positions
-  const labelPositions = [
-    { x: 185, y: 75 },   // aware
-    { x: 355, y: 75 },   // arouse
-    { x: 400, y: 210 },  // acquire
-    { x: 285, y: 320 },  // use
-    { x: 145, y: 210 },  // reflect
-  ];
-
-  // Create path for each segment
-  const createSegmentPath = (index: number) => {
-    const nextIndex = (index + 1) % 5;
-    const outer1 = outerPoints[index];
-    const outer2 = outerPoints[nextIndex];
-    const inner1 = innerPoints[index];
-    const inner2 = innerPoints[nextIndex];
-    
-    return `M ${outer1.x} ${outer1.y} 
-            L ${outer2.x} ${outer2.y} 
-            L ${inner2.x} ${inner2.y} 
-            L ${inner1.x} ${inner1.y} Z`;
+  // Get connection line between two circles
+  const getConnectionPath = (fromIndex: number, toIndex: number) => {
+    const from = getCirclePosition(fromIndex);
+    const to = getCirclePosition(toIndex);
+    return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
   return (
     <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-      {/* Pentagon SVG */}
-      <div className="relative w-full max-w-[500px] aspect-square">
+      {/* Circles SVG */}
+      <div className="relative w-full max-w-[420px] aspect-square">
         <svg 
-          viewBox="70 0 430 380" 
+          viewBox="0 0 400 400" 
           className="w-full h-full"
-          style={{ filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))' }}
         >
-          {/* Pentagon segments */}
-          {steps.map((step, index) => (
-            <g key={step.label}>
-              <path
-                d={createSegmentPath(index)}
-                fill={activeStep === index ? 'hsl(210, 70%, 75%)' : 'hsl(210, 60%, 90%)'}
-                stroke="hsl(210, 60%, 60%)"
-                strokeWidth="2"
-                className="transition-all duration-300 cursor-pointer hover:fill-[hsl(210,70%,80%)]"
+          {/* Connection lines between circles */}
+          {steps.map((_, index) => (
+            <path
+              key={`line-${index}`}
+              d={getConnectionPath(index, (index + 1) % 5)}
+              stroke="hsl(210, 50%, 80%)"
+              strokeWidth="2"
+              fill="none"
+              strokeDasharray="4 4"
+              className="transition-all duration-300"
+            />
+          ))}
+
+          {/* Circles */}
+          {steps.map((step, index) => {
+            const pos = getCirclePosition(index);
+            const isActive = activeStep === index;
+            
+            return (
+              <g 
+                key={step.label}
+                className="cursor-pointer"
                 onMouseEnter={() => setActiveStep(index)}
                 onMouseLeave={() => setActiveStep(null)}
-              />
-              <text
-                x={labelPositions[index].x}
-                y={labelPositions[index].y}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="text-lg font-light fill-slate-600 pointer-events-none select-none"
-                style={{ fontFamily: 'system-ui, sans-serif' }}
               >
-                {step.label}
-              </text>
-            </g>
-          ))}
+                {/* Outer glow when active */}
+                {isActive && (
+                  <circle
+                    cx={pos.x}
+                    cy={pos.y}
+                    r={circleRadius + 8}
+                    fill="none"
+                    stroke="hsl(210, 70%, 60%)"
+                    strokeWidth="3"
+                    opacity="0.5"
+                    className="animate-pulse"
+                  />
+                )}
+                
+                {/* Main circle */}
+                <circle
+                  cx={pos.x}
+                  cy={pos.y}
+                  r={circleRadius}
+                  fill={isActive ? 'hsl(210, 70%, 75%)' : 'hsl(210, 60%, 90%)'}
+                  stroke="hsl(210, 60%, 60%)"
+                  strokeWidth="2"
+                  className="transition-all duration-300 hover:fill-[hsl(210,70%,80%)]"
+                />
+                
+                {/* Label */}
+                <text
+                  x={pos.x}
+                  y={pos.y}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="text-base font-light fill-slate-600 pointer-events-none select-none"
+                  style={{ fontFamily: 'system-ui, sans-serif' }}
+                >
+                  {step.label}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Center text */}
+          <text
+            x={centerX}
+            y={centerY - 10}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            className="text-sm font-medium fill-slate-500 pointer-events-none"
+          >
+            Experience
+          </text>
+          <text
+            x={centerX}
+            y={centerY + 10}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            className="text-sm font-medium fill-slate-500 pointer-events-none"
+          >
+            Framework
+          </text>
         </svg>
       </div>
 
