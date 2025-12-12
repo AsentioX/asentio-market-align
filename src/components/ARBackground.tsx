@@ -1,4 +1,17 @@
+import { useState, useEffect } from 'react';
+
 const ARBackground = () => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Neural Network Nodes */}
@@ -75,9 +88,13 @@ const ARBackground = () => {
         </div>
       </div>
 
-      {/* AR Targeting Reticle */}
+      {/* AR Targeting Reticle - Follows Mouse */}
       <svg
-        className="absolute bottom-32 left-1/4 w-24 h-24 opacity-[0.08] animate-pulse-glow"
+        className="fixed w-24 h-24 opacity-[0.15] transition-transform duration-100 ease-out"
+        style={{
+          left: mousePosition.x - 48,
+          top: mousePosition.y - 48,
+        }}
         viewBox="0 0 100 100"
         fill="none"
       >
