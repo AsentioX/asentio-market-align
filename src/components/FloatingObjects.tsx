@@ -76,10 +76,16 @@ const icons: Record<string, JSX.Element> = {
     </svg>
   ),
   shuttle: (
-    <svg viewBox="0 0 64 64" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M32 6 L42 24 L42 48 L36 58 L28 58 L22 48 L22 24 Z" />
-      <path d="M22 36 L14 46 L14 54 L22 48" />
-      <path d="M42 36 L50 46 L50 54 L42 48" />
+    <svg viewBox="0 0 64 64" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Main body outline */}
+      <path d="M32 4 Q28 4 26 8 L24 16 L24 40 L20 44 L20 52 L26 48 L26 54 L30 58 L30 62 L32 64 L34 62 L34 58 L38 54 L38 48 L44 52 L44 44 L40 40 L40 16 L38 8 Q36 4 32 4 Z" fill="none" strokeWidth="2" />
+      {/* Wings */}
+      <path d="M24 28 L8 44 L8 52 L24 40" fill="currentColor" />
+      <path d="M40 28 L56 44 L56 52 L40 40" fill="currentColor" />
+      {/* Cockpit window */}
+      <path d="M29 12 L32 8 L35 12 L35 18 L29 18 Z" fill="currentColor" />
+      {/* Center tail fin */}
+      <path d="M30 54 L32 48 L34 54" fill="none" strokeWidth="2" />
     </svg>
   ),
   circle: (
