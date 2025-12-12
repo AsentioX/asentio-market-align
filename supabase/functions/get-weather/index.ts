@@ -35,21 +35,6 @@ const cityCoordinates: Record<string, { lat: number; lon: number }> = {
   'Tokyo': { lat: 35.6762, lon: 139.6503 },
 };
 
-// Weather code to emoji mapping
-const getWeatherEmoji = (code: number, isDay: boolean): string => {
-  // WMO Weather interpretation codes
-  if (code === 0) return isDay ? '☀️' : '🌙'; // Clear sky
-  if (code <= 3) return isDay ? '⛅' : '☁️'; // Partly cloudy
-  if (code <= 48) return '🌫️'; // Fog
-  if (code <= 57) return '🌧️'; // Drizzle
-  if (code <= 67) return '🌧️'; // Rain
-  if (code <= 77) return '❄️'; // Snow
-  if (code <= 82) return '🌧️'; // Rain showers
-  if (code <= 86) return '🌨️'; // Snow showers
-  if (code >= 95) return '⛈️'; // Thunderstorm
-  return isDay ? '☀️' : '🌙';
-};
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -64,7 +49,7 @@ serve(async (req) => {
     
     // Fetch current weather for all cities in one request
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code,is_day`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code,is_day,wind_speed_10m`
     );
     
     if (!response.ok) {
@@ -75,7 +60,7 @@ serve(async (req) => {
     console.log('Open-Meteo response received for', cities.length, 'cities');
     
     // Parse response into city weather map
-    const weatherData: Record<string, { temp: number; icon: string; code: number }> = {};
+    const weatherData: Record<string, { temp: number; code: number; isDay: boolean; windSpeed: number }> = {};
     
     // Open-Meteo returns an array when multiple coordinates are requested
     const results = Array.isArray(data) ? data : [data];
@@ -83,16 +68,26 @@ serve(async (req) => {
     results.forEach((result: any, index: number) => {
       const city = cities[index];
       if (result.current) {
-        const isDay = result.current.is_day === 1;
-        const code = result.current.weather_code;
         weatherData[city] = {
           temp: Math.round(result.current.temperature_2m),
-          icon: getWeatherEmoji(code, isDay),
-          code: code
+          code: result.current.weather_code,
+          isDay: result.current.is_day === 1,
+          windSpeed: result.current.wind_speed_10m
         };
       }
     });
 
+    return new Response(JSON.stringify({ weather: weatherData }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Error fetching weather:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});
     return new Response(JSON.stringify({ weather: weatherData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
