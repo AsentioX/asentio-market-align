@@ -7,7 +7,8 @@ const GlobeGraphic = () => {
       {/* Main globe */}
       <svg
         viewBox="0 0 400 400"
-        className="w-full h-full"
+        className="w-full h-full animate-rotate-slow"
+        style={{ animationDuration: '90s' }}
         fill="none"
       >
         {/* Globe outline */}
