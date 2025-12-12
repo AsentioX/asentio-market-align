@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import ExperienceFramework from "@/components/ExperienceFramework";
 import { Link } from "react-router-dom";
@@ -10,6 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const Services = () => {
   const { t } = useLanguage();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -21,6 +22,8 @@ const Services = () => {
       icon: Target,
       color: "bg-blue-50 border-blue-200",
       iconColor: "text-blue-600",
+      quote: "Design is not just what it looks like. Design is how it works.",
+      quoteAuthor: "Steve Jobs",
       items: [
         t('services.product.item1'),
         t('services.product.item2'),
@@ -33,6 +36,8 @@ const Services = () => {
       icon: Rocket,
       color: "bg-green-50 border-green-200",
       iconColor: "text-green-600",
+      quote: "The best marketing doesn't feel like marketing.",
+      quoteAuthor: "Tom Fishburne",
       items: [
         t('services.gtm.item1'),
         t('services.gtm.item2'),
@@ -45,6 +50,8 @@ const Services = () => {
       icon: MessageSquare,
       color: "bg-purple-50 border-purple-200",
       iconColor: "text-purple-600",
+      quote: "Your brand is what people say about you when you're not in the room.",
+      quoteAuthor: "Jeff Bezos",
       items: [
         t('services.branding.item1'),
         t('services.branding.item2'),
@@ -109,28 +116,50 @@ const Services = () => {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {services.map((service, index) => (
-                <Card key={index} className={`${service.color} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group`}>
-                  <CardHeader className="text-center pb-4">
-                    <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-white shadow-lg flex items-center justify-center`}>
-                      <service.icon className={`h-8 w-8 ${service.iconColor}`} />
-                    </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-300">
-                    <div className="overflow-hidden">
-                      <ul className="space-y-3">
-                        {service.items.map((item, itemIndex) => (
-                          <li key={itemIndex} className="flex items-start">
-                            <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-700 leading-relaxed">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {services.map((service, index) => {
+                const isHovered = hoveredIndex === index;
+                const showQuote = hoveredIndex !== null && hoveredIndex !== index;
+                
+                return (
+                  <Card 
+                    key={index} 
+                    className={`${service.color} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    <CardHeader className="text-center pb-4">
+                      <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-white shadow-lg flex items-center justify-center`}>
+                        <service.icon className={`h-8 w-8 ${service.iconColor}`} />
+                      </div>
+                      <CardTitle className="text-xl font-bold text-gray-900">{service.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="transition-all duration-300">
+                      {/* Show items when hovered */}
+                      <div className={`grid transition-all duration-300 ${isHovered ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                        <div className="overflow-hidden">
+                          <ul className="space-y-3">
+                            {service.items.map((item, itemIndex) => (
+                              <li key={itemIndex} className="flex items-start">
+                                <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                                <span className="text-gray-700 leading-relaxed">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      {/* Show quote when another card is hovered */}
+                      <div className={`grid transition-all duration-300 ${showQuote ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                        <div className="overflow-hidden">
+                          <div className="text-center py-4 px-2">
+                            <p className="text-gray-500 italic text-sm leading-relaxed">"{service.quote}"</p>
+                            <p className="text-gray-400 text-xs mt-2">— {service.quoteAuthor}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </div>
