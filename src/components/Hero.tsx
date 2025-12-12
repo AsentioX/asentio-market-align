@@ -97,7 +97,7 @@ const Hero = () => {
                   size="lg"
                   className="px-8 py-6 text-base font-medium border-2 hover:bg-muted"
                 >
-                  Our Services
+                  {t('hero.services')}
                 </Button>
               </Link>
             </div>
