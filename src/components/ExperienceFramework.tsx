@@ -75,13 +75,29 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
-  // Tooltip is always positioned to the left of the diagram
-  const getTooltipPosition = () => {
-    return { 
-      right: 'calc(100% + 24px)', 
-      top: '50%', 
-      transform: 'translateY(-50%)' 
-    };
+  // Get tooltip position based on circle index - position outside the circle
+  const getTooltipPosition = (index: number) => {
+    const pos = getCirclePosition(index);
+    // Convert SVG coordinates to percentage
+    const xPercent = (pos.x / 500) * 100;
+    const yPercent = (pos.y / 500) * 100;
+    
+    // Position tooltip based on which circle is active
+    // Avoid covering the center by pushing tooltips outward
+    switch (index) {
+      case 0: // Top (Aware) - show above
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-50%, -130%)' };
+      case 1: // Top-right (Arouse) - show to the right
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(20%, -50%)' };
+      case 2: // Bottom-right (Acquire) - show to the right
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(20%, -50%)' };
+      case 3: // Bottom-left (Use) - show to the left
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-120%, -50%)' };
+      case 4: // Left (Reflect) - show to the left
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-120%, -50%)' };
+      default:
+        return { left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-50%, -50%)' };
+    }
   };
 
   return (
@@ -190,7 +206,7 @@ const ExperienceFramework = () => {
           {activeStep !== null && (
             <div 
               className="absolute z-50 w-80 bg-white rounded-xl shadow-xl border border-gray-200 p-5 animate-fade-in pointer-events-none"
-              style={getTooltipPosition()}
+              style={getTooltipPosition(activeStep)}
             >
               <div className="space-y-2 text-sm text-gray-600">
                 <p>
