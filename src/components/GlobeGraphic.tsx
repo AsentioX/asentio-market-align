@@ -37,15 +37,27 @@ const GlobeGraphic = () => {
         <ellipse cx="200" cy="200" rx="75" ry="150" className="stroke-asentio-blue/15" strokeWidth="0.75" />
         <ellipse cx="200" cy="200" rx="120" ry="150" className="stroke-asentio-blue/15" strokeWidth="0.75" />
         
-        {/* Connection nodes */}
-        <circle cx="120" cy="140" r="6" className="fill-asentio-red animate-pulse-glow" />
-        <circle cx="280" cy="160" r="5" className="fill-asentio-blue animate-pulse-glow" style={{ animationDelay: '1s' }} />
-        <circle cx="200" cy="280" r="6" className="fill-asentio-red animate-pulse-glow" style={{ animationDelay: '2s' }} />
-        <circle cx="160" cy="220" r="4" className="fill-asentio-blue animate-pulse-glow" style={{ animationDelay: '0.5s' }} />
-        <circle cx="240" cy="240" r="5" className="fill-asentio-red animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
-        <circle cx="180" cy="120" r="4" className="fill-asentio-blue animate-pulse-glow" style={{ animationDelay: '2.5s' }} />
+        {/* Connection nodes - animated */}
+        <g className="animate-undulate-1" style={{ transformOrigin: '120px 140px' }}>
+          <circle cx="120" cy="140" r="6" className="fill-asentio-red animate-pulse-glow" />
+        </g>
+        <g className="animate-undulate-2" style={{ transformOrigin: '280px 160px' }}>
+          <circle cx="280" cy="160" r="5" className="fill-asentio-blue animate-pulse-glow" style={{ animationDelay: '1s' }} />
+        </g>
+        <g className="animate-undulate-3" style={{ transformOrigin: '200px 280px' }}>
+          <circle cx="200" cy="280" r="6" className="fill-asentio-red animate-pulse-glow" style={{ animationDelay: '2s' }} />
+        </g>
+        <g className="animate-undulate-1" style={{ transformOrigin: '160px 220px', animationDelay: '3s' }}>
+          <circle cx="160" cy="220" r="4" className="fill-asentio-blue animate-pulse-glow" style={{ animationDelay: '0.5s' }} />
+        </g>
+        <g className="animate-undulate-2" style={{ transformOrigin: '240px 240px', animationDelay: '5s' }}>
+          <circle cx="240" cy="240" r="5" className="fill-asentio-red animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
+        </g>
+        <g className="animate-undulate-3" style={{ transformOrigin: '180px 120px', animationDelay: '2s' }}>
+          <circle cx="180" cy="120" r="4" className="fill-asentio-blue animate-pulse-glow" style={{ animationDelay: '2.5s' }} />
+        </g>
         
-        {/* Connection lines */}
+        {/* Connection lines - these stay static as anchor points */}
         <line x1="120" y1="140" x2="180" y2="120" className="stroke-asentio-red/40" strokeWidth="1" />
         <line x1="180" y1="120" x2="280" y2="160" className="stroke-asentio-blue/40" strokeWidth="1" />
         <line x1="120" y1="140" x2="160" y2="220" className="stroke-asentio-red/40" strokeWidth="1" />
