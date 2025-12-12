@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type Language = 'en' | 'zh';
+type Language = 'en' | 'zh' | 'es' | 'de';
 
 interface LanguageContextType {
   language: Language;
@@ -245,14 +245,22 @@ const translations = {
     'footer.quicklinks': '快速链接',
     'footer.contact': '联系方式',
     'footer.whyus': '为什么选择asentio'
-  }
+  },
+  es: {} as typeof translations.en,
+  de: {} as typeof translations.en
 };
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>('en');
 
   const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations['en']] || key;
+    const langTranslations = translations[language];
+    const translatedValue = langTranslations[key as keyof typeof translations['en']];
+    // Fall back to English if translation is missing (for es/de placeholders)
+    if (!translatedValue) {
+      return translations.en[key as keyof typeof translations['en']] || key;
+    }
+    return translatedValue;
   };
 
   return (
