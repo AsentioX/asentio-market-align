@@ -14,109 +14,89 @@ interface FloatingObject {
 
 const icons: Record<string, JSX.Element> = {
   astronaut: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 64 64" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
       {/* Helmet */}
-      <circle cx="32" cy="16" r="10" />
-      <path d="M26 16 Q26 12 32 12 Q38 12 38 16 Q38 20 32 20 Q26 20 26 16" />
-      {/* Visor reflection */}
-      <path d="M28 14 L30 12" />
+      <circle cx="32" cy="14" r="10" fill="none" strokeWidth="2" />
+      <ellipse cx="32" cy="14" rx="6" ry="5" fill="currentColor" />
       {/* Body/Torso */}
-      <path d="M24 26 L24 40 L40 40 L40 26 Q40 22 32 22 Q24 22 24 26" />
+      <path d="M24 24 L24 38 L40 38 L40 24 Q40 20 32 20 Q24 20 24 24" fill="currentColor" />
       {/* Backpack */}
-      <rect x="40" y="26" width="6" height="12" rx="1" />
+      <rect x="40" y="24" width="5" height="10" rx="1" fill="currentColor" />
       {/* Left arm */}
-      <path d="M24 28 L16 32 L14 40" />
-      <circle cx="14" cy="42" r="3" />
+      <path d="M24 26 L16 30 L14 38" fill="none" strokeWidth="3" />
+      <circle cx="14" cy="40" r="3" fill="currentColor" />
       {/* Right arm */}
-      <path d="M40 28 L48 24 L52 28" />
-      <circle cx="52" cy="30" r="3" />
+      <path d="M40 26 L48 22 L52 26" fill="none" strokeWidth="3" />
+      <circle cx="52" cy="28" r="3" fill="currentColor" />
       {/* Left leg */}
-      <path d="M26 40 L24 52 L22 56" />
-      <ellipse cx="21" cy="58" rx="4" ry="2" />
+      <path d="M28 38 L26 50 L22 54" fill="none" strokeWidth="3" />
+      <ellipse cx="20" cy="56" rx="4" ry="2" fill="currentColor" />
       {/* Right leg */}
-      <path d="M38 40 L40 52 L42 56" />
-      <ellipse cx="43" cy="58" rx="4" ry="2" />
-      {/* Belt */}
-      <line x1="24" y1="38" x2="40" y2="38" />
+      <path d="M36 38 L38 50 L42 54" fill="none" strokeWidth="3" />
+      <ellipse cx="44" cy="56" rx="4" ry="2" fill="currentColor" />
+    </svg>
+  ),
+  bracketTL: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 40 L8 8 L40 8" />
+    </svg>
+  ),
+  bracketTR: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M24 8 L56 8 L56 40" />
+    </svg>
+  ),
+  bracketBL: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 24 L8 56 L40 56" />
+    </svg>
+  ),
+  bracketBR: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M24 56 L56 56 L56 24" />
+    </svg>
+  ),
+  square: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="12" y="12" width="40" height="40" />
+    </svg>
+  ),
+  diamond: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M32 8 L56 32 L32 56 L8 32 Z" />
     </svg>
   ),
   satellite: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 64 64" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="24" y="24" width="16" height="16" rx="2" />
-      <line x1="20" y1="32" x2="8" y2="32" />
-      <line x1="44" y1="32" x2="56" y2="32" />
-      <line x1="8" y1="28" x2="8" y2="36" />
-      <line x1="56" y1="28" x2="56" y2="36" />
-      <line x1="32" y1="24" x2="32" y2="16" />
-      <circle cx="32" cy="12" r="3" />
-      <line x1="40" y1="40" x2="48" y2="48" />
-      <line x1="24" y1="40" x2="16" y2="48" />
+      <rect x="6" y="28" width="14" height="8" />
+      <rect x="44" y="28" width="14" height="8" />
+      <circle cx="32" cy="12" r="4" />
+      <line x1="32" y1="16" x2="32" y2="24" strokeWidth="2" />
     </svg>
   ),
   shuttle: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M32 8 L40 24 L40 48 L36 56 L28 56 L24 48 L24 24 Z" />
-      <path d="M24 36 L16 44 L16 52 L24 48" />
-      <path d="M40 36 L48 44 L48 52 L40 48" />
-      <circle cx="32" cy="20" r="3" />
-      <line x1="28" y1="48" x2="36" y2="48" />
+    <svg viewBox="0 0 64 64" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M32 6 L42 24 L42 48 L36 58 L28 58 L22 48 L22 24 Z" />
+      <path d="M22 36 L14 46 L14 54 L22 48" />
+      <path d="M42 36 L50 46 L50 54 L42 48" />
     </svg>
   ),
-  saucer: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <ellipse cx="32" cy="36" rx="24" ry="8" />
-      <path d="M16 36 Q16 28 32 24 Q48 28 48 36" />
-      <path d="M24 32 Q24 26 32 24 Q40 26 40 32" />
-      <circle cx="20" cy="40" r="2" />
-      <circle cx="32" cy="42" r="2" />
-      <circle cx="44" cy="40" r="2" />
+  circle: (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="32" cy="32" r="20" />
     </svg>
   ),
-  comet: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="48" cy="16" r="8" />
-      <path d="M42 22 Q24 32 8 56" />
-      <path d="M40 20 Q20 28 4 48" />
-      <path d="M44 24 Q28 36 12 58" />
-    </svg>
-  ),
-  robot: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="20" y="20" width="24" height="20" rx="2" />
-      <rect x="22" y="40" width="20" height="16" rx="2" />
-      <circle cx="28" cy="28" r="3" />
-      <circle cx="36" cy="28" r="3" />
-      <line x1="26" y1="36" x2="38" y2="36" />
-      <line x1="32" y1="12" x2="32" y2="20" />
-      <circle cx="32" cy="10" r="3" />
-      <line x1="20" y1="28" x2="12" y2="24" />
-      <line x1="44" y1="28" x2="52" y2="24" />
-      <line x1="26" y1="56" x2="26" y2="60" />
-      <line x1="38" y1="56" x2="38" y2="60" />
-    </svg>
-  ),
-  car: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 36 L12 24 L20 20 L44 20 L52 24 L56 36 L56 44 L8 44 L8 36" />
-      <line x1="20" y1="20" x2="20" y2="36" />
-      <line x1="44" y1="20" x2="44" y2="36" />
-      <circle cx="16" cy="44" r="5" />
-      <circle cx="48" cy="44" r="5" />
-      <line x1="8" y1="36" x2="56" y2="36" />
-    </svg>
-  ),
-  phone: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="20" y="8" width="24" height="48" rx="4" />
-      <line x1="20" y1="16" x2="44" y2="16" />
-      <line x1="20" y1="48" x2="44" y2="48" />
-      <circle cx="32" cy="52" r="2" />
-      <line x1="28" y1="12" x2="36" y2="12" />
+  dots: (
+    <svg viewBox="0 0 64 64" fill="currentColor">
+      <circle cx="16" cy="32" r="4" />
+      <circle cx="32" cy="32" r="4" />
+      <circle cx="48" cy="32" r="4" />
     </svg>
   ),
 };
 
-const objectTypes = ['astronaut', 'satellite', 'shuttle', 'saucer', 'comet', 'robot', 'car', 'phone'];
+const objectTypes = ['astronaut', 'bracketTL', 'bracketTR', 'bracketBL', 'bracketBR', 'square', 'diamond', 'satellite', 'shuttle', 'circle', 'dots'];
 
 const getRandomEdgePosition = (side: 'left' | 'right' | 'top' | 'bottom') => {
   switch (side) {
@@ -163,8 +143,8 @@ const FloatingObjects = () => {
         endX: end.x,
         endY: end.y,
         duration: 15 + Math.random() * 20, // 15-35 seconds
-        size: 24 + Math.random() * 24, // 24-48px
-        rotation: Math.random() * 360,
+        size: 32 + Math.random() * 40, // 32-72px
+        rotation: Math.random() * 30 - 15, // subtle rotation -15 to 15 degrees
       };
 
       // Schedule removal after animation completes
@@ -222,7 +202,7 @@ const FloatingObjects = () => {
       {objects.map(obj => (
         <div
           key={obj.id}
-          className="absolute text-asentio-blue/80"
+          className="absolute text-foreground/80"
           style={{
             width: obj.size,
             height: obj.size,
