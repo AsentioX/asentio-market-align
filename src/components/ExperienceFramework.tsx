@@ -221,12 +221,6 @@ const ExperienceFramework = () => {
                   <span className="font-semibold text-gray-800">Touchpoints:</span>{' '}
                   {steps[activeStep].touchpoints}
                 </p>
-                <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <p className="text-blue-700 text-sm">
-                    <span className="font-semibold">💡 Tip:</span>{' '}
-                    {steps[activeStep].strategyTip}
-                  </p>
-                </div>
               </div>
             </div>
           )}
