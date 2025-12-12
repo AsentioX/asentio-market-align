@@ -4,6 +4,8 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import chesterImg from "@/assets/chester.png";
+import jonImg from "@/assets/jon.png";
 
 const About = () => {
   const { t } = useLanguage();
@@ -59,19 +61,29 @@ const About = () => {
       <AnimatedSection className="section bg-gray-50">
         <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1">
-                <h2 className="text-3xl font-bold mb-6">{t('about.leadership.title')}</h2>
-                <p className="text-lg text-gray-700">
-                  {t('about.leadership.desc')}
+            <h2 className="text-3xl font-bold mb-12 text-center">{t('about.team.title')}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="flex flex-col items-center text-center">
+                <img 
+                  src={chesterImg} 
+                  alt="Chester Mui" 
+                  className="w-48 h-48 rounded-full object-cover shadow-lg mb-6"
+                />
+                <h3 className="text-xl font-semibold mb-3">Chester Mui</h3>
+                <p className="text-gray-700">
+                  {t('about.team.chester')}
                 </p>
               </div>
-              <div className="order-1 lg:order-2">
+              <div className="flex flex-col items-center text-center">
                 <img 
-                  src="/lovable-uploads/8a95cdac-ce43-4150-b29a-a16818c5bc00.png" 
-                  alt="Jon Li presenting at a Mobile World Congress" 
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  src={jonImg} 
+                  alt="Jon Li" 
+                  className="w-48 h-48 rounded-full object-cover shadow-lg mb-6"
                 />
+                <h3 className="text-xl font-semibold mb-3">Jon Li</h3>
+                <p className="text-gray-700">
+                  {t('about.team.jon')}
+                </p>
               </div>
             </div>
           </div>
