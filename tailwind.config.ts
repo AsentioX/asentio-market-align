@@ -254,7 +254,7 @@ export default {
 				'undulate-2': 'undulate-2 15s ease-in-out infinite',
 				'undulate-3': 'undulate-3 18s ease-in-out infinite',
 				'orbit-3d': 'orbit-3d 20s linear infinite',
-				'marquee': 'marquee 60s linear infinite'
+				'marquee': 'marquee 120s linear infinite'
 			}
 		}
 	},
