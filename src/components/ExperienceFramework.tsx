@@ -64,60 +64,7 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
-  // Get tooltip position based on circle index - position outside the circle
-  const getTooltipPosition = (index: number) => {
-    const pos = getCirclePosition(index);
-    // Convert SVG coordinates to percentage
-    const xPercent = pos.x / 500 * 100;
-    const yPercent = pos.y / 500 * 100;
-
-    // Position tooltip based on which circle is active
-    // Avoid covering the center by pushing tooltips outward
-    switch (index) {
-      case 0:
-        // Top (Aware)
-        return {
-          left: `${xPercent}%`,
-          top: `${yPercent}%`,
-          transform: 'translate(-60%, -80%)'
-        };
-      case 1:
-        // Top-right (Arouse)
-        return {
-          left: `${xPercent}%`,
-          top: `${yPercent}%`,
-          transform: 'translate(-60%, -50%)'
-        };
-      case 2:
-        // Bottom-right (Acquire)
-        return {
-          left: `${xPercent}%`,
-          top: `${yPercent}%`,
-          transform: 'translate(-60%, -50%)'
-        };
-      case 3:
-        // Bottom-left (Use)
-        return {
-          left: `${xPercent}%`,
-          top: `${yPercent}%`,
-          transform: 'translate(-200%, -50%)'
-        };
-      case 4:
-        // Left (Reflect) - show to the left of circle
-        return {
-          left: `${xPercent}%`,
-          top: `${yPercent}%`,
-          transform: 'translate(-115%, -50%)'
-        };
-      default:
-        return {
-          left: `${xPercent}%`,
-          top: `${yPercent}%`,
-          transform: 'translate(-130%, -50%)'
-        };
-    }
-  };
-  return <div className="space-y-12">
+  return <div className="space-y-8">
       {/* Header */}
       <div className="text-center max-w-4xl mx-auto">
         <h2 className="text-4xl font-bold text-gray-900 mb-6">How We Do It </h2>
@@ -125,7 +72,7 @@ const ExperienceFramework = () => {
         </p>
       </div>
 
-      {/* Centered Circles with Hover Tooltips */}
+      {/* Centered Circles */}
       <div className="flex justify-center">
         <div className="relative w-full max-w-[500px] aspect-square">
           <svg viewBox="0 0 500 500" className="w-full h-full">
@@ -168,10 +115,18 @@ const ExperienceFramework = () => {
                 </div>}
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Floating Tooltip */}
-          {activeStep !== null && <div className="absolute z-50 w-96 bg-white rounded-xl shadow-xl border border-gray-200 p-5 animate-fade-in pointer-events-none" style={getTooltipPosition(activeStep)}>
-              <div className="space-y-2 text-sm text-gray-600">
+      {/* Hover Tooltip - Centered below circles */}
+      <div className="flex justify-center -mt-4">
+        <div className={`w-full max-w-3xl bg-white rounded-xl shadow-xl border border-gray-200 p-6 transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-0'}`} style={{ minHeight: '140px' }}>
+          {activeStep !== null && (
+            <div className="space-y-3 text-base text-gray-600 animate-fade-in">
+              <h3 className="text-xl font-bold text-asentio-blue text-center mb-4">
+                {steps[activeStep].label}: {steps[activeStep].objective}
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4">
                 <p>
                   <span className="font-semibold text-gray-800">Focus:</span>{' '}
                   {steps[activeStep].keyFocus}
@@ -185,7 +140,8 @@ const ExperienceFramework = () => {
                   {steps[activeStep].touchpoints}
                 </p>
               </div>
-            </div>}
+            </div>
+          )}
         </div>
       </div>
     </div>;
