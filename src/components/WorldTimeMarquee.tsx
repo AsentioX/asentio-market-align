@@ -70,6 +70,7 @@ const WorldTimeMarquee = () => {
   const [weatherData, setWeatherData] = useState<Record<string, WeatherData>>({});
   const [gradientStops, setGradientStops] = useState<string>('');
   const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [timeFormat, setTimeFormat] = useState<'12H' | '24H'>('12H');
   const [lockedCities, setLockedCities] = useState<string[]>([]);
 
   // Convert Celsius to Fahrenheit
@@ -124,7 +125,7 @@ const WorldTimeMarquee = () => {
           timeZone: city.timezone,
           hour: '2-digit',
           minute: '2-digit',
-          hour12: true,
+          hour12: timeFormat === '12H',
         });
         
         const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -188,7 +189,7 @@ const WorldTimeMarquee = () => {
     updateTimes();
     const interval = setInterval(updateTimes, 60000); // Update every minute
     return () => clearInterval(interval);
-  }, []);
+  }, [timeFormat]);
 
   // Get sky color based on hour (0-23) - using sunset palette
   const getSkyColor = (hour: number): string => {
@@ -378,15 +379,28 @@ const WorldTimeMarquee = () => {
 
   return (
     <div className="relative mt-[120px]">
-      {/* Temperature unit toggle */}
-      <button
-        onClick={() => setUnit(u => u === 'C' ? 'F' : 'C')}
-        className="absolute -top-8 right-4 z-10 flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm border border-border/30 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
-      >
-        <span className={unit === 'C' ? 'text-foreground' : 'text-muted-foreground/50'}>°C</span>
-        <span className="text-muted-foreground/30">/</span>
-        <span className={unit === 'F' ? 'text-foreground' : 'text-muted-foreground/50'}>°F</span>
-      </button>
+      {/* Settings toggles */}
+      <div className="absolute -top-8 right-4 z-10 flex items-center gap-2">
+        {/* Time format toggle */}
+        <button
+          onClick={() => setTimeFormat(f => f === '12H' ? '24H' : '12H')}
+          className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm border border-border/30 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
+        >
+          <span className={timeFormat === '12H' ? 'text-foreground' : 'text-muted-foreground/50'}>12H</span>
+          <span className="text-muted-foreground/30">/</span>
+          <span className={timeFormat === '24H' ? 'text-foreground' : 'text-muted-foreground/50'}>24H</span>
+        </button>
+        
+        {/* Temperature unit toggle */}
+        <button
+          onClick={() => setUnit(u => u === 'C' ? 'F' : 'C')}
+          className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm border border-border/30 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
+        >
+          <span className={unit === 'C' ? 'text-foreground' : 'text-muted-foreground/50'}>°C</span>
+          <span className="text-muted-foreground/30">/</span>
+          <span className={unit === 'F' ? 'text-foreground' : 'text-muted-foreground/50'}>°F</span>
+        </button>
+      </div>
       
       <div className="flex relative">
         {/* Subtle noise texture overlay */}
