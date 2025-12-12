@@ -72,24 +72,24 @@ const ExperienceFramework = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 md:px-0">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-foreground">
+      <div className="text-center max-w-3xl mx-auto mb-8 md:mb-16">
+        <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+        <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-foreground">
           {t('framework.title')}
         </h2>
         <p 
-          className="text-lg text-muted-foreground leading-relaxed"
+          className="text-base md:text-lg text-muted-foreground leading-relaxed"
           dangerouslySetInnerHTML={{ __html: t('framework.subtitle') }}
         />
       </div>
 
       {/* Circles Left + Content Right */}
-      <div className="flex flex-col lg:flex-row items-center lg:items-center justify-center gap-8">
-        {/* Circles - Left side */}
+      <div className="flex flex-col items-center justify-center gap-6 md:gap-8">
+        {/* Circles */}
         <div className="flex-shrink-0">
-          <div className="relative w-[350px] aspect-square">
+          <div className="relative w-[280px] md:w-[350px] aspect-square">
             <svg viewBox="0 0 500 500" className="w-full h-full">
               {/* Connection lines */}
               {steps.map((_, index) => (
@@ -114,6 +114,7 @@ const ExperienceFramework = () => {
                     className="cursor-pointer" 
                     onMouseEnter={() => setActiveStep(index)} 
                     onMouseLeave={() => setActiveStep(null)}
+                    onClick={() => setActiveStep(activeStep === index ? null : index)}
                   >
                     {isActive && (
                       <circle 
@@ -170,6 +171,9 @@ const ExperienceFramework = () => {
                     <p className="text-xs text-muted-foreground/60 font-medium uppercase tracking-wider">
                       {t('framework.hover')}
                     </p>
+                    <p className="text-[10px] text-muted-foreground/40 mt-1 md:hidden">
+                      Tap to explore
+                    </p>
                   </div>
                 )}
               </div>
@@ -177,24 +181,24 @@ const ExperienceFramework = () => {
           </div>
         </div>
 
-        {/* Content - Right side */}
-        <div className="w-full max-w-[280px] flex items-center min-h-[350px]">
-          <div className="w-full space-y-4">
+        {/* Content - Below on mobile */}
+        <div className="w-full max-w-md px-4 md:px-0">
+          <div className="w-full space-y-4 bg-muted/30 rounded-xl p-4 md:p-6">
             <div>
-              <h4 className="font-semibold text-foreground text-lg mb-1">{t('framework.focus')}</h4>
-              <p className={`text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
+              <h4 className="font-semibold text-foreground text-base md:text-lg mb-1">{t('framework.focus')}</h4>
+              <p className={`text-sm md:text-base text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
                 {activeStep !== null ? t(steps[activeStep].keyFocusKey) : t('framework.hover.details')}
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-foreground text-lg mb-1">{t('framework.channels')}</h4>
-              <p className={`text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
+              <h4 className="font-semibold text-foreground text-base md:text-lg mb-1">{t('framework.channels')}</h4>
+              <p className={`text-sm md:text-base text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
                 {activeStep !== null ? t(steps[activeStep].channelsKey) : t('framework.hover.details')}
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-foreground text-lg mb-1">{t('framework.touchpoints')}</h4>
-              <p className={`text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
+              <h4 className="font-semibold text-foreground text-base md:text-lg mb-1">{t('framework.touchpoints')}</h4>
+              <p className={`text-sm md:text-base text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
                 {activeStep !== null ? t(steps[activeStep].touchpointsKey) : t('framework.hover.details')}
               </p>
             </div>

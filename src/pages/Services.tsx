@@ -109,18 +109,18 @@ const Services = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="bg-asentio-blue text-white py-24 relative overflow-hidden">
+      <section className="bg-asentio-blue text-white py-16 md:py-24 relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-asentio-red/5 rounded-full blur-2xl" />
+        <div className="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-asentio-red/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-24 md:w-48 h-24 md:h-48 bg-asentio-red/5 rounded-full blur-2xl" />
         
-        <div className="container mx-auto relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
               {t('services.hero.title')} <span className="text-blue-200">{t('services.hero.title.highlight')}</span>
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
+            <p className="text-lg md:text-2xl text-blue-100 leading-relaxed">
               {t('services.hero.subtitle')}
             </p>
           </div>
@@ -128,22 +128,22 @@ const Services = () => {
       </section>
 
       {/* Services Cards */}
-      <AnimatedSection className="py-24 bg-background relative">
+      <AnimatedSection className="py-12 md:py-24 bg-background relative">
         <TopographicPattern className="opacity-30" />
         
-        <div className="container mx-auto relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+            <div className="text-center mb-10 md:mb-16">
+              <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                 {t('services.what.title')}
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
                 {t('services.what.subtitle')}
               </p>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {services.map((service, index) => {
                 const isHovered = hoveredIndex === index;
                 const showQuote = hoveredIndex !== null && hoveredIndex !== index;
@@ -199,7 +199,7 @@ const Services = () => {
       </AnimatedSection>
 
       {/* Experience Framework Section */}
-      <AnimatedSection className="py-24 bg-muted relative">
+      <AnimatedSection className="py-12 md:py-24 bg-muted relative">
         <TopographicPattern className="opacity-20" />
         
         <div className="container mx-auto relative z-10">
@@ -210,34 +210,34 @@ const Services = () => {
       </AnimatedSection>
 
       {/* Process Section */}
-      <AnimatedSection className="py-24 bg-background relative">
+      <AnimatedSection className="py-12 md:py-24 bg-background relative">
         <TopographicPattern className="opacity-30" />
         
-        <div className="container mx-auto relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+            <div className="text-center mb-10 md:mb-16">
+              <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                 {t('services.process.title')}
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
                 {t('services.process.subtitle')}
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
               {processSteps.map((step, index) => (
                 <div key={index} className="group text-center">
-                  <div className="relative mb-6">
-                    <div className="w-20 h-20 mx-auto bg-asentio-blue rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg group-hover:shadow-xl group-hover:shadow-asentio-blue/20 transition-all duration-300">
+                  <div className="relative mb-4 md:mb-6">
+                    <div className="w-14 h-14 md:w-20 md:h-20 mx-auto bg-asentio-blue rounded-full flex items-center justify-center text-white text-lg md:text-2xl font-bold shadow-lg group-hover:shadow-xl group-hover:shadow-asentio-blue/20 transition-all duration-300">
                       {step.number}
                     </div>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-card rounded-full flex items-center justify-center border border-border group-hover:border-asentio-red/30 transition-colors">
-                      <step.icon className="h-6 w-6 text-asentio-blue group-hover:text-asentio-red transition-colors" />
+                    <div className="absolute -bottom-1 md:-bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 md:w-12 md:h-12 bg-card rounded-full flex items-center justify-center border border-border group-hover:border-asentio-red/30 transition-colors">
+                      <step.icon className="h-4 w-4 md:h-6 md:w-6 text-asentio-blue group-hover:text-asentio-red transition-colors" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                  <h3 className="text-base md:text-xl font-bold text-foreground mb-2 md:mb-3">{step.title}</h3>
+                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{step.description}</p>
                 </div>
               ))}
             </div>
@@ -246,24 +246,24 @@ const Services = () => {
       </AnimatedSection>
 
       {/* CTA Section */}
-      <AnimatedSection className="py-24 bg-asentio-blue text-white relative overflow-hidden">
+      <AnimatedSection className="py-12 md:py-24 bg-asentio-blue text-white relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-asentio-red/5 rounded-full blur-2xl" />
+        <div className="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-asentio-red/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-24 md:w-48 h-24 md:h-48 bg-asentio-red/5 rounded-full blur-2xl" />
         
-        <div className="container mx-auto relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
               {t('services.cta.title')} <span className="text-blue-200">{t('services.cta.title.highlight')}</span>
             </h2>
-            <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed">
+            <p className="text-base md:text-2xl text-blue-100 mb-8 md:mb-10 leading-relaxed">
               {t('services.cta.subtitle')}
             </p>
-            <Link to="/contact">
+            <Link to="/contact" className="inline-block">
               <Button 
                 size="lg" 
-                className="bg-background text-asentio-blue hover:bg-background/90 px-10 py-6 text-base font-medium shadow-lg transition-all hover:shadow-xl"
+                className="bg-background text-asentio-blue hover:bg-background/90 px-8 md:px-10 py-5 md:py-6 text-base font-medium shadow-lg transition-all hover:shadow-xl"
               >
                 {t('services.cta.button')}
                 <ArrowRight className="w-4 h-4 ml-2" />

@@ -70,16 +70,16 @@ const Contact = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="bg-asentio-blue text-white py-24 relative overflow-hidden">
+      <section className="bg-asentio-blue text-white py-16 md:py-24 relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-asentio-red/5 rounded-full blur-2xl" />
+        <div className="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-asentio-red/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-24 md:w-48 h-24 md:h-48 bg-asentio-red/5 rounded-full blur-2xl" />
         
-        <div className="container mx-auto relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">{t('contact.hero.title')}</h1>
-            <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
+            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">{t('contact.hero.title')}</h1>
+            <p className="text-lg md:text-2xl text-blue-100 leading-relaxed">
               {t('contact.hero.subtitle')}
             </p>
           </div>
@@ -87,17 +87,17 @@ const Contact = () => {
       </section>
 
       {/* Contact Form Section */}
-      <AnimatedSection className="py-24 bg-background relative">
+      <AnimatedSection className="py-12 md:py-24 bg-background relative">
         <TopographicPattern className="opacity-30" />
         
-        <div className="container mx-auto relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
               {/* Left side - Contact info */}
               <div>
-                <div className="w-12 h-1 bg-asentio-red mb-6" />
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">{t('contact.form.title')}</h2>
-                <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                <div className="w-12 h-1 bg-asentio-red mb-4 md:mb-6" />
+                <h2 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-foreground">{t('contact.form.title')}</h2>
+                <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed">
                   {t('contact.form.subtitle')}
                 </p>
                 
