@@ -56,10 +56,10 @@ const ExperienceFramework = () => {
   ];
 
   // Circle positions
-  const circleRadius = 45;
-  const centerX = 160;
-  const centerY = 160;
-  const orbitRadius = 100;
+  const circleRadius = 50;
+  const centerX = 200;
+  const centerY = 200;
+  const orbitRadius = 130;
 
   const getCirclePosition = (index: number) => {
     const angle = (index * 72 - 90) * (Math.PI / 180);
@@ -75,6 +75,10 @@ const ExperienceFramework = () => {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   };
 
+  const handleStepClick = (index: number) => {
+    setActiveStep(activeStep === index ? null : index);
+  };
+
   return (
     <div className="space-y-12">
       {/* Header */}
@@ -85,130 +89,118 @@ const ExperienceFramework = () => {
         </p>
       </div>
 
-      {/* Interactive Diagram + Stages List */}
-      <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
-        {/* Circles SVG */}
-        <div className="w-full lg:w-auto flex-shrink-0">
-          <div className="relative w-full max-w-[320px] mx-auto aspect-square">
-            <svg viewBox="0 0 320 320" className="w-full h-full">
-              {/* Connection lines */}
-              {steps.map((_, index) => (
-                <path
-                  key={`line-${index}`}
-                  d={getConnectionPath(index, (index + 1) % 5)}
-                  stroke={activeStep !== null && (activeStep === index || activeStep === (index + 1) % 5) 
-                    ? "hsl(210, 60%, 50%)" 
-                    : "hsl(210, 50%, 80%)"}
-                  strokeWidth="2"
-                  fill="none"
-                  strokeDasharray="4 4"
-                  className="transition-all duration-300"
-                />
-              ))}
+      {/* Centered Circles */}
+      <div className="flex justify-center">
+        <div className="relative w-full max-w-[400px] aspect-square">
+          <svg viewBox="0 0 400 400" className="w-full h-full">
+            {/* Connection lines */}
+            {steps.map((_, index) => (
+              <path
+                key={`line-${index}`}
+                d={getConnectionPath(index, (index + 1) % 5)}
+                stroke={activeStep !== null && (activeStep === index || activeStep === (index + 1) % 5) 
+                  ? "#0A2342" 
+                  : "#cbd5e1"}
+                strokeWidth="2"
+                fill="none"
+                strokeDasharray="6 4"
+                className="transition-all duration-300"
+              />
+            ))}
 
-              {/* Circles */}
-              {steps.map((step, index) => {
-                const pos = getCirclePosition(index);
-                const isActive = activeStep === index;
-                
-                return (
-                  <g 
-                    key={step.label}
-                    className="cursor-pointer"
-                    onMouseEnter={() => setActiveStep(index)}
-                    onMouseLeave={() => setActiveStep(null)}
-                    onClick={() => setActiveStep(activeStep === index ? null : index)}
-                  >
-                    {isActive && (
-                      <circle
-                        cx={pos.x}
-                        cy={pos.y}
-                        r={circleRadius + 5}
-                        fill="none"
-                        stroke="hsl(210, 70%, 50%)"
-                        strokeWidth="2"
-                        opacity="0.6"
-                      />
-                    )}
-                    
+            {/* Circles */}
+            {steps.map((step, index) => {
+              const pos = getCirclePosition(index);
+              const isActive = activeStep === index;
+              
+              return (
+                <g 
+                  key={step.label}
+                  className="cursor-pointer"
+                  onClick={() => handleStepClick(index)}
+                >
+                  {isActive && (
                     <circle
                       cx={pos.x}
                       cy={pos.y}
-                      r={circleRadius}
-                      fill={isActive ? 'hsl(210, 70%, 70%)' : 'hsl(210, 60%, 90%)'}
-                      stroke="hsl(210, 60%, 55%)"
-                      strokeWidth="2"
-                      className="transition-all duration-300"
+                      r={circleRadius + 6}
+                      fill="none"
+                      stroke="#0A2342"
+                      strokeWidth="3"
+                      opacity="0.4"
                     />
-                    
-                    <text
-                      x={pos.x}
-                      y={pos.y}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      className="text-sm font-medium fill-slate-700 pointer-events-none select-none"
-                      style={{ fontFamily: 'system-ui, sans-serif' }}
-                    >
-                      {step.label}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* Center label */}
-              <text
-                x={centerX}
-                y={centerY}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="text-xs font-medium fill-slate-400 pointer-events-none"
-              >
-                JOURNEY
-              </text>
-            </svg>
-          </div>
-        </div>
-
-        {/* Stages List */}
-        <div className="flex-1 space-y-3">
-          {steps.map((step, index) => {
-            const isActive = activeStep === index;
-            return (
-              <div
-                key={step.label}
-                className={`p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
-                  isActive 
-                    ? 'bg-blue-50 border-blue-300 shadow-md' 
-                    : 'bg-white border-gray-200 hover:border-blue-200 hover:bg-gray-50'
-                }`}
-                onMouseEnter={() => setActiveStep(index)}
-                onMouseLeave={() => setActiveStep(null)}
-              >
-                <div className="flex items-start gap-4">
-                  <h4 className={`text-lg font-bold min-w-[80px] ${isActive ? 'text-blue-700' : 'text-gray-900'}`}>
+                  )}
+                  
+                  <circle
+                    cx={pos.x}
+                    cy={pos.y}
+                    r={circleRadius}
+                    fill={isActive ? '#0A2342' : '#e2e8f0'}
+                    stroke="#0A2342"
+                    strokeWidth="2"
+                    className="transition-all duration-300 hover:fill-[#1a3a5c]"
+                  />
+                  
+                  <text
+                    x={pos.x}
+                    y={pos.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill={isActive ? '#ffffff' : '#0A2342'}
+                    className="text-sm font-semibold pointer-events-none select-none transition-all duration-300"
+                    style={{ fontFamily: 'system-ui, sans-serif' }}
+                  >
                     {step.label}
-                  </h4>
-                  <div className="flex-1">
-                    <p className={`font-medium mb-2 ${isActive ? 'text-blue-700' : 'text-gray-700'}`}>
-                      {step.objective}
-                    </p>
-                    {isActive && (
-                      <div className="space-y-1 text-sm text-gray-600 animate-fade-in">
-                        <p><span className="font-semibold">Focus:</span> {step.keyFocus}</p>
-                        <p><span className="font-semibold">Channels:</span> {step.channels}</p>
-                        <p><span className="font-semibold">Touchpoints:</span> {step.touchpoints}</p>
-                        <p className="mt-2 p-2 bg-amber-50 rounded-lg border border-amber-200 text-amber-800">
-                          <span className="font-semibold">💡 Tip:</span> {step.strategyTip}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Center label */}
+            <text
+              x={centerX}
+              y={centerY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="#64748b"
+              className="text-xs font-medium pointer-events-none"
+            >
+              JOURNEY
+            </text>
+          </svg>
         </div>
       </div>
+
+      {/* Description - only shown when a stage is selected */}
+      {activeStep !== null && (
+        <div className="max-w-2xl mx-auto animate-fade-in">
+          <div className="bg-gray-50 border-2 border-asentio-blue/20 rounded-xl p-6">
+            <h3 className="text-2xl font-bold text-asentio-blue mb-3">
+              {steps[activeStep].label}
+            </h3>
+            <p className="text-lg text-gray-700 font-medium mb-4">
+              {steps[activeStep].objective}
+            </p>
+            <div className="space-y-2 text-gray-600">
+              <p><span className="font-semibold text-gray-800">Focus:</span> {steps[activeStep].keyFocus}</p>
+              <p><span className="font-semibold text-gray-800">Channels:</span> {steps[activeStep].channels}</p>
+              <p><span className="font-semibold text-gray-800">Touchpoints:</span> {steps[activeStep].touchpoints}</p>
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-blue-800">
+                  <span className="font-semibold">💡 Tip:</span> {steps[activeStep].strategyTip}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hint text when nothing selected */}
+      {activeStep === null && (
+        <p className="text-center text-gray-500 text-sm">
+          Click on a stage to learn more
+        </p>
+      )}
     </div>
   );
 };
