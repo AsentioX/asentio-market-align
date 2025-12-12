@@ -11,10 +11,41 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const Services = () => {
   const { t } = useLanguage();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [quoteIndices, setQuoteIndices] = useState<number[]>([0, 0, 0]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Rotate quotes when hover changes
+  useEffect(() => {
+    if (hoveredIndex !== null) {
+      setQuoteIndices(prev => prev.map((qi, i) => 
+        i !== hoveredIndex ? (qi + 1) % quotes[i].length : qi
+      ));
+    }
+  }, [hoveredIndex]);
+
+  const quotes = [
+    [
+      { text: "Design is not just what it looks like. Design is how it works.", author: "Steve Jobs" },
+      { text: "Good design is obvious. Great design is transparent.", author: "Joe Sparano" },
+      { text: "The details are not the details. They make the design.", author: "Charles Eames" },
+      { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
+    ],
+    [
+      { text: "The best marketing doesn't feel like marketing.", author: "Tom Fishburne" },
+      { text: "Make the customer the hero of your story.", author: "Ann Handley" },
+      { text: "People don't buy what you do, they buy why you do it.", author: "Simon Sinek" },
+      { text: "Content is fire, social media is gasoline.", author: "Jay Baer" },
+    ],
+    [
+      { text: "Your brand is what people say about you when you're not in the room.", author: "Jeff Bezos" },
+      { text: "A brand is a voice and a product is a souvenir.", author: "Lisa Gansky" },
+      { text: "Products are made in a factory but brands are created in the mind.", author: "Walter Landor" },
+      { text: "The best brands stand for something bigger than their products.", author: "Allen Adamson" },
+    ]
+  ];
 
   const services = [
     {
@@ -22,8 +53,6 @@ const Services = () => {
       icon: Target,
       color: "bg-blue-50 border-blue-200",
       iconColor: "text-blue-600",
-      quote: "Design is not just what it looks like. Design is how it works.",
-      quoteAuthor: "Steve Jobs",
       items: [
         t('services.product.item1'),
         t('services.product.item2'),
@@ -36,8 +65,6 @@ const Services = () => {
       icon: Rocket,
       color: "bg-green-50 border-green-200",
       iconColor: "text-green-600",
-      quote: "The best marketing doesn't feel like marketing.",
-      quoteAuthor: "Tom Fishburne",
       items: [
         t('services.gtm.item1'),
         t('services.gtm.item2'),
@@ -50,8 +77,6 @@ const Services = () => {
       icon: MessageSquare,
       color: "bg-purple-50 border-purple-200",
       iconColor: "text-purple-600",
-      quote: "Your brand is what people say about you when you're not in the room.",
-      quoteAuthor: "Jeff Bezos",
       items: [
         t('services.branding.item1'),
         t('services.branding.item2'),
@@ -149,10 +174,10 @@ const Services = () => {
                       </div>
                       {/* Show quote when another card is hovered */}
                       <div className={`grid transition-all duration-300 ${showQuote ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                        <div className="overflow-hidden">
-                          <div className="text-center py-4 px-2">
-                            <p className="text-gray-500 italic text-sm leading-relaxed">"{service.quote}"</p>
-                            <p className="text-gray-400 text-xs mt-2">— {service.quoteAuthor}</p>
+                        <div className="overflow-hidden flex items-center justify-center min-h-[120px]">
+                          <div className="text-center py-4 px-2 flex flex-col items-center justify-center h-full">
+                            <p className="text-gray-500 italic text-sm leading-relaxed">"{quotes[index][quoteIndices[index]].text}"</p>
+                            <p className="text-gray-400 text-xs mt-2">— {quotes[index][quoteIndices[index]].author}</p>
                           </div>
                         </div>
                       </div>
