@@ -53,21 +53,21 @@ const GlobeGraphic = () => {
         <line x1="240" y1="240" x2="200" y2="280" className="stroke-asentio-red/40" strokeWidth="1" />
         <line x1="280" y1="160" x2="240" y2="240" className="stroke-asentio-blue/40" strokeWidth="1" />
         
-        {/* Orbiting ring */}
-        <ellipse
-          cx="200"
-          cy="200"
-          rx="180"
-          ry="50"
-          className="stroke-asentio-red/20"
-          strokeWidth="1"
-          strokeDasharray="8 4"
-          transform="rotate(-20 200 200)"
-        />
-        
-        {/* Orbiting dot */}
-        <g className="animate-orbit" style={{ transformOrigin: '200px 200px' }}>
-          <circle cx="380" cy="200" r="4" className="fill-asentio-red/60" />
+        {/* Orbiting ring - counter-rotates to appear spinning relative to globe */}
+        <g className="animate-rotate-slow" style={{ transformOrigin: '200px 200px', animationDuration: '45s', animationDirection: 'reverse' }}>
+          <ellipse
+            cx="200"
+            cy="200"
+            rx="180"
+            ry="50"
+            className="stroke-asentio-red/20"
+            strokeWidth="1"
+            strokeDasharray="8 4"
+            transform="rotate(-20 200 200)"
+          />
+          
+          {/* Orbiting dot */}
+          <circle cx="380" cy="200" r="4" className="fill-asentio-red/60" transform="rotate(-20 200 200)" />
         </g>
       </svg>
       
