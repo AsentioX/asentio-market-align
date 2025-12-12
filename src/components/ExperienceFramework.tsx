@@ -124,7 +124,7 @@ const ExperienceFramework = () => {
         </div>
 
         {/* Content - Right side */}
-        <div className="flex-1 flex items-center min-h-[350px]">
+        <div className="w-full max-w-[280px] flex items-center min-h-[350px]">
           <div className="w-full space-y-4">
             <div>
               <h4 className="font-semibold text-gray-800 text-lg mb-1">Focus</h4>
