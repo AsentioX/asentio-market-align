@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface FloatingObject {
   id: number;
@@ -8,7 +8,6 @@ interface FloatingObject {
   endX: number;
   endY: number;
   duration: number;
-  delay: number;
   size: number;
   rotation: number;
 }
@@ -112,57 +111,84 @@ const getOppositeSide = (side: 'left' | 'right' | 'top' | 'bottom') => {
   return opposites[side];
 };
 
+const MAX_OBJECTS = 3;
+
 const FloatingObjects = () => {
   const [objects, setObjects] = useState<FloatingObject[]>([]);
   const [idCounter, setIdCounter] = useState(0);
 
-  const createObject = () => {
-    const type = objectTypes[Math.floor(Math.random() * objectTypes.length)];
-    const startSide = sides[Math.floor(Math.random() * sides.length)];
-    const endSide = getOppositeSide(startSide);
-    const start = getRandomEdgePosition(startSide);
-    const end = getRandomEdgePosition(endSide);
+  const createObject = useCallback((specificType?: string) => {
+    setObjects(prev => {
+      // Don't add if we're at max capacity
+      if (prev.length >= MAX_OBJECTS) return prev;
+      
+      const type = specificType || objectTypes[Math.floor(Math.random() * objectTypes.length)];
+      const startSide = sides[Math.floor(Math.random() * sides.length)];
+      const endSide = getOppositeSide(startSide);
+      const start = getRandomEdgePosition(startSide);
+      const end = getRandomEdgePosition(endSide);
 
-    const newObject: FloatingObject = {
-      id: idCounter,
-      type,
-      startX: start.x,
-      startY: start.y,
-      endX: end.x,
-      endY: end.y,
-      duration: 15 + Math.random() * 20, // 15-35 seconds
-      delay: 0,
-      size: 24 + Math.random() * 24, // 24-48px
-      rotation: Math.random() * 360,
-    };
+      const newObject: FloatingObject = {
+        id: Date.now() + Math.random(),
+        type,
+        startX: start.x,
+        startY: start.y,
+        endX: end.x,
+        endY: end.y,
+        duration: 15 + Math.random() * 20, // 15-35 seconds
+        size: 24 + Math.random() * 24, // 24-48px
+        rotation: Math.random() * 360,
+      };
 
+      // Schedule removal after animation completes
+      setTimeout(() => {
+        setObjects(current => current.filter(obj => obj.id !== newObject.id));
+      }, newObject.duration * 1000);
+
+      return [...prev, newObject];
+    });
+    
     setIdCounter(prev => prev + 1);
-    setObjects(prev => [...prev, newObject]);
-
-    // Remove object after animation completes
-    setTimeout(() => {
-      setObjects(prev => prev.filter(obj => obj.id !== newObject.id));
-    }, newObject.duration * 1000);
-  };
-
-  useEffect(() => {
-    // Create initial objects with staggered timing
-    const initialTimeouts = [0, 2000, 5000, 8000].map(delay =>
-      setTimeout(createObject, delay)
-    );
-
-    // Continuously spawn new objects
-    const interval = setInterval(() => {
-      if (Math.random() > 0.3) { // 70% chance to spawn
-        createObject();
-      }
-    }, 6000);
-
-    return () => {
-      initialTimeouts.forEach(clearTimeout);
-      clearInterval(interval);
-    };
   }, []);
+
+  // Handle keyboard input for spawning specific objects
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input field
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      const keyNumber = parseInt(e.key);
+      if (keyNumber >= 1 && keyNumber <= 7) {
+        createObject(objectTypes[keyNumber - 1]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [createObject]);
+
+  // Random interval spawning
+  useEffect(() => {
+    const scheduleNext = () => {
+      // Random interval between 3-12 seconds
+      const nextInterval = 3000 + Math.random() * 9000;
+      
+      return setTimeout(() => {
+        createObject();
+        timeoutId = scheduleNext();
+      }, nextInterval);
+    };
+
+    // Initial spawn after 2 seconds
+    let timeoutId = setTimeout(() => {
+      createObject();
+      timeoutId = scheduleNext();
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [createObject]);
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
