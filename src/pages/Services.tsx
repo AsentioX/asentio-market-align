@@ -110,22 +110,24 @@ const Services = () => {
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {services.map((service, index) => (
-                <Card key={index} className={`${service.color} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}>
+                <Card key={index} className={`${service.color} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group`}>
                   <CardHeader className="text-center pb-4">
                     <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-white shadow-lg flex items-center justify-center`}>
                       <service.icon className={`h-8 w-8 ${service.iconColor}`} />
                     </div>
                     <CardTitle className="text-xl font-bold text-gray-900">{service.title}</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {service.items.map((item, itemIndex) => (
-                        <li key={itemIndex} className="flex items-start">
-                          <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700 leading-relaxed">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <CardContent className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-300">
+                    <div className="overflow-hidden">
+                      <ul className="space-y-3">
+                        {service.items.map((item, itemIndex) => (
+                          <li key={itemIndex} className="flex items-start">
+                            <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                            <span className="text-gray-700 leading-relaxed">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
