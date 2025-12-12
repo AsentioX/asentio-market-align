@@ -299,7 +299,7 @@ const WorldTimeMarquee = () => {
       >
         {/* Color gradient bar at top */}
         <span 
-          className="absolute top-0 left-0 right-0 h-[10px]"
+          className="absolute top-0 left-0 right-0 h-[8px]"
           style={{ 
             background: `linear-gradient(to right, ${currentColor.replace(/[\d.]+\)$/, '1)')} 0%, ${currentColor.replace(/[\d.]+\)$/, '1)')} 40%, ${nextColor.replace(/[\d.]+\)$/, '1)')} 100%)`
           }}
