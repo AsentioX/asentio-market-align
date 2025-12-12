@@ -9,7 +9,7 @@ const Hero = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="relative bg-background min-h-[80vh] flex items-center pt-24 pb-16 overflow-hidden">
+    <section className="relative bg-background min-h-[80vh] flex items-center pt-12 pb-16 overflow-hidden">
       {/* Topographic Pattern */}
       <TopographicPattern className="opacity-60" />
       
