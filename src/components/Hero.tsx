@@ -53,7 +53,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative bg-background min-h-[80vh] flex items-center pt-12 pb-16 overflow-hidden">
+    <section className="relative bg-background min-h-[60vh] md:min-h-[80vh] flex items-center pt-8 md:pt-12 pb-12 md:pb-16 overflow-hidden px-4 md:px-0">
       {/* Topographic Pattern */}
       <TopographicPattern className="opacity-60" />
       
@@ -64,38 +64,38 @@ const Hero = () => {
       <div className="absolute top-0 left-0 w-1 h-32 bg-gradient-to-b from-asentio-red to-transparent" />
       
       <div className="container mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Content */}
-          <div className="space-y-8 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-full overflow-hidden">
+          <div className="space-y-6 md:space-y-8 max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-muted rounded-full overflow-hidden">
               <span className="w-2 h-2 bg-asentio-red rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-muted-foreground tracking-wide uppercase transition-all duration-500">
+              <span className="text-xs md:text-sm font-medium text-muted-foreground tracking-wide uppercase transition-all duration-500">
                 {services[currentServiceIndex]}
               </span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-foreground">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-foreground">
               {t('hero.title')}
             </h1>
             
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
               {t('hero.subtitle')}
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link to="/contact">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4 justify-center lg:justify-start">
+              <Link to="/contact" className="w-full sm:w-auto">
                 <Button 
                   size="lg" 
-                  className="bg-asentio-blue hover:bg-asentio-blue/90 text-primary-foreground px-8 py-6 text-base font-medium shadow-lg shadow-asentio-blue/20 transition-all hover:shadow-xl hover:shadow-asentio-blue/30"
+                  className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 text-primary-foreground px-6 md:px-8 py-5 md:py-6 text-base font-medium shadow-lg shadow-asentio-blue/20 transition-all hover:shadow-xl hover:shadow-asentio-blue/30"
                 >
                   {t('hero.cta')}
                 </Button>
               </Link>
-              <Link to="/services">
+              <Link to="/services" className="w-full sm:w-auto">
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="px-8 py-6 text-base font-medium border-2 hover:bg-muted"
+                  className="w-full sm:w-auto px-6 md:px-8 py-5 md:py-6 text-base font-medium border-2 hover:bg-muted"
                 >
                   {t('hero.services')}
                 </Button>
@@ -103,8 +103,8 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Globe Graphic */}
-          <div className="hidden lg:block">
+          {/* Globe Graphic - show smaller version on tablet, hide on mobile */}
+          <div className="hidden md:block">
             <GlobeGraphic />
           </div>
         </div>

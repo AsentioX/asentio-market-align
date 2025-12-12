@@ -7,14 +7,14 @@ const Footer = () => {
   const { t } = useLanguage();
   
   return (
-    <footer className="bg-asentio-blue text-white py-12">
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
+    <footer className="bg-asentio-blue text-white py-8 md:py-12">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 text-center sm:text-left">
+          <div className="sm:col-span-2 md:col-span-1">
             <img 
               src="/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" 
               alt="asentio logo" 
-              className="h-8 mb-4 brightness-0 invert"
+              className="h-8 mb-4 brightness-0 invert mx-auto sm:mx-0"
             />
             <p className="text-gray-300 mb-4">
               {t('footer.tagline')}

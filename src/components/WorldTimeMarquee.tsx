@@ -379,7 +379,7 @@ const WorldTimeMarquee = () => {
     .filter((c): c is CityTime => c !== undefined);
 
   return (
-    <div className="relative mt-[120px]">
+    <div className="relative mt-[80px] md:mt-[120px]">
       {/* Settings toggles */}
       <div className="absolute -top-8 right-4 z-10 flex items-center gap-2">
         {/* Time format toggle */}
