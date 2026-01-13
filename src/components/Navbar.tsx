@@ -48,6 +48,9 @@ const Navbar = () => {
           <Link to="/services" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
             {t('nav.services')}
           </Link>
+          <Link to="/xr-directory" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
+            XR Directory
+          </Link>
           <LanguageToggle />
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
@@ -89,6 +92,13 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               {t('nav.services')}
+            </Link>
+            <Link
+              to="/xr-directory"
+              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              XR Directory
             </Link>
             <div className="px-4">
               <LanguageToggle />
