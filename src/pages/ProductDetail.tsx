@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +10,25 @@ import DirectoryCTA from '@/components/directory/DirectoryCTA';
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading, error } = useXRProduct(slug || '');
+
+  // SEO meta tags
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.name} - XR Directory | Asentio`;
+      
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', product.description || `${product.name} by ${product.company} - ${product.category}`);
+    }
+
+    return () => {
+      document.title = 'Asentio';
+    };
+  }, [product]);
 
   if (isLoading) {
     return (
@@ -34,28 +53,6 @@ const ProductDetail = () => {
   }
 
   return (
-    <>
-      <Helmet>
-        <title>{product.name} - XR Directory | Asentio</title>
-        <meta name="description" content={product.description || `${product.name} by ${product.company} - ${product.category}`} />
-        <link rel="canonical" href={`https://asentio.com/xr-directory/${product.slug}`} />
-        
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "name": product.name,
-            "description": product.description,
-            "brand": {
-              "@type": "Brand",
-              "name": product.company
-            },
-            "category": product.category,
-            "url": `https://asentio.com/xr-directory/${product.slug}`
-          })}
-        </script>
-      </Helmet>
-
       <div className="min-h-screen bg-background pt-24">
         <div className="container mx-auto px-4 py-8">
           {/* Back Button */}
@@ -207,7 +204,6 @@ const ProductDetail = () => {
           <DirectoryCTA />
         </div>
       </div>
-    </>
   );
 };
 
