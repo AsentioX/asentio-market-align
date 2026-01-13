@@ -14,7 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      xr_products: {
+        Row: {
+          ai_integration: string
+          category: string
+          company: string
+          created_at: string
+          description: string | null
+          editors_note: string | null
+          id: string
+          image_url: string | null
+          is_editors_pick: boolean | null
+          key_features: string[] | null
+          link: string | null
+          name: string
+          price_range: string | null
+          region: string
+          shipping_status: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          ai_integration: string
+          category: string
+          company: string
+          created_at?: string
+          description?: string | null
+          editors_note?: string | null
+          id?: string
+          image_url?: string | null
+          is_editors_pick?: boolean | null
+          key_features?: string[] | null
+          link?: string | null
+          name: string
+          price_range?: string | null
+          region: string
+          shipping_status: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          ai_integration?: string
+          category?: string
+          company?: string
+          created_at?: string
+          description?: string | null
+          editors_note?: string | null
+          id?: string
+          image_url?: string | null
+          is_editors_pick?: boolean | null
+          key_features?: string[] | null
+          link?: string | null
+          name?: string
+          price_range?: string | null
+          region?: string
+          shipping_status?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
