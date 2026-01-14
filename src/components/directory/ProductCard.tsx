@@ -36,16 +36,31 @@ const ProductCard = ({ product }: ProductCardProps) => {
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border ${
       product.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
+      {/* Product Image */}
+      <div className="relative aspect-[16/10] bg-muted overflow-hidden">
+        {product.image_url ? (
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+            <Package className="w-12 h-12 text-muted-foreground/40" />
+          </div>
+        )}
+        {product.is_editors_pick && (
+          <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-asentio-blue text-white px-2 py-1 rounded-full">
+            <Sparkles className="w-3 h-3" />
+            <span className="text-xs font-semibold">Editor's Pick</span>
+          </div>
+        )}
+      </div>
+      
       <CardContent className="p-5">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
-            {product.is_editors_pick && (
-              <div className="flex items-center gap-1.5 text-asentio-blue mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="text-xs font-semibold uppercase tracking-wide">Editor's Pick</span>
-              </div>
-            )}
             <Link to={`/xr-directory/${product.slug}`}>
               <h3 className="font-semibold text-lg text-foreground group-hover:text-asentio-blue transition-colors line-clamp-1">
                 {product.name}
