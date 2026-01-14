@@ -12,7 +12,8 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, isAdmin } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const { signIn, signUp, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -26,6 +27,28 @@ const AdminLogin = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    if (isSignUp) {
+      const { error } = await signUp(email, password);
+      
+      if (error) {
+        toast({
+          title: 'Sign Up Failed',
+          description: error.message,
+          variant: 'destructive'
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: 'Account Created',
+        description: 'You can now sign in with your credentials.'
+      });
+      setIsSignUp(false);
+      setIsLoading(false);
+      return;
+    }
+
     const { error } = await signIn(email, password);
 
     if (error) {
@@ -38,13 +61,11 @@ const AdminLogin = () => {
       return;
     }
 
-    // Check if user is admin after login
     toast({
       title: 'Login Successful',
       description: 'Redirecting to dashboard...'
     });
     
-    // Small delay to allow auth state to update
     setTimeout(() => {
       navigate('/admin/dashboard');
     }, 500);
@@ -58,9 +79,11 @@ const AdminLogin = () => {
             <ArrowLeft className="w-4 h-4" />
             Back to Directory
           </Link>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
+          <CardTitle className="text-2xl">{isSignUp ? 'Create Account' : 'Admin Login'}</CardTitle>
           <CardDescription>
-            Sign in to manage the XR Products Directory
+            {isSignUp 
+              ? 'Create an admin account to manage the directory' 
+              : 'Sign in to manage the XR Products Directory'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -81,26 +104,42 @@ const AdminLogin = () => {
               <Input
                 id="password"
                 type="password"
+                placeholder="Min. 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
               />
             </div>
             <Button type="submit" className="w-full bg-asentio-blue hover:bg-asentio-blue/90" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  {isSignUp ? 'Creating account...' : 'Signing in...'}
                 </>
               ) : (
-                'Sign In'
+                isSignUp ? 'Create Account' : 'Sign In'
               )}
             </Button>
           </form>
           
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            Need an admin account? Contact the site administrator.
-          </p>
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm text-asentio-blue hover:underline"
+            >
+              {isSignUp 
+                ? 'Already have an account? Sign in' 
+                : 'Need an account? Create one'}
+            </button>
+          </div>
+          
+          {isSignUp && (
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              Use <strong>admin@asentio.com</strong> to get admin privileges.
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>
