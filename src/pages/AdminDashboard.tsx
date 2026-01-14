@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,17 +32,18 @@ const AdminDashboard = () => {
   const { toast } = useToast();
 
   // Redirect if not admin
-  if (loading) {
+  useEffect(() => {
+    if (!loading && (!user || !isAdmin)) {
+      navigate('/admin');
+    }
+  }, [loading, user, isAdmin, navigate]);
+
+  if (loading || !user || !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-asentio-blue" />
       </div>
     );
-  }
-
-  if (!user || !isAdmin) {
-    navigate('/admin');
-    return null;
   }
 
   const handleDelete = async (product: XRProduct) => {
