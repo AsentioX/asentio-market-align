@@ -43,8 +43,18 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/xr-directory" className="text-gray-300 hover:text-white transition-colors">
+                  XR Directory
+                </Link>
+              </li>
+              <li>
                 <Link to="/contact" className="text-gray-300 hover:text-white transition-colors">
                   {t('footer.contact')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/login" className="text-gray-300 hover:text-white transition-colors">
+                  Login
                 </Link>
               </li>
             </ul>
