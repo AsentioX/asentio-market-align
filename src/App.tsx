@@ -15,6 +15,7 @@ import ProductDetail from "./pages/ProductDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProductForm from "./pages/ProductForm";
+import Schedule from "./pages/Schedule";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -38,6 +39,7 @@ const App = () => (
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/xr-directory" element={<Directory />} />
                 <Route path="/xr-directory/:slug" element={<ProductDetail />} />
+                <Route path="/schedule" element={<Schedule />} />
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/products/new" element={<ProductForm />} />

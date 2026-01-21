@@ -51,6 +51,9 @@ const Navbar = () => {
           <Link to="/xr-directory" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
             XR Directory
           </Link>
+          <Link to="/schedule" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
+            Schedule
+          </Link>
           <LanguageToggle />
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
@@ -99,6 +102,13 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               XR Directory
+            </Link>
+            <Link
+              to="/schedule"
+              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Schedule
             </Link>
             <div className="px-4">
               <LanguageToggle />
