@@ -38,6 +38,48 @@ export type Database = {
         }
         Relationships: []
       }
+      schedule_items: {
+        Row: {
+          allowed_roles: Database["public"]["Enums"]["schedule_role"][]
+          created_at: string
+          description: string | null
+          end_time: string | null
+          event_date: string
+          icon_name: string | null
+          id: string
+          location: string | null
+          start_time: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_roles?: Database["public"]["Enums"]["schedule_role"][]
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_date: string
+          icon_name?: string | null
+          id?: string
+          location?: string | null
+          start_time: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_roles?: Database["public"]["Enums"]["schedule_role"][]
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_date?: string
+          icon_name?: string | null
+          id?: string
+          location?: string | null
+          start_time?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       xr_products: {
         Row: {
           ai_integration: string
@@ -106,7 +148,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      schedule_role: "hacker" | "sponsor" | "press" | "mentor" | "organizer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -233,6 +275,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      schedule_role: ["hacker", "sponsor", "press", "mentor", "organizer"],
+    },
   },
 } as const
