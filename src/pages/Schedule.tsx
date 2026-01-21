@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   useScheduleItems, 
   ScheduleRole, 
@@ -15,15 +15,16 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Settings, ArrowLeft, Loader2, Zap } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const Schedule = () => {
   const { isAdmin } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<ScheduleRole | null>(null);
+  const [selectedRole, setSelectedRole] = useState<ScheduleRole | null>(() => {
+    const savedRole = localStorage.getItem('schedule-role');
+    return savedRole ? (savedRole as ScheduleRole) : null;
+  });
   const [selectedDate, setSelectedDate] = useState(EVENT_DATES[0].value);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterByRole, setFilterByRole] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(true);
   const [showAdmin, setShowAdmin] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ScheduleItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -34,100 +35,15 @@ const Schedule = () => {
     searchTerm
   );
 
-  // Check localStorage for saved role
-  useEffect(() => {
-    const savedRole = localStorage.getItem('schedule-role');
-    if (savedRole) {
-      setSelectedRole(savedRole as ScheduleRole);
-      setShowOnboarding(false);
-    }
-  }, []);
-
   const handleRoleSelect = (role: ScheduleRole) => {
     setSelectedRole(role);
     localStorage.setItem('schedule-role', role);
-  };
-
-  const handleContinue = () => {
-    if (selectedRole) {
-      setShowOnboarding(false);
-    }
   };
 
   const handleCardClick = (item: ScheduleItem) => {
     setSelectedItem(item);
     setDetailOpen(true);
   };
-
-  const handleChangeRole = () => {
-    setShowOnboarding(true);
-  };
-
-  // Onboarding screen
-  if (showOnboarding) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 pt-20">
-        {/* Background effects */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-          {/* Grid pattern */}
-          <div 
-            className="absolute inset-0 opacity-[0.03]" 
-            style={{
-              backgroundImage: `linear-gradient(rgba(0, 255, 255, 0.5) 1px, transparent 1px), 
-                               linear-gradient(90deg, rgba(0, 255, 255, 0.5) 1px, transparent 1px)`,
-              backgroundSize: '50px 50px'
-            }}
-          />
-        </div>
-
-        <div className="container mx-auto px-4 py-16 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            {/* Logo/Title */}
-            <div className="mb-8">
-              <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full px-4 py-2 mb-6">
-                <Zap className="w-4 h-4 text-cyan-400" />
-                <span className="text-cyan-400 text-sm font-medium">MIT Reality Hack 2026</span>
-              </div>
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                  Interactive Schedule
-                </span>
-              </h1>
-              <p className="text-gray-400 text-lg max-w-xl mx-auto">
-                Select your role to personalize your hackathon experience and see events relevant to you.
-              </p>
-            </div>
-
-            {/* Role Selection */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-white mb-6">Select Your Role</h2>
-              <RoleSelector 
-                selectedRole={selectedRole} 
-                onSelectRole={handleRoleSelect}
-                isOnboarding
-              />
-            </div>
-
-            {/* Continue Button */}
-            <Button
-              onClick={handleContinue}
-              disabled={!selectedRole}
-              className={cn(
-                "px-8 py-6 text-lg font-semibold rounded-xl transition-all duration-300",
-                selectedRole
-                  ? "bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-lg shadow-cyan-500/25"
-                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
-              )}
-            >
-              Continue to Schedule
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Admin view
   if (showAdmin && isAdmin) {
@@ -178,13 +94,6 @@ const Schedule = () => {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={handleChangeRole}
-              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
-            >
-              Change Role
-            </Button>
             {isAdmin && (
               <Button
                 onClick={() => setShowAdmin(true)}
@@ -219,14 +128,12 @@ const Schedule = () => {
         </div>
 
         {/* Current Role */}
-        {selectedRole && (
-          <div className="mb-6">
-            <RoleSelector 
-              selectedRole={selectedRole} 
-              onSelectRole={handleRoleSelect}
-            />
-          </div>
-        )}
+        <div className="mb-6">
+          <RoleSelector 
+            selectedRole={selectedRole} 
+            onSelectRole={handleRoleSelect}
+          />
+        </div>
 
         {/* Date Tabs */}
         <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full">
