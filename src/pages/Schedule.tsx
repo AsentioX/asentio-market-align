@@ -1,0 +1,290 @@
+import { useState, useEffect } from 'react';
+import { 
+  useScheduleItems, 
+  ScheduleRole, 
+  EVENT_DATES,
+  ScheduleItem 
+} from '@/hooks/useSchedule';
+import { useAuth } from '@/hooks/useAuth';
+import RoleSelector from '@/components/schedule/RoleSelector';
+import ScheduleCard from '@/components/schedule/ScheduleCard';
+import ScheduleDetail from '@/components/schedule/ScheduleDetail';
+import ScheduleAdmin from '@/components/schedule/ScheduleAdmin';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search, Settings, ArrowLeft, Loader2, Zap } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const Schedule = () => {
+  const { isAdmin } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<ScheduleRole | null>(null);
+  const [selectedDate, setSelectedDate] = useState(EVENT_DATES[0].value);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterByRole, setFilterByRole] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ScheduleItem | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const { data: items, isLoading } = useScheduleItems(
+    selectedDate,
+    filterByRole ? selectedRole : null,
+    searchTerm
+  );
+
+  // Check localStorage for saved role
+  useEffect(() => {
+    const savedRole = localStorage.getItem('schedule-role');
+    if (savedRole) {
+      setSelectedRole(savedRole as ScheduleRole);
+      setShowOnboarding(false);
+    }
+  }, []);
+
+  const handleRoleSelect = (role: ScheduleRole) => {
+    setSelectedRole(role);
+    localStorage.setItem('schedule-role', role);
+  };
+
+  const handleContinue = () => {
+    if (selectedRole) {
+      setShowOnboarding(false);
+    }
+  };
+
+  const handleCardClick = (item: ScheduleItem) => {
+    setSelectedItem(item);
+    setDetailOpen(true);
+  };
+
+  const handleChangeRole = () => {
+    setShowOnboarding(true);
+  };
+
+  // Onboarding screen
+  if (showOnboarding) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 pt-20">
+        {/* Background effects */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+          {/* Grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.03]" 
+            style={{
+              backgroundImage: `linear-gradient(rgba(0, 255, 255, 0.5) 1px, transparent 1px), 
+                               linear-gradient(90deg, rgba(0, 255, 255, 0.5) 1px, transparent 1px)`,
+              backgroundSize: '50px 50px'
+            }}
+          />
+        </div>
+
+        <div className="container mx-auto px-4 py-16 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            {/* Logo/Title */}
+            <div className="mb-8">
+              <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full px-4 py-2 mb-6">
+                <Zap className="w-4 h-4 text-cyan-400" />
+                <span className="text-cyan-400 text-sm font-medium">MIT Reality Hack 2026</span>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                  Interactive Schedule
+                </span>
+              </h1>
+              <p className="text-gray-400 text-lg max-w-xl mx-auto">
+                Select your role to personalize your hackathon experience and see events relevant to you.
+              </p>
+            </div>
+
+            {/* Role Selection */}
+            <div className="mb-8">
+              <h2 className="text-xl font-semibold text-white mb-6">Select Your Role</h2>
+              <RoleSelector 
+                selectedRole={selectedRole} 
+                onSelectRole={handleRoleSelect}
+                isOnboarding
+              />
+            </div>
+
+            {/* Continue Button */}
+            <Button
+              onClick={handleContinue}
+              disabled={!selectedRole}
+              className={cn(
+                "px-8 py-6 text-lg font-semibold rounded-xl transition-all duration-300",
+                selectedRole
+                  ? "bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-lg shadow-cyan-500/25"
+                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
+              )}
+            >
+              Continue to Schedule
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Admin view
+  if (showAdmin && isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 pt-20">
+        <div className="container mx-auto px-4 py-8">
+          <Button
+            variant="ghost"
+            onClick={() => setShowAdmin(false)}
+            className="text-cyan-400 hover:text-cyan-300 mb-6"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Schedule
+          </Button>
+          <ScheduleAdmin />
+        </div>
+      </div>
+    );
+  }
+
+  // Main schedule view
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 pt-20">
+      {/* Background effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+        <div 
+          className="absolute inset-0 opacity-[0.03]" 
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 255, 255, 0.5) 1px, transparent 1px), 
+                             linear-gradient(90deg, rgba(0, 255, 255, 0.5) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full px-3 py-1 mb-2">
+              <Zap className="w-3 h-3 text-cyan-400" />
+              <span className="text-cyan-400 text-xs font-medium">MIT Reality Hack 2026</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white">
+              Event Schedule
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={handleChangeRole}
+              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+            >
+              Change Role
+            </Button>
+            {isAdmin && (
+              <Button
+                onClick={() => setShowAdmin(true)}
+                className="bg-purple-500 hover:bg-purple-600 text-white"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Admin
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+              placeholder="Search events..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-cyan-500"
+            />
+          </div>
+          <div className="flex items-center gap-3 bg-gray-800/50 rounded-lg px-4 py-2 border border-gray-700">
+            <span className="text-sm text-gray-400">My Role Only</span>
+            <Switch
+              checked={filterByRole}
+              onCheckedChange={setFilterByRole}
+              className="data-[state=checked]:bg-cyan-500"
+            />
+          </div>
+        </div>
+
+        {/* Current Role */}
+        {selectedRole && (
+          <div className="mb-6">
+            <RoleSelector 
+              selectedRole={selectedRole} 
+              onSelectRole={handleRoleSelect}
+            />
+          </div>
+        )}
+
+        {/* Date Tabs */}
+        <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full">
+          <TabsList className="w-full bg-gray-800/50 border border-gray-700 p-1 rounded-xl mb-6 flex">
+            {EVENT_DATES.map((date) => (
+              <TabsTrigger
+                key={date.value}
+                value={date.value}
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg py-3 transition-all"
+              >
+                <div className="text-center">
+                  <div className="font-semibold">{date.label}</div>
+                  <div className="text-xs opacity-70">{date.day}</div>
+                </div>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {EVENT_DATES.map((date) => (
+            <TabsContent key={date.value} value={date.value} className="mt-0">
+              {isLoading ? (
+                <div className="flex justify-center py-16">
+                  <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+                </div>
+              ) : items && items.length > 0 ? (
+                <div className="grid gap-4">
+                  {items.map((item) => (
+                    <ScheduleCard
+                      key={item.id}
+                      item={item}
+                      onClick={() => handleCardClick(item)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-8 h-8 text-gray-600" />
+                  </div>
+                  <p className="text-gray-400 text-lg">No events found</p>
+                  <p className="text-gray-500 text-sm mt-1">
+                    Try adjusting your filters or search term
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+
+      {/* Detail Dialog */}
+      <ScheduleDetail
+        item={selectedItem}
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+      />
+    </div>
+  );
+};
+
+export default Schedule;
