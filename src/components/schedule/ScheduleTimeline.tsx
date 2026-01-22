@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ScheduleItem, ScheduleRole } from '@/hooks/useSchedule';
 import { cn } from '@/lib/utils';
 import { 
@@ -6,8 +6,16 @@ import {
   Megaphone, Users, Coffee, HardDrive, Code, Handshake, 
   Gamepad2, Pencil, Trophy, PartyPopper, Award, Presentation,
   MapPin, AlertCircle, ClipboardList, DoorClosed, 
-  Lightbulb, Mic, Package, BookOpen, Globe
+  Lightbulb, Mic, Package, BookOpen, Globe, X
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import campusMap from '@/assets/map-campus.png';
+import buildingsMap from '@/assets/map-buildings.png';
 
 interface ScheduleTimelineProps {
   items: ScheduleItem[];
@@ -54,6 +62,49 @@ const eventColors = [
   { bg: 'bg-rose-400/30', border: 'border-rose-400/50', text: 'text-rose-100' },
 ];
 
+// Location to map mapping
+const getMapForLocation = (location: string): { map: string; title: string } => {
+  const loc = location.toLowerCase();
+  
+  // Stratton Student Center locations
+  if (loc.includes('stratton') || loc.includes('student center') || 
+      loc.includes('sala') || loc.includes('west lounge') || 
+      loc.includes('expo') || loc.includes('registration')) {
+    return { map: buildingsMap, title: 'Student Center - Floor 2' };
+  }
+  
+  // Building-specific room numbers (1-xxx, 3-xxx, 5-xxx, 32-xxx)
+  if (loc.match(/^(1|3|5)-\d+/) || loc.includes('building 1') || 
+      loc.includes('building 3') || loc.includes('building 5')) {
+    return { map: buildingsMap, title: 'Buildings 1, 3, 5 Floor Plans' };
+  }
+  
+  if (loc.match(/^32-/) || loc.includes('stata') || loc.includes('building 32')) {
+    return { map: buildingsMap, title: 'Building 32 - Stata Center' };
+  }
+  
+  // Default to campus map for general locations
+  return { map: campusMap, title: 'MIT Campus Map' };
+};
+
+// Priority sort for locations - Stratton Student Center first
+const sortLocations = (locations: string[]): string[] => {
+  return [...locations].sort((a, b) => {
+    const aLower = a.toLowerCase();
+    const bLower = b.toLowerCase();
+    
+    // Stratton Student Center always first
+    const aIsStratton = aLower.includes('stratton') || aLower.includes('student center');
+    const bIsStratton = bLower.includes('stratton') || bLower.includes('student center');
+    
+    if (aIsStratton && !bIsStratton) return -1;
+    if (!aIsStratton && bIsStratton) return 1;
+    
+    // Then alphabetical
+    return a.localeCompare(b);
+  });
+};
+
 // Parse time string like "09:00" or "9:00 AM" to minutes from midnight
 const parseTimeToMinutes = (timeStr: string): number => {
   if (!timeStr) return 0;
@@ -91,14 +142,17 @@ const formatHour = (hour: number): string => {
 };
 
 const ScheduleTimeline = ({ items, onItemClick }: ScheduleTimelineProps) => {
+  const [mapDialogOpen, setMapDialogOpen] = useState(false);
+  const [selectedLocationMap, setSelectedLocationMap] = useState<{ map: string; title: string; location: string } | null>(null);
+
   // Calculate timeline bounds based on events
   const { startHour, endHour, timelineItems, locations } = useMemo(() => {
     if (!items.length) {
       return { startHour: 8, endHour: 22, timelineItems: [], locations: [] };
     }
 
-    // Get unique locations
-    const uniqueLocations = [...new Set(items.map(item => item.location || 'TBD'))].sort();
+    // Get unique locations and sort with Stratton first
+    const uniqueLocations = sortLocations([...new Set(items.map(item => item.location || 'TBD'))]);
     
     // Calculate min/max hours
     let minMinutes = Infinity;
@@ -149,115 +203,147 @@ const ScheduleTimeline = ({ items, onItemClick }: ScheduleTimelineProps) => {
     return grouped;
   }, [timelineItems, locations]);
 
+  const handleLocationClick = (location: string) => {
+    const mapInfo = getMapForLocation(location);
+    setSelectedLocationMap({ ...mapInfo, location });
+    setMapDialogOpen(true);
+  };
+
   if (!items.length) {
     return null;
   }
 
   return (
-    <div className="w-full overflow-x-auto">
-      <div className="min-w-[600px]">
-        {/* Location headers */}
-        <div className="flex border-b border-white/10 mb-2 sticky top-0 bg-[#1a0a2e]/95 backdrop-blur-sm z-10">
-          <div className="w-16 flex-shrink-0" /> {/* Time column spacer */}
-          <div className="flex-1 flex">
-            {locations.map((location, idx) => (
-              <div 
-                key={location}
-                className="flex-1 px-2 py-3 text-center"
-                style={{ minWidth: `${100 / Math.max(locations.length, 1)}%` }}
-              >
-                <div className="flex items-center justify-center gap-1.5 text-white/70 text-sm font-medium">
-                  <MapPin className="w-3.5 h-3.5 text-rh-pink" />
-                  <span className="truncate max-w-[120px]">{location}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Timeline grid */}
-        <div className="flex relative" style={{ height: totalHeight }}>
-          {/* Time labels */}
-          <div className="w-16 flex-shrink-0 relative">
-            {hours.map((hour, idx) => (
-              <div
-                key={hour}
-                className="absolute left-0 right-0 text-white/50 text-xs font-medium pr-2 text-right"
-                style={{ top: idx * hourHeight - 6 }}
-              >
-                {formatHour(hour)}
-              </div>
-            ))}
-          </div>
-
-          {/* Grid and events */}
-          <div className="flex-1 relative">
-            {/* Hour lines */}
-            {hours.map((hour, idx) => (
-              <div
-                key={hour}
-                className="absolute left-0 right-0 border-t border-white/10"
-                style={{ top: idx * hourHeight }}
-              />
-            ))}
-
-            {/* Location columns */}
-            <div className="absolute inset-0 flex">
-              {locations.map((location, locIdx) => (
-                <div 
+    <>
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[600px]">
+          {/* Location headers */}
+          <div className="flex border-b border-white/10 mb-2 sticky top-0 bg-[#1a0a2e]/95 backdrop-blur-sm z-10">
+            <div className="w-16 flex-shrink-0" /> {/* Time column spacer */}
+            <div className="flex-1 flex">
+              {locations.map((location, idx) => (
+                <button 
                   key={location}
-                  className={cn(
-                    "flex-1 relative",
-                    locIdx > 0 && "border-l border-white/5"
-                  )}
+                  onClick={() => handleLocationClick(location)}
+                  className="flex-1 px-2 py-3 text-center hover:bg-white/5 transition-colors rounded-lg group"
                   style={{ minWidth: `${100 / Math.max(locations.length, 1)}%` }}
                 >
-                  {/* Events for this location */}
-                  {itemsByLocation[location]?.map((item) => {
-                    const IconComponent = iconMap[item.icon_name || 'calendar'] || Calendar;
-                    const topOffset = ((item.startMinutes - startHour * 60) / 60) * hourHeight;
-                    const height = Math.max((item.durationMinutes / 60) * hourHeight, 50);
-                    
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => onItemClick(item)}
-                        className={cn(
-                          "absolute left-1 right-1 rounded-xl border backdrop-blur-sm p-3 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-lg overflow-hidden group",
-                          item.color.bg,
-                          item.color.border
-                        )}
-                        style={{
-                          top: topOffset,
-                          height: height,
-                          zIndex: 1,
-                        }}
-                      >
-                        <div className="flex items-start gap-2 h-full">
-                          <IconComponent className={cn("w-4 h-4 flex-shrink-0 mt-0.5", item.color.text)} />
-                          <div className="flex-1 min-w-0 overflow-hidden">
-                            <h4 className={cn(
-                              "font-semibold text-sm leading-tight line-clamp-2 group-hover:text-white transition-colors",
-                              item.color.text
-                            )}>
-                              {item.title}
-                            </h4>
-                            <p className="text-white/60 text-xs mt-1">
-                              {item.start_time}
-                              {item.end_time && ` - ${item.end_time}`}
-                            </p>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                  <div className="flex items-center justify-center gap-1.5 text-white/70 text-sm font-medium group-hover:text-rh-pink transition-colors">
+                    <MapPin className="w-3.5 h-3.5 text-rh-pink" />
+                    <span className="truncate max-w-[120px]">{location}</span>
+                  </div>
+                  <p className="text-white/40 text-xs mt-0.5 group-hover:text-white/60">Click for map</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Timeline grid */}
+          <div className="flex relative" style={{ height: totalHeight }}>
+            {/* Time labels */}
+            <div className="w-16 flex-shrink-0 relative">
+              {hours.map((hour, idx) => (
+                <div
+                  key={hour}
+                  className="absolute left-0 right-0 text-white/50 text-xs font-medium pr-2 text-right"
+                  style={{ top: idx * hourHeight - 6 }}
+                >
+                  {formatHour(hour)}
                 </div>
               ))}
+            </div>
+
+            {/* Grid and events */}
+            <div className="flex-1 relative">
+              {/* Hour lines */}
+              {hours.map((hour, idx) => (
+                <div
+                  key={hour}
+                  className="absolute left-0 right-0 border-t border-white/10"
+                  style={{ top: idx * hourHeight }}
+                />
+              ))}
+
+              {/* Location columns */}
+              <div className="absolute inset-0 flex">
+                {locations.map((location, locIdx) => (
+                  <div 
+                    key={location}
+                    className={cn(
+                      "flex-1 relative",
+                      locIdx > 0 && "border-l border-white/5"
+                    )}
+                    style={{ minWidth: `${100 / Math.max(locations.length, 1)}%` }}
+                  >
+                    {/* Events for this location */}
+                    {itemsByLocation[location]?.map((item) => {
+                      const IconComponent = iconMap[item.icon_name || 'calendar'] || Calendar;
+                      const topOffset = ((item.startMinutes - startHour * 60) / 60) * hourHeight;
+                      const height = Math.max((item.durationMinutes / 60) * hourHeight, 50);
+                      
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => onItemClick(item)}
+                          className={cn(
+                            "absolute left-1 right-1 rounded-xl border backdrop-blur-sm p-3 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-lg overflow-hidden group",
+                            item.color.bg,
+                            item.color.border
+                          )}
+                          style={{
+                            top: topOffset,
+                            height: height,
+                            zIndex: 1,
+                          }}
+                        >
+                          <div className="flex items-start gap-2 h-full">
+                            <IconComponent className={cn("w-4 h-4 flex-shrink-0 mt-0.5", item.color.text)} />
+                            <div className="flex-1 min-w-0 overflow-hidden">
+                              <h4 className={cn(
+                                "font-semibold text-sm leading-tight line-clamp-2 group-hover:text-white transition-colors",
+                                item.color.text
+                              )}>
+                                {item.title}
+                              </h4>
+                              <p className="text-white/60 text-xs mt-1">
+                                {item.start_time}
+                                {item.end_time && ` - ${item.end_time}`}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Map Dialog */}
+      <Dialog open={mapDialogOpen} onOpenChange={setMapDialogOpen}>
+        <DialogContent className="max-w-4xl bg-[#1a0a2e] border-rh-purple-light/30 p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-2 border-b border-white/10">
+            <DialogTitle className="text-white flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-rh-pink" />
+              {selectedLocationMap?.title}
+            </DialogTitle>
+            <p className="text-white/60 text-sm">
+              Location: {selectedLocationMap?.location}
+            </p>
+          </DialogHeader>
+          <div className="p-4 pt-2">
+            <img 
+              src={selectedLocationMap?.map} 
+              alt={selectedLocationMap?.title}
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
