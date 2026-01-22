@@ -97,23 +97,15 @@ const Schedule = () => {
           )}
         </div>
 
-        {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6 max-w-2xl mx-auto">
-          <div className="relative flex-1">
+        {/* Search */}
+        <div className="max-w-2xl mx-auto mb-6">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-rh-pink/70" />
             <Input
               placeholder="Search events..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-white/5 border-rh-purple-light/30 text-white placeholder:text-white/40 focus:border-rh-pink focus:ring-rh-pink/20"
-            />
-          </div>
-          <div className="flex items-center gap-3 bg-white/5 rounded-lg px-4 py-2 border border-rh-purple-light/30">
-            <span className="text-sm text-white/70">My Role Only</span>
-            <Switch
-              checked={filterByRole}
-              onCheckedChange={setFilterByRole}
-              className="data-[state=checked]:bg-rh-pink"
             />
           </div>
         </div>
