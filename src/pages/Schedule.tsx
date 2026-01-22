@@ -7,7 +7,7 @@ import {
 } from '@/hooks/useSchedule';
 import { useAuth } from '@/hooks/useAuth';
 import RoleSelector from '@/components/schedule/RoleSelector';
-import ScheduleCard from '@/components/schedule/ScheduleCard';
+import ScheduleTimeline from '@/components/schedule/ScheduleTimeline';
 import ScheduleDetail from '@/components/schedule/ScheduleDetail';
 import ScheduleAdmin from '@/components/schedule/ScheduleAdmin';
 import GeometricBackground from '@/components/schedule/GeometricBackground';
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import realityHackLogo from '@/assets/reality-hack-logo.png';
-import { Search, Settings, ArrowLeft, Loader2, MapPin, X } from 'lucide-react';
+import { Search, Settings, ArrowLeft, Loader2, X } from 'lucide-react';
 
 const Schedule = () => {
   const { isAdmin } = useAuth();
@@ -25,7 +25,6 @@ const Schedule = () => {
   });
   const [selectedDate, setSelectedDate] = useState(EVENT_DATES[0].value);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ScheduleItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -37,22 +36,14 @@ const Schedule = () => {
     searchTerm
   );
 
-  // Get unique locations for filter dropdown
-  const locations = useMemo(() => {
-    if (!allItems) return [];
-    const uniqueLocations = [...new Set(allItems.map(item => item.location).filter(Boolean))];
-    return uniqueLocations.sort() as string[];
-  }, [allItems]);
-
-  // Filter items by role and location client-side
+  // Filter items by role client-side
   const items = useMemo(() => {
     if (!allItems) return [];
     return allItems.filter(item => {
       const roleMatch = !selectedRole || item.allowed_roles.includes(selectedRole);
-      const locationMatch = !selectedLocation || item.location === selectedLocation;
-      return roleMatch && locationMatch;
+      return roleMatch;
     });
-  }, [allItems, selectedRole, selectedLocation]);
+  }, [allItems, selectedRole]);
 
   const handleRoleSelect = (role: ScheduleRole | null) => {
     setSelectedRole(role);
@@ -70,12 +61,11 @@ const Schedule = () => {
 
   const clearFilters = () => {
     setSelectedRole(null);
-    setSelectedLocation(null);
     setSearchTerm('');
     localStorage.removeItem('schedule-role');
   };
 
-  const hasActiveFilters = selectedRole || selectedLocation || searchTerm;
+  const hasActiveFilters = selectedRole || searchTerm;
 
   // Admin view
   if (showAdmin && isAdmin) {
@@ -127,8 +117,8 @@ const Schedule = () => {
           )}
         </div>
 
-        {/* Search and Location Filter */}
-        <div className="max-w-2xl mx-auto mb-6 space-y-3">
+        {/* Search */}
+        <div className="max-w-2xl mx-auto mb-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-rh-pink/70" />
             <Input
@@ -139,44 +129,8 @@ const Schedule = () => {
             />
           </div>
           
-          {/* Location Buttons */}
-          {locations.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-white/60 text-sm font-medium text-center flex items-center justify-center gap-2">
-                <MapPin className="w-4 h-4 text-rh-pink" />
-                Filter by Location
-              </h3>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {locations.map((location) => {
-                  const isSelected = selectedLocation === location;
-                  return (
-                    <button
-                      key={location}
-                      onClick={() => setSelectedLocation(isSelected ? null : location)}
-                      className={`
-                        group flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 text-sm
-                        ${isSelected
-                          ? 'bg-rh-pink/20 border-rh-pink/50 text-rh-pink shadow-lg'
-                          : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-rh-pink/30 text-white/70 hover:text-white'
-                        }
-                      `}
-                    >
-                      <MapPin className={`w-4 h-4 ${isSelected ? 'text-rh-pink' : 'text-white/50 group-hover:text-rh-pink/70'}`} />
-                      <span className="font-medium">
-                        {location.length > 30 ? `${location.slice(0, 30)}...` : location}
-                      </span>
-                      {isSelected && (
-                        <div className="w-2 h-2 rounded-full bg-rh-pink animate-pulse" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          
           {hasActiveFilters && (
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-3">
               <Button
                 variant="ghost"
                 onClick={clearFilters}
@@ -198,8 +152,8 @@ const Schedule = () => {
         </div>
 
         {/* Date Tabs */}
-        <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full max-w-4xl mx-auto">
-          <TabsList className="w-full bg-white/5 border border-rh-purple-light/20 p-1.5 rounded-2xl mb-8 flex">
+        <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full">
+          <TabsList className="w-full max-w-4xl mx-auto bg-white/5 border border-rh-purple-light/20 p-1.5 rounded-2xl mb-8 flex">
             {EVENT_DATES.map((date) => (
               <TabsTrigger
                 key={date.value}
@@ -221,15 +175,10 @@ const Schedule = () => {
                   <Loader2 className="w-8 h-8 animate-spin text-rh-pink" />
                 </div>
               ) : items && items.length > 0 ? (
-                <div className="grid gap-3">
-                  {items.map((item) => (
-                    <ScheduleCard
-                      key={item.id}
-                      item={item}
-                      onClick={() => handleCardClick(item)}
-                    />
-                  ))}
-                </div>
+                <ScheduleTimeline
+                  items={items}
+                  onItemClick={handleCardClick}
+                />
               ) : (
                 <div className="text-center py-16">
                   <div className="w-16 h-16 bg-rh-purple/30 rounded-full flex items-center justify-center mx-auto mb-4">
