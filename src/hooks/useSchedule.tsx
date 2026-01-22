@@ -42,6 +42,7 @@ export const useScheduleItems = (date?: string, role?: ScheduleRole | null, sear
       let query = supabase
         .from('schedule_items')
         .select('*')
+        .order('event_date', { ascending: true })
         .order('start_time', { ascending: true });
 
       if (date) {
