@@ -14,13 +14,6 @@ import GeometricBackground from '@/components/schedule/GeometricBackground';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import realityHackLogo from '@/assets/reality-hack-logo.png';
 import { Search, Settings, ArrowLeft, Loader2, MapPin, X } from 'lucide-react';
 
@@ -146,42 +139,48 @@ const Schedule = () => {
             />
           </div>
           
-          <div className="flex gap-3">
-            <Select 
-              value={selectedLocation || "all"} 
-              onValueChange={(value) => setSelectedLocation(value === "all" ? null : value)}
-            >
-              <SelectTrigger className="bg-white/5 border-rh-purple-light/30 text-white focus:border-rh-pink focus:ring-rh-pink/20">
-                <MapPin className="w-4 h-4 mr-2 text-rh-pink/70" />
-                <SelectValue placeholder="All Locations" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1a0a2e] border-rh-purple-light/30">
-                <SelectItem value="all" className="text-white hover:bg-white/10 focus:bg-white/10">
-                  All Locations
-                </SelectItem>
-                {locations.map((location) => (
-                  <SelectItem 
-                    key={location} 
-                    value={location}
-                    className="text-white hover:bg-white/10 focus:bg-white/10"
+          {/* Location Buttons */}
+          {locations.length > 0 && (
+            <div className="flex flex-wrap gap-2 justify-center">
+              {locations.map((location) => {
+                const isSelected = selectedLocation === location;
+                return (
+                  <button
+                    key={location}
+                    onClick={() => setSelectedLocation(isSelected ? null : location)}
+                    className={`
+                      group flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 text-sm
+                      ${isSelected
+                        ? 'bg-rh-pink/20 border-rh-pink/50 text-rh-pink shadow-lg'
+                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-rh-pink/30 text-white/70 hover:text-white'
+                      }
+                    `}
                   >
-                    {location.length > 40 ? `${location.slice(0, 40)}...` : location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            {hasActiveFilters && (
+                    <MapPin className={`w-4 h-4 ${isSelected ? 'text-rh-pink' : 'text-white/50 group-hover:text-rh-pink/70'}`} />
+                    <span className="font-medium">
+                      {location.length > 25 ? `${location.slice(0, 25)}...` : location}
+                    </span>
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full bg-rh-pink animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          
+          {hasActiveFilters && (
+            <div className="flex justify-center">
               <Button
                 variant="ghost"
                 onClick={clearFilters}
-                className="text-rh-pink hover:text-rh-pink-hot hover:bg-rh-pink/10 shrink-0"
+                className="text-rh-pink hover:text-rh-pink-hot hover:bg-rh-pink/10"
               >
                 <X className="w-4 h-4 mr-1" />
-                Clear
+                Clear All Filters
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Current Role */}
