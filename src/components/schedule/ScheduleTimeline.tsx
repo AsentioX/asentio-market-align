@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import campusMap from '@/assets/map-campus.png';
 import buildingsMap from '@/assets/map-buildings.png';
+import studentCenterMap from '@/assets/map-student-center.png';
 
 interface ScheduleTimelineProps {
   items: ScheduleItem[];
@@ -70,7 +71,7 @@ const getMapForLocation = (location: string): { map: string; title: string } => 
   if (loc.includes('stratton') || loc.includes('student center') || 
       loc.includes('sala') || loc.includes('west lounge') || 
       loc.includes('expo') || loc.includes('registration')) {
-    return { map: buildingsMap, title: 'Student Center - Floor 2' };
+    return { map: studentCenterMap, title: 'Stratton Student Center (Building W20)' };
   }
   
   // Building-specific room numbers (1-xxx, 3-xxx, 5-xxx, 32-xxx)
