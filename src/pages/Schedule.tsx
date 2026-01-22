@@ -141,31 +141,37 @@ const Schedule = () => {
           
           {/* Location Buttons */}
           {locations.length > 0 && (
-            <div className="flex flex-wrap gap-2 justify-center">
-              {locations.map((location) => {
-                const isSelected = selectedLocation === location;
-                return (
-                  <button
-                    key={location}
-                    onClick={() => setSelectedLocation(isSelected ? null : location)}
-                    className={`
-                      group flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 text-sm
-                      ${isSelected
-                        ? 'bg-rh-pink/20 border-rh-pink/50 text-rh-pink shadow-lg'
-                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-rh-pink/30 text-white/70 hover:text-white'
-                      }
-                    `}
-                  >
-                    <MapPin className={`w-4 h-4 ${isSelected ? 'text-rh-pink' : 'text-white/50 group-hover:text-rh-pink/70'}`} />
-                    <span className="font-medium">
-                      {location.length > 25 ? `${location.slice(0, 25)}...` : location}
-                    </span>
-                    {isSelected && (
-                      <div className="w-2 h-2 rounded-full bg-rh-pink animate-pulse" />
-                    )}
-                  </button>
-                );
-              })}
+            <div className="space-y-3">
+              <h3 className="text-white/60 text-sm font-medium text-center flex items-center justify-center gap-2">
+                <MapPin className="w-4 h-4 text-rh-pink" />
+                Filter by Location
+              </h3>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {locations.map((location) => {
+                  const isSelected = selectedLocation === location;
+                  return (
+                    <button
+                      key={location}
+                      onClick={() => setSelectedLocation(isSelected ? null : location)}
+                      className={`
+                        group flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 text-sm
+                        ${isSelected
+                          ? 'bg-rh-pink/20 border-rh-pink/50 text-rh-pink shadow-lg'
+                          : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-rh-pink/30 text-white/70 hover:text-white'
+                        }
+                      `}
+                    >
+                      <MapPin className={`w-4 h-4 ${isSelected ? 'text-rh-pink' : 'text-white/50 group-hover:text-rh-pink/70'}`} />
+                      <span className="font-medium">
+                        {location.length > 30 ? `${location.slice(0, 30)}...` : location}
+                      </span>
+                      {isSelected && (
+                        <div className="w-2 h-2 rounded-full bg-rh-pink animate-pulse" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
           
