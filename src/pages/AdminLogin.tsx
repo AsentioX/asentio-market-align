@@ -43,10 +43,12 @@ const AdminLogin = () => {
       }
 
       toast({
-        title: 'Account Created',
-        description: 'You can now sign in with your credentials.'
+        title: 'Verification Email Sent',
+        description: 'Please check your inbox and click the verification link to activate your account.'
       });
       setIsSignUp(false);
+      setEmail('');
+      setPassword('');
       setIsLoading(false);
       return;
     }
@@ -221,9 +223,10 @@ const AdminLogin = () => {
               </div>
               
               {isSignUp && (
-                <p className="text-center text-xs text-muted-foreground mt-4">
-                  Use <strong>admin@asentio.com</strong> to get admin privileges.
-                </p>
+                <div className="text-center text-xs text-muted-foreground mt-4 space-y-1">
+                  <p>Use <strong>admin@asentio.com</strong> to get admin privileges.</p>
+                  <p className="text-warning">You'll need to verify your email before signing in.</p>
+                </div>
               )}
             </>
           )}
