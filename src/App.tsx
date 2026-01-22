@@ -16,6 +16,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProductForm from "./pages/ProductForm";
 import Schedule from "./pages/Schedule";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/reset-password" element={<ResetPassword />} />
                 <Route path="/admin/products/new" element={<ProductForm />} />
                 <Route path="/admin/products/:id/edit" element={<ProductForm />} />
                 <Route path="*" element={<NotFound />} />
