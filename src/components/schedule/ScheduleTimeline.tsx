@@ -152,8 +152,8 @@ const ScheduleTimeline = ({ items, onItemClick }: ScheduleTimelineProps) => {
       return { startHour: 8, endHour: 22, timelineItems: [], locations: [] };
     }
 
-    // Get unique locations and sort with Stratton first
-    const uniqueLocations = sortLocations([...new Set(items.map(item => item.location || 'TBD'))]);
+    // Get unique locations and sort with Stratton first, excluding TBD
+    const uniqueLocations = sortLocations([...new Set(items.map(item => item.location).filter((loc): loc is string => !!loc && loc.toLowerCase() !== 'tbd'))]);
     
     // Calculate min/max hours
     let minMinutes = Infinity;
@@ -166,7 +166,8 @@ const ScheduleTimeline = ({ items, onItemClick }: ScheduleTimelineProps) => {
       minMinutes = Math.min(minMinutes, startMinutes);
       maxMinutes = Math.max(maxMinutes, endMinutes);
       
-      const locationIndex = uniqueLocations.indexOf(item.location || 'TBD');
+      const itemLocation = item.location || '';
+      const locationIndex = uniqueLocations.indexOf(itemLocation);
       const colorIndex = index % eventColors.length;
       
       return {
@@ -199,7 +200,7 @@ const ScheduleTimeline = ({ items, onItemClick }: ScheduleTimelineProps) => {
   const itemsByLocation = useMemo(() => {
     const grouped: Record<string, typeof timelineItems> = {};
     locations.forEach(loc => {
-      grouped[loc] = timelineItems.filter(item => (item.location || 'TBD') === loc);
+      grouped[loc] = timelineItems.filter(item => item.location === loc);
     });
     return grouped;
   }, [timelineItems, locations]);
