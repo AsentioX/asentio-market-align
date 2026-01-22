@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import realityHackLogo from '@/assets/reality-hack-logo.png';
 import { Search, Settings, ArrowLeft, Loader2 } from 'lucide-react';
 
 const Schedule = () => {
@@ -74,32 +75,14 @@ const Schedule = () => {
       <div className="container mx-auto px-4 py-8 pt-12 relative z-10">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-10">
-          {/* Logo/Title area */}
-          <div className="relative mb-2">
-            {/* Yellow play button triangle */}
-            <div className="absolute -left-16 top-1/2 -translate-y-1/2 w-14 h-14 hidden md:block">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <path 
-                  d="M 10,90 L 10,10 L 90,50 Z" 
-                  stroke="#FFD700" 
-                  strokeWidth="6" 
-                  fill="none"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              <span className="text-rh-pink font-black italic">REALITY</span>
-            </h1>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tight bg-gradient-to-r from-[#9333ea] via-[#00d4ff] to-[#22c55e] bg-clip-text text-transparent leading-none">
-              HACK
-            </h1>
-            <p className="text-rh-cyan text-sm md:text-base tracking-[0.3em] mt-1">
-              MIT XR HACKATHON
-            </p>
-          </div>
+          {/* Logo */}
+          <img 
+            src={realityHackLogo} 
+            alt="Reality Hack - MIT XR Hackathon" 
+            className="w-64 md:w-80 h-auto mb-4"
+          />
           
-          <p className="text-white/70 text-sm md:text-base mt-4">
+          <p className="text-white/70 text-sm md:text-base">
             January 22-26, 2026 • Cambridge, MA
           </p>
 
