@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   useScheduleItems, 
   ScheduleRole, 
@@ -13,10 +13,16 @@ import ScheduleAdmin from '@/components/schedule/ScheduleAdmin';
 import GeometricBackground from '@/components/schedule/GeometricBackground';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import realityHackLogo from '@/assets/reality-hack-logo.png';
-import { Search, Settings, ArrowLeft, Loader2 } from 'lucide-react';
+import { Search, Settings, ArrowLeft, Loader2, MapPin, X } from 'lucide-react';
 
 const Schedule = () => {
   const { isAdmin } = useAuth();
@@ -26,26 +32,57 @@ const Schedule = () => {
   });
   const [selectedDate, setSelectedDate] = useState(EVENT_DATES[0].value);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterByRole, setFilterByRole] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ScheduleItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  const { data: items, isLoading } = useScheduleItems(
+  // Fetch all items for the selected date (filter role/location client-side for better UX)
+  const { data: allItems, isLoading } = useScheduleItems(
     selectedDate,
-    filterByRole ? selectedRole : null,
+    null,
     searchTerm
   );
 
-  const handleRoleSelect = (role: ScheduleRole) => {
+  // Get unique locations for filter dropdown
+  const locations = useMemo(() => {
+    if (!allItems) return [];
+    const uniqueLocations = [...new Set(allItems.map(item => item.location).filter(Boolean))];
+    return uniqueLocations.sort() as string[];
+  }, [allItems]);
+
+  // Filter items by role and location client-side
+  const items = useMemo(() => {
+    if (!allItems) return [];
+    return allItems.filter(item => {
+      const roleMatch = !selectedRole || item.allowed_roles.includes(selectedRole);
+      const locationMatch = !selectedLocation || item.location === selectedLocation;
+      return roleMatch && locationMatch;
+    });
+  }, [allItems, selectedRole, selectedLocation]);
+
+  const handleRoleSelect = (role: ScheduleRole | null) => {
     setSelectedRole(role);
-    localStorage.setItem('schedule-role', role);
+    if (role) {
+      localStorage.setItem('schedule-role', role);
+    } else {
+      localStorage.removeItem('schedule-role');
+    }
   };
 
   const handleCardClick = (item: ScheduleItem) => {
     setSelectedItem(item);
     setDetailOpen(true);
   };
+
+  const clearFilters = () => {
+    setSelectedRole(null);
+    setSelectedLocation(null);
+    setSearchTerm('');
+    localStorage.removeItem('schedule-role');
+  };
+
+  const hasActiveFilters = selectedRole || selectedLocation || searchTerm;
 
   // Admin view
   if (showAdmin && isAdmin) {
@@ -97,8 +134,8 @@ const Schedule = () => {
           )}
         </div>
 
-        {/* Search */}
-        <div className="max-w-2xl mx-auto mb-6">
+        {/* Search and Location Filter */}
+        <div className="max-w-2xl mx-auto mb-6 space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-rh-pink/70" />
             <Input
@@ -107,6 +144,43 @@ const Schedule = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-white/5 border-rh-purple-light/30 text-white placeholder:text-white/40 focus:border-rh-pink focus:ring-rh-pink/20"
             />
+          </div>
+          
+          <div className="flex gap-3">
+            <Select 
+              value={selectedLocation || "all"} 
+              onValueChange={(value) => setSelectedLocation(value === "all" ? null : value)}
+            >
+              <SelectTrigger className="bg-white/5 border-rh-purple-light/30 text-white focus:border-rh-pink focus:ring-rh-pink/20">
+                <MapPin className="w-4 h-4 mr-2 text-rh-pink/70" />
+                <SelectValue placeholder="All Locations" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a0a2e] border-rh-purple-light/30">
+                <SelectItem value="all" className="text-white hover:bg-white/10 focus:bg-white/10">
+                  All Locations
+                </SelectItem>
+                {locations.map((location) => (
+                  <SelectItem 
+                    key={location} 
+                    value={location}
+                    className="text-white hover:bg-white/10 focus:bg-white/10"
+                  >
+                    {location.length > 40 ? `${location.slice(0, 40)}...` : location}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                onClick={clearFilters}
+                className="text-rh-pink hover:text-rh-pink-hot hover:bg-rh-pink/10 shrink-0"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Clear
+              </Button>
+            )}
           </div>
         </div>
 

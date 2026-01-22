@@ -4,7 +4,7 @@ import { User, Briefcase, Newspaper, GraduationCap, Settings } from 'lucide-reac
 
 interface RoleSelectorProps {
   selectedRole: ScheduleRole | null;
-  onSelectRole: (role: ScheduleRole) => void;
+  onSelectRole: (role: ScheduleRole | null) => void;
   isOnboarding?: boolean;
 }
 
@@ -57,7 +57,7 @@ const RoleSelector = ({ selectedRole, onSelectRole, isOnboarding = false }: Role
         return (
           <button
             key={role.value}
-            onClick={() => onSelectRole(role.value)}
+            onClick={() => onSelectRole(isSelected ? null : role.value)}
             className={cn(
               "group relative flex items-center gap-2 p-3 rounded-xl border transition-all duration-200",
               isSelected
