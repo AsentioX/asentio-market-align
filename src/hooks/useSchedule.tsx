@@ -37,6 +37,8 @@ export const useScheduleItems = (date?: string, role?: ScheduleRole | null, sear
   return useQuery({
     queryKey: ['schedule-items', date, role, search],
     queryFn: async () => {
+      console.log('Fetching schedule items for date:', date);
+      
       let query = supabase
         .from('schedule_items')
         .select('*')
@@ -48,9 +50,14 @@ export const useScheduleItems = (date?: string, role?: ScheduleRole | null, sear
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      console.log('Schedule query result:', { data, error });
 
-      let filteredData = data as ScheduleItem[];
+      if (error) {
+        console.error('Schedule query error:', error);
+        throw error;
+      }
+
+      let filteredData = (data || []) as ScheduleItem[];
 
       // Filter by role if specified
       if (role) {
@@ -71,6 +78,8 @@ export const useScheduleItems = (date?: string, role?: ScheduleRole | null, sear
 
       return filteredData;
     },
+    staleTime: 1000 * 60, // 1 minute
+    retry: 2,
   });
 };
 
