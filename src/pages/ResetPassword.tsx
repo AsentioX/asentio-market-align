@@ -13,24 +13,42 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isValidSession, setIsValidSession] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if we have a valid session from the reset link
+    // Listen for auth state changes - the recovery link will trigger a PASSWORD_RECOVERY event
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          // User arrived via recovery link
+          setIsValidSession(true);
+          setIsChecking(false);
+        } else if (event === 'SIGNED_IN' && session) {
+          // Already signed in (could be from recovery)
+          setIsValidSession(true);
+          setIsChecking(false);
+        }
+      }
+    );
+
+    // Also check for existing session (in case auth event already fired)
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: 'Invalid or Expired Link',
-          description: 'Please request a new password reset link.',
-          variant: 'destructive'
-        });
-        navigate('/admin');
+      if (session) {
+        setIsValidSession(true);
       }
+      // Give a brief delay for the auth event to process URL hash
+      setTimeout(() => {
+        setIsChecking(false);
+      }, 1500);
     };
     checkSession();
-  }, [navigate, toast]);
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,12 +95,44 @@ const ResetPassword = () => {
     }, 2000);
   };
 
+  // Show loading while checking session
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/50 px-4 pt-20">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-muted-foreground" />
+            <p className="text-muted-foreground">Verifying reset link...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show error if no valid session
+  if (!isValidSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/50 px-4 pt-20">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <div className="text-destructive text-5xl mb-4">⚠️</div>
+            <h2 className="text-xl font-bold mb-2">Invalid or Expired Link</h2>
+            <p className="text-muted-foreground mb-4">Please request a new password reset link.</p>
+            <Button onClick={() => navigate('/admin')} variant="outline">
+              Back to Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/50 px-4 pt-20">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-2">Password Updated!</h2>
             <p className="text-muted-foreground">Redirecting to login...</p>
           </CardContent>
@@ -126,7 +176,7 @@ const ResetPassword = () => {
                 minLength={6}
               />
             </div>
-            <Button type="submit" className="w-full bg-asentio-blue hover:bg-asentio-blue/90" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
