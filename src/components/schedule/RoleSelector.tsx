@@ -9,62 +9,101 @@ interface RoleSelectorProps {
 }
 
 const roleIcons: Record<ScheduleRole, React.ReactNode> = {
-  hacker: <User className="w-6 h-6" />,
-  sponsor: <Briefcase className="w-6 h-6" />,
-  press: <Newspaper className="w-6 h-6" />,
-  mentor: <GraduationCap className="w-6 h-6" />,
-  organizer: <Settings className="w-6 h-6" />,
+  hacker: <User className="w-5 h-5" />,
+  sponsor: <Briefcase className="w-5 h-5" />,
+  press: <Newspaper className="w-5 h-5" />,
+  mentor: <GraduationCap className="w-5 h-5" />,
+  organizer: <Settings className="w-5 h-5" />,
+};
+
+const roleColors: Record<ScheduleRole, { bg: string; border: string; text: string }> = {
+  hacker: { 
+    bg: 'bg-cyan-500/20', 
+    border: 'border-cyan-500/50 hover:border-cyan-400', 
+    text: 'text-cyan-400' 
+  },
+  sponsor: { 
+    bg: 'bg-purple-500/20', 
+    border: 'border-purple-500/50 hover:border-purple-400', 
+    text: 'text-purple-400' 
+  },
+  press: { 
+    bg: 'bg-pink-500/20', 
+    border: 'border-pink-500/50 hover:border-pink-400', 
+    text: 'text-pink-400' 
+  },
+  mentor: { 
+    bg: 'bg-green-500/20', 
+    border: 'border-green-500/50 hover:border-green-400', 
+    text: 'text-green-400' 
+  },
+  organizer: { 
+    bg: 'bg-orange-500/20', 
+    border: 'border-orange-500/50 hover:border-orange-400', 
+    text: 'text-orange-400' 
+  },
 };
 
 const RoleSelector = ({ selectedRole, onSelectRole, isOnboarding = false }: RoleSelectorProps) => {
   return (
     <div className={cn(
-      "grid gap-3",
+      "grid gap-2",
       isOnboarding ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-2 sm:grid-cols-5"
     )}>
-      {SCHEDULE_ROLES.map((role) => (
-        <button
-          key={role.value}
-          onClick={() => onSelectRole(role.value)}
-          className={cn(
-            "group relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-300",
-            "hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/20",
-            selectedRole === role.value
-              ? "border-cyan-400 bg-cyan-500/20 shadow-lg shadow-cyan-500/30"
-              : "border-gray-700 bg-gray-800/50 hover:border-cyan-500/50",
-            isOnboarding && "flex-col text-center py-6"
-          )}
-        >
-          <div className={cn(
-            "flex items-center justify-center w-12 h-12 rounded-lg transition-colors",
-            selectedRole === role.value 
-              ? "bg-cyan-500 text-black" 
-              : "bg-gray-700 text-cyan-400 group-hover:bg-cyan-500/20"
-          )}>
-            {roleIcons[role.value]}
-          </div>
-          <div className={cn(isOnboarding ? "text-center" : "text-left")}>
-            <span className={cn(
-              "font-semibold text-lg",
-              selectedRole === role.value ? "text-cyan-400" : "text-white"
-            )}>
-              {role.label}
-            </span>
-            {isOnboarding && (
-              <p className="text-gray-400 text-sm mt-1">
-                {role.value === 'hacker' && 'Build amazing XR projects'}
-                {role.value === 'sponsor' && 'Support the hackers'}
-                {role.value === 'press' && 'Cover the event'}
-                {role.value === 'mentor' && 'Guide the teams'}
-                {role.value === 'organizer' && 'Run the show'}
-              </p>
+      {SCHEDULE_ROLES.map((role) => {
+        const colors = roleColors[role.value];
+        const isSelected = selectedRole === role.value;
+        
+        return (
+          <button
+            key={role.value}
+            onClick={() => onSelectRole(role.value)}
+            className={cn(
+              "group relative flex items-center gap-2 p-3 rounded-xl border transition-all duration-200",
+              isSelected
+                ? `${colors.bg} ${colors.border} shadow-lg`
+                : `bg-white/5 border-white/10 hover:bg-white/10 ${colors.border}`,
+              isOnboarding && "flex-col text-center py-5"
             )}
-          </div>
-          {selectedRole === role.value && (
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 rounded-full animate-pulse" />
-          )}
-        </button>
-      ))}
+          >
+            <div className={cn(
+              "flex items-center justify-center w-10 h-10 rounded-lg transition-colors",
+              isSelected 
+                ? `${colors.bg} ${colors.text}` 
+                : `bg-white/10 text-white/60 group-hover:${colors.text}`
+            )}>
+              {roleIcons[role.value]}
+            </div>
+            <div className={cn(isOnboarding ? "text-center" : "text-left")}>
+              <span className={cn(
+                "font-semibold text-sm",
+                isSelected ? colors.text : "text-white/80"
+              )}>
+                {role.label}
+              </span>
+              {isOnboarding && (
+                <p className="text-white/50 text-xs mt-1">
+                  {role.value === 'hacker' && 'Build amazing XR projects'}
+                  {role.value === 'sponsor' && 'Support the hackers'}
+                  {role.value === 'press' && 'Cover the event'}
+                  {role.value === 'mentor' && 'Guide the teams'}
+                  {role.value === 'organizer' && 'Run the show'}
+                </p>
+              )}
+            </div>
+            {isSelected && (
+              <div className={cn(
+                "absolute -top-1 -right-1 w-3 h-3 rounded-full animate-pulse",
+                role.value === 'hacker' && 'bg-cyan-400',
+                role.value === 'sponsor' && 'bg-purple-400',
+                role.value === 'press' && 'bg-pink-400',
+                role.value === 'mentor' && 'bg-green-400',
+                role.value === 'organizer' && 'bg-orange-400'
+              )} />
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 };

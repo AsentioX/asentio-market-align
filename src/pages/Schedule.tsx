@@ -10,11 +10,12 @@ import RoleSelector from '@/components/schedule/RoleSelector';
 import ScheduleCard from '@/components/schedule/ScheduleCard';
 import ScheduleDetail from '@/components/schedule/ScheduleDetail';
 import ScheduleAdmin from '@/components/schedule/ScheduleAdmin';
+import GeometricBackground from '@/components/schedule/GeometricBackground';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Settings, ArrowLeft, Loader2, Zap } from 'lucide-react';
+import { Search, Settings, ArrowLeft, Loader2 } from 'lucide-react';
 
 const Schedule = () => {
   const { isAdmin } = useAuth();
@@ -48,12 +49,13 @@ const Schedule = () => {
   // Admin view
   if (showAdmin && isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 pt-20">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-[#1a0a2e] pt-20">
+        <GeometricBackground />
+        <div className="container mx-auto px-4 py-8 relative z-10">
           <Button
             variant="ghost"
             onClick={() => setShowAdmin(false)}
-            className="text-cyan-400 hover:text-cyan-300 mb-6"
+            className="text-rh-pink hover:text-rh-pink-hot hover:bg-rh-pink/10 mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Schedule
@@ -66,69 +68,75 @@ const Schedule = () => {
 
   // Main schedule view
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 pt-20">
-      {/* Background effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-        <div 
-          className="absolute inset-0 opacity-[0.03]" 
-          style={{
-            backgroundImage: `linear-gradient(rgba(0, 255, 255, 0.5) 1px, transparent 1px), 
-                             linear-gradient(90deg, rgba(0, 255, 255, 0.5) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
-          }}
-        />
-      </div>
+    <div className="min-h-screen bg-[#1a0a2e]">
+      <GeometricBackground />
 
-      <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="container mx-auto px-4 py-8 pt-12 relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full px-3 py-1 mb-2">
-              <Zap className="w-3 h-3 text-cyan-400" />
-              <span className="text-cyan-400 text-xs font-medium">MIT Reality Hack 2026</span>
+        <div className="flex flex-col items-center text-center mb-10">
+          {/* Logo/Title area */}
+          <div className="relative mb-2">
+            {/* Yellow play button triangle */}
+            <div className="absolute -left-16 top-1/2 -translate-y-1/2 w-14 h-14 hidden md:block">
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                <path 
+                  d="M 10,90 L 10,10 L 90,50 Z" 
+                  stroke="#FFD700" 
+                  strokeWidth="6" 
+                  fill="none"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
-              Event Schedule
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+              <span className="text-rh-pink font-black italic">REALITY</span>
             </h1>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight bg-gradient-to-r from-[#9333ea] via-[#00d4ff] to-[#22c55e] bg-clip-text text-transparent leading-none">
+              HACK
+            </h1>
+            <p className="text-rh-cyan text-sm md:text-base tracking-[0.3em] mt-1">
+              MIT XR HACKATHON
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            {isAdmin && (
-              <Button
-                onClick={() => setShowAdmin(true)}
-                className="bg-purple-500 hover:bg-purple-600 text-white"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Admin
-              </Button>
-            )}
-          </div>
+          
+          <p className="text-white/70 text-sm md:text-base mt-4">
+            January 22-26, 2026 • Cambridge, MA
+          </p>
+
+          {isAdmin && (
+            <Button
+              onClick={() => setShowAdmin(true)}
+              className="mt-4 bg-rh-pink hover:bg-rh-pink-hot text-white border-0"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Admin
+            </Button>
+          )}
         </div>
 
         {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 mb-6 max-w-2xl mx-auto">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-rh-pink/70" />
             <Input
               placeholder="Search events..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-cyan-500"
+              className="pl-10 bg-white/5 border-rh-purple-light/30 text-white placeholder:text-white/40 focus:border-rh-pink focus:ring-rh-pink/20"
             />
           </div>
-          <div className="flex items-center gap-3 bg-gray-800/50 rounded-lg px-4 py-2 border border-gray-700">
-            <span className="text-sm text-gray-400">My Role Only</span>
+          <div className="flex items-center gap-3 bg-white/5 rounded-lg px-4 py-2 border border-rh-purple-light/30">
+            <span className="text-sm text-white/70">My Role Only</span>
             <Switch
               checked={filterByRole}
               onCheckedChange={setFilterByRole}
-              className="data-[state=checked]:bg-cyan-500"
+              className="data-[state=checked]:bg-rh-pink"
             />
           </div>
         </div>
 
         {/* Current Role */}
-        <div className="mb-6">
+        <div className="mb-8 max-w-4xl mx-auto">
           <RoleSelector 
             selectedRole={selectedRole} 
             onSelectRole={handleRoleSelect}
@@ -136,17 +144,17 @@ const Schedule = () => {
         </div>
 
         {/* Date Tabs */}
-        <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full">
-          <TabsList className="w-full bg-gray-800/50 border border-gray-700 p-1 rounded-xl mb-6 flex">
+        <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full max-w-4xl mx-auto">
+          <TabsList className="w-full bg-white/5 border border-rh-purple-light/20 p-1.5 rounded-2xl mb-8 flex">
             {EVENT_DATES.map((date) => (
               <TabsTrigger
                 key={date.value}
                 value={date.value}
-                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg py-3 transition-all"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rh-pink data-[state=active]:to-rh-purple data-[state=active]:text-white text-white/60 rounded-xl py-3 transition-all"
               >
                 <div className="text-center">
-                  <div className="font-semibold">{date.label}</div>
-                  <div className="text-xs opacity-70">{date.day}</div>
+                  <div className="font-bold text-sm md:text-base">{date.label}</div>
+                  <div className="text-xs opacity-80">{date.day}</div>
                 </div>
               </TabsTrigger>
             ))}
@@ -156,10 +164,10 @@ const Schedule = () => {
             <TabsContent key={date.value} value={date.value} className="mt-0">
               {isLoading ? (
                 <div className="flex justify-center py-16">
-                  <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+                  <Loader2 className="w-8 h-8 animate-spin text-rh-pink" />
                 </div>
               ) : items && items.length > 0 ? (
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                   {items.map((item) => (
                     <ScheduleCard
                       key={item.id}
@@ -170,11 +178,11 @@ const Schedule = () => {
                 </div>
               ) : (
                 <div className="text-center py-16">
-                  <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="w-8 h-8 text-gray-600" />
+                  <div className="w-16 h-16 bg-rh-purple/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-8 h-8 text-rh-pink/50" />
                   </div>
-                  <p className="text-gray-400 text-lg">No events found</p>
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className="text-white/70 text-lg">No events found</p>
+                  <p className="text-white/40 text-sm mt-1">
                     Try adjusting your filters or search term
                   </p>
                 </div>

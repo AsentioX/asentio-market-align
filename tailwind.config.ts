@@ -67,6 +67,25 @@ export default {
 					blue: '#0A2342',
 					lightgray: '#F5F5F7',
 					red: '#CF0A0A'
+				},
+				'rh': {
+					purple: {
+						dark: '#2D1B4E',
+						DEFAULT: '#4A2C7A',
+						light: '#6B4D9A'
+					},
+					pink: {
+						DEFAULT: '#FF1493',
+						hot: '#FF69B4'
+					},
+					cyan: {
+						DEFAULT: '#00FFFF',
+						light: '#7FFFD4'
+					},
+					yellow: {
+						DEFAULT: '#FFD700',
+						neon: '#FFFF00'
+					}
 				}
 			},
 			borderRadius: {
