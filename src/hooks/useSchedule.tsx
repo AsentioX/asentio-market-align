@@ -85,7 +85,10 @@ export const useScheduleItems = (date?: string, role?: ScheduleRole | null, sear
         throw err;
       }
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 0, // Always refetch when component mounts
+    gcTime: 1000 * 60 * 5, // Keep cache for 5 minutes for background use
+    refetchOnMount: 'always', // Always refetch when component mounts
+    refetchOnWindowFocus: true,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
   });
