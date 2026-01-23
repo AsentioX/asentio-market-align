@@ -154,9 +154,6 @@ const Services = () => {
             <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed mb-3">
               Asentio is a go-to-market consultancy guiding global products and services to successfully enter and scale in the U.S. market.
             </p>
-            <p className="text-base md:text-lg text-primary-foreground/70">
-              We work with founders and leadership teams who don't just want advice — they want traction, customers, and revenue.
-            </p>
           </div>
         </div>
       </section>
