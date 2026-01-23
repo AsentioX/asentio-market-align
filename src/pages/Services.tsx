@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
-import ExperienceFramework from "@/components/ExperienceFramework";
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Target, Rocket, MessageSquare, ArrowRight, CheckCircle, Building2, Users, Code } from "lucide-react";
@@ -218,16 +218,6 @@ const Services = () => {
         </div>
       </AnimatedSection>
 
-      {/* How We Do It Section (Experience Framework) */}
-      <AnimatedSection className="py-10 md:py-14 bg-background relative">
-        <TopographicPattern className="opacity-30" />
-
-        <div className="container mx-auto relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <ExperienceFramework />
-          </div>
-        </div>
-      </AnimatedSection>
 
       {/* How We Engage Section */}
       <AnimatedSection id="how-we-engage" className="py-10 md:py-14 bg-muted relative">
