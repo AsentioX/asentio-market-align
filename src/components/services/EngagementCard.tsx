@@ -11,11 +11,7 @@ interface EngagementCardProps {
 
 const EngagementCard = ({ title, duration, description, includes, pricingAnchor, isSelective }: EngagementCardProps) => {
   return (
-    <div className={`relative bg-card p-6 md:p-8 rounded-xl border transition-all duration-300 hover:shadow-lg ${
-      isSelective 
-        ? 'border-asentio-red/30 hover:border-asentio-red/50' 
-        : 'border-border hover:border-asentio-blue/30'
-    }`}>
+    <div className="relative bg-card p-6 md:p-8 rounded-xl border border-border transition-all duration-300 hover:shadow-lg hover:border-asentio-blue/30">
       <div className="mb-4">
         <div className="flex items-center gap-3 mb-2">
           <h3 className="text-lg font-bold text-foreground">{title}</h3>
