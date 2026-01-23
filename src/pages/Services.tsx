@@ -157,25 +157,6 @@ const Services = () => {
             <p className="text-base md:text-lg text-primary-foreground/70 mb-10">
               We work with founders and leadership teams who don't just want advice — they want traction, customers, and revenue.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/contact">
-                <Button 
-                  size="lg" 
-                  className="bg-background text-asentio-blue hover:bg-background/90 px-8 py-6 text-base font-medium shadow-lg transition-all hover:shadow-xl w-full sm:w-auto"
-                >
-                  Start a Conversation
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={scrollToEngage}
-                className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 px-8 py-6 text-base font-medium w-full sm:w-auto"
-              >
-                See How We Engage
-              </Button>
-            </div>
           </div>
         </div>
       </section>
