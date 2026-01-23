@@ -49,7 +49,7 @@ const Services = () => {
       includes: [
         "Positioning and messaging for U.S. audiences",
         "Launch narratives and press alignment",
-        "Trade show and event strategy (CES, SPIE, AWE, etc.)",
+        "Trade show and event strategy",
         "Sales enablement and storytelling assets",
       ],
       outcome: "Clear differentiation and credibility at critical market moments.",
