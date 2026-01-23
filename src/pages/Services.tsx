@@ -59,18 +59,21 @@ const Services = () => {
   const channels = [
     {
       title: "Retail & Distribution",
-      description: "Specialty retail, national partners, and pilot-to-scale programs.",
-      bestFor: "Consumer hardware, wearables, and smart devices.",
+      description: "Specialty retail, national partners, and pilot-to-scale programs that drive real sell-through — not just shelf presence.",
+      bestFor: "Consumer hardware, wearables, audio products, and smart devices that need clear U.S. retail positioning and velocity.",
+      whyItMatters: "Retail success validates product-market fit and accelerates brand trust in the U.S.",
     },
     {
-      title: "Enterprise & Strategic Partnerships",
-      description: "Enterprise procurement, productivity, safety, and compliance use cases.",
-      bestFor: "Construction, infrastructure, inspection, and large organizations.",
+      title: "Platform & Strategic Partnerships",
+      description: "Alignment with the platforms, technology leaders, and ecosystem players that shape product direction, integration, and scale. This includes partnerships with major platforms (Google, Meta, Microsoft, NVIDIA), enabling technologies (audio, AI, silicon), and strategic collaborators.",
+      bestFor: "AI-enabled devices, smart eyewear, spatial computing products, and platform-dependent hardware.",
+      whyItMatters: "The right partnerships unlock credibility, capability expansion, and long-term leverage far beyond traditional sales.",
     },
     {
       title: "Developer & Ecosystem",
-      description: "Developer adoption, ecosystem partnerships, and early traction for platform products.",
-      bestFor: "Platform products requiring ecosystem growth.",
+      description: "Developer adoption, ecosystem partnerships, and early traction that turn products into platforms. We help define integration stories, activate early partners, and build momentum with developers and third-party ecosystems.",
+      bestFor: "Platforms, APIs, AI-powered products, and hardware that relies on software or third-party innovation.",
+      whyItMatters: "Ecosystems compound growth — and are difficult to build without the right introductions and narrative.",
     },
   ];
 
@@ -194,6 +197,9 @@ const Services = () => {
             <div className="text-center mb-6 md:mb-8">
               <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
               <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">Channels We Build</h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+                We don't just open channels — we connect you to the ecosystems that control distribution, adoption, and scale.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
