@@ -39,48 +39,55 @@ export const useScheduleItems = (date?: string, role?: ScheduleRole | null, sear
     queryFn: async () => {
       console.log('Fetching schedule items for date:', date);
       
-      let query = supabase
-        .from('schedule_items')
-        .select('*')
-        .order('event_date', { ascending: true })
-        .order('start_time', { ascending: true });
+      try {
+        let query = supabase
+          .from('schedule_items')
+          .select('*')
+          .order('event_date', { ascending: true })
+          .order('start_time', { ascending: true });
 
-      if (date) {
-        query = query.eq('event_date', date);
+        if (date) {
+          query = query.eq('event_date', date);
+        }
+
+        const { data, error } = await query;
+
+        console.log('Schedule query result:', { dataLength: data?.length, error });
+
+        if (error) {
+          console.error('Schedule query error:', error);
+          throw error;
+        }
+
+        let filteredData = (data || []) as ScheduleItem[];
+
+        // Filter by role if specified
+        if (role) {
+          filteredData = filteredData.filter(item => 
+            item.allowed_roles.includes(role)
+          );
+        }
+
+        // Filter by search term
+        if (search && search.trim()) {
+          const searchLower = search.toLowerCase();
+          filteredData = filteredData.filter(item =>
+            item.title.toLowerCase().includes(searchLower) ||
+            item.description?.toLowerCase().includes(searchLower) ||
+            item.location?.toLowerCase().includes(searchLower)
+          );
+        }
+
+        console.log('Returning filtered data:', filteredData.length, 'items');
+        return filteredData;
+      } catch (err) {
+        console.error('Schedule fetch failed:', err);
+        throw err;
       }
-
-      const { data, error } = await query;
-
-      console.log('Schedule query result:', { data, error });
-
-      if (error) {
-        console.error('Schedule query error:', error);
-        throw error;
-      }
-
-      let filteredData = (data || []) as ScheduleItem[];
-
-      // Filter by role if specified
-      if (role) {
-        filteredData = filteredData.filter(item => 
-          item.allowed_roles.includes(role)
-        );
-      }
-
-      // Filter by search term
-      if (search && search.trim()) {
-        const searchLower = search.toLowerCase();
-        filteredData = filteredData.filter(item =>
-          item.title.toLowerCase().includes(searchLower) ||
-          item.description?.toLowerCase().includes(searchLower) ||
-          item.location?.toLowerCase().includes(searchLower)
-        );
-      }
-
-      return filteredData;
     },
     staleTime: 1000 * 60, // 1 minute
-    retry: 2,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
   });
 };
 
