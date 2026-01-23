@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import AnimatedSection from "@/components/AnimatedSection";
+import ExperienceFramework from "@/components/ExperienceFramework";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -85,6 +86,17 @@ const Index = () => {
                 </Link>
               </div>
             ))}
+          </div>
+        </div>
+      </AnimatedSection>
+      
+      {/* Our Approach Section */}
+      <AnimatedSection className="py-12 md:py-24 bg-muted relative">
+        <TopographicPattern className="opacity-20" />
+        
+        <div className="container mx-auto relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <ExperienceFramework />
           </div>
         </div>
       </AnimatedSection>
