@@ -61,6 +61,7 @@ interface ScheduleFormData {
   event_date: string;
   location: string;
   description: string;
+  sponsor: string;
   allowed_roles: ScheduleRole[];
   icon_name: string;
 }
@@ -72,6 +73,7 @@ const defaultFormData: ScheduleFormData = {
   event_date: EVENT_DATES[0].value,
   location: '',
   description: '',
+  sponsor: '',
   allowed_roles: [],
   icon_name: 'calendar',
 };
@@ -104,6 +106,7 @@ const ScheduleAdmin = () => {
       event_date: item.event_date,
       location: item.location || '',
       description: item.description || '',
+      sponsor: (item as any).sponsor || '',
       allowed_roles: item.allowed_roles,
       icon_name: item.icon_name || 'calendar',
     });
@@ -126,7 +129,8 @@ const ScheduleAdmin = () => {
           end_time: formData.end_time || null,
           location: formData.location || null,
           description: formData.description || null,
-        });
+          sponsor: formData.sponsor || null,
+        } as any);
         toast({ title: 'Event updated successfully' });
       } else {
         await createMutation.mutateAsync({
@@ -134,7 +138,8 @@ const ScheduleAdmin = () => {
           end_time: formData.end_time || null,
           location: formData.location || null,
           description: formData.description || null,
-        });
+          sponsor: formData.sponsor || null,
+        } as any);
         toast({ title: 'Event created successfully' });
       }
       setFormOpen(false);
@@ -194,22 +199,26 @@ const ScheduleAdmin = () => {
         <Table>
           <TableHeader>
             <TableRow className="border-gray-700 hover:bg-gray-800/50">
-              <TableHead className="text-gray-400">Title</TableHead>
               <TableHead className="text-gray-400">Date</TableHead>
               <TableHead className="text-gray-400">Time</TableHead>
               <TableHead className="text-gray-400">Location</TableHead>
+              <TableHead className="text-gray-400">Title</TableHead>
+              <TableHead className="text-gray-400">Sponsor</TableHead>
+              <TableHead className="text-gray-400">Description</TableHead>
               <TableHead className="text-gray-400 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {items?.map((item) => (
               <TableRow key={item.id} className="border-gray-700 hover:bg-gray-800/50">
-                <TableCell className="text-white font-medium">{item.title}</TableCell>
                 <TableCell className="text-gray-300">{item.event_date}</TableCell>
                 <TableCell className="text-gray-300">
                   {item.start_time}{item.end_time && ` - ${item.end_time}`}
                 </TableCell>
                 <TableCell className="text-gray-300">{item.location || '-'}</TableCell>
+                <TableCell className="text-white font-medium">{item.title}</TableCell>
+                <TableCell className="text-gray-300">{(item as any).sponsor || '-'}</TableCell>
+                <TableCell className="text-gray-300 max-w-xs truncate">{item.description || '-'}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button 
@@ -315,6 +324,15 @@ const ScheduleAdmin = () => {
                 <Input
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="text-sm text-gray-400 mb-1 block">Sponsor</label>
+                <Input
+                  value={formData.sponsor}
+                  onChange={(e) => setFormData({ ...formData, sponsor: e.target.value })}
+                  placeholder="e.g., Microsoft, Meta"
                   className="bg-gray-800 border-gray-600 text-white"
                 />
               </div>
