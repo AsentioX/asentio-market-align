@@ -132,7 +132,7 @@ const translations = {
     'footer.whyus': 'Why asentio',
     
     // Experience Framework
-    'framework.title': 'How We Do It',
+    'framework.title': 'Our Approach',
     'framework.subtitle': 'The Consumer Experience Framework is holistic model that maps the <strong>emotional and behavioral journey</strong> a consumer goes through with a product or brand.',
     'framework.hover': 'Hover to explore',
     'framework.focus': 'Focus',
@@ -438,7 +438,7 @@ const translations = {
     'footer.whyus': 'Por qué asentio',
     
     // Experience Framework
-    'framework.title': 'Cómo Lo Hacemos',
+    'framework.title': 'Nuestro Enfoque',
     'framework.subtitle': 'El Marco de Experiencia del Consumidor es un modelo holístico que mapea el <strong>viaje emocional y conductual</strong> que un consumidor atraviesa con un producto o marca.',
     'framework.hover': 'Pasa el cursor para explorar',
     'framework.focus': 'Enfoque',
@@ -591,7 +591,7 @@ const translations = {
     'footer.whyus': 'Warum asentio',
     
     // Experience Framework
-    'framework.title': 'Wie wir es machen',
+    'framework.title': 'Unser Ansatz',
     'framework.subtitle': 'Das Consumer Experience Framework ist ein ganzheitliches Modell, das die <strong>emotionale und verhaltensbezogene Reise</strong> abbildet, die ein Verbraucher mit einem Produkt oder einer Marke durchläuft.',
     'framework.hover': 'Hover zum Erkunden',
     'framework.focus': 'Fokus',
