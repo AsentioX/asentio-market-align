@@ -79,7 +79,7 @@ const ExperienceFramework = () => {
   ];
 
   return (
-    <div className="space-y-6 px-4 md:px-0">
+    <div className="space-y-8 px-4 md:px-0">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
         <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
@@ -92,148 +92,151 @@ const ExperienceFramework = () => {
         />
       </div>
 
-      {/* Two-column layout: Interactive diagram left, Process right */}
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-8 lg:gap-12 max-w-6xl mx-auto">
-        {/* Left: Interactive Circles */}
-        <div className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center">
-          <div className="relative w-[280px] md:w-[350px] aspect-square">
-            <svg viewBox="0 0 500 500" className="w-full h-full">
-              {/* Connection lines */}
-              {steps.map((_, index) => (
-                <path 
-                  key={`line-${index}`} 
-                  d={getConnectionPath(index, (index + 1) % 5)} 
-                  stroke={activeStep !== null && (activeStep === index || activeStep === (index + 1) % 5) ? "#0A2342" : "#cbd5e1"} 
-                  strokeWidth="2" 
-                  fill="none" 
-                  strokeDasharray="6 4" 
-                  className="transition-all duration-300" 
-                />
-              ))}
-
-              {/* Circles */}
-              {steps.map((step, index) => {
-                const pos = getCirclePosition(index);
-                const isActive = activeStep === index;
-                return (
-                  <g 
-                    key={step.labelKey} 
-                    className="cursor-pointer" 
-                    onMouseEnter={() => setActiveStep(index)} 
-                    onMouseLeave={() => setActiveStep(null)}
-                    onClick={() => setActiveStep(activeStep === index ? null : index)}
-                  >
-                    {isActive && (
-                      <circle 
-                        cx={pos.x} 
-                        cy={pos.y} 
-                        r={circleRadius + 6} 
-                        fill="none" 
-                        stroke="#0A2342" 
-                        strokeWidth="3" 
-                        opacity="0.4" 
-                      />
-                    )}
-                    
-                    <circle 
-                      cx={pos.x} 
-                      cy={pos.y} 
-                      r={circleRadius} 
-                      fill={isActive ? '#0A2342' : '#e2e8f0'} 
-                      stroke="#0A2342" 
+      {/* Two-column layout with card styling */}
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Left: Interactive Circles with background card */}
+          <div className="relative order-2 lg:order-1">
+            <div className="bg-gradient-to-br from-muted/50 to-muted/20 rounded-2xl p-6 md:p-10 border border-border/50">
+              <div className="relative w-full max-w-[320px] md:max-w-[380px] aspect-square mx-auto">
+                <svg viewBox="0 0 500 500" className="w-full h-full">
+                  {/* Connection lines */}
+                  {steps.map((_, index) => (
+                    <path 
+                      key={`line-${index}`} 
+                      d={getConnectionPath(index, (index + 1) % 5)} 
+                      stroke={activeStep !== null && (activeStep === index || activeStep === (index + 1) % 5) ? "hsl(var(--asentio-blue))" : "hsl(var(--border))"} 
                       strokeWidth="2" 
+                      fill="none" 
+                      strokeDasharray="6 4" 
                       className="transition-all duration-300" 
                     />
-                    
-                    <text 
-                      x={pos.x} 
-                      y={pos.y} 
-                      textAnchor="middle" 
-                      dominantBaseline="middle" 
-                      fill={isActive ? '#ffffff' : '#0A2342'} 
-                      className="text-sm font-semibold pointer-events-none select-none transition-all duration-300" 
-                      style={{ fontFamily: 'system-ui, sans-serif' }}
-                    >
-                      {t(step.labelKey)}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
+                  ))}
 
-            {/* Center Content - description in the middle */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[160px] h-[160px] flex items-center justify-center">
-                {activeStep !== null ? (
-                  <div className="text-center p-2 animate-fade-in">
-                    <h3 className="text-base font-bold text-asentio-blue mb-1">
-                      {t(steps[activeStep].labelKey)}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-tight">
-                      {t(steps[activeStep].objectiveKey)}
-                    </p>
+                  {/* Circles */}
+                  {steps.map((step, index) => {
+                    const pos = getCirclePosition(index);
+                    const isActive = activeStep === index;
+                    return (
+                      <g 
+                        key={step.labelKey} 
+                        className="cursor-pointer" 
+                        onMouseEnter={() => setActiveStep(index)} 
+                        onMouseLeave={() => setActiveStep(null)}
+                        onClick={() => setActiveStep(activeStep === index ? null : index)}
+                      >
+                        {isActive && (
+                          <circle 
+                            cx={pos.x} 
+                            cy={pos.y} 
+                            r={circleRadius + 8} 
+                            fill="none" 
+                            stroke="hsl(var(--asentio-blue))" 
+                            strokeWidth="3" 
+                            opacity="0.3" 
+                            className="animate-pulse"
+                          />
+                        )}
+                        
+                        <circle 
+                          cx={pos.x} 
+                          cy={pos.y} 
+                          r={circleRadius} 
+                          fill={isActive ? 'hsl(var(--asentio-blue))' : 'hsl(var(--muted))'} 
+                          stroke="hsl(var(--asentio-blue))" 
+                          strokeWidth="2.5" 
+                          className="transition-all duration-300" 
+                        />
+                        
+                        <text 
+                          x={pos.x} 
+                          y={pos.y} 
+                          textAnchor="middle" 
+                          dominantBaseline="middle" 
+                          fill={isActive ? 'hsl(var(--background))' : 'hsl(var(--asentio-blue))'} 
+                          className="text-sm font-semibold pointer-events-none select-none transition-all duration-300" 
+                          style={{ fontFamily: 'system-ui, sans-serif' }}
+                        >
+                          {t(step.labelKey)}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
+
+                {/* Center Content */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-[140px] h-[140px] md:w-[160px] md:h-[160px] flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-full shadow-lg">
+                    {activeStep !== null ? (
+                      <div className="text-center p-3 animate-fade-in">
+                        <h3 className="text-sm md:text-base font-bold text-asentio-blue mb-1">
+                          {t(steps[activeStep].labelKey)}
+                        </h3>
+                        <p className="text-[10px] md:text-xs text-muted-foreground leading-tight">
+                          {t(steps[activeStep].objectiveKey)}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground/70 font-medium uppercase tracking-wider">
+                          {t('framework.hover')}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground/60 font-medium uppercase tracking-wider">
-                      {t('framework.hover')}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/40 mt-1 lg:hidden">
-                      Tap to explore
-                    </p>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Details below circles on mobile/tablet, hidden on desktop */}
-          <div className="w-full max-w-md px-4 md:px-0 mt-6 lg:hidden">
-            <div className="w-full space-y-4 bg-muted/30 rounded-xl p-4 md:p-6">
-              <div>
-                <h4 className="font-semibold text-foreground text-base md:text-lg mb-1">{t('framework.focus')}</h4>
-                <p className={`text-sm md:text-base text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
-                  {activeStep !== null ? t(steps[activeStep].keyFocusKey) : t('framework.hover.details')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground text-base md:text-lg mb-1">{t('framework.channels')}</h4>
-                <p className={`text-sm md:text-base text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
-                  {activeStep !== null ? t(steps[activeStep].channelsKey) : t('framework.hover.details')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground text-base md:text-lg mb-1">{t('framework.touchpoints')}</h4>
-                <p className={`text-sm md:text-base text-muted-foreground transition-all duration-300 ${activeStep !== null ? 'opacity-100' : 'opacity-30'}`}>
-                  {activeStep !== null ? t(steps[activeStep].touchpointsKey) : t('framework.hover.details')}
-                </p>
-              </div>
+          {/* Right: Our Process */}
+          <div className="order-1 lg:order-2">
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
+              {t('services.process.title')}
+            </h3>
+            <div className="space-y-6">
+              {processSteps.map((step, index) => (
+                <div 
+                  key={index} 
+                  className="flex gap-5 group hover:translate-x-1 transition-transform duration-300"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-asentio-blue/10 border-2 border-asentio-blue/20 flex items-center justify-center group-hover:bg-asentio-blue/20 group-hover:border-asentio-blue/40 transition-all duration-300">
+                    <span className="text-sm font-bold text-asentio-blue">{step.number}</span>
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <h4 className="font-semibold text-foreground text-lg mb-1 group-hover:text-asentio-blue transition-colors duration-300">
+                      {t(step.titleKey)}
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t(step.descKey)}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Right: Our Process */}
-        <div className="flex-1 w-full lg:max-w-md">
-          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-6">
-            {t('services.process.title')}
-          </h3>
-          <div className="space-y-5">
-            {processSteps.map((step, index) => (
-              <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-asentio-blue/10 flex items-center justify-center">
-                  <span className="text-sm font-bold text-asentio-blue">{step.number}</span>
+        {/* Details section on mobile - shown below when step is active */}
+        <div className="lg:hidden mt-6">
+          {activeStep !== null && (
+            <div className="bg-muted/30 rounded-xl p-5 animate-fade-in border border-border/50">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-foreground text-sm mb-1">{t('framework.focus')}</h4>
+                  <p className="text-sm text-muted-foreground">{t(steps[activeStep].keyFocusKey)}</p>
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-foreground text-base mb-1">
-                    {t(step.titleKey)}
-                  </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t(step.descKey)}
-                  </p>
+                <div>
+                  <h4 className="font-semibold text-foreground text-sm mb-1">{t('framework.channels')}</h4>
+                  <p className="text-sm text-muted-foreground">{t(steps[activeStep].channelsKey)}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-foreground text-sm mb-1">{t('framework.touchpoints')}</h4>
+                  <p className="text-sm text-muted-foreground">{t(steps[activeStep].touchpointsKey)}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
