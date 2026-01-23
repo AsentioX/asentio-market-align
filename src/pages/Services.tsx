@@ -159,12 +159,12 @@ const Services = () => {
       </section>
 
       {/* What We Do Section */}
-      <AnimatedSection className="py-16 md:py-24 bg-background relative">
+      <AnimatedSection className="py-10 md:py-14 bg-background relative">
         <TopographicPattern className="opacity-30" />
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12 md:mb-16">
+            <div className="text-center mb-8 md:mb-10">
               <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
               <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                 What We Do
@@ -184,12 +184,12 @@ const Services = () => {
       </AnimatedSection>
 
       {/* Channels We Build Section */}
-      <AnimatedSection className="py-16 md:py-24 bg-muted relative">
+      <AnimatedSection className="py-10 md:py-14 bg-muted relative">
         <TopographicPattern className="opacity-20" />
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10 md:mb-12">
+            <div className="text-center mb-6 md:mb-8">
               <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
               <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">
                 Channels We Build
@@ -206,7 +206,7 @@ const Services = () => {
       </AnimatedSection>
 
       {/* How We Do It Section (Experience Framework) */}
-      <AnimatedSection className="py-16 md:py-24 bg-background relative">
+      <AnimatedSection className="py-10 md:py-14 bg-background relative">
         <TopographicPattern className="opacity-30" />
         
         <div className="container mx-auto relative z-10">
@@ -217,12 +217,12 @@ const Services = () => {
       </AnimatedSection>
 
       {/* How We Engage Section */}
-      <AnimatedSection id="how-we-engage" className="py-16 md:py-24 bg-muted relative">
+      <AnimatedSection id="how-we-engage" className="py-10 md:py-14 bg-muted relative">
         <TopographicPattern className="opacity-20" />
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-10 md:mb-14">
+            <div className="text-center mb-6 md:mb-8">
               <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
               <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                 How We Engage
@@ -243,12 +243,12 @@ const Services = () => {
 
 
       {/* Case Studies Section */}
-      <AnimatedSection className="py-16 md:py-24 bg-muted relative">
+      <AnimatedSection className="py-10 md:py-14 bg-muted relative">
         <TopographicPattern className="opacity-20" />
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10 md:mb-12">
+            <div className="text-center mb-6 md:mb-8">
               <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
               <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">
                 Case Studies & Experience
@@ -265,15 +265,15 @@ const Services = () => {
       </AnimatedSection>
 
       {/* Final CTA Section */}
-      <AnimatedSection className="py-16 md:py-24 bg-asentio-blue text-primary-foreground relative overflow-hidden">
+      <AnimatedSection className="py-10 md:py-14 bg-asentio-blue text-primary-foreground relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
         <div className="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-destructive/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-24 md:w-48 h-24 md:h-48 bg-destructive/5 rounded-full blur-2xl" />
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6 md:mb-8" />
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-8">
+            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6">
               Let's Build Your U.S. Growth Engine
             </h2>
             <Link to="/contact">
