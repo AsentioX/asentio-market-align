@@ -263,36 +263,6 @@ const Services = () => {
         </div>
       </AnimatedSection>
 
-      {/* Who We Work Best With Section */}
-      <AnimatedSection className="py-16 md:py-24 bg-background relative">
-        <TopographicPattern className="opacity-30" />
-        
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8">
-              Who We Work Best With
-            </h2>
-            
-            <p className="text-lg text-muted-foreground mb-8">
-              We are most effective with companies that:
-            </p>
-            
-            <ul className="space-y-4 mb-10 text-left max-w-xl mx-auto">
-              {idealClients.map((item, index) => (
-                <li key={index} className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-asentio-red mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">{item}</span>
-                </li>
-              ))}
-            </ul>
-            
-            <p className="text-sm text-muted-foreground/70 italic">
-              If you're looking for a purely theoretical exercise, we're probably not the right fit.
-            </p>
-          </div>
-        </div>
-      </AnimatedSection>
 
       {/* Case Studies Section */}
       <AnimatedSection className="py-16 md:py-24 bg-muted relative">
