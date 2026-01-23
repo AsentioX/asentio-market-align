@@ -140,21 +140,21 @@ const Services = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="bg-asentio-blue text-primary-foreground py-12 md:py-20 relative overflow-hidden">
+      <section className="bg-asentio-blue text-primary-foreground py-10 md:py-14 relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
         <div className="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-destructive/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-24 md:w-48 h-24 md:h-48 bg-destructive/5 rounded-full blur-2xl" />
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-6 md:mb-8" />
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
               We Help Global Tech Companies <span className="text-primary-foreground/70">Win in the U.S.</span>
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed mb-4">
+            <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed mb-3">
               Asentio is a go-to-market consultancy guiding global products and services to successfully enter and scale in the U.S. market.
             </p>
-            <p className="text-base md:text-lg text-primary-foreground/70 mb-10">
+            <p className="text-base md:text-lg text-primary-foreground/70">
               We work with founders and leadership teams who don't just want advice — they want traction, customers, and revenue.
             </p>
           </div>
