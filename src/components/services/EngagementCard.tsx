@@ -16,15 +16,14 @@ const EngagementCard = ({ title, duration, description, includes, pricingAnchor,
         ? 'border-asentio-red/30 hover:border-asentio-red/50' 
         : 'border-border hover:border-asentio-blue/30'
     }`}>
-      {isSelective && (
-        <div className="absolute -top-3 left-6 bg-asentio-red text-white text-xs font-medium px-3 py-1 rounded-full">
-          Selective
-        </div>
-      )}
-      
       <div className="mb-4">
         <div className="flex items-center gap-3 mb-2">
           <h3 className="text-lg font-bold text-foreground">{title}</h3>
+          {isSelective && (
+            <span className="bg-asentio-red text-white text-xs font-medium px-3 py-1 rounded-full">
+              Selective
+            </span>
+          )}
           {duration && (
             <span className="text-xs bg-asentio-blue/10 text-asentio-blue px-2 py-1 rounded-full font-medium">
               {duration}
