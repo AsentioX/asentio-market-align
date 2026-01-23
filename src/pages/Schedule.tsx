@@ -15,12 +15,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import realityHackLogo from '@/assets/reality-hack-logo.png';
-import { Search, Settings, ArrowLeft, Loader2, X } from 'lucide-react';
+import { Search, Settings, ArrowLeft, Loader2, X, RefreshCw } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 const VALID_ROLES: ScheduleRole[] = ['hacker', 'sponsor', 'press', 'mentor', 'organizer'];
 
 const Schedule = () => {
   const { isAdmin } = useAuth();
+  const queryClient = useQueryClient();
   const [selectedRole, setSelectedRole] = useState<ScheduleRole | null>(() => {
     const savedRole = localStorage.getItem('schedule-role');
     // Validate the saved role is a valid ScheduleRole
@@ -73,6 +75,14 @@ const Schedule = () => {
     setSelectedRole(null);
     setSearchTerm('');
     localStorage.removeItem('schedule-role');
+  };
+
+  const clearCache = () => {
+    localStorage.removeItem('schedule-role');
+    queryClient.invalidateQueries({ queryKey: ['schedule-items'] });
+    queryClient.refetchQueries({ queryKey: ['schedule-items'] });
+    setSelectedRole(null);
+    setSearchTerm('');
   };
 
   const hasActiveFilters = selectedRole || searchTerm;
@@ -139,18 +149,26 @@ const Schedule = () => {
             />
           </div>
           
-          {hasActiveFilters && (
-            <div className="flex justify-center mt-3">
+          <div className="flex justify-center gap-2 mt-3">
+            {hasActiveFilters && (
               <Button
                 variant="ghost"
                 onClick={clearFilters}
                 className="text-rh-pink hover:text-rh-pink-hot hover:bg-rh-pink/10"
               >
                 <X className="w-4 h-4 mr-1" />
-                Clear All Filters
+                Clear Filters
               </Button>
-            </div>
-          )}
+            )}
+            <Button
+              variant="ghost"
+              onClick={clearCache}
+              className="text-white/60 hover:text-white hover:bg-white/10"
+            >
+              <RefreshCw className="w-4 h-4 mr-1" />
+              Refresh Data
+            </Button>
+          </div>
         </div>
 
         {/* Current Role */}
