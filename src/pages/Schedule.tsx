@@ -17,11 +17,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import realityHackLogo from '@/assets/reality-hack-logo.png';
 import { Search, Settings, ArrowLeft, Loader2, X } from 'lucide-react';
 
+const VALID_ROLES: ScheduleRole[] = ['hacker', 'sponsor', 'press', 'mentor', 'organizer'];
+
 const Schedule = () => {
   const { isAdmin } = useAuth();
   const [selectedRole, setSelectedRole] = useState<ScheduleRole | null>(() => {
     const savedRole = localStorage.getItem('schedule-role');
-    return savedRole ? (savedRole as ScheduleRole) : null;
+    // Validate the saved role is a valid ScheduleRole
+    if (savedRole && VALID_ROLES.includes(savedRole as ScheduleRole)) {
+      return savedRole as ScheduleRole;
+    }
+    // Clear invalid saved role
+    if (savedRole) {
+      localStorage.removeItem('schedule-role');
+    }
+    return null;
   });
   const [selectedDate, setSelectedDate] = useState(EVENT_DATES[0].value);
   const [searchTerm, setSearchTerm] = useState('');
