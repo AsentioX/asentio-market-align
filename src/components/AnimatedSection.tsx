@@ -5,9 +5,10 @@ interface AnimatedSectionProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  id?: string;
 }
 
-const AnimatedSection = ({ children, className = '', delay = 0 }: AnimatedSectionProps) => {
+const AnimatedSection = ({ children, className = '', delay = 0, id }: AnimatedSectionProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -37,7 +38,7 @@ const AnimatedSection = ({ children, className = '', delay = 0 }: AnimatedSectio
   }, [delay]);
   
   return (
-    <div ref={sectionRef} className={`animate-on-scroll ${className}`}>
+    <div ref={sectionRef} id={id} className={`animate-on-scroll ${className}`}>
       {children}
     </div>
   );
