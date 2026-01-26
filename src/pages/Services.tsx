@@ -131,6 +131,7 @@ const Services = () => {
       description: "Brand narrative, CES positioning, and enterprise messaging for AIoT and smart home products.",
       image: "/images/xthings.png",
       imageZoom: 1.4,
+      imagePosition: "center 70%",
     },
     {
       company: "Optix",
