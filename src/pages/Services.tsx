@@ -124,15 +124,17 @@ const Services = () => {
     {
       company: "BleeqUp",
       description: "U.S. go-to-market strategy, product feedback, and retail readiness for smart eyewear.",
+      image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
     },
     {
       company: "Xthings",
       description: "Brand narrative, CES positioning, and enterprise messaging for AIoT and smart home products.",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
     },
     {
       company: "Optix",
-      description:
-        "Market positioning and competitive differentiation for advanced optical and waveguide technologies.",
+      description: "Market positioning and competitive differentiation for advanced optical and waveguide technologies.",
+      image: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=400&h=300&fit=crop",
     },
   ];
 
@@ -253,7 +255,7 @@ const Services = () => {
               <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">Case Studies & Experience</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {caseStudies.map((study, index) => (
                 <CaseStudyCard key={index} {...study} />
               ))}
