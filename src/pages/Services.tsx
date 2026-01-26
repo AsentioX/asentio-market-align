@@ -124,7 +124,7 @@ const Services = () => {
     {
       company: "BleeqUp",
       description: "U.S. go-to-market strategy, product feedback, and retail readiness for smart eyewear.",
-      image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
+      image: "/images/bleeqUp.png",
     },
     {
       company: "Xthings",
