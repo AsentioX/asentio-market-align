@@ -51,7 +51,7 @@ const translations = {
     'cta.contact': 'Contact Us',
     
     // About page
-    'about.banner.text': 'We help consumer electronics brands achieve product-market fit in the United States through strategic guidance and cross-cultural expertise.',
+    'about.banner.text': 'We help global brands achieve product-market fit in the United States through strategic guidance and cross-cultural expertise.',
     'about.who.title': 'Who We Are',
     'about.who.p1': 'Asentio is a cross-border strategic consultancy that helps international technology companies succeed in the U.S. market.',
     'about.who.p2': 'Founded by professionals with deep experience in both global and American markets, we specialize in translating global innovation into local success.',
@@ -204,7 +204,7 @@ const translations = {
     'cta.contact': '联系我们',
     
     // About page
-    'about.banner.text': '我们通过战略指导和跨文化专业知识，帮助消费电子品牌在美国实现产品市场契合度。',
+    'about.banner.text': '我们通过战略指导和跨文化专业知识，帮助全球品牌在美国实现产品市场契合度。',
     'about.who.title': '我们是谁',
     'about.who.p1': 'Asentio是一家跨境战略咨询公司，帮助国际科技公司在美国市场取得成功。',
     'about.who.p2': '由在中美两国市场拥有丰富经验的专业人士创立，我们专门将全球创新转化为本地成功。',
@@ -357,7 +357,7 @@ const translations = {
     'cta.contact': 'Contáctenos',
     
     // About page
-    'about.banner.text': 'Ayudamos a marcas de electrónica de consumo a lograr el ajuste producto-mercado en Estados Unidos a través de orientación estratégica y experiencia intercultural.',
+    'about.banner.text': 'Ayudamos a marcas globales a lograr el ajuste producto-mercado en Estados Unidos a través de orientación estratégica y experiencia intercultural.',
     'about.who.title': 'Quiénes Somos',
     'about.who.p1': 'Asentio es una consultora estratégica transfronteriza que ayuda a empresas tecnológicas internacionales a triunfar en el mercado estadounidense.',
     'about.who.p2': 'Fundada por profesionales con amplia experiencia en mercados globales y estadounidenses, nos especializamos en traducir innovación global en éxito local.',
@@ -510,7 +510,7 @@ const translations = {
     'cta.contact': 'Kontaktieren Sie uns',
     
     // About page
-    'about.banner.text': 'Wir helfen Unterhaltungselektronik-Marken, den Produkt-Markt-Fit in den USA durch strategische Beratung und interkulturelle Expertise zu erreichen.',
+    'about.banner.text': 'Wir helfen globalen Marken, den Produkt-Markt-Fit in den USA durch strategische Beratung und interkulturelle Expertise zu erreichen.',
     'about.who.title': 'Wer wir sind',
     'about.who.p1': 'Asentio ist eine grenzüberschreitende strategische Beratung, die internationalen Technologieunternehmen zum Erfolg auf dem US-Markt verhilft.',
     'about.who.p2': 'Gegründet von Fachleuten mit umfassender Erfahrung sowohl auf globalen als auch auf amerikanischen Märkten, sind wir darauf spezialisiert, globale Innovation in lokalen Erfolg zu übersetzen.',
