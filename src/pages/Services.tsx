@@ -129,7 +129,7 @@ const Services = () => {
     {
       company: "Xthings",
       description: "Brand narrative, CES positioning, and enterprise messaging for AIoT and smart home products.",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      image: "/images/xthings.png",
     },
     {
       company: "Optix",
