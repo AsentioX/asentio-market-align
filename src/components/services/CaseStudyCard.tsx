@@ -2,16 +2,18 @@ interface CaseStudyCardProps {
   company: string;
   description: string;
   image: string;
+  imageZoom?: number;
 }
 
-const CaseStudyCard = ({ company, description, image }: CaseStudyCardProps) => {
+const CaseStudyCard = ({ company, description, image, imageZoom = 1 }: CaseStudyCardProps) => {
   return (
     <div className="group bg-card rounded-xl border border-border hover:border-asentio-blue/30 transition-all duration-300 overflow-hidden flex flex-col sm:flex-row sm:h-40">
-      <div className="sm:w-2/5 flex-shrink-0 h-32 sm:h-full">
+      <div className="sm:w-2/5 flex-shrink-0 h-32 sm:h-full overflow-hidden">
         <img 
           src={image} 
           alt={company} 
           className="w-full h-full object-cover"
+          style={{ transform: `scale(${imageZoom})` }}
         />
       </div>
       <div className="p-5 sm:p-6 flex flex-col justify-center sm:w-3/5">
