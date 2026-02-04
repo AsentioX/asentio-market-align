@@ -83,6 +83,51 @@ export type Database = {
         }
         Relationships: []
       }
+      xr_agencies: {
+        Row: {
+          created_at: string
+          description: string | null
+          editors_note: string | null
+          id: string
+          is_editors_pick: boolean | null
+          logo_url: string | null
+          name: string
+          regions: string[] | null
+          services: string[] | null
+          slug: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          editors_note?: string | null
+          id?: string
+          is_editors_pick?: boolean | null
+          logo_url?: string | null
+          name: string
+          regions?: string[] | null
+          services?: string[] | null
+          slug: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          editors_note?: string | null
+          id?: string
+          is_editors_pick?: boolean | null
+          logo_url?: string | null
+          name?: string
+          regions?: string[] | null
+          services?: string[] | null
+          slug?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       xr_products: {
         Row: {
           ai_integration: string
@@ -142,6 +187,62 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      xr_use_cases: {
+        Row: {
+          agency_id: string | null
+          client_name: string | null
+          created_at: string
+          description: string | null
+          device: string
+          editors_note: string | null
+          id: string
+          image_url: string | null
+          is_editors_pick: boolean | null
+          slug: string
+          tech_stack: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id?: string | null
+          client_name?: string | null
+          created_at?: string
+          description?: string | null
+          device: string
+          editors_note?: string | null
+          id?: string
+          image_url?: string | null
+          is_editors_pick?: boolean | null
+          slug: string
+          tech_stack?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string | null
+          client_name?: string | null
+          created_at?: string
+          description?: string | null
+          device?: string
+          editors_note?: string | null
+          id?: string
+          image_url?: string | null
+          is_editors_pick?: boolean | null
+          slug?: string
+          tech_stack?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xr_use_cases_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "xr_agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
