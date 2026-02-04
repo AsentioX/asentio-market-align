@@ -14,6 +14,8 @@ import ProductDetail from "./pages/ProductDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProductForm from "./pages/ProductForm";
+import AgencyForm from "./pages/AgencyForm";
+import UseCaseForm from "./pages/UseCaseForm";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -43,6 +45,10 @@ const AppContent = () => {
           <Route path="/admin/reset-password" element={<ResetPassword />} />
           <Route path="/admin/products/new" element={<ProductForm />} />
           <Route path="/admin/products/:id/edit" element={<ProductForm />} />
+          <Route path="/admin/agencies/new" element={<AgencyForm />} />
+          <Route path="/admin/agencies/:id/edit" element={<AgencyForm />} />
+          <Route path="/admin/use-cases/new" element={<UseCaseForm />} />
+          <Route path="/admin/use-cases/:id/edit" element={<UseCaseForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

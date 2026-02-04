@@ -50,20 +50,24 @@ export const useXRAgencies = (filters?: AgencyFilters) => {
   });
 };
 
-export const useXRAgency = (slug: string) => {
+export const useXRAgency = (idOrSlug: string) => {
   return useQuery({
-    queryKey: ['xr-agency', slug],
+    queryKey: ['xr-agency', idOrSlug],
     queryFn: async () => {
+      // Try by ID first (UUID format), then by slug
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+      const column = isUUID ? 'id' : 'slug';
+      
       const { data, error } = await supabase
         .from('xr_agencies')
         .select('*')
-        .eq('slug', slug)
+        .eq(column, idOrSlug)
         .single();
       
       if (error) throw error;
       return data as XRAgency;
     },
-    enabled: !!slug
+    enabled: !!idOrSlug
   });
 };
 
