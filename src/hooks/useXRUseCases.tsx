@@ -57,23 +57,27 @@ export const useXRUseCases = (filters?: UseCaseFilters) => {
   });
 };
 
-export const useXRUseCase = (slug: string) => {
+export const useXRUseCase = (idOrSlug: string) => {
   return useQuery({
-    queryKey: ['xr-use-case', slug],
+    queryKey: ['xr-use-case', idOrSlug],
     queryFn: async () => {
+      // Try by ID first (UUID format), then by slug
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+      const column = isUUID ? 'id' : 'slug';
+      
       const { data, error } = await supabase
         .from('xr_use_cases')
         .select(`
           *,
           agency:xr_agencies(*)
         `)
-        .eq('slug', slug)
+        .eq(column, idOrSlug)
         .single();
       
       if (error) throw error;
       return data as XRUseCase;
     },
-    enabled: !!slug
+    enabled: !!idOrSlug
   });
 };
 
