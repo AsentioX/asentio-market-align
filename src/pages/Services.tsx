@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 
 import { Link } from "react-router-dom";
@@ -8,10 +8,9 @@ import TopographicPattern from "@/components/TopographicPattern";
 import ServiceCard from "@/components/services/ServiceCard";
 import ChannelCard from "@/components/services/ChannelCard";
 import EngagementCard from "@/components/services/EngagementCard";
-import CaseStudyCard from "@/components/services/CaseStudyCard";
+import CaseStudyCarousel from "@/components/services/CaseStudyCarousel";
 
 const Services = () => {
-  const [expandedStudy, setExpandedStudy] = useState<number | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -265,16 +264,7 @@ const Services = () => {
               <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">Case Studies & Experience</h2>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {caseStudies.map((study, index) => (
-                <CaseStudyCard
-                  key={index}
-                  {...study}
-                  expanded={expandedStudy === index}
-                  onToggle={() => setExpandedStudy(expandedStudy === index ? null : index)}
-                />
-              ))}
-            </div>
+            <CaseStudyCarousel caseStudies={caseStudies} />
           </div>
         </div>
       </AnimatedSection>
