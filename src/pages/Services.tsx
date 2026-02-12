@@ -125,6 +125,8 @@ const Services = () => {
       company: "BleeqUp",
       description: "U.S. go-to-market strategy, product feedback, and retail readiness for smart eyewear.",
       image: "/images/bleeqUp.png",
+      challenge: "A European smart eyewear startup needed to validate product-market fit and build retail-ready positioning for U.S. consumers with no existing presence.",
+      whatWeDid: "Conducted U.S.-focused product and UX evaluation, developed retail-ready messaging, and created a go-to-market roadmap targeting specialty and national retail partners.",
     },
     {
       company: "Xthings",
@@ -132,11 +134,15 @@ const Services = () => {
       image: "/images/xthings.png",
       imageZoom: 1.4,
       imagePosition: "center 70%",
+      challenge: "An AIoT company preparing for CES needed a compelling brand narrative and enterprise messaging that would resonate with U.S. buyers and media.",
+      whatWeDid: "Shaped the brand story, crafted CES-specific positioning, and developed enterprise sales narratives that translated technical capabilities into clear business value.",
     },
     {
       company: "Optix",
       description: "Market positioning and competitive differentiation for advanced optical and waveguide technologies.",
       image: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=400&h=300&fit=crop",
+      challenge: "A waveguide technology company needed to differentiate in a crowded AR optics market and communicate technical advantages to non-technical decision makers.",
+      whatWeDid: "Developed competitive positioning frameworks, created clear differentiation narratives, and built sales enablement materials bridging technical depth with business impact.",
     },
   ];
 
