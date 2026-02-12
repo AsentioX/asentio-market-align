@@ -22,6 +22,7 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
+    setExpandedStudy(null);
     const scrollAmount = scrollRef.current.offsetWidth * 0.8;
     scrollRef.current.scrollBy({
       left: direction === "left" ? -scrollAmount : scrollAmount,
