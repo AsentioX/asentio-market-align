@@ -263,7 +263,7 @@ const Services = () => {
               <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">Case Studies & Experience</h2>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 max-w-3xl mx-auto">
               {caseStudies.map((study, index) => (
                 <CaseStudyCard key={index} {...study} />
               ))}
