@@ -194,29 +194,22 @@ const Services = () => {
                 <ServiceCard key={index} {...service} />
               ))}
             </div>
-          </div>
-        </div>
-      </AnimatedSection>
 
-      {/* Channels We Build Section */}
-      <AnimatedSection className="py-10 md:py-14 bg-muted relative">
-        <TopographicPattern className="opacity-20" />
+            {/* Channels We Build */}
+            <div className="mt-12 md:mt-16">
+              <div className="text-center mb-6 md:mb-8">
+                <h3 className="text-xl md:text-3xl font-bold text-foreground mb-3">Channels We Build</h3>
+                <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+                  We don't just open channels — we connect you to the ecosystems that control distribution, adoption, and
+                  scale.
+                </p>
+              </div>
 
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-6 md:mb-8">
-              <div className="w-12 h-1 bg-asentio-red mx-auto mb-6" />
-              <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">Channels We Build</h2>
-              <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
-                We don't just open channels — we connect you to the ecosystems that control distribution, adoption, and
-                scale.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {channels.map((channel, index) => (
-                <ChannelCard key={index} {...channel} />
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {channels.map((channel, index) => (
+                  <ChannelCard key={index} {...channel} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
