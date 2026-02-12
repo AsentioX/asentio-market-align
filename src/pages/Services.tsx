@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 
 import { Link } from "react-router-dom";
@@ -11,6 +11,8 @@ import EngagementCard from "@/components/services/EngagementCard";
 import CaseStudyCard from "@/components/services/CaseStudyCard";
 
 const Services = () => {
+  const [expandedStudy, setExpandedStudy] = useState<number | null>(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -265,7 +267,12 @@ const Services = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {caseStudies.map((study, index) => (
-                <CaseStudyCard key={index} {...study} />
+                <CaseStudyCard
+                  key={index}
+                  {...study}
+                  expanded={expandedStudy === index}
+                  onToggle={() => setExpandedStudy(expandedStudy === index ? null : index)}
+                />
               ))}
             </div>
           </div>
