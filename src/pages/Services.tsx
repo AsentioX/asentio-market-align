@@ -141,7 +141,7 @@ const Services = () => {
     {
       company: "Optix",
       description: "Market positioning and competitive differentiation for advanced optical and waveguide technologies.",
-      image: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=400&h=300&fit=crop",
+      image: "/images/optix.jpg",
       challenge: "A waveguide technology company needed to differentiate in a crowded AR optics market and communicate technical advantages to non-technical decision makers.",
       whatWeDid: "Developed competitive positioning frameworks, created clear differentiation narratives, and built sales enablement materials bridging technical depth with business impact.",
     },
