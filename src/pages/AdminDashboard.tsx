@@ -132,42 +132,6 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-asentio-blue/10 flex items-center justify-center">
-                <LayoutGrid className="w-6 h-6 text-asentio-blue" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{products?.length || 0}</p>
-                <p className="text-sm text-muted-foreground">Products</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{agencies?.length || 0}</p>
-                <p className="text-sm text-muted-foreground">Agencies</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Layers className="w-6 h-6 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{useCases?.length || 0}</p>
-                <p className="text-sm text-muted-foreground">Use Cases</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
