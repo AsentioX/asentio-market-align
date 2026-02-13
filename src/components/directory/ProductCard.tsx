@@ -33,7 +33,7 @@ const getStatusBadgeColor = (status: string) => {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   return (
-    <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border ${
+    <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border flex flex-col ${
       product.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
       {/* Product Image */}
@@ -57,7 +57,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         )}
       </div>
       
-      <CardContent className="p-5">
+      <CardContent className="p-5 flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
@@ -84,7 +84,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         
         
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-border">
+        <div className="flex items-center justify-between pt-3 border-t border-border mt-auto">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <MapPin className="w-3 h-3" />
