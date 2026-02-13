@@ -11,7 +11,7 @@ import { useXRProducts, useDeleteProduct, XRProduct } from '@/hooks/useXRProduct
 import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies';
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
 import { 
-  Plus, LogOut, Search, Edit, Trash2, ExternalLink, 
+  Plus, LogOut, Search, Trash2, ExternalLink, 
   Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Layers
 } from 'lucide-react';
 import {
@@ -188,12 +188,12 @@ const AdminDashboard = () => {
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground">Product</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Category</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">AI</th>
-                          <th className="text-right py-3 px-4 font-medium text-muted-foreground">Actions</th>
+                          <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {products.map((product) => (
-                          <tr key={product.id} className="border-b last:border-0 hover:bg-muted/50">
+                          <tr key={product.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/products/${product.id}/edit`)}>
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
                                 {product.is_editors_pick && <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />}
@@ -214,10 +214,7 @@ const AdminDashboard = () => {
                               }>{product.ai_integration}</Badge>
                             </td>
                             <td className="py-3 px-4">
-                              <div className="flex items-center justify-end gap-2">
-                                <Link to={`/admin/products/${product.id}/edit`}>
-                                  <Button variant="ghost" size="sm"><Edit className="w-4 h-4" /></Button>
-                                </Link>
+                              <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
@@ -296,12 +293,12 @@ const AdminDashboard = () => {
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground">Agency</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Services</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">Regions</th>
-                          <th className="text-right py-3 px-4 font-medium text-muted-foreground">Actions</th>
+                          <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {agencies.map((agency) => (
-                          <tr key={agency.id} className="border-b last:border-0 hover:bg-muted/50">
+                          <tr key={agency.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/agencies/${agency.id}/edit`)}>
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
                                 {agency.is_editors_pick && <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />}
@@ -329,10 +326,7 @@ const AdminDashboard = () => {
                               <span className="text-sm text-muted-foreground">{agency.regions?.join(', ')}</span>
                             </td>
                             <td className="py-3 px-4">
-                              <div className="flex items-center justify-end gap-2">
-                                <Link to={`/admin/agencies/${agency.id}/edit`}>
-                                  <Button variant="ghost" size="sm"><Edit className="w-4 h-4" /></Button>
-                                </Link>
+                              <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
@@ -411,12 +405,12 @@ const AdminDashboard = () => {
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground">Use Case</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Device</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">Agency</th>
-                          <th className="text-right py-3 px-4 font-medium text-muted-foreground">Actions</th>
+                          <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {useCases.map((useCase) => (
-                          <tr key={useCase.id} className="border-b last:border-0 hover:bg-muted/50">
+                          <tr key={useCase.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/use-cases/${useCase.id}/edit`)}>
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
                                 {useCase.is_editors_pick && <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />}
@@ -433,10 +427,7 @@ const AdminDashboard = () => {
                               <span className="text-sm text-muted-foreground">{useCase.agency?.name || '—'}</span>
                             </td>
                             <td className="py-3 px-4">
-                              <div className="flex items-center justify-end gap-2">
-                                <Link to={`/admin/use-cases/${useCase.id}/edit`}>
-                                  <Button variant="ghost" size="sm"><Edit className="w-4 h-4" /></Button>
-                                </Link>
+                              <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
