@@ -291,11 +291,10 @@ const DirectoryFloatingElements = () => {
       </div>
 
       <div
-        className="absolute bottom-4 right-4 z-50 flex items-center gap-2 bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-lg border border-white/10 shadow-lg"
+        className="absolute bottom-4 right-4 z-50"
         style={{ cursor: 'default', fontFamily: "'Share Tech Mono', monospace" }}
       >
-        <img src={iconExplosion} alt="" className="w-5 h-5 invert opacity-70" draggable={false} />
-        <span className="text-lg tracking-widest text-cyan-300 drop-shadow-[0_0_6px_rgba(0,255,255,0.5)]" style={{ fontFamily: "'Share Tech Mono', monospace" }}>
+        <span className="text-lg tracking-widest text-white/80">
           {String(killCount).padStart(3, '0')}
         </span>
       </div>
