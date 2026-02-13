@@ -138,15 +138,15 @@ const AdminDashboard = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="products" className="flex items-center gap-2">
               <LayoutGrid className="w-4 h-4" />
-              Products
+              Products ({products?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="agencies" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
-              Agencies
+              Agencies ({agencies?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="use-cases" className="flex items-center gap-2">
               <Layers className="w-4 h-4" />
-              Use Cases
+              Use Cases ({useCases?.length || 0})
             </TabsTrigger>
           </TabsList>
 
