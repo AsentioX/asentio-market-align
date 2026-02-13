@@ -71,9 +71,9 @@ const ProductGraphView = ({ products }: ProductGraphViewProps) => {
         const x = getValue(p, xAxis);
         const y = getValue(p, yAxis);
         if (x === null || y === null) return null;
-        return { x, y, name: p.name, company: p.company, z: 60 };
+        return { x, y, name: p.name, company: p.company, image_url: p.image_url, z: 60 };
       })
-      .filter(Boolean) as { x: number; y: number; name: string; company: string; z: number }[];
+      .filter(Boolean) as { x: number; y: number; name: string; company: string; image_url: string | null; z: number }[];
   }, [products, xAxis, yAxis]);
 
   const getLabel = (key: AxisKey) => axisOptions.find((o) => o.value === key)?.label || key;
@@ -156,7 +156,10 @@ const ProductGraphView = ({ products }: ProductGraphViewProps) => {
                   if (!payload?.length) return null;
                   const d = payload[0].payload;
                   return (
-                    <div className="bg-popover border border-border rounded-lg shadow-lg p-3 text-sm">
+                    <div className="bg-popover border border-border rounded-lg shadow-lg p-3 text-sm max-w-[240px]">
+                      {d.image_url && (
+                        <img src={d.image_url} alt={d.name} className="w-full h-24 object-cover rounded-md mb-2" />
+                      )}
                       <p className="font-semibold">{d.name}</p>
                       <p className="text-muted-foreground text-xs">{d.company}</p>
                       <div className="mt-1 text-xs space-y-0.5">
