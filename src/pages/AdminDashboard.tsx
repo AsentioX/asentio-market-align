@@ -189,7 +189,8 @@ const AdminDashboard = () => {
                         <tr className="border-b">
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground">Company</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground">Product</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Location</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Company HQ</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Price</th>
                           <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
@@ -206,7 +207,10 @@ const AdminDashboard = () => {
                               <p className="text-sm text-foreground">{product.name}</p>
                             </td>
                             <td className="py-3 px-4 hidden md:table-cell">
-                              <span className="text-sm text-muted-foreground">{product.region}</span>
+                              <span className="text-sm text-muted-foreground">{product.company_hq || '—'}</span>
+                            </td>
+                            <td className="py-3 px-4 hidden md:table-cell">
+                              <span className="text-sm text-muted-foreground">{product.price_range || '—'}</span>
                             </td>
                             <td className="py-3 px-4">
                               <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
