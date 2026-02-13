@@ -148,6 +148,18 @@ const DirectoryFloatingElements = () => {
     setTimeout(() => setStreaks(prev => prev.filter(s => s.id !== streak.id)), streak.duration * 1000 + 500);
   }, []);
 
+  // Spacebar spawns a streak
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        spawnStreak();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [spawnStreak]);
+
   const handleStreakClick = useCallback((streak: StreakConfig, e: React.MouseEvent) => {
     e.stopPropagation();
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
