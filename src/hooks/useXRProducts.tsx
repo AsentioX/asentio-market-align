@@ -90,6 +90,23 @@ export const useXRProduct = (slug: string) => {
   });
 };
 
+export const useXRProductById = (id: string) => {
+  return useQuery({
+    queryKey: ['xr-product-id', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('xr_products')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      return data as XRProduct;
+    },
+    enabled: !!id
+  });
+};
+
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
   

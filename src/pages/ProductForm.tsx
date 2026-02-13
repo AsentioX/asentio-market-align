@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useXRProduct, useCreateProduct, useUpdateProduct, CATEGORIES, AI_INTEGRATIONS, SHIPPING_STATUSES } from '@/hooks/useXRProducts';
+import { useXRProduct, useXRProductById, useCreateProduct, useUpdateProduct, CATEGORIES, AI_INTEGRATIONS, SHIPPING_STATUSES } from '@/hooks/useXRProducts';
 import { ArrowLeft, Loader2, Plus, X } from 'lucide-react';
 
 const generateSlug = (name: string) => {
@@ -26,7 +26,7 @@ const ProductForm = () => {
   const { toast } = useToast();
   const { user, isAdmin, loading: authLoading } = useAuth();
   
-  const { data: existingProduct, isLoading: productLoading } = useXRProduct(id || '');
+  const { data: existingProduct, isLoading: productLoading } = useXRProductById(id || '');
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
 
@@ -34,6 +34,7 @@ const ProductForm = () => {
     name: '',
     slug: '',
     company: '',
+    company_hq: '',
     category: 'AR Glasses',
     ai_integration: 'No',
     price_range: '',
@@ -57,6 +58,7 @@ const ProductForm = () => {
         name: existingProduct.name,
         slug: existingProduct.slug,
         company: existingProduct.company,
+        company_hq: existingProduct.company_hq || '',
         category: existingProduct.category,
         ai_integration: existingProduct.ai_integration,
         price_range: existingProduct.price_range || '',
@@ -131,7 +133,7 @@ const ProductForm = () => {
         image_url: formData.image_url || null,
         editors_note: formData.editors_note || null,
         key_features: formData.key_features.length > 0 ? formData.key_features : null,
-        company_hq: (formData as any).company_hq || null,
+        company_hq: formData.company_hq || null,
       };
 
       if (isEditing) {
@@ -235,6 +237,18 @@ const ProductForm = () => {
                     required
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="company_hq">Company HQ</Label>
+                  <Input
+                    id="company_hq"
+                    value={formData.company_hq}
+                    onChange={(e) => setFormData(prev => ({ ...prev, company_hq: e.target.value }))}
+                    placeholder="San Francisco, CA"
+                  />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="region">Region *</Label>
                   <Input
