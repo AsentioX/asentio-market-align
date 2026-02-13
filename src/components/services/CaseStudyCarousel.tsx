@@ -85,6 +85,8 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
             />
           </div>
         ))}
+        {/* Spacer to allow last cards to scroll to center */}
+        <div className="flex-shrink-0" style={{ minWidth: "40%" }} aria-hidden="true" />
       </div>
 
       {/* Dot indicators */}
