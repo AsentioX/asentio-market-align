@@ -68,6 +68,8 @@ const DirectoryHeader = () => {
     setOrbs(prev => prev.map((orb, i) => i === index ? { ...orb, ...randomPos() } : orb));
   }, []);
 
+  // No transition - orbs teleport to new position while faded out
+
   return (
     <section
       ref={sectionRef}
@@ -88,7 +90,7 @@ const DirectoryHeader = () => {
               top: `${orb.top}%`,
               left: `${orb.left}%`,
               animation: orb.animation.split('_').join(' '),
-              transition: 'top 8s ease-in-out, left 8s ease-in-out',
+              transition: 'none',
             }}
             onAnimationIteration={() => handleOrbIteration(i)}
           />
