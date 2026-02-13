@@ -130,7 +130,8 @@ const ProductForm = () => {
         link: formData.link || null,
         image_url: formData.image_url || null,
         editors_note: formData.editors_note || null,
-        key_features: formData.key_features.length > 0 ? formData.key_features : null
+        key_features: formData.key_features.length > 0 ? formData.key_features : null,
+        company_hq: (formData as any).company_hq || null,
       };
 
       if (isEditing) {

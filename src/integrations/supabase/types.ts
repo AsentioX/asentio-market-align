@@ -133,6 +133,7 @@ export type Database = {
           ai_integration: string
           category: string
           company: string
+          company_hq: string | null
           created_at: string
           description: string | null
           editors_note: string | null
@@ -152,6 +153,7 @@ export type Database = {
           ai_integration: string
           category: string
           company: string
+          company_hq?: string | null
           created_at?: string
           description?: string | null
           editors_note?: string | null
@@ -171,6 +173,7 @@ export type Database = {
           ai_integration?: string
           category?: string
           company?: string
+          company_hq?: string | null
           created_at?: string
           description?: string | null
           editors_note?: string | null

@@ -6,6 +6,7 @@ export interface XRProduct {
   slug: string;
   name: string;
   company: string;
+  company_hq: string | null;
   category: string;
   ai_integration: string;
   price_range: string | null;

@@ -7,9 +7,8 @@ import { Upload, Loader2, Download, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EXPECTED_HEADERS = [
-  'name', 'slug', 'company', 'category', 'ai_integration',
-  'price_range', 'shipping_status', 'region', 'description',
-  'key_features', 'link', 'image_url', 'is_editors_pick', 'editors_note'
+  'company name', 'product name', 'company hq', 'region', 'shipping status',
+  'price', 'category', 'product url', 'description', 'image url'
 ];
 
 const parseCSV = (text: string): Record<string, string>[] => {
@@ -51,8 +50,8 @@ const CsvProductUpload = () => {
   const queryClient = useQueryClient();
 
   const downloadTemplate = () => {
-    const csv = EXPECTED_HEADERS.join(',') + '\n' +
-      'XREAL One Pro,xreal-one-pro,XREAL,AR Glasses,No,$299,Available,Global,Great AR glasses,"Feature 1|Feature 2",https://example.com,https://example.com/img.jpg,false,';
+    const csv = EXPECTED_HEADERS.map(h => h.charAt(0).toUpperCase() + h.slice(1)).join(',') + '\n' +
+      'XREAL,One Pro,"San Francisco, CA",Global,Shipping,$299,AR Glasses,https://example.com,Great AR glasses,https://example.com/img.jpg';
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -86,7 +85,7 @@ const CsvProductUpload = () => {
 
       // Validate required headers
       const firstRow = rows[0];
-      const missingHeaders = ['name', 'slug', 'company', 'category', 'shipping_status', 'region']
+      const missingHeaders = ['product name', 'company name', 'category', 'shipping status', 'region']
         .filter(h => !(h in firstRow));
       
       if (missingHeaders.length > 0) {
@@ -101,25 +100,27 @@ const CsvProductUpload = () => {
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         try {
+          const name = row['product name'] || '';
+          const company = row['company name'] || '';
+          const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
           const product = {
-            name: row.name,
-            slug: row.slug,
-            company: row.company,
-            category: row.category,
-            ai_integration: row.ai_integration || 'No',
-            price_range: row.price_range || null,
-            shipping_status: row.shipping_status,
-            region: row.region,
-            description: row.description || null,
-            key_features: row.key_features ? row.key_features.split('|').map(f => f.trim()).filter(Boolean) : null,
-            link: row.link || null,
-            image_url: row.image_url || null,
-            is_editors_pick: row.is_editors_pick === 'true',
-            editors_note: row.editors_note || null,
+            name,
+            slug,
+            company,
+            company_hq: row['company hq'] || null,
+            category: row['category'] || '',
+            ai_integration: 'No',
+            price_range: row['price'] || null,
+            shipping_status: row['shipping status'] || '',
+            region: row['region'] || '',
+            description: row['description'] || null,
+            link: row['product url'] || null,
+            image_url: row['image url'] || null,
           };
 
-          if (!product.name || !product.slug || !product.company) {
-            errors.push(`Row ${i + 2}: Missing name, slug, or company`);
+          if (!product.name || !product.company) {
+            errors.push(`Row ${i + 2}: Missing product name or company name`);
             continue;
           }
 
