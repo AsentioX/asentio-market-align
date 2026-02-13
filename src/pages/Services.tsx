@@ -170,7 +170,7 @@ const Services = () => {
 
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
+            
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
               We Help Global Tech Companies <span className="text-primary-foreground/70">Win in the U.S.</span>
             </h1>

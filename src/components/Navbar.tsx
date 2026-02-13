@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,6 +10,9 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,16 +42,16 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
+          <Link to="/" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/") ? "border-b-2 border-asentio-red" : ""}`}>
             {t('nav.home')}
           </Link>
-          <Link to="/about" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
+          <Link to="/about" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/about") ? "border-b-2 border-asentio-red" : ""}`}>
             {t('nav.about')}
           </Link>
-          <Link to="/services" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
+          <Link to="/services" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/services") ? "border-b-2 border-asentio-red" : ""}`}>
             {t('nav.services')}
           </Link>
-          <Link to="/xr-directory" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium`}>
+          <Link to="/xr-directory" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/xr-directory") ? "border-b-2 border-asentio-red" : ""}`}>
             XR Directory
           </Link>
           <LanguageToggle />
