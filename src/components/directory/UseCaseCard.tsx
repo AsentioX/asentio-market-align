@@ -10,6 +10,7 @@ interface UseCaseCardProps {
 
 const UseCaseCard = ({ useCase }: UseCaseCardProps) => {
   return (
+    <Link to={`/xr-directory/use-cases/${useCase.slug}`} className="block">
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border ${
       useCase.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
@@ -37,11 +38,9 @@ const UseCaseCard = ({ useCase }: UseCaseCardProps) => {
       <CardContent className="p-5">
         {/* Header */}
         <div className="mb-3">
-          <Link to={`/xr-directory/use-cases/${useCase.slug}`}>
             <h3 className="font-semibold text-lg text-foreground group-hover:text-asentio-blue transition-colors line-clamp-1">
               {useCase.title}
             </h3>
-          </Link>
           {useCase.client_name && (
             <p className="text-sm text-muted-foreground">{useCase.client_name}</p>
           )}
@@ -99,6 +98,7 @@ const UseCaseCard = ({ useCase }: UseCaseCardProps) => {
         )}
       </CardContent>
     </Card>
+    </Link>
   );
 };
 

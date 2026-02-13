@@ -33,6 +33,7 @@ const getStatusBadgeColor = (status: string) => {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   return (
+    <Link to={`/xr-directory/${product.slug}`} className="block">
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border flex flex-col ${
       product.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
@@ -61,11 +62,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
-            <Link to={`/xr-directory/${product.slug}`}>
               <h3 className="font-semibold text-lg text-foreground group-hover:text-asentio-blue transition-colors line-clamp-1">
                 {product.name}
               </h3>
-            </Link>
             <p className="text-sm text-muted-foreground">{product.company}</p>
           </div>
           
@@ -106,6 +105,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 };
 
