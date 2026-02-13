@@ -1,4 +1,3 @@
-import { Sparkles } from 'lucide-react';
 import DirectoryFloatingElements from './DirectoryFloatingElements';
 
 const DirectoryHeader = () => {
@@ -37,10 +36,6 @@ const DirectoryHeader = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-            <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span className="text-sm font-medium">Curated XR & AI Products</span>
-          </div>
           
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
             Global{' '}
