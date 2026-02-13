@@ -334,31 +334,6 @@ const ProductForm = () => {
                 />
               </div>
 
-              {/* Key Features */}
-              <div className="space-y-2">
-                <Label>Key Features</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={newFeature}
-                    onChange={(e) => setNewFeature(e.target.value)}
-                    placeholder="Add a feature..."
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
-                  />
-                  <Button type="button" variant="outline" onClick={addFeature}>
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.key_features.map((feature, idx) => (
-                    <span key={idx} className="inline-flex items-center gap-1 bg-muted px-3 py-1 rounded-full text-sm">
-                      {feature}
-                      <button type="button" onClick={() => removeFeature(idx)} className="hover:text-destructive">
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
 
 
 
