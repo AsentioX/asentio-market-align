@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import DirectoryHeader from '@/components/directory/DirectoryHeader';
 import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
+import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryViewToggle';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
@@ -14,6 +15,7 @@ import { Package, Building2, Layers } from 'lucide-react';
 const Directory = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [productFilters, setProductFilters] = useState<ProductFilters>({});
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [agencyFilters, setAgencyFilters] = useState<AgencyFilters>({});
   const [useCaseFilters, setUseCaseFilters] = useState<UseCaseFilters>({});
   
@@ -60,9 +62,12 @@ const Directory = () => {
           </TabsList>
           
           <TabsContent value="products">
-            <DirectoryFilters filters={productFilters} onFilterChange={setProductFilters} />
-            <div className="py-8">
-              <DirectoryGrid products={products} isLoading={productsLoading} />
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <DirectoryFilters filters={productFilters} onFilterChange={setProductFilters} />
+              <DirectoryViewToggle view={viewMode} onViewChange={setViewMode} />
+            </div>
+            <div className="py-4">
+              <DirectoryGrid products={products} isLoading={productsLoading} view={viewMode} />
             </div>
           </TabsContent>
           

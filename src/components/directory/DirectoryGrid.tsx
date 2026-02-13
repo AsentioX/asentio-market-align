@@ -1,13 +1,17 @@
 import { XRProduct } from '@/hooks/useXRProducts';
 import ProductCard from './ProductCard';
+import ProductListView from './ProductListView';
+import ProductGraphView from './ProductGraphView';
+import { ViewMode } from './DirectoryViewToggle';
 import { Loader2 } from 'lucide-react';
 
 interface DirectoryGridProps {
   products: XRProduct[] | undefined;
   isLoading: boolean;
+  view?: ViewMode;
 }
 
-const DirectoryGrid = ({ products, isLoading }: DirectoryGridProps) => {
+const DirectoryGrid = ({ products, isLoading, view = 'card' }: DirectoryGridProps) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -25,13 +29,20 @@ const DirectoryGrid = ({ products, isLoading }: DirectoryGridProps) => {
     );
   }
 
-  // Separate editor's picks from regular products
+  if (view === 'graph') {
+    return <ProductGraphView products={products} />;
+  }
+
+  if (view === 'list') {
+    return <ProductListView products={products} />;
+  }
+
+  // Card view (default)
   const editorsPicks = products.filter(p => p.is_editors_pick);
   const regularProducts = products.filter(p => !p.is_editors_pick);
 
   return (
     <div className="space-y-12">
-      {/* Editor's Picks Section */}
       {editorsPicks.length > 0 && (
         <section>
           <div className="flex items-center gap-2 mb-6">
@@ -47,7 +58,6 @@ const DirectoryGrid = ({ products, isLoading }: DirectoryGridProps) => {
         </section>
       )}
 
-      {/* All Products Section */}
       {regularProducts.length > 0 && (
         <section>
           <div className="flex items-center gap-2 mb-6">
