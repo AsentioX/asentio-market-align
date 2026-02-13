@@ -32,19 +32,6 @@ const DirectoryHeader = () => {
             and AI-powered experiences—from smart glasses and spatial AI apps to mixed reality platforms and lifestyle services.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/contact">
-              <Button size="lg" className="bg-white text-asentio-red hover:bg-gray-100 font-semibold px-8">
-                Get Featured
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
-            <Link to="/contact">
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 font-semibold px-8">
-                Talk to Asentio
-              </Button>
-            </Link>
-          </div>
           
           <p className="mt-6 text-sm text-gray-400">
             Are you building something in XR? Let us help you reach your audience.
