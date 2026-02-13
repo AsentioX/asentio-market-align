@@ -215,14 +215,14 @@ const UseCaseForm = () => {
               <div className="space-y-2">
                 <Label>Implementing Agency</Label>
                 <Select
-                  value={formData.agency_id}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, agency_id: value }))}
+                  value={formData.agency_id || "none"}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, agency_id: value === "none" ? "" : value }))}
                 >
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder="Select an agency..." />
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-lg">
-                    <SelectItem value="">No agency</SelectItem>
+                    <SelectItem value="none">No agency</SelectItem>
                     {agencies?.map((agency) => (
                       <SelectItem key={agency.id} value={agency.id}>{agency.name}</SelectItem>
                     ))}
