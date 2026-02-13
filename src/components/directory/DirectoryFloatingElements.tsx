@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 
 interface FloatingElement {
   id: number;
@@ -108,13 +108,14 @@ const icons: Record<string, JSX.Element> = {
 const elementTypes = Object.keys(icons);
 
 const DirectoryFloatingElements = () => {
-  const [elements, setElements] = useState<FloatingElement[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const elementsRef = useRef<FloatingElement[]>([]);
 
-  const createElements = useCallback(() => {
+  const initialElements = useMemo(() => {
     const count = 8;
-    const newElements: FloatingElement[] = [];
+    const els: FloatingElement[] = [];
     for (let i = 0; i < count; i++) {
-      newElements.push({
+      els.push({
         id: i,
         type: elementTypes[i % elementTypes.length],
         x: Math.random() * 100,
@@ -128,27 +129,35 @@ const DirectoryFloatingElements = () => {
         driftSpeed: 0.1 + Math.random() * 0.25,
       });
     }
-    setElements(newElements);
+    elementsRef.current = els;
+    return els;
   }, []);
 
   useEffect(() => {
-    createElements();
-  }, [createElements]);
-
-  useEffect(() => {
     let animationId: number;
-    let startTime = Date.now();
 
     const animate = () => {
-      const elapsed = (Date.now() - startTime) / 1000;
-      setElements(prev =>
-        prev.map(el => ({
-          ...el,
-          y: ((el.y - el.speed * 0.02 + 100) % 120) - 10,
-          rotation: el.rotation + el.rotationSpeed,
-          drift: el.drift + el.driftSpeed * 0.01,
-        }))
-      );
+      const els = elementsRef.current;
+      const container = containerRef.current;
+      if (!container) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
+      const children = container.children;
+      for (let i = 0; i < els.length; i++) {
+        const el = els[i];
+        el.y = ((el.y - el.speed * 0.02 + 100) % 120) - 10;
+        el.rotation += el.rotationSpeed;
+        el.drift += el.driftSpeed * 0.01;
+
+        const child = children[i] as HTMLElement;
+        if (child) {
+          const x = el.x + Math.sin(el.drift) * 3;
+          child.style.transform = `translate3d(${x}vw, ${el.y}vh, 0) rotate(${el.rotation}deg)`;
+        }
+      }
+
       animationId = requestAnimationFrame(animate);
     };
 
@@ -157,20 +166,19 @@ const DirectoryFloatingElements = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {elements.map(el => (
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none">
+      {initialElements.map(el => (
         <div
           key={el.id}
           className="absolute text-white"
           style={{
-            left: `${el.x + Math.sin(el.drift) * 3}%`,
-            top: `${el.y}%`,
             width: el.size,
             height: el.size,
             opacity: el.opacity,
-            transform: `rotate(${el.rotation}deg)`,
-            transition: 'none',
-            willChange: 'transform, top, left',
+            willChange: 'transform',
+            top: 0,
+            left: 0,
+            transform: `translate3d(${el.x}vw, ${el.y}vh, 0) rotate(${el.rotation}deg)`,
           }}
         >
           {icons[el.type]}
