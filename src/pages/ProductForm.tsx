@@ -247,7 +247,7 @@ const ProductForm = () => {
               </div>
 
               {/* Selects */}
-              <div className="grid sm:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Category *</Label>
                   <Select
@@ -260,22 +260,6 @@ const ProductForm = () => {
                     <SelectContent className="bg-background border shadow-lg">
                       {CATEGORIES.map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>AI Integration *</Label>
-                  <Select
-                    value={formData.ai_integration}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, ai_integration: value }))}
-                  >
-                    <SelectTrigger className="bg-background">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border shadow-lg">
-                      {AI_INTEGRATIONS.map((ai) => (
-                        <SelectItem key={ai} value={ai}>{ai}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -297,6 +281,8 @@ const ProductForm = () => {
                   </Select>
                 </div>
               </div>
+
+
 
               {/* Price & Link */}
               <div className="grid sm:grid-cols-2 gap-4">
