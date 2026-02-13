@@ -30,19 +30,19 @@ const CaseStudyCard = ({ company, description, image, imageZoom = 1, imagePositi
               style={{ transform: `scale(${imageZoom})`, objectPosition: imagePosition }}
             />
           </div>
-          <div className="flex-1 p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8">
-            <div className="md:w-1/3 flex flex-col justify-center">
+          <div className="flex-1 p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+            <div className="md:w-1/3">
               <h3 className="text-lg font-bold text-foreground mb-2">{company}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
             </div>
             {challenge && (
-              <div className="md:w-1/3 flex flex-col justify-center">
+            <div className="md:w-1/3">
                 <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Challenge</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{challenge}</p>
               </div>
             )}
             {whatWeDid && (
-              <div className="md:w-1/3 flex flex-col justify-center">
+              <div className="md:w-1/3">
                 <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">What We Did</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{whatWeDid}</p>
               </div>

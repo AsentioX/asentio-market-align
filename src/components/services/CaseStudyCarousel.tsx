@@ -33,9 +33,6 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
 
   return (
     <div className="relative group/carousel">
-      {/* Fade edges */}
-      <div className="absolute left-0 top-0 bottom-8 w-8 bg-gradient-to-r from-muted to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-8 w-8 bg-gradient-to-l from-muted to-transparent z-10 pointer-events-none" />
 
       {/* Left arrow */}
       <button
