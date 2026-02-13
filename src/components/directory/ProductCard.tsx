@@ -81,46 +81,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           )}
         </div>
         
-        {/* Category & AI Badge */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          <Badge variant="secondary" className="text-xs">
-            {product.category}
-          </Badge>
-          <Badge className={`text-xs border ${getAIBadgeColor(product.ai_integration)}`}>
-            <Brain className="w-3 h-3 mr-1" />
-            AI: {product.ai_integration}
-          </Badge>
-        </div>
         
-        {/* Editor's Note */}
-        {product.editors_note && (
-          <p className="text-sm text-asentio-blue bg-blue-50 p-2 rounded mb-3 italic">
-            {product.editors_note}
-          </p>
-        )}
-        
-        {/* Description */}
-        {product.description && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-            {product.description}
-          </p>
-        )}
-        
-        {/* Key Features */}
-        {product.key_features && product.key_features.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {product.key_features.slice(0, 3).map((feature, idx) => (
-              <span key={idx} className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
-                {feature}
-              </span>
-            ))}
-            {product.key_features.length > 3 && (
-              <span className="text-xs px-2 py-1 text-muted-foreground">
-                +{product.key_features.length - 3} more
-              </span>
-            )}
-          </div>
-        )}
         
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 border-t border-border">
