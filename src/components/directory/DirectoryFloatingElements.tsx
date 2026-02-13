@@ -7,8 +7,10 @@ import glassesSmartOutline from '@/assets/floating/glasses-smart-outline.png';
 import glassesSmartFilled from '@/assets/floating/glasses-smart-filled.png';
 import glassesVrGoggles from '@/assets/floating/glasses-vr-goggles.png';
 import glassesVrHeadset from '@/assets/floating/glasses-vr-headset.png';
+import iconRocket from '@/assets/floating/icon-rocket.png';
+import iconUfo from '@/assets/floating/icon-ufo.png';
 
-const images = [glassesWayfarer, glassesRoundThick, glassesClubmaster, glassesRoundRed, glassesSmartOutline, glassesSmartFilled, glassesVrGoggles, glassesVrHeadset];
+const images = [glassesWayfarer, glassesRoundThick, glassesClubmaster, glassesRoundRed, glassesSmartOutline, glassesSmartFilled, glassesVrGoggles, glassesVrHeadset, iconRocket, iconUfo];
 
 interface ElementConfig {
   src: string;
