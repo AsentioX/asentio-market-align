@@ -38,16 +38,12 @@ export const useXRProducts = (filters?: ProductFilters) => {
         .from('xr_products')
         .select('*');
 
-      // Apply sorting
+      // Apply sorting (non-price sorts handled by DB)
       const sort = filters?.sort || 'default';
       if (sort === 'company') {
         query = query.order('company', { ascending: true }).order('name', { ascending: true });
       } else if (sort === 'product') {
         query = query.order('name', { ascending: true });
-      } else if (sort === 'price_asc') {
-        query = query.order('price_range', { ascending: true, nullsFirst: false });
-      } else if (sort === 'price_desc') {
-        query = query.order('price_range', { ascending: false, nullsFirst: false });
       } else {
         query = query.order('is_editors_pick', { ascending: false }).order('created_at', { ascending: false });
       }
@@ -68,6 +64,20 @@ export const useXRProducts = (filters?: ProductFilters) => {
       const { data, error } = await query;
       
       if (error) throw error;
+      
+      // Client-side price sorting (parse numeric values from text like "$299", "$1,299")
+      if (sort === 'price_asc' || sort === 'price_desc') {
+        const parsePrice = (p: string | null): number => {
+          if (!p) return sort === 'price_asc' ? Infinity : -Infinity;
+          const match = p.replace(/,/g, '').match(/[\d.]+/);
+          return match ? parseFloat(match[0]) : (sort === 'price_asc' ? Infinity : -Infinity);
+        };
+        (data as XRProduct[]).sort((a, b) => {
+          const diff = parsePrice(a.price_range) - parsePrice(b.price_range);
+          return sort === 'price_asc' ? diff : -diff;
+        });
+      }
+      
       return data as XRProduct[];
     }
   });
