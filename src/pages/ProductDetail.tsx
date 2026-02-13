@@ -64,22 +64,28 @@ const UseCasesSection = () => {
     <Card>
       <CardContent className="p-6 md:p-8">
         <h2 className="text-xl font-semibold mb-4">Use Cases</h2>
-        <div className="space-y-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           {useCases.slice(0, 6).map((uc) => (
-            <div key={uc.id} className="flex gap-4 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
-              {uc.image_url && (
-                <img src={uc.image_url} alt={uc.title} className="w-16 h-16 rounded-lg object-cover shrink-0" />
-              )}
-              <div className="flex-1 min-w-0">
+            <div key={uc.id} className="rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow">
+              <div className="aspect-[16/10] bg-muted overflow-hidden">
+                {uc.image_url ? (
+                  <img src={uc.image_url} alt={uc.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+                    <Package className="w-10 h-10 text-muted-foreground/30" />
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
                 <h3 className="font-medium text-foreground line-clamp-1">{uc.title}</h3>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-1.5">
                   <Badge variant="secondary" className="text-xs">{uc.device}</Badge>
                   {uc.agency && (
                     <span className="text-xs text-muted-foreground">by {uc.agency.name}</span>
                   )}
                 </div>
                 {uc.description && (
-                  <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{uc.description}</p>
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{uc.description}</p>
                 )}
               </div>
             </div>
