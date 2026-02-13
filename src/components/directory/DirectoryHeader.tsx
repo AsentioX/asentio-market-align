@@ -88,7 +88,7 @@ const DirectoryHeader = () => {
               top: `${orb.top}%`,
               left: `${orb.left}%`,
               animation: orb.animation.split('_').join(' '),
-              transition: 'top 1s ease-in-out, left 1s ease-in-out',
+              transition: 'top 8s ease-in-out, left 8s ease-in-out',
             }}
             onAnimationIteration={() => handleOrbIteration(i)}
           />
