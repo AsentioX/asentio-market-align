@@ -182,21 +182,7 @@ const ProductDetail = () => {
                     </div>
                   )}
 
-                  <div className="flex flex-wrap gap-3 mb-6">
-                    <Badge variant="secondary" className="text-sm px-3 py-1">
-                      {product.category}
-                    </Badge>
-                    <Badge className={`text-sm px-3 py-1 ${
-                      product.ai_integration === 'Yes' 
-                        ? 'bg-emerald-100 text-emerald-700' 
-                        : product.ai_integration === 'Partial'
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      <Brain className="w-3.5 h-3.5 mr-1.5" />
-                      AI: {product.ai_integration}
-                    </Badge>
-                  </div>
+
 
                   {product.description && (
                     <p className="text-muted-foreground leading-relaxed">
