@@ -143,7 +143,14 @@ export const CATEGORIES = [
   'Smart Glasses',
   'Spatial Apps',
   'AR Entertainment Glasses',
-  'Services'
+  'Services',
+  'AI Smartglasses',
+  'AR Smartglasses',
+  'AI/AR Hybrid',
+  'Full AR',
+  'Mixed Reality',
+  'Enterprise AR',
+  'Standalone AR'
 ] as const;
 
 export const AI_INTEGRATIONS = ['Yes', 'No', 'Partial'] as const;
