@@ -173,6 +173,32 @@ const ProductForm = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Editor's Pick */}
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="editors_pick">Editor's Pick</Label>
+                    <p className="text-sm text-muted-foreground">Feature this product at the top of the directory</p>
+                  </div>
+                  <Switch
+                    id="editors_pick"
+                    checked={formData.is_editors_pick}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_editors_pick: checked }))}
+                  />
+                </div>
+                {formData.is_editors_pick && (
+                  <div className="space-y-2">
+                    <Label htmlFor="editors_note">Editor's Note</Label>
+                    <Input
+                      id="editors_note"
+                      value={formData.editors_note}
+                      onChange={(e) => setFormData(prev => ({ ...prev, editors_note: e.target.value }))}
+                      placeholder="Why this product stands out..."
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* Basic Info */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -333,31 +359,7 @@ const ProductForm = () => {
                 </div>
               </div>
 
-              {/* Editor's Pick */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="editors_pick">Editor's Pick</Label>
-                    <p className="text-sm text-muted-foreground">Feature this product at the top of the directory</p>
-                  </div>
-                  <Switch
-                    id="editors_pick"
-                    checked={formData.is_editors_pick}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_editors_pick: checked }))}
-                  />
-                </div>
-                {formData.is_editors_pick && (
-                  <div className="space-y-2">
-                    <Label htmlFor="editors_note">Editor's Note</Label>
-                    <Input
-                      id="editors_note"
-                      value={formData.editors_note}
-                      onChange={(e) => setFormData(prev => ({ ...prev, editors_note: e.target.value }))}
-                      placeholder="Why this product stands out..."
-                    />
-                  </div>
-                )}
-              </div>
+
 
               {/* Image URL */}
               <div className="space-y-2">
