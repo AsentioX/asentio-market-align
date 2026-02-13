@@ -50,7 +50,7 @@ const DirectoryGrid = ({ products, isLoading, view = 'card' }: DirectoryGridProp
             <h2 className="text-xl font-semibold text-foreground">Editor's Picks</h2>
             <span className="text-sm text-muted-foreground">({editorsPicks.length})</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {editorsPicks.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -65,7 +65,7 @@ const DirectoryGrid = ({ products, isLoading, view = 'card' }: DirectoryGridProp
             <h2 className="text-xl font-semibold text-foreground">All Products</h2>
             <span className="text-sm text-muted-foreground">({regularProducts.length})</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {regularProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
