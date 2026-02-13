@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
-import smartGlasses from '@/assets/floating/smart-glasses.png';
-import arVisor from '@/assets/floating/ar-visor.png';
-import roundGlasses from '@/assets/floating/round-glasses.png';
-import wayfarer from '@/assets/floating/wayfarer.png';
-import catEye from '@/assets/floating/cat-eye.png';
-import robot from '@/assets/floating/robot.png';
-import rocket from '@/assets/floating/rocket.png';
-import ufo from '@/assets/floating/ufo.png';
+import glassesWayfarer from '@/assets/floating/glasses-wayfarer.png';
+import glassesRoundThick from '@/assets/floating/glasses-round-thick.png';
+import glassesClubmaster from '@/assets/floating/glasses-clubmaster.png';
+import glassesRoundRed from '@/assets/floating/glasses-round-red.png';
+import glassesSmartOutline from '@/assets/floating/glasses-smart-outline.png';
+import glassesSmartFilled from '@/assets/floating/glasses-smart-filled.png';
+import glassesVrGoggles from '@/assets/floating/glasses-vr-goggles.png';
+import glassesVrHeadset from '@/assets/floating/glasses-vr-headset.png';
 
-const images = [smartGlasses, arVisor, roundGlasses, wayfarer, catEye, robot, rocket, ufo];
+const images = [glassesWayfarer, glassesRoundThick, glassesClubmaster, glassesRoundRed, glassesSmartOutline, glassesSmartFilled, glassesVrGoggles, glassesVrHeadset];
 
 interface ElementConfig {
   src: string;
