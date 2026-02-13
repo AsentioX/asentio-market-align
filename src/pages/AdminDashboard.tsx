@@ -157,23 +157,23 @@ const AdminDashboard = () => {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <CardTitle>Products</CardTitle>
-                  <div className="flex items-center gap-3">
-                    <CsvProductUpload />
-                    <div className="relative w-full sm:w-64">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search products..."
-                        value={productSearch}
-                        onChange={(e) => setProductSearch(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                    <Link to="/admin/products/new">
-                      <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add
-                      </Button>
-                    </Link>
+                   <div className="flex items-center gap-3">
+                     <div className="relative w-full sm:w-64">
+                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                       <Input
+                         placeholder="Search products..."
+                         value={productSearch}
+                         onChange={(e) => setProductSearch(e.target.value)}
+                         className="pl-10"
+                       />
+                     </div>
+                     <Link to="/admin/products/new">
+                       <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
+                         <Plus className="w-4 h-4 mr-2" />
+                         Add
+                       </Button>
+                     </Link>
+                     <CsvProductUpload />
                   </div>
                 </div>
               </CardHeader>
