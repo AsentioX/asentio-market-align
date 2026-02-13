@@ -19,11 +19,11 @@ const CaseStudyCard = ({ company, description, image, imageZoom = 1, imagePositi
   if (expanded && hasDetails) {
     return (
       <div
-        className="col-span-1 lg:col-span-3 group bg-card rounded-xl border border-asentio-blue/30 overflow-hidden cursor-pointer animate-fade-in"
+        className="group bg-card/50 rounded-lg overflow-hidden cursor-pointer animate-fade-in"
         onClick={onToggle}
       >
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/4 flex-shrink-0 h-40 md:h-auto overflow-hidden">
+          <div className="md:w-1/4 flex-shrink-0 h-48 md:h-auto overflow-hidden">
             <img
               src={image}
               alt={company}
@@ -31,20 +31,20 @@ const CaseStudyCard = ({ company, description, image, imageZoom = 1, imagePositi
               style={{ transform: `scale(${imageZoom})`, objectPosition: imagePosition }}
             />
           </div>
-          <div className="flex-1 p-6 flex flex-col md:flex-row gap-6">
+          <div className="flex-1 p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8">
             <div className="md:w-1/3 flex flex-col justify-center">
-              <h3 className="text-lg font-bold text-asentio-blue mb-2">{company}</h3>
+              <h3 className="text-lg font-bold text-foreground mb-2">{company}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
             </div>
             {challenge && (
               <div className="md:w-1/3 flex flex-col justify-center">
-                <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-1">Challenge</p>
+                <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Challenge</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{challenge}</p>
               </div>
             )}
             {whatWeDid && (
               <div className="md:w-1/3 flex flex-col justify-center">
-                <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-1">What We Did</p>
+                <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">What We Did</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{whatWeDid}</p>
               </div>
             )}
