@@ -163,7 +163,7 @@ const Services = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="bg-asentio-blue text-primary-foreground py-10 md:py-14 relative overflow-hidden">
+      <section className="bg-asentio-blue text-primary-foreground pt-24 md:pt-32 pb-10 md:pb-14 relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
         <div className="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-destructive/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-24 md:w-48 h-24 md:h-48 bg-destructive/5 rounded-full blur-2xl" />
