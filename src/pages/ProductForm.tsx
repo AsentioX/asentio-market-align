@@ -302,7 +302,7 @@ const ProductForm = () => {
               {/* Price & Link */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price_range">Price Range</Label>
+                  <Label htmlFor="price_range">Price</Label>
                   <Input
                     id="price_range"
                     value={formData.price_range}
