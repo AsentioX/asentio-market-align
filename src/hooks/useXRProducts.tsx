@@ -162,5 +162,10 @@ export const SHIPPING_STATUSES = [
   'Concept',
   'CES prototype',
   'CES preview',
-  'CES 2026 launch'
+  'CES 2026 launch',
+  'Dev Only',
+  'Dev Only ($99/mo)',
+  'Announced',
+  'Beta',
+  'Discontinued'
 ] as const;
