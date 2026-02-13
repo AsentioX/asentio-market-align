@@ -1,0 +1,1 @@
+ALTER TABLE public.xr_products ADD COLUMN company_hq text;
