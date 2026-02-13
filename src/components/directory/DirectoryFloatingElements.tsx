@@ -1,100 +1,17 @@
 import { useMemo } from 'react';
+import smartGlasses from '@/assets/floating/smart-glasses.png';
+import arVisor from '@/assets/floating/ar-visor.png';
+import roundGlasses from '@/assets/floating/round-glasses.png';
+import wayfarer from '@/assets/floating/wayfarer.png';
+import catEye from '@/assets/floating/cat-eye.png';
+import robot from '@/assets/floating/robot.png';
+import rocket from '@/assets/floating/rocket.png';
+import ufo from '@/assets/floating/ufo.png';
 
-const icons: Record<string, JSX.Element> = {
-  glasses: (
-    <svg viewBox="0 0 80 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="8" width="28" height="20" rx="4" />
-      <rect x="48" y="8" width="28" height="20" rx="4" />
-      <path d="M32 18 Q40 12 48 18" />
-      <line x1="4" y1="18" x2="0" y2="14" />
-      <line x1="76" y1="18" x2="80" y2="14" />
-      <circle cx="18" cy="18" r="6" strokeDasharray="2 2" opacity="0.5" />
-      <circle cx="62" cy="18" r="6" strokeDasharray="2 2" opacity="0.5" />
-    </svg>
-  ),
-  smartGlasses: (
-    <svg viewBox="0 0 80 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 16 Q6 8 14 8 L34 8 Q38 8 40 12 Q42 8 46 8 L66 8 Q74 8 74 16 L74 24 Q74 32 66 32 L46 32 Q42 32 40 28 Q38 32 34 32 L14 32 Q6 32 6 24 Z" />
-      <line x1="6" y1="20" x2="0" y2="16" />
-      <line x1="74" y1="20" x2="80" y2="16" />
-      <rect x="12" y="14" width="20" height="12" rx="2" opacity="0.3" />
-      <rect x="48" y="14" width="20" height="12" rx="2" opacity="0.3" />
-      <circle cx="30" cy="12" r="2" fill="currentColor" opacity="0.6" />
-    </svg>
-  ),
-  neuralNetwork: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
-      <circle cx="12" cy="16" r="4" />
-      <circle cx="12" cy="32" r="4" />
-      <circle cx="12" cy="48" r="4" />
-      <circle cx="32" cy="20" r="4" />
-      <circle cx="32" cy="44" r="4" />
-      <circle cx="52" cy="32" r="4" />
-      <line x1="16" y1="16" x2="28" y2="20" opacity="0.5" />
-      <line x1="16" y1="16" x2="28" y2="44" opacity="0.3" />
-      <line x1="16" y1="32" x2="28" y2="20" opacity="0.5" />
-      <line x1="16" y1="32" x2="28" y2="44" opacity="0.5" />
-      <line x1="16" y1="48" x2="28" y2="44" opacity="0.5" />
-      <line x1="16" y1="48" x2="28" y2="20" opacity="0.3" />
-      <line x1="36" y1="20" x2="48" y2="32" opacity="0.5" />
-      <line x1="36" y1="44" x2="48" y2="32" opacity="0.5" />
-    </svg>
-  ),
-  chip: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="16" y="16" width="32" height="32" rx="4" />
-      <rect x="24" y="24" width="16" height="16" rx="2" opacity="0.4" />
-      <line x1="24" y1="12" x2="24" y2="16" />
-      <line x1="32" y1="12" x2="32" y2="16" />
-      <line x1="40" y1="12" x2="40" y2="16" />
-      <line x1="24" y1="48" x2="24" y2="52" />
-      <line x1="32" y1="48" x2="32" y2="52" />
-      <line x1="40" y1="48" x2="40" y2="52" />
-      <line x1="12" y1="24" x2="16" y2="24" />
-      <line x1="12" y1="32" x2="16" y2="32" />
-      <line x1="12" y1="40" x2="16" y2="40" />
-      <line x1="48" y1="24" x2="52" y2="24" />
-      <line x1="48" y1="32" x2="52" y2="32" />
-      <line x1="48" y1="40" x2="52" y2="40" />
-    </svg>
-  ),
-  eye: (
-    <svg viewBox="0 0 64 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 20 Q16 4 32 4 Q48 4 60 20 Q48 36 32 36 Q16 36 4 20 Z" />
-      <circle cx="32" cy="20" r="10" />
-      <circle cx="32" cy="20" r="4" fill="currentColor" opacity="0.4" />
-      <path d="M22 20 Q27 14 32 14" opacity="0.3" />
-    </svg>
-  ),
-  brain: (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M32 56 L32 32" />
-      <path d="M20 48 Q12 44 12 36 Q8 32 10 26 Q8 20 14 16 Q16 8 24 8 Q28 4 32 4 Q36 4 40 8 Q48 8 50 16 Q56 20 54 26 Q56 32 52 36 Q52 44 44 48" />
-      <path d="M22 20 Q28 24 32 20 Q36 16 42 20" opacity="0.4" />
-      <path d="M18 32 Q24 28 32 32 Q40 36 46 32" opacity="0.4" />
-    </svg>
-  ),
-  vrHeadset: (
-    <svg viewBox="0 0 80 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 16 Q8 8 20 8 L60 8 Q72 8 72 16 L72 32 Q72 40 60 40 L48 40 Q44 40 40 36 Q36 40 32 40 L20 40 Q8 40 8 32 Z" />
-      <line x1="8" y1="24" x2="2" y2="20" />
-      <line x1="72" y1="24" x2="78" y2="20" />
-      <rect x="16" y="14" width="20" height="18" rx="4" opacity="0.3" />
-      <rect x="44" y="14" width="20" height="18" rx="4" opacity="0.3" />
-      <path d="M36 24 L44 24" strokeDasharray="2 2" opacity="0.5" />
-    </svg>
-  ),
-  sparkle: (
-    <svg viewBox="0 0 48 48" fill="currentColor" stroke="none" opacity="0.6">
-      <path d="M24 4 L26 20 L42 18 L28 24 L36 40 L24 28 L12 40 L20 24 L4 18 L22 20 Z" />
-    </svg>
-  ),
-};
-
-const elementTypes = Object.keys(icons);
+const images = [smartGlasses, arVisor, roundGlasses, wayfarer, catEye, robot, rocket, ufo];
 
 interface ElementConfig {
-  type: string;
+  src: string;
   x: number;
   y: number;
   size: number;
@@ -106,19 +23,18 @@ interface ElementConfig {
 
 const DirectoryFloatingElements = () => {
   const elements = useMemo<ElementConfig[]>(() => {
-    const count = 8;
     const els: ElementConfig[] = [];
     const seededRandom = (seed: number) => {
       const x = Math.sin(seed * 9301 + 49297) * 49297;
       return x - Math.floor(x);
     };
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < images.length; i++) {
       els.push({
-        type: elementTypes[i % elementTypes.length],
+        src: images[i],
         x: seededRandom(i * 7 + 1) * 90 + 5,
         y: seededRandom(i * 13 + 3) * 80 + 10,
-        size: 24 + seededRandom(i * 17 + 5) * 36,
-        opacity: 0.12 + seededRandom(i * 23 + 7) * 0.15,
+        size: 32 + seededRandom(i * 17 + 5) * 40,
+        opacity: 0.15 + seededRandom(i * 23 + 7) * 0.15,
         duration: 25 + seededRandom(i * 31 + 11) * 35,
         delay: seededRandom(i * 37 + 13) * -40,
         driftX: 10 + seededRandom(i * 41 + 17) * 20,
@@ -142,7 +58,7 @@ const DirectoryFloatingElements = () => {
         {elements.map((el, i) => (
           <div
             key={i}
-            className="absolute text-white"
+            className="absolute"
             style={{
               left: `${el.x}%`,
               top: `${el.y}%`,
@@ -151,9 +67,10 @@ const DirectoryFloatingElements = () => {
               opacity: el.opacity,
               '--drift-x': `${el.driftX}px`,
               animation: `float-drift ${el.duration}s linear ${el.delay}s infinite`,
+              filter: 'brightness(0) invert(1)',
             } as React.CSSProperties}
           >
-            {icons[el.type]}
+            <img src={el.src} alt="" className="w-full h-full object-contain" draggable={false} />
           </div>
         ))}
       </div>
