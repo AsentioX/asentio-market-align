@@ -59,10 +59,11 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
         {caseStudies.map((study, index) => (
           <div
             key={index}
-            className="snap-start transition-all duration-500 ease-in-out flex-shrink-0"
+            className="snap-start flex-shrink-0"
             style={{
               width: expandedStudy === index ? "100%" : "min(340px, 85vw)",
               minWidth: expandedStudy === index ? "100%" : "min(340px, 85vw)",
+              transition: "width 0.4s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
             <CaseStudyCard

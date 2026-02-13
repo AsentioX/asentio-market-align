@@ -19,7 +19,7 @@ const CaseStudyCard = ({ company, description, image, imageZoom = 1, imagePositi
   if (expanded && hasDetails) {
     return (
       <div
-        className="col-span-1 lg:col-span-3 group bg-card rounded-xl border border-asentio-blue/30 transition-all duration-300 overflow-hidden cursor-pointer"
+        className="col-span-1 lg:col-span-3 group bg-card rounded-xl border border-asentio-blue/30 overflow-hidden cursor-pointer animate-fade-in"
         onClick={onToggle}
       >
         <div className="flex flex-col md:flex-row">
