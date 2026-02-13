@@ -51,8 +51,7 @@ const DirectoryHeader = () => {
           </h1>
           
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Curated by Asentio's strategic team, this directory tracks the leading-edge of immersive technology 
-            and AI-powered experiences—from smart glasses and spatial AI apps to mixed reality platforms and lifestyle services.
+            This directory tracks the leading-edge of XR and AI-powered experiences, the agencies creating these experiences, and XR enabled use cases.
           </p>
           
         </div>
