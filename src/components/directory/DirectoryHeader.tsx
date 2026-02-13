@@ -43,11 +43,11 @@ const DirectoryHeader = () => {
           </div>
           
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Discover the World's Most Innovative{' '}
+            Global{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">
               XR & AI
             </span>{' '}
-            Consumer Products
+            Smartglasses
           </h1>
           
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
