@@ -7,6 +7,30 @@ interface ShotDot {
   y: number;
 }
 
+interface Orb {
+  top: number;
+  left: number;
+  size: string;
+  color: string;
+  blur: string;
+  animation: string;
+}
+
+const orbConfigs = [
+  { size: 'w-32 h-32', color: 'bg-cyan-400/30', blur: 'blur-3xl', animation: 'orb-pulse-1_6s_ease-in-out_infinite' },
+  { size: 'w-20 h-20', color: 'bg-blue-300/35', blur: 'blur-2xl', animation: 'orb-pulse-2_8s_ease-in-out_infinite' },
+  { size: 'w-48 h-48', color: 'bg-indigo-400/25', blur: 'blur-3xl', animation: 'orb-pulse-3_7s_ease-in-out_infinite' },
+  { size: 'w-24 h-24', color: 'bg-cyan-300/30', blur: 'blur-2xl', animation: 'orb-pulse-1_9s_ease-in-out_1s_infinite' },
+  { size: 'w-40 h-40', color: 'bg-blue-400/25', blur: 'blur-3xl', animation: 'orb-pulse-2_10s_ease-in-out_2s_infinite' },
+  { size: 'w-16 h-16', color: 'bg-purple-400/30', blur: 'blur-2xl', animation: 'orb-pulse-3_5s_ease-in-out_0.5s_infinite' },
+  { size: 'w-36 h-36', color: 'bg-cyan-500/25', blur: 'blur-3xl', animation: 'orb-pulse-1_11s_ease-in-out_3s_infinite' },
+  { size: 'w-12 h-12', color: 'bg-blue-200/35', blur: 'blur-xl', animation: 'orb-pulse-2_6s_ease-in-out_1.5s_infinite' },
+];
+
+const randomPos = () => ({ top: Math.random() * 80 + 5, left: Math.random() * 85 + 5 });
+
+const initOrbs = (): Orb[] => orbConfigs.map(c => ({ ...c, ...randomPos() }));
+
 const playShootSound = () => {
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -26,6 +50,7 @@ const playShootSound = () => {
 
 const DirectoryHeader = () => {
   const [dots, setDots] = useState<ShotDot[]>([]);
+  const [orbs, setOrbs] = useState<Orb[]>(initOrbs);
   const sectionRef = useRef<HTMLElement>(null);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
@@ -37,6 +62,10 @@ const DirectoryHeader = () => {
     setDots(prev => [...prev, dot]);
     playShootSound();
     setTimeout(() => setDots(prev => prev.filter(d => d.id !== dot.id)), 400);
+  }, []);
+
+  const handleOrbIteration = useCallback((index: number) => {
+    setOrbs(prev => prev.map((orb, i) => i === index ? { ...orb, ...randomPos() } : orb));
   }, []);
 
   return (
@@ -51,14 +80,19 @@ const DirectoryHeader = () => {
       
       {/* Glowing Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[5%] w-32 h-32 rounded-full bg-cyan-400/30 blur-3xl animate-[orb-pulse-1_6s_ease-in-out_infinite]" />
-        <div className="absolute top-[60%] left-[15%] w-20 h-20 rounded-full bg-blue-300/35 blur-2xl animate-[orb-pulse-2_8s_ease-in-out_infinite]" />
-        <div className="absolute top-[20%] right-[10%] w-48 h-48 rounded-full bg-indigo-400/25 blur-3xl animate-[orb-pulse-3_7s_ease-in-out_infinite]" />
-        <div className="absolute top-[70%] right-[20%] w-24 h-24 rounded-full bg-cyan-300/30 blur-2xl animate-[orb-pulse-1_9s_ease-in-out_1s_infinite]" />
-        <div className="absolute top-[40%] left-[40%] w-40 h-40 rounded-full bg-blue-400/25 blur-3xl animate-[orb-pulse-2_10s_ease-in-out_2s_infinite]" />
-        <div className="absolute top-[5%] left-[60%] w-16 h-16 rounded-full bg-purple-400/30 blur-2xl animate-[orb-pulse-3_5s_ease-in-out_0.5s_infinite]" />
-        <div className="absolute top-[80%] left-[70%] w-36 h-36 rounded-full bg-cyan-500/25 blur-3xl animate-[orb-pulse-1_11s_ease-in-out_3s_infinite]" />
-        <div className="absolute top-[30%] left-[85%] w-12 h-12 rounded-full bg-blue-200/35 blur-xl animate-[orb-pulse-2_6s_ease-in-out_1.5s_infinite]" />
+        {orbs.map((orb, i) => (
+          <div
+            key={i}
+            className={`absolute rounded-full ${orb.size} ${orb.color} ${orb.blur}`}
+            style={{
+              top: `${orb.top}%`,
+              left: `${orb.left}%`,
+              animation: orb.animation.split('_').join(' '),
+              transition: 'top 1s ease-in-out, left 1s ease-in-out',
+            }}
+            onAnimationIteration={() => handleOrbIteration(i)}
+          />
+        ))}
       </div>
 
       {/* Shot dots */}
