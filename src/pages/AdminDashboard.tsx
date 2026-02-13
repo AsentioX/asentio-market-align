@@ -185,9 +185,9 @@ const AdminDashboard = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Company</th>
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground">Product</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Category</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">AI</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Location</th>
                           <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
@@ -197,21 +197,14 @@ const AdminDashboard = () => {
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
                                 {product.is_editors_pick && <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />}
-                                <div>
-                                  <p className="font-medium text-foreground">{product.name}</p>
-                                  <p className="text-sm text-muted-foreground">{product.company}</p>
-                                </div>
+                                <p className="font-medium text-foreground">{product.company}</p>
                               </div>
                             </td>
-                            <td className="py-3 px-4 hidden md:table-cell">
-                              <Badge variant="secondary">{product.category}</Badge>
+                            <td className="py-3 px-4">
+                              <p className="text-sm text-foreground">{product.name}</p>
                             </td>
-                            <td className="py-3 px-4 hidden lg:table-cell">
-                              <Badge className={
-                                product.ai_integration === 'Yes' ? 'bg-emerald-100 text-emerald-700' 
-                                : product.ai_integration === 'Partial' ? 'bg-amber-100 text-amber-700'
-                                : 'bg-gray-100 text-gray-600'
-                              }>{product.ai_integration}</Badge>
+                            <td className="py-3 px-4 hidden md:table-cell">
+                              <span className="text-sm text-muted-foreground">{product.region}</span>
                             </td>
                             <td className="py-3 px-4">
                               <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
