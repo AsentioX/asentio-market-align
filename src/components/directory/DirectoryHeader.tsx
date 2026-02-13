@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import DirectoryFloatingElements from './DirectoryFloatingElements';
 
 const DirectoryHeader = () => {
   return (
     <section className="relative bg-gradient-to-br from-asentio-blue via-asentio-blue/95 to-asentio-blue/90 text-white pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
+      {/* Floating XR & AI Elements */}
+      <DirectoryFloatingElements />
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-white/20 blur-3xl" />
