@@ -1,18 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
-
-interface FloatingElement {
-  id: number;
-  type: string;
-  x: number;
-  y: number;
-  speed: number;
-  size: number;
-  rotation: number;
-  rotationSpeed: number;
-  opacity: number;
-  drift: number;
-  driftSpeed: number;
-}
+import { useMemo } from 'react';
 
 const icons: Record<string, JSX.Element> = {
   glasses: (
@@ -107,84 +93,71 @@ const icons: Record<string, JSX.Element> = {
 
 const elementTypes = Object.keys(icons);
 
-const DirectoryFloatingElements = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const elementsRef = useRef<FloatingElement[]>([]);
+interface ElementConfig {
+  type: string;
+  x: number;
+  y: number;
+  size: number;
+  opacity: number;
+  duration: number;
+  delay: number;
+  driftX: number;
+}
 
-  const initialElements = useMemo(() => {
+const DirectoryFloatingElements = () => {
+  const elements = useMemo<ElementConfig[]>(() => {
     const count = 8;
-    const els: FloatingElement[] = [];
+    const els: ElementConfig[] = [];
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed * 9301 + 49297) * 49297;
+      return x - Math.floor(x);
+    };
     for (let i = 0; i < count; i++) {
       els.push({
-        id: i,
         type: elementTypes[i % elementTypes.length],
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        speed: 0.15 + Math.random() * 0.35,
-        size: 24 + Math.random() * 36,
-        rotation: Math.random() * 360,
-        rotationSpeed: (Math.random() - 0.5) * 0.2,
-        opacity: 0.12 + Math.random() * 0.15,
-        drift: Math.random() * Math.PI * 2,
-        driftSpeed: 0.1 + Math.random() * 0.25,
+        x: seededRandom(i * 7 + 1) * 90 + 5,
+        y: seededRandom(i * 13 + 3) * 80 + 10,
+        size: 24 + seededRandom(i * 17 + 5) * 36,
+        opacity: 0.12 + seededRandom(i * 23 + 7) * 0.15,
+        duration: 25 + seededRandom(i * 31 + 11) * 35,
+        delay: seededRandom(i * 37 + 13) * -40,
+        driftX: 10 + seededRandom(i * 41 + 17) * 20,
       });
     }
-    elementsRef.current = els;
     return els;
   }, []);
 
-  useEffect(() => {
-    let animationId: number;
-
-    const animate = () => {
-      const els = elementsRef.current;
-      const container = containerRef.current;
-      if (!container) {
-        animationId = requestAnimationFrame(animate);
-        return;
-      }
-
-      const children = container.children;
-      for (let i = 0; i < els.length; i++) {
-        const el = els[i];
-        el.y = ((el.y - el.speed * 0.02 + 100) % 120) - 10;
-        el.rotation += el.rotationSpeed;
-        el.drift += el.driftSpeed * 0.01;
-
-        const child = children[i] as HTMLElement;
-        if (child) {
-          const x = el.x + Math.sin(el.drift) * 3;
-          child.style.transform = `translate3d(${x}vw, ${el.y}vh, 0) rotate(${el.rotation}deg)`;
-        }
-      }
-
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animationId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationId);
-  }, []);
-
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none">
-      {initialElements.map(el => (
-        <div
-          key={el.id}
-          className="absolute text-white"
-          style={{
-            width: el.size,
-            height: el.size,
-            opacity: el.opacity,
-            willChange: 'transform',
-            top: 0,
-            left: 0,
-            transform: `translate3d(${el.x}vw, ${el.y}vh, 0) rotate(${el.rotation}deg)`,
-          }}
-        >
-          {icons[el.type]}
-        </div>
-      ))}
-    </div>
+    <>
+      <style>{`
+        @keyframes float-drift {
+          0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+          25% { transform: translate3d(var(--drift-x), -25%, 0) rotate(5deg); }
+          50% { transform: translate3d(0, -50%, 0) rotate(0deg); }
+          75% { transform: translate3d(calc(var(--drift-x) * -1), -75%, 0) rotate(-5deg); }
+          100% { transform: translate3d(0, -100%, 0) rotate(0deg); }
+        }
+      `}</style>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {elements.map((el, i) => (
+          <div
+            key={i}
+            className="absolute text-white"
+            style={{
+              left: `${el.x}%`,
+              top: `${el.y}%`,
+              width: el.size,
+              height: el.size,
+              opacity: el.opacity,
+              '--drift-x': `${el.driftX}px`,
+              animation: `float-drift ${el.duration}s linear ${el.delay}s infinite`,
+            } as React.CSSProperties}
+          >
+            {icons[el.type]}
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 
