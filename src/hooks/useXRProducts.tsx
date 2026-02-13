@@ -27,6 +27,7 @@ export interface ProductFilters {
   ai_integration?: string;
   shipping_status?: string;
   search?: string;
+  sort?: string;
 }
 
 export const useXRProducts = (filters?: ProductFilters) => {
@@ -35,9 +36,21 @@ export const useXRProducts = (filters?: ProductFilters) => {
     queryFn: async () => {
       let query = supabase
         .from('xr_products')
-        .select('*')
-        .order('is_editors_pick', { ascending: false })
-        .order('created_at', { ascending: false });
+        .select('*');
+
+      // Apply sorting
+      const sort = filters?.sort || 'default';
+      if (sort === 'company') {
+        query = query.order('company', { ascending: true }).order('name', { ascending: true });
+      } else if (sort === 'product') {
+        query = query.order('name', { ascending: true });
+      } else if (sort === 'price_asc') {
+        query = query.order('price_range', { ascending: true, nullsFirst: false });
+      } else if (sort === 'price_desc') {
+        query = query.order('price_range', { ascending: false, nullsFirst: false });
+      } else {
+        query = query.order('is_editors_pick', { ascending: false }).order('created_at', { ascending: false });
+      }
 
       if (filters?.category && filters.category !== 'all') {
         query = query.eq('category', filters.category);
