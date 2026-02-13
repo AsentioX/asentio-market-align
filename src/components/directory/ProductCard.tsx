@@ -69,14 +69,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </div>
           
           {product.link && (
-            <a
-              href={product.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-full bg-muted hover:bg-asentio-blue hover:text-white transition-colors shrink-0"
+            <span
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(product.link!, '_blank', 'noopener,noreferrer');
+              }}
+              className="p-2 rounded-full bg-muted hover:bg-asentio-blue hover:text-white transition-colors shrink-0 cursor-pointer"
             >
               <ExternalLink className="w-4 h-4" />
-            </a>
+            </span>
           )}
         </div>
         
