@@ -26,14 +26,17 @@ interface Particle {
   rotationSpeed: number;
 }
 
-interface StreakConfig {
+interface Streak {
   id: number;
   src: string;
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
   size: number;
+  rotation: number;
+  opacity: number;
+  startTime: number;
   duration: number;
 }
 
@@ -61,70 +64,105 @@ const initParticles = (): Particle[] =>
     rotationSpeed: (seededRandom(i * 31 + 11) - 0.5) * 0.3,
   }));
 
+const createStreak = (): Streak => {
+  const src = streakImages[Math.floor(Math.random() * streakImages.length)];
+  const pattern = Math.floor(Math.random() * 4);
+  let startX: number, startY: number, endX: number, endY: number;
+  switch (pattern) {
+    case 0: startX = -5; startY = 10 + Math.random() * 60; endX = 105; endY = startY + (Math.random() * 30 - 15); break;
+    case 1: startX = 105; startY = 10 + Math.random() * 60; endX = -5; endY = startY + (Math.random() * 30 - 15); break;
+    case 2: startX = -5; startY = -5; endX = 70 + Math.random() * 30; endY = 70 + Math.random() * 25; break;
+    default: startX = 105; startY = -5; endX = Math.random() * 30; endY = 70 + Math.random() * 25; break;
+  }
+  const duration = 3000 + Math.random() * 2000;
+  const dx = endX - startX;
+  const dy = endY - startY;
+  const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+  return {
+    id: Date.now() + Math.random(),
+    src,
+    x: startX,
+    y: startY,
+    vx: dx / duration * 16, // per-frame velocity at ~60fps
+    vy: dy / duration * 16,
+    size: 50 + Math.random() * 30,
+    rotation: angle - 45,
+    opacity: 0,
+    startTime: performance.now(),
+    duration,
+  };
+};
+
 const DirectoryFloatingElements = () => {
   const particlesRef = useRef<Particle[]>(initParticles());
+  const streaksRef = useRef<Streak[]>([]);
   const [renderTick, setRenderTick] = useState(0);
-  const [streaks, setStreaks] = useState<StreakConfig[]>([]);
   const [explosions, setExplosions] = useState<ExplosionConfig[]>([]);
   const [killCount, setKillCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Physics loop
+  // Physics loop for both particles and streaks
   useEffect(() => {
     let animId: number;
     const step = () => {
       const ps = particlesRef.current;
+      const now = performance.now();
+
       // Move particles
       for (const p of ps) {
         p.x += p.vx;
         p.y += p.vy;
         p.rotation += p.rotationSpeed;
-        // Bounce off walls (0-100 percent space)
         if (p.x < 0) { p.x = 0; p.vx *= -1; }
         if (p.x > 95) { p.x = 95; p.vx *= -1; }
         if (p.y < 0) { p.y = 0; p.vy *= -1; }
         if (p.y > 90) { p.y = 90; p.vy *= -1; }
       }
-      // Collision detection between particles
+
+      // Collision detection
       for (let i = 0; i < ps.length; i++) {
         for (let j = i + 1; j < ps.length; j++) {
-          const a = ps[i];
-          const b = ps[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
+          const a = ps[i]; const b = ps[j];
+          const dx = a.x - b.x; const dy = a.y - b.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const minDist = (a.size + b.size) / 2 * 0.08; // convert px size to approx % units
+          const minDist = (a.size + b.size) / 2 * 0.08;
           if (dist < minDist && dist > 0) {
-            // Normalize
-            const nx = dx / dist;
-            const ny = dy / dist;
-            // Relative velocity
-            const dvx = a.vx - b.vx;
-            const dvy = a.vy - b.vy;
-            const dvn = dvx * nx + dvy * ny;
-            // Only resolve if approaching
+            const nx = dx / dist; const ny = dy / dist;
+            const dvn = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
             if (dvn < 0) {
-              a.vx -= dvn * nx;
-              a.vy -= dvn * ny;
-              b.vx += dvn * nx;
-              b.vy += dvn * ny;
-              // Add slight rotation kick
+              a.vx -= dvn * nx; a.vy -= dvn * ny;
+              b.vx += dvn * nx; b.vy += dvn * ny;
               a.rotationSpeed += (Math.random() - 0.5) * 0.4;
               b.rotationSpeed += (Math.random() - 0.5) * 0.4;
             }
-            // Separate overlapping
             const overlap = minDist - dist;
-            a.x += nx * overlap * 0.5;
-            a.y += ny * overlap * 0.5;
-            b.x -= nx * overlap * 0.5;
-            b.y -= ny * overlap * 0.5;
+            a.x += nx * overlap * 0.5; a.y += ny * overlap * 0.5;
+            b.x -= nx * overlap * 0.5; b.y -= ny * overlap * 0.5;
           }
         }
       }
+
       // Dampen rotation
-      for (const p of ps) {
-        p.rotationSpeed *= 0.998;
+      for (const p of ps) { p.rotationSpeed *= 0.998; }
+
+      // Move streaks
+      const streaks = streaksRef.current;
+      for (const s of streaks) {
+        s.x += s.vx;
+        s.y += s.vy;
+        const elapsed = now - s.startTime;
+        const progress = elapsed / s.duration;
+        if (progress < 0.05) {
+          s.opacity = progress / 0.05;
+        } else if (progress > 0.9) {
+          s.opacity = Math.max(0, (1 - progress) / 0.1);
+        } else {
+          s.opacity = 1;
+        }
       }
+      // Remove expired streaks
+      streaksRef.current = streaks.filter(s => (now - s.startTime) < s.duration);
+
       setRenderTick(t => t + 1);
       animId = requestAnimationFrame(step);
     };
@@ -132,20 +170,8 @@ const DirectoryFloatingElements = () => {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  // Streak spawner
   const spawnStreak = useCallback(() => {
-    const src = streakImages[Math.floor(Math.random() * streakImages.length)];
-    const pattern = Math.floor(Math.random() * 4);
-    let startX: number, startY: number, endX: number, endY: number;
-    switch (pattern) {
-      case 0: startX = -10; startY = 10 + Math.random() * 70; endX = 110; endY = startY + (Math.random() * 40 - 20); break;
-      case 1: startX = 110; startY = 10 + Math.random() * 70; endX = -10; endY = startY + (Math.random() * 40 - 20); break;
-      case 2: startX = -10; startY = -10; endX = 80 + Math.random() * 30; endY = 80 + Math.random() * 30; break;
-      default: startX = 110; startY = -10; endX = -10 + Math.random() * 30; endY = 80 + Math.random() * 30; break;
-    }
-    const streak: StreakConfig = { id: Date.now() + Math.random(), src, startX, startY, endX, endY, size: 30 + Math.random() * 20, duration: 2 + Math.random() * 2 };
-    setStreaks(prev => [...prev, streak]);
-    setTimeout(() => setStreaks(prev => prev.filter(s => s.id !== streak.id)), streak.duration * 1000 + 500);
+    streaksRef.current = [...streaksRef.current, createStreak()];
   }, []);
 
   // Spacebar spawns a streak
@@ -160,30 +186,36 @@ const DirectoryFloatingElements = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [spawnStreak]);
 
-  const handleStreakClick = useCallback((streak: StreakConfig, e: React.MouseEvent) => {
+  // Auto-spawn streaks
+  useEffect(() => {
+    // Spawn one immediately
+    spawnStreak();
+    const scheduleNext = () => {
+      const delay = 6000 + Math.random() * 10000;
+      return setTimeout(() => { spawnStreak(); timeoutId = scheduleNext(); }, delay);
+    };
+    let timeoutId = scheduleNext();
+    return () => clearTimeout(timeoutId);
+  }, [spawnStreak]);
+
+  const handleStreakClick = useCallback((streak: Streak, e: React.MouseEvent) => {
     e.stopPropagation();
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const container = containerRef.current;
-    const containerRect = container?.getBoundingClientRect() || rect;
-    const x = ((rect.left + rect.width / 2 - containerRect.left) / containerRect.width) * 100;
-    const y = ((rect.top + rect.height / 2 - containerRect.top) / containerRect.height) * 100;
-    setStreaks(prev => prev.filter(s => s.id !== streak.id));
+    if (!container) return;
+    const containerRect = container.getBoundingClientRect();
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+    const x = ((clickX - containerRect.left) / containerRect.width) * 100;
+    const y = ((clickY - containerRect.top) / containerRect.height) * 100;
+    streaksRef.current = streaksRef.current.filter(s => s.id !== streak.id);
     setKillCount(prev => prev + 1);
     const explosion: ExplosionConfig = { id: Date.now() + Math.random(), x, y };
     setExplosions(prev => [...prev, explosion]);
     setTimeout(() => setExplosions(prev => prev.filter(ex => ex.id !== explosion.id)), 600);
   }, []);
 
-  useEffect(() => {
-    const scheduleNext = () => {
-      const delay = 8000 + Math.random() * 14000;
-      return setTimeout(() => { spawnStreak(); timeoutId = scheduleNext(); }, delay);
-    };
-    let timeoutId = setTimeout(() => { spawnStreak(); timeoutId = scheduleNext(); }, 5000);
-    return () => clearTimeout(timeoutId);
-  }, [spawnStreak]);
-
   const particles = particlesRef.current;
+  const streaks = streaksRef.current;
 
   return (
     <>
@@ -194,7 +226,7 @@ const DirectoryFloatingElements = () => {
           100% { transform: scale(0) rotate(45deg); opacity: 0; }
         }
       `}</style>
-      <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none streak-container" style={{ cursor: 'crosshair' }}>
+      <div ref={containerRef} className="absolute inset-0 pointer-events-none" style={{ cursor: 'crosshair' }}>
         {/* Physics-based floating glasses */}
         {particles.map((p, i) => (
           <div
@@ -208,45 +240,33 @@ const DirectoryFloatingElements = () => {
               opacity: p.opacity,
               transform: `rotate(${p.rotation}deg)`,
               filter: 'brightness(2) invert(1) drop-shadow(0 0 2px rgba(255,255,255,0.3))',
-              transition: 'none',
             }}
           >
             <img src={p.src} alt="" className="w-full h-full object-contain" draggable={false} />
           </div>
         ))}
 
-        {/* Streaking rocket/UFO */}
-        {streaks.map(s => {
-          const angle = Math.atan2(s.endY - s.startY, s.endX - s.startX) * (180 / Math.PI);
-          return (
-            <div
-              key={s.id}
-              className="absolute pointer-events-auto"
-              onClick={(e) => handleStreakClick(s, e)}
-              style={{
-                left: `${s.startX}%`,
-                top: `${s.startY}%`,
-                width: s.size,
-                height: s.size,
-                cursor: 'crosshair',
-                zIndex: 20,
-                filter: 'brightness(2) invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.5))',
-                transform: `rotate(${angle - 45}deg)`,
-                animation: `streak-path-${s.id} ${s.duration}s ease-in-out forwards`,
-              } as React.CSSProperties}
-            >
-              <img src={s.src} alt="" className="w-full h-full object-contain" draggable={false} />
-              <style>{`
-                @keyframes streak-path-${s.id} {
-                  0% { left: ${s.startX}%; top: ${s.startY}%; opacity: 0; }
-                  5% { opacity: 0.6; }
-                  90% { opacity: 0.6; }
-                  100% { left: ${s.endX}%; top: ${s.endY}%; opacity: 0; }
-                }
-              `}</style>
-            </div>
-          );
-        })}
+        {/* Streaking rocket/UFO - JS driven */}
+        {streaks.map(s => (
+          <div
+            key={s.id}
+            className="absolute pointer-events-auto"
+            onClick={(e) => handleStreakClick(s, e)}
+            style={{
+              left: `${s.x}%`,
+              top: `${s.y}%`,
+              width: s.size,
+              height: s.size,
+              opacity: s.opacity,
+              cursor: 'crosshair',
+              zIndex: 20,
+              transform: `rotate(${s.rotation}deg)`,
+              filter: 'invert(1) drop-shadow(0 0 12px rgba(0,255,255,0.9)) drop-shadow(0 0 24px rgba(0,200,255,0.6))',
+            }}
+          >
+            <img src={s.src} alt="" className="w-full h-full object-contain" draggable={false} />
+          </div>
+        ))}
 
         {/* Explosions */}
         {explosions.map(ex => (
