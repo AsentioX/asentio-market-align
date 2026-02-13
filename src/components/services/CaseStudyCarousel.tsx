@@ -73,7 +73,15 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
             <CaseStudyCard
               {...study}
               expanded={expandedStudy === index}
-              onToggle={() => setExpandedStudy(expandedStudy === index ? null : index)}
+              onToggle={() => {
+                const next = expandedStudy === index ? null : index;
+                setExpandedStudy(next);
+                if (next !== null) {
+                  setTimeout(() => {
+                    scrollRef.current?.children[next]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                  }, 50);
+                }
+              }}
             />
           </div>
         ))}
