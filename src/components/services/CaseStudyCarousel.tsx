@@ -37,7 +37,7 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
       {/* Left arrow */}
       <button
         onClick={() => scroll("left")}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-asentio-blue/30 transition-all opacity-0 group-hover/carousel:opacity-100"
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-asentio-blue/30 transition-all"
         aria-label="Scroll left"
       >
         <ChevronLeft className="w-5 h-5" />
@@ -46,7 +46,7 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
       {/* Right arrow */}
       <button
         onClick={() => scroll("right")}
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-asentio-blue/30 transition-all opacity-0 group-hover/carousel:opacity-100"
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-asentio-blue/30 transition-all"
         aria-label="Scroll right"
       >
         <ChevronRight className="w-5 h-5" />
