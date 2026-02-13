@@ -67,7 +67,7 @@ const DirectoryFloatingElements = () => {
               opacity: el.opacity,
               '--drift-x': `${el.driftX}px`,
               animation: `float-drift ${el.duration}s linear ${el.delay}s infinite`,
-              filter: 'brightness(0) invert(1)',
+              filter: 'brightness(2) invert(1) drop-shadow(0 0 2px rgba(255,255,255,0.3))',
             } as React.CSSProperties}
           >
             <img src={el.src} alt="" className="w-full h-full object-contain" draggable={false} />
