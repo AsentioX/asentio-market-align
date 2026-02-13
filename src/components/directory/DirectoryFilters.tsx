@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ArrowUpDown } from 'lucide-react';
 import { CATEGORIES, AI_INTEGRATIONS, SHIPPING_STATUSES, ProductFilters } from '@/hooks/useXRProducts';
 
 interface DirectoryFiltersProps {
@@ -73,6 +73,23 @@ const DirectoryFilters = ({ filters, onFilterChange }: DirectoryFiltersProps) =>
                 {SHIPPING_STATUSES.map((status) => (
                   <SelectItem key={status} value={status}>{status}</SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.sort || 'default'}
+              onValueChange={(value) => onFilterChange({ ...filters, sort: value })}
+            >
+              <SelectTrigger className="w-[150px] bg-background">
+                <ArrowUpDown className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border shadow-lg">
+                <SelectItem value="default">Default</SelectItem>
+                <SelectItem value="company">Company</SelectItem>
+                <SelectItem value="product">Product</SelectItem>
+                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+                <SelectItem value="price_desc">Price: High → Low</SelectItem>
               </SelectContent>
             </Select>
           </div>
