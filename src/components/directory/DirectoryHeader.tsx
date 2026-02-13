@@ -34,7 +34,7 @@ const DirectoryHeader = () => {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/contact">
-              <Button size="lg" className="bg-white text-asentio-blue hover:bg-gray-100 font-semibold px-8">
+              <Button size="lg" className="bg-white text-asentio-red hover:bg-gray-100 font-semibold px-8">
                 Get Featured
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
