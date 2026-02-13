@@ -17,17 +17,18 @@ interface CaseStudyCarouselProps {
 }
 
 const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
-  const [expandedStudy, setExpandedStudy] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
-    setExpandedStudy(null);
-    const scrollAmount = scrollRef.current.offsetWidth * 0.8;
-    scrollRef.current.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
+    const newIndex = direction === "left"
+      ? Math.max(0, activeIndex - 1)
+      : Math.min(caseStudies.length - 1, activeIndex + 1);
+    setActiveIndex(newIndex);
+    setTimeout(() => {
+      scrollRef.current?.children[newIndex]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }, 50);
   };
 
   return (
@@ -63,30 +64,14 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
         {caseStudies.map((study, index) => (
           <div
             key={index}
-            className="snap-start flex-shrink-0"
-            style={{
-              width: expandedStudy === index ? "100%" : "min(340px, 85vw)",
-              minWidth: expandedStudy === index ? "100%" : "min(340px, 85vw)",
-              transition: "width 0.4s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
+            className="snap-center flex-shrink-0 w-full min-w-full"
           >
             <CaseStudyCard
               {...study}
-              expanded={expandedStudy === index}
-              onToggle={() => {
-                const next = expandedStudy === index ? null : index;
-                setExpandedStudy(next);
-                if (next !== null) {
-                  setTimeout(() => {
-                    scrollRef.current?.children[next]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-                  }, 50);
-                }
-              }}
+              expanded={true}
             />
           </div>
         ))}
-        {/* Spacer to allow last cards to scroll to center */}
-        <div className="flex-shrink-0" style={{ minWidth: "40%" }} aria-hidden="true" />
       </div>
 
       {/* Dot indicators */}
@@ -95,11 +80,11 @@ const CaseStudyCarousel = ({ caseStudies }: CaseStudyCarouselProps) => {
           <button
             key={index}
             onClick={() => {
-              setExpandedStudy(expandedStudy === index ? null : index);
-              scrollRef.current?.children[index]?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+              setActiveIndex(index);
+              scrollRef.current?.children[index]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
             }}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              expandedStudy === index ? "bg-asentio-blue w-6" : "bg-border hover:bg-muted-foreground"
+              activeIndex === index ? "bg-asentio-blue w-6" : "bg-border hover:bg-muted-foreground"
             }`}
             aria-label={`View ${caseStudies[index].company}`}
           />

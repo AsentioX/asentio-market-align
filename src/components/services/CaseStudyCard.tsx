@@ -19,8 +19,7 @@ const CaseStudyCard = ({ company, description, image, imageZoom = 1, imagePositi
   if (expanded && hasDetails) {
     return (
       <div
-        className="group bg-card/50 rounded-lg overflow-hidden cursor-pointer animate-fade-in"
-        onClick={onToggle}
+        className="group bg-card/50 rounded-lg overflow-hidden"
       >
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/4 flex-shrink-0 h-48 md:h-auto overflow-hidden">
