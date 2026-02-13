@@ -1,8 +1,51 @@
+import { useState, useCallback, useRef } from 'react';
 import DirectoryFloatingElements from './DirectoryFloatingElements';
 
+interface ShotDot {
+  id: number;
+  x: number;
+  y: number;
+}
+
+const playShootSound = () => {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.15);
+  } catch {}
+};
+
 const DirectoryHeader = () => {
+  const [dots, setDots] = useState<ShotDot[]>([]);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (!sectionRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const dot: ShotDot = { id: Date.now() + Math.random(), x, y };
+    setDots(prev => [...prev, dot]);
+    playShootSound();
+    setTimeout(() => setDots(prev => prev.filter(d => d.id !== dot.id)), 400);
+  }, []);
+
   return (
-    <section className="relative bg-gradient-to-br from-asentio-blue via-asentio-blue/95 to-asentio-blue/90 text-white pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
+    <section
+      ref={sectionRef}
+      onClick={handleClick}
+      className="relative bg-gradient-to-br from-asentio-blue via-asentio-blue/95 to-asentio-blue/90 text-white pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden"
+      style={{ cursor: 'crosshair' }}
+    >
       {/* Floating XR & AI Elements */}
       <DirectoryFloatingElements />
       
@@ -18,6 +61,28 @@ const DirectoryHeader = () => {
         <div className="absolute top-[30%] left-[85%] w-12 h-12 rounded-full bg-blue-200/35 blur-xl animate-[orb-pulse-2_6s_ease-in-out_1.5s_infinite]" />
       </div>
 
+      {/* Shot dots */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-40">
+        {dots.map(d => (
+          <div
+            key={d.id}
+            className="absolute"
+            style={{
+              left: d.x,
+              top: d.y,
+              width: 8,
+              height: 8,
+              marginLeft: -4,
+              marginTop: -4,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, white 30%, rgba(255,255,255,0) 70%)',
+              boxShadow: '0 0 8px 2px rgba(255,255,255,0.6)',
+              animation: 'shot-dot 0.4s ease-out forwards',
+            }}
+          />
+        ))}
+      </div>
+
       <style>{`
         @keyframes orb-pulse-1 {
           0%, 100% { opacity: 0.3; transform: scale(1); }
@@ -31,6 +96,10 @@ const DirectoryHeader = () => {
           0%, 100% { opacity: 0.2; transform: scale(0.9); }
           40% { opacity: 0.7; transform: scale(1.15); }
           70% { opacity: 0.4; transform: scale(1.05); }
+        }
+        @keyframes shot-dot {
+          0% { transform: scale(1); opacity: 1; }
+          100% { transform: scale(3); opacity: 0; }
         }
       `}</style>
       
@@ -51,8 +120,8 @@ const DirectoryHeader = () => {
           
         </div>
       </div>
-    </section>);
-
+    </section>
+  );
 };
 
 export default DirectoryHeader;
