@@ -1,0 +1,1 @@
+ALTER TABLE public.xr_products ADD CONSTRAINT xr_products_slug_unique UNIQUE (slug);

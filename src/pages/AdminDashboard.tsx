@@ -14,6 +14,7 @@ import {
   Plus, LogOut, Search, Trash2, ExternalLink, 
   Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Layers
 } from 'lucide-react';
+import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -157,6 +158,7 @@ const AdminDashboard = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <CardTitle>Products</CardTitle>
                   <div className="flex items-center gap-3">
+                    <CsvProductUpload />
                     <div className="relative w-full sm:w-64">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
