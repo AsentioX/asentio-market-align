@@ -49,7 +49,7 @@ const DirectoryFloatingElements = () => {
         y: seededRandom(i * 13 + 3) * 80 + 10,
         size: 32 + seededRandom(i * 17 + 5) * 40,
         opacity: 0.15 + seededRandom(i * 23 + 7) * 0.15,
-        duration: 25 + seededRandom(i * 31 + 11) * 35,
+        duration: 12 + seededRandom(i * 31 + 11) * 50,
         delay: seededRandom(i * 37 + 13) * -40,
         driftX: 10 + seededRandom(i * 41 + 17) * 20,
       });
