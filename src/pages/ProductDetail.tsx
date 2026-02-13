@@ -1,11 +1,58 @@
 import { useParams, Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ExternalLink, Brain, MapPin, Package, Sparkles, Check } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Brain, MapPin, Package, Sparkles, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useXRProduct } from '@/hooks/useXRProducts';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
+
+const ProductImageCarousel = ({ imageUrl, name }: { imageUrl: string; name: string }) => {
+  // Currently single image; ready for multiple images when DB supports it
+  const images = [imageUrl];
+  const [current, setCurrent] = useState(0);
+
+  return (
+    <div className="relative w-full bg-muted">
+      <div className="container mx-auto">
+        <div className="relative aspect-[21/9] max-h-[400px] overflow-hidden">
+          <img
+            src={images[current]}
+            alt={`${name} - image ${current + 1}`}
+            className="w-full h-full object-contain"
+          />
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={() => setCurrent(i => (i - 1 + images.length) % images.length)}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors shadow-md"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setCurrent(i => (i + 1) % images.length)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors shadow-md"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                {images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrent(idx)}
+                    className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                      idx === current ? 'bg-asentio-blue' : 'bg-foreground/30'
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -54,6 +101,11 @@ const ProductDetail = () => {
 
   return (
       <div className="min-h-screen bg-background pt-24">
+        {/* Product Image Carousel */}
+        {product.image_url && (
+          <ProductImageCarousel imageUrl={product.image_url} name={product.name} />
+        )}
+
         <div className="container mx-auto px-4 py-8">
           {/* Back Button */}
           <Link to="/xr-directory" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
