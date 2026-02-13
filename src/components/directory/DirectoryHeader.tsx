@@ -2,7 +2,7 @@ import DirectoryFloatingElements from './DirectoryFloatingElements';
 
 const DirectoryHeader = () => {
   return (
-    <section className="relative bg-gradient-to-br from-asentio-blue via-asentio-blue/95 to-asentio-blue/90 text-white pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden" style={{ cursor: 'crosshair' }}>
+    <section className="relative bg-gradient-to-br from-asentio-blue via-asentio-blue/95 to-asentio-blue/90 text-white pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
       {/* Floating XR & AI Elements */}
       <DirectoryFloatingElements />
       
