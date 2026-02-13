@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, ExternalLink, Brain, MapPin, Package, Sparkles, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useXRProduct } from '@/hooks/useXRProducts';
+import { useXRUseCases } from '@/hooks/useXRUseCases';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
 
 const ProductImageCarousel = ({ imageUrl, name }: { imageUrl: string; name: string }) => {
@@ -51,6 +52,41 @@ const ProductImageCarousel = ({ imageUrl, name }: { imageUrl: string; name: stri
         </div>
       </div>
     </div>
+  );
+};
+
+const UseCasesSection = () => {
+  const { data: useCases, isLoading } = useXRUseCases();
+
+  if (isLoading || !useCases || useCases.length === 0) return null;
+
+  return (
+    <Card>
+      <CardContent className="p-6 md:p-8">
+        <h2 className="text-xl font-semibold mb-4">Use Cases</h2>
+        <div className="space-y-4">
+          {useCases.slice(0, 6).map((uc) => (
+            <div key={uc.id} className="flex gap-4 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+              {uc.image_url && (
+                <img src={uc.image_url} alt={uc.title} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium text-foreground line-clamp-1">{uc.title}</h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant="secondary" className="text-xs">{uc.device}</Badge>
+                  {uc.agency && (
+                    <span className="text-xs text-muted-foreground">by {uc.agency.name}</span>
+                  )}
+                </div>
+                {uc.description && (
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{uc.description}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -164,24 +200,8 @@ const ProductDetail = () => {
                 </CardContent>
               </Card>
 
-              {/* Key Features */}
-              {product.key_features && product.key_features.length > 0 && (
-                <Card>
-                  <CardContent className="p-6 md:p-8">
-                    <h2 className="text-xl font-semibold mb-4">Key Features</h2>
-                    <ul className="grid sm:grid-cols-2 gap-3">
-                      {product.key_features.map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-3">
-                          <div className="w-5 h-5 rounded-full bg-asentio-blue/10 flex items-center justify-center shrink-0">
-                            <Check className="w-3 h-3 text-asentio-blue" />
-                          </div>
-                          <span className="text-muted-foreground">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
+              {/* Use Cases */}
+              <UseCasesSection />
             </div>
 
             {/* Sidebar */}
