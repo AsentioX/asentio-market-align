@@ -111,7 +111,7 @@ const DirectoryFloatingElements = () => {
   const [elements, setElements] = useState<FloatingElement[]>([]);
 
   const createElements = useCallback(() => {
-    const count = 12;
+    const count = 8;
     const newElements: FloatingElement[] = [];
     for (let i = 0; i < count; i++) {
       newElements.push({
@@ -119,13 +119,13 @@ const DirectoryFloatingElements = () => {
         type: elementTypes[i % elementTypes.length],
         x: Math.random() * 100,
         y: Math.random() * 100,
-        speed: 0.3 + Math.random() * 0.8,
-        size: 20 + Math.random() * 30,
+        speed: 0.15 + Math.random() * 0.35,
+        size: 24 + Math.random() * 36,
         rotation: Math.random() * 360,
-        rotationSpeed: (Math.random() - 0.5) * 0.5,
-        opacity: 0.08 + Math.random() * 0.12,
+        rotationSpeed: (Math.random() - 0.5) * 0.2,
+        opacity: 0.12 + Math.random() * 0.15,
         drift: Math.random() * Math.PI * 2,
-        driftSpeed: 0.2 + Math.random() * 0.5,
+        driftSpeed: 0.1 + Math.random() * 0.25,
       });
     }
     setElements(newElements);
