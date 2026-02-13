@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import glassesWayfarer from '@/assets/floating/glasses-wayfarer.png';
 import glassesRoundThick from '@/assets/floating/glasses-round-thick.png';
 import glassesClubmaster from '@/assets/floating/glasses-clubmaster.png';
@@ -10,7 +10,8 @@ import glassesVrHeadset from '@/assets/floating/glasses-vr-headset.png';
 import iconRocket from '@/assets/floating/icon-rocket.png';
 import iconUfo from '@/assets/floating/icon-ufo.png';
 
-const images = [glassesWayfarer, glassesRoundThick, glassesClubmaster, glassesRoundRed, glassesSmartOutline, glassesSmartFilled, glassesVrGoggles, glassesVrHeadset, iconRocket, iconUfo];
+const floatingImages = [glassesWayfarer, glassesRoundThick, glassesClubmaster, glassesRoundRed, glassesSmartOutline, glassesSmartFilled, glassesVrGoggles, glassesVrHeadset];
+const streakImages = [iconRocket, iconUfo];
 
 interface ElementConfig {
   src: string;
@@ -23,16 +24,27 @@ interface ElementConfig {
   driftX: number;
 }
 
+interface StreakConfig {
+  id: number;
+  src: string;
+  y: number;
+  size: number;
+  duration: number;
+  direction: 'ltr' | 'rtl';
+}
+
 const DirectoryFloatingElements = () => {
+  const [streaks, setStreaks] = useState<StreakConfig[]>([]);
+
   const elements = useMemo<ElementConfig[]>(() => {
     const els: ElementConfig[] = [];
     const seededRandom = (seed: number) => {
       const x = Math.sin(seed * 9301 + 49297) * 49297;
       return x - Math.floor(x);
     };
-    for (let i = 0; i < images.length; i++) {
+    for (let i = 0; i < floatingImages.length; i++) {
       els.push({
-        src: images[i],
+        src: floatingImages[i],
         x: seededRandom(i * 7 + 1) * 90 + 5,
         y: seededRandom(i * 13 + 3) * 80 + 10,
         size: 32 + seededRandom(i * 17 + 5) * 40,
@@ -45,6 +57,38 @@ const DirectoryFloatingElements = () => {
     return els;
   }, []);
 
+  const spawnStreak = useCallback(() => {
+    const src = streakImages[Math.floor(Math.random() * streakImages.length)];
+    const direction = Math.random() > 0.5 ? 'ltr' : 'rtl';
+    const streak: StreakConfig = {
+      id: Date.now() + Math.random(),
+      src,
+      y: 15 + Math.random() * 60,
+      size: 28 + Math.random() * 24,
+      duration: 1.5 + Math.random() * 1.5,
+      direction,
+    };
+    setStreaks(prev => [...prev, streak]);
+    setTimeout(() => {
+      setStreaks(prev => prev.filter(s => s.id !== streak.id));
+    }, streak.duration * 1000 + 200);
+  }, []);
+
+  useEffect(() => {
+    const scheduleNext = () => {
+      const delay = 4000 + Math.random() * 8000;
+      return setTimeout(() => {
+        spawnStreak();
+        timeoutId = scheduleNext();
+      }, delay);
+    };
+    let timeoutId = setTimeout(() => {
+      spawnStreak();
+      timeoutId = scheduleNext();
+    }, 3000);
+    return () => clearTimeout(timeoutId);
+  }, [spawnStreak]);
+
   return (
     <>
       <style>{`
@@ -55,8 +99,21 @@ const DirectoryFloatingElements = () => {
           75% { transform: translate3d(calc(var(--drift-x) * -1), -75%, 0) rotate(-5deg); }
           100% { transform: translate3d(0, -100%, 0) rotate(0deg); }
         }
+        @keyframes streak-ltr {
+          0% { left: -10%; opacity: 0; }
+          5% { opacity: 0.5; }
+          90% { opacity: 0.5; }
+          100% { left: 110%; opacity: 0; }
+        }
+        @keyframes streak-rtl {
+          0% { right: -10%; opacity: 0; }
+          5% { opacity: 0.5; }
+          90% { opacity: 0.5; }
+          100% { right: 110%; opacity: 0; }
+        }
       `}</style>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Slow floating glasses */}
         {elements.map((el, i) => (
           <div
             key={i}
@@ -73,6 +130,24 @@ const DirectoryFloatingElements = () => {
             } as React.CSSProperties}
           >
             <img src={el.src} alt="" className="w-full h-full object-contain" draggable={false} />
+          </div>
+        ))}
+
+        {/* Fast streaking rocket/UFO */}
+        {streaks.map(s => (
+          <div
+            key={s.id}
+            className="absolute"
+            style={{
+              top: `${s.y}%`,
+              width: s.size,
+              height: s.size,
+              animation: `streak-${s.direction} ${s.duration}s ease-in-out forwards`,
+              filter: 'brightness(2) invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.5))',
+              transform: s.direction === 'rtl' ? 'scaleX(-1)' : undefined,
+            } as React.CSSProperties}
+          >
+            <img src={s.src} alt="" className="w-full h-full object-contain" draggable={false} />
           </div>
         ))}
       </div>
