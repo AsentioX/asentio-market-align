@@ -273,7 +273,7 @@ const DirectoryFloatingElements = () => {
           100% { transform: scale(0) rotate(45deg); opacity: 0; }
         }
       `}</style>
-      <div ref={containerRef} className="absolute inset-0 pointer-events-none" style={{ cursor: 'crosshair' }}>
+      <div ref={containerRef} className="absolute inset-0 pointer-events-none">
         {/* Physics-based floating glasses */}
         {particles.map((p, i) => (
           <div
@@ -305,7 +305,7 @@ const DirectoryFloatingElements = () => {
               width: s.size,
               height: s.size,
               opacity: s.opacity,
-              cursor: 'crosshair',
+              cursor: 'pointer',
               zIndex: 20,
               transform: `rotate(${s.rotation}deg)`,
               filter: 'invert(1) drop-shadow(0 0 12px rgba(0,255,255,0.9)) drop-shadow(0 0 24px rgba(0,200,255,0.6))',
