@@ -64,8 +64,52 @@ const initParticles = (): Particle[] =>
     rotationSpeed: (seededRandom(i * 31 + 11) - 0.5) * 0.3,
   }));
 
+const playExplosionSound = () => {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    // White noise burst
+    const bufferSize = ctx.sampleRate * 0.3;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.06));
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    // Low rumble oscillator
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.25);
+    // Gains
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.4, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    const oscGain = ctx.createGain();
+    oscGain.gain.setValueAtTime(0.3, ctx.currentTime);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    // High pitch zap
+    const zap = ctx.createOscillator();
+    zap.type = 'square';
+    zap.frequency.setValueAtTime(800, ctx.currentTime);
+    zap.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.15);
+    const zapGain = ctx.createGain();
+    zapGain.gain.setValueAtTime(0.15, ctx.currentTime);
+    zapGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    noise.connect(noiseGain).connect(ctx.destination);
+    osc.connect(oscGain).connect(ctx.destination);
+    zap.connect(zapGain).connect(ctx.destination);
+    noise.start(); osc.start(); zap.start();
+    noise.stop(ctx.currentTime + 0.3);
+    osc.stop(ctx.currentTime + 0.25);
+    zap.stop(ctx.currentTime + 0.15);
+  } catch {}
+};
+
 const createStreak = (): Streak => {
-  const src = streakImages[Math.floor(Math.random() * streakImages.length)];
+  const srcIndex = Math.floor(Math.random() * streakImages.length);
+  const src = streakImages[srcIndex];
+  const isRocket = src === iconRocket;
   const pattern = Math.floor(Math.random() * 4);
   let startX: number, startY: number, endX: number, endY: number;
   switch (pattern) {
@@ -78,15 +122,17 @@ const createStreak = (): Streak => {
   const dx = endX - startX;
   const dy = endY - startY;
   const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+  // Rocket image points up (-90°), so rotate to match travel direction
+  const rotation = isRocket ? angle + 90 : angle - 45;
   return {
     id: Date.now() + Math.random(),
     src,
     x: startX,
     y: startY,
-    vx: dx / duration * 16, // per-frame velocity at ~60fps
+    vx: dx / duration * 16,
     vy: dy / duration * 16,
     size: 50 + Math.random() * 30,
-    rotation: angle - 45,
+    rotation,
     opacity: 0,
     startTime: performance.now(),
     duration,
@@ -208,6 +254,7 @@ const DirectoryFloatingElements = () => {
     const x = ((clickX - containerRect.left) / containerRect.width) * 100;
     const y = ((clickY - containerRect.top) / containerRect.height) * 100;
     streaksRef.current = streaksRef.current.filter(s => s.id !== streak.id);
+    playExplosionSound();
     setKillCount(prev => prev + 1);
     const explosion: ExplosionConfig = { id: Date.now() + Math.random(), x, y };
     setExplosions(prev => [...prev, explosion]);
