@@ -75,7 +75,7 @@ const DirectoryHeader = () => {
       ref={sectionRef}
       onClick={handleClick}
       className="relative bg-gradient-to-br from-asentio-blue via-asentio-blue/95 to-asentio-blue/90 text-white pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden"
-      style={{ cursor: 'url(/cursors/retro-crosshair.svg) 16 16, crosshair' }}
+      style={{ cursor: 'url(/cursors/retro-crosshair.svg) 24 24, crosshair' }}
     >
       {/* Floating XR & AI Elements */}
       <DirectoryFloatingElements />
