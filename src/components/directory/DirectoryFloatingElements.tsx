@@ -68,11 +68,11 @@ const playExplosionSound = () => {
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     // White noise burst
-    const bufferSize = ctx.sampleRate * 2.3;
+    const bufferSize = ctx.sampleRate * 1.3;
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.4));
+      output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.25));
     }
     const noise = ctx.createBufferSource();
     noise.buffer = noiseBuffer;
@@ -80,29 +80,29 @@ const playExplosionSound = () => {
     const osc = ctx.createOscillator();
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(150, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 2.25);
+    osc.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 1.25);
     // Gains
     const noiseGain = ctx.createGain();
     noiseGain.gain.setValueAtTime(0.4, ctx.currentTime);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.3);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.3);
     const oscGain = ctx.createGain();
     oscGain.gain.setValueAtTime(0.3, ctx.currentTime);
-    oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.25);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.25);
     // High pitch zap
     const zap = ctx.createOscillator();
     zap.type = 'square';
     zap.frequency.setValueAtTime(800, ctx.currentTime);
-    zap.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.5);
+    zap.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.4);
     const zapGain = ctx.createGain();
     zapGain.gain.setValueAtTime(0.15, ctx.currentTime);
-    zapGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    zapGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
     noise.connect(noiseGain).connect(ctx.destination);
     osc.connect(oscGain).connect(ctx.destination);
     zap.connect(zapGain).connect(ctx.destination);
     noise.start(); osc.start(); zap.start();
-    noise.stop(ctx.currentTime + 2.3);
-    osc.stop(ctx.currentTime + 2.25);
-    zap.stop(ctx.currentTime + 0.5);
+    noise.stop(ctx.currentTime + 1.3);
+    osc.stop(ctx.currentTime + 1.25);
+    zap.stop(ctx.currentTime + 0.4);
   } catch {}
 };
 
