@@ -134,10 +134,12 @@ export type Database = {
           created_at: string
           description: string | null
           editors_note: string | null
+          end_of_life_date: string | null
           founded_year: number | null
           hq_location: string | null
           id: string
           is_editors_pick: boolean | null
+          launch_date: string | null
           logo_url: string | null
           name: string
           sectors: string[] | null
@@ -150,10 +152,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           editors_note?: string | null
+          end_of_life_date?: string | null
           founded_year?: number | null
           hq_location?: string | null
           id?: string
           is_editors_pick?: boolean | null
+          launch_date?: string | null
           logo_url?: string | null
           name: string
           sectors?: string[] | null
@@ -166,10 +170,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           editors_note?: string | null
+          end_of_life_date?: string | null
           founded_year?: number | null
           hq_location?: string | null
           id?: string
           is_editors_pick?: boolean | null
+          launch_date?: string | null
           logo_url?: string | null
           name?: string
           sectors?: string[] | null
