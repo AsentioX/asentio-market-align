@@ -1,5 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useXRProducts, XRProduct } from '@/hooks/useXRProducts';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, MapPin, Package, Loader2 } from 'lucide-react';
@@ -19,6 +21,19 @@ const CompanyDetail = () => {
 
   const companyHQ = companyProducts.find(p => p.company_hq)?.company_hq;
   const categories = [...new Set(companyProducts.map(p => p.category))];
+
+  const { data: companyRecord } = useQuery({
+    queryKey: ['xr-company-by-name', decodedName],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('xr_companies')
+        .select('description, website')
+        .eq('name', decodedName)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!decodedName,
+  });
 
   if (isLoading) {
     return (
@@ -61,6 +76,9 @@ const CompanyDetail = () => {
               <Package className="w-4 h-4" /> {companyProducts.length} product{companyProducts.length !== 1 ? 's' : ''}
             </span>
           </div>
+          {companyRecord?.description && (
+            <p className="text-muted-foreground mt-3 max-w-2xl">{companyRecord.description}</p>
+          )}
           <div className="flex flex-wrap gap-2 mt-3">
             {categories.map(cat => (
               <Badge key={cat} variant="secondary">{cat}</Badge>
