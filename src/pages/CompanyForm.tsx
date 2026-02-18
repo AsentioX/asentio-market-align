@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,11 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useXRCompany, useCreateCompany, useUpdateCompany, COMPANY_SECTORS, COMPANY_SIZES } from '@/hooks/useXRCompanies';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useXRProducts } from '@/hooks/useXRProducts';
+import { ArrowLeft, Loader2, ExternalLink, MapPin } from 'lucide-react';
 
 const generateSlug = (name: string) => {
   return name
@@ -29,8 +31,16 @@ const CompanyForm = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   
   const { data: existingCompany, isLoading: companyLoading } = useXRCompany(id || '');
+  const { data: allProducts } = useXRProducts({});
   const createCompany = useCreateCompany();
   const updateCompany = useUpdateCompany();
+
+  const companyProducts = useMemo(() => {
+    if (!allProducts || !id) return [];
+    return allProducts
+      .filter(p => p.company === id)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [allProducts, id]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -268,26 +278,6 @@ const CompanyForm = () => {
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="launch_date">Launch Date</Label>
-                  <Input
-                    id="launch_date"
-                    type="date"
-                    value={formData.launch_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, launch_date: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="end_of_life_date">End of Life Date</Label>
-                  <Input
-                    id="end_of_life_date"
-                    type="date"
-                    value={formData.end_of_life_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, end_of_life_date: e.target.value }))}
-                  />
-                </div>
-              </div>
 
               {/* Description */}
               <div className="space-y-2">
@@ -341,6 +331,56 @@ const CompanyForm = () => {
             </form>
           </CardContent>
         </Card>
+
+        {/* Product List */}
+        {isEditing && companyProducts.length > 0 && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-lg">Products ({companyProducts.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-3 font-medium text-muted-foreground text-sm">Product</th>
+                      <th className="text-left py-2 px-3 font-medium text-muted-foreground text-sm hidden md:table-cell">Category</th>
+                      <th className="text-left py-2 px-3 font-medium text-muted-foreground text-sm hidden md:table-cell">Status</th>
+                      <th className="text-left py-2 px-3 font-medium text-muted-foreground text-sm hidden md:table-cell">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {companyProducts.map((product) => (
+                      <tr
+                        key={product.id}
+                        className="border-b last:border-0 hover:bg-muted/50 cursor-pointer"
+                        onClick={() => navigate(`/admin/products/${product.id}/edit`)}
+                      >
+                        <td className="py-2 px-3">
+                          <div className="flex items-center gap-2">
+                            {product.image_url && (
+                              <img src={product.image_url} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                            )}
+                            <span className="font-medium text-sm text-foreground">{product.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-2 px-3 hidden md:table-cell">
+                          <Badge variant="outline" className="text-xs">{product.category}</Badge>
+                        </td>
+                        <td className="py-2 px-3 hidden md:table-cell">
+                          <Badge variant="secondary" className="text-xs">{product.shipping_status}</Badge>
+                        </td>
+                        <td className="py-2 px-3 hidden md:table-cell">
+                          <span className="text-sm text-muted-foreground">{product.price_range || '—'}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
