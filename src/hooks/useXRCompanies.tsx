@@ -60,9 +60,21 @@ export const useXRCompany = (idOrSlug: string) => {
         .from('xr_companies')
         .select('*')
         .eq(column, idOrSlug)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
+      
+      // Fallback: try matching by name (for derived company navigation)
+      if (!data) {
+        const { data: byName, error: nameError } = await supabase
+          .from('xr_companies')
+          .select('*')
+          .eq('name', idOrSlug)
+          .maybeSingle();
+        if (nameError) throw nameError;
+        return byName as XRCompany | null;
+      }
+      
       return data as XRCompany;
     },
     enabled: !!idOrSlug
