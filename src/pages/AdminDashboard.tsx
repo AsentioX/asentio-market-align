@@ -9,10 +9,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useXRProducts, useDeleteProduct, XRProduct } from '@/hooks/useXRProducts';
 import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies';
+import { useXRCompanies, useDeleteCompany, XRCompany } from '@/hooks/useXRCompanies';
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink, 
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Layers
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import {
@@ -31,15 +32,18 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [productSearch, setProductSearch] = useState('');
   const [agencySearch, setAgencySearch] = useState('');
+  const [companySearch, setCompanySearch] = useState('');
   const [useCaseSearch, setUseCaseSearch] = useState('');
   
   const { user, isAdmin, loading, signOut } = useAuth();
   const { data: products, isLoading: productsLoading } = useXRProducts({ search: productSearch });
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies({ search: agencySearch });
+  const { data: companies, isLoading: companiesLoading } = useXRCompanies({ search: companySearch });
   const { data: useCases, isLoading: useCasesLoading } = useXRUseCases({ search: useCaseSearch });
   
   const deleteProduct = useDeleteProduct();
   const deleteAgency = useDeleteAgency();
+  const deleteCompany = useDeleteCompany();
   const deleteUseCase = useDeleteUseCase();
   
   const navigate = useNavigate();
@@ -92,6 +96,22 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteCompany = async (company: XRCompany) => {
+    try {
+      await deleteCompany.mutateAsync(company.id);
+      toast({
+        title: 'Company Deleted',
+        description: `${company.name} has been removed from the directory.`
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to delete company',
+        variant: 'destructive'
+      });
+    }
+  };
+
   const handleDeleteUseCase = async (useCase: XRUseCase) => {
     try {
       await deleteUseCase.mutateAsync(useCase.id);
@@ -124,7 +144,7 @@ const AdminDashboard = () => {
               Back to Directory
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">XR Directory Admin</h1>
-            <p className="text-muted-foreground">Manage products, agencies, and use cases</p>
+            <p className="text-muted-foreground">Manage products, agencies, companies, and use cases</p>
           </div>
           
           <Button variant="outline" onClick={handleSignOut}>
@@ -144,6 +164,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="agencies" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               Agencies ({agencies?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="companies" className="flex items-center gap-2">
+              <Building className="w-4 h-4" />
+              Companies ({companies?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="use-cases" className="flex items-center gap-2">
               <Layers className="w-4 h-4" />
@@ -362,6 +386,122 @@ const AdminDashboard = () => {
                     <Link to="/admin/agencies/new">
                       <Button className="mt-4 bg-asentio-blue hover:bg-asentio-blue/90">
                         <Plus className="w-4 h-4 mr-2" />Add Your First Agency
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Companies Tab */}
+          <TabsContent value="companies">
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <CardTitle>Companies</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-full sm:w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search companies..."
+                        value={companySearch}
+                        onChange={(e) => setCompanySearch(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    <Link to="/admin/companies/new">
+                      <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {companiesLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-asentio-blue" />
+                  </div>
+                ) : companies && companies.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Company</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">HQ</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Sectors</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">Size</th>
+                          <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {companies.map((company) => (
+                          <tr key={company.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/companies/${company.id}/edit`)}>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-2">
+                                {company.is_editors_pick && <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />}
+                                <div>
+                                  <p className="font-medium text-foreground">{company.name}</p>
+                                  {company.website && (
+                                    <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-sm text-asentio-blue hover:underline flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                      <ExternalLink className="w-3 h-3" />Website
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 hidden md:table-cell">
+                              <span className="text-sm text-muted-foreground">{company.hq_location || '—'}</span>
+                            </td>
+                            <td className="py-3 px-4 hidden md:table-cell">
+                              <div className="flex flex-wrap gap-1">
+                                {company.sectors?.slice(0, 2).map((sector, idx) => (
+                                  <Badge key={idx} variant="secondary" className="text-xs">{sector}</Badge>
+                                ))}
+                                {(company.sectors?.length || 0) > 2 && (
+                                  <span className="text-xs text-muted-foreground">+{company.sectors!.length - 2}</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 hidden lg:table-cell">
+                              <span className="text-sm text-muted-foreground">{company.company_size || '—'}</span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Company</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete "{company.name}"? This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDeleteCompany(company)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No companies found</p>
+                    <Link to="/admin/companies/new">
+                      <Button className="mt-4 bg-asentio-blue hover:bg-asentio-blue/90">
+                        <Plus className="w-4 h-4 mr-2" />Add Your First Company
                       </Button>
                     </Link>
                   </div>
