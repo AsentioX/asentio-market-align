@@ -11,6 +11,7 @@ import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import Directory from "./pages/Directory";
 import ProductDetail from "./pages/ProductDetail";
+import CompanyDetail from "./pages/CompanyDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProductForm from "./pages/ProductForm";
@@ -39,6 +40,7 @@ const AppContent = () => {
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/xr-directory" element={<Directory />} />
+          <Route path="/xr-directory/company/:companyName" element={<CompanyDetail />} />
           <Route path="/xr-directory/:slug" element={<ProductDetail />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/admin" element={<AdminLogin />} />
