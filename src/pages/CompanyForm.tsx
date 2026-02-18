@@ -21,7 +21,8 @@ const generateSlug = (name: string) => {
 };
 
 const CompanyForm = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: rawId } = useParams<{ id: string }>();
+  const id = rawId ? decodeURIComponent(rawId) : '';
   const isEditing = !!id;
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -66,8 +67,11 @@ const CompanyForm = () => {
         is_editors_pick: existingCompany.is_editors_pick,
         editors_note: existingCompany.editors_note || ''
       });
+    } else if (isEditing && !companyLoading) {
+      // Company name from URL but no xr_companies record yet — pre-fill name
+      setFormData(prev => ({ ...prev, name: id, slug: generateSlug(id) }));
     }
-  }, [existingCompany]);
+  }, [existingCompany, isEditing, companyLoading, id]);
 
   useEffect(() => {
     if (!isEditing && formData.name) {
@@ -126,8 +130,8 @@ const CompanyForm = () => {
         editors_note: formData.editors_note || null,
       };
 
-      if (isEditing) {
-        await updateCompany.mutateAsync({ id, ...companyData });
+      if (existingCompany) {
+        await updateCompany.mutateAsync({ id: existingCompany.id, ...companyData });
         toast({ title: 'Company Updated', description: `${formData.name} has been updated successfully.` });
       } else {
         await createCompany.mutateAsync(companyData);
