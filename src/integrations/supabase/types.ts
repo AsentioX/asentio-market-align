@@ -128,6 +128,57 @@ export type Database = {
         }
         Relationships: []
       }
+      xr_companies: {
+        Row: {
+          company_size: string | null
+          created_at: string
+          description: string | null
+          editors_note: string | null
+          founded_year: number | null
+          hq_location: string | null
+          id: string
+          is_editors_pick: boolean | null
+          logo_url: string | null
+          name: string
+          sectors: string[] | null
+          slug: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          editors_note?: string | null
+          founded_year?: number | null
+          hq_location?: string | null
+          id?: string
+          is_editors_pick?: boolean | null
+          logo_url?: string | null
+          name: string
+          sectors?: string[] | null
+          slug: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          editors_note?: string | null
+          founded_year?: number | null
+          hq_location?: string | null
+          id?: string
+          is_editors_pick?: boolean | null
+          logo_url?: string | null
+          name?: string
+          sectors?: string[] | null
+          slug?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       xr_products: {
         Row: {
           ai_integration: string

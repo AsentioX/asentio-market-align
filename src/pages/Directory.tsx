@@ -4,23 +4,27 @@ import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
 import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryViewToggle';
 import AgencyGrid from '@/components/directory/AgencyGrid';
+import CompanyGrid from '@/components/directory/CompanyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
+import { useXRCompanies, CompanyFilters } from '@/hooks/useXRCompanies';
 import { useXRUseCases, UseCaseFilters } from '@/hooks/useXRUseCases';
-import { Package, Building2, Layers } from 'lucide-react';
+import { Package, Building2, Building, Layers } from 'lucide-react';
 
 const Directory = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [productFilters, setProductFilters] = useState<ProductFilters>({});
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [agencyFilters, setAgencyFilters] = useState<AgencyFilters>({});
+  const [companyFilters, setCompanyFilters] = useState<CompanyFilters>({});
   const [useCaseFilters, setUseCaseFilters] = useState<UseCaseFilters>({});
   
   const { data: products, isLoading: productsLoading } = useXRProducts(productFilters);
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies(agencyFilters);
+  const { data: companies, isLoading: companiesLoading } = useXRCompanies(companyFilters);
   const { data: useCases, isLoading: useCasesLoading } = useXRUseCases(useCaseFilters);
 
   // SEO meta tags
@@ -46,10 +50,14 @@ const Directory = () => {
       
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-8">
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="w-4 h-4" />
               <span className="hidden sm:inline">Products</span>
+            </TabsTrigger>
+            <TabsTrigger value="companies" className="flex items-center gap-2">
+              <Building className="w-4 h-4" />
+              <span className="hidden sm:inline">Companies</span>
             </TabsTrigger>
             <TabsTrigger value="agencies" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
@@ -74,6 +82,12 @@ const Directory = () => {
           <TabsContent value="agencies">
             <div className="py-8">
               <AgencyGrid agencies={agencies} isLoading={agenciesLoading} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="companies">
+            <div className="py-8">
+              <CompanyGrid companies={companies} isLoading={companiesLoading} />
             </div>
           </TabsContent>
           
