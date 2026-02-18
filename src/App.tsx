@@ -15,6 +15,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProductForm from "./pages/ProductForm";
 import AgencyForm from "./pages/AgencyForm";
+import CompanyForm from "./pages/CompanyForm";
 import UseCaseForm from "./pages/UseCaseForm";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
@@ -47,6 +48,8 @@ const AppContent = () => {
           <Route path="/admin/products/:id/edit" element={<ProductForm />} />
           <Route path="/admin/agencies/new" element={<AgencyForm />} />
           <Route path="/admin/agencies/:id/edit" element={<AgencyForm />} />
+          <Route path="/admin/companies/new" element={<CompanyForm />} />
+          <Route path="/admin/companies/:id/edit" element={<CompanyForm />} />
           <Route path="/admin/use-cases/new" element={<UseCaseForm />} />
           <Route path="/admin/use-cases/:id/edit" element={<UseCaseForm />} />
           <Route path="*" element={<NotFound />} />
