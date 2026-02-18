@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import DirectoryHeader from '@/components/directory/DirectoryHeader';
 import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
@@ -14,7 +15,9 @@ import { useXRUseCases, UseCaseFilters } from '@/hooks/useXRUseCases';
 import { Package, Building, Building2, Layers } from 'lucide-react';
 
 const Directory = () => {
-  const [activeTab, setActiveTab] = useState('products');
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'products';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [productFilters, setProductFilters] = useState<ProductFilters>({});
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [agencyFilters, setAgencyFilters] = useState<AgencyFilters>({});

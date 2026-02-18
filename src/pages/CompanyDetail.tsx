@@ -47,7 +47,7 @@ const CompanyDetail = () => {
     return (
       <div className="min-h-screen pt-24">
         <div className="container mx-auto px-4">
-          <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+          <Link to="/xr-directory?tab=companies" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
             <ArrowLeft className="w-4 h-4" /> Back to Directory
           </Link>
           <p className="text-muted-foreground">No products found for this company.</p>
@@ -59,7 +59,7 @@ const CompanyDetail = () => {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="container mx-auto px-4">
-        <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+        <Link to="/xr-directory?tab=companies" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Directory
         </Link>
 
