@@ -3,28 +3,26 @@ import DirectoryHeader from '@/components/directory/DirectoryHeader';
 import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
 import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryViewToggle';
+import DerivedCompanyGrid from '@/components/directory/DerivedCompanyGrid';
 import AgencyGrid from '@/components/directory/AgencyGrid';
-import CompanyGrid from '@/components/directory/CompanyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
-import { useXRCompanies, CompanyFilters } from '@/hooks/useXRCompanies';
 import { useXRUseCases, UseCaseFilters } from '@/hooks/useXRUseCases';
-import { Package, Building2, Building, Layers } from 'lucide-react';
+import { Package, Building, Building2, Layers } from 'lucide-react';
 
 const Directory = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [productFilters, setProductFilters] = useState<ProductFilters>({});
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [agencyFilters, setAgencyFilters] = useState<AgencyFilters>({});
-  const [companyFilters, setCompanyFilters] = useState<CompanyFilters>({});
   const [useCaseFilters, setUseCaseFilters] = useState<UseCaseFilters>({});
   
   const { data: products, isLoading: productsLoading } = useXRProducts(productFilters);
+  const { data: allProducts, isLoading: allProductsLoading } = useXRProducts({});
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies(agencyFilters);
-  const { data: companies, isLoading: companiesLoading } = useXRCompanies(companyFilters);
   const { data: useCases, isLoading: useCasesLoading } = useXRUseCases(useCaseFilters);
 
   // SEO meta tags
@@ -78,16 +76,16 @@ const Directory = () => {
               <DirectoryGrid products={products} isLoading={productsLoading} view={viewMode} />
             </div>
           </TabsContent>
+
+          <TabsContent value="companies">
+            <div className="py-8">
+              <DerivedCompanyGrid products={allProducts} isLoading={allProductsLoading} />
+            </div>
+          </TabsContent>
           
           <TabsContent value="agencies">
             <div className="py-8">
               <AgencyGrid agencies={agencies} isLoading={agenciesLoading} />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="companies">
-            <div className="py-8">
-              <CompanyGrid companies={companies} isLoading={companiesLoading} />
             </div>
           </TabsContent>
           
