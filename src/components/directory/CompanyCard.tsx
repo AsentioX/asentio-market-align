@@ -1,7 +1,8 @@
 import { XRCompany } from '@/hooks/useXRCompanies';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, MapPin, Calendar, Users } from 'lucide-react';
+import { ExternalLink, MapPin, Calendar, Users, Rocket, XCircle } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface CompanyCardProps {
   company: XRCompany;
@@ -49,7 +50,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         </div>
 
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             {company.founded_year && (
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
@@ -60,6 +61,18 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
               <span className="flex items-center gap-1">
                 <Users className="w-3 h-3" />
                 {company.company_size}
+              </span>
+            )}
+            {company.launch_date && (
+              <span className="flex items-center gap-1">
+                <Rocket className="w-3 h-3" />
+                {format(new Date(company.launch_date), 'MMM yyyy')}
+              </span>
+            )}
+            {company.end_of_life_date && (
+              <span className="flex items-center gap-1 text-destructive">
+                <XCircle className="w-3 h-3" />
+                {format(new Date(company.end_of_life_date), 'MMM yyyy')}
               </span>
             )}
           </div>

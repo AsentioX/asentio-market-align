@@ -12,6 +12,8 @@ export interface XRCompany {
   founded_year: number | null;
   company_size: string | null;
   sectors: string[] | null;
+  launch_date: string | null;
+  end_of_life_date: string | null;
   is_editors_pick: boolean;
   editors_note: string | null;
   created_at: string;
