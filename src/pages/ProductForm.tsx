@@ -237,7 +237,7 @@ const ProductForm = () => {
         weight: formData.weight || null,
         wifi_bluetooth_version: formData.wifi_bluetooth_version || null,
         cellular_5g: formData.cellular_5g,
-        additional_images: formData.additional_images.filter(u => u.trim()).length > 0 ? formData.additional_images.filter(u => u.trim()) : null,
+        additional_images: formData.additional_images.filter(u => u && u.trim()).length > 0 ? formData.additional_images.filter(u => u && u.trim()) : null,
       };
 
       if (isEditing) {
