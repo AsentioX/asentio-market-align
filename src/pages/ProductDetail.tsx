@@ -305,11 +305,11 @@ const ProductDetail = () => {
                 </CardContent>
               </Card>
 
-              {/* Use Cases */}
-              <UseCasesSection />
-
               {/* Technical Specifications */}
               <SpecificationsSection product={product} />
+
+              {/* Use Cases */}
+              <UseCasesSection />
             </div>
 
             {/* Sidebar */}
