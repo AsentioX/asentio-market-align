@@ -24,6 +24,37 @@ export interface XRProduct {
   monetization_score: number | null;
   platform_viability_score: number | null;
   developer_resources_url: string | null;
+  // Platform & Software
+  operating_system: string | null;
+  standalone_or_tethered: string | null;
+  sdk_availability: string | null;
+  developer_docs_url: string | null;
+  openxr_compatible: boolean | null;
+  app_store_availability: string | null;
+  sideloading_allowed: boolean | null;
+  // Display & Optics
+  optics_type: string | null;
+  field_of_view: string | null;
+  resolution_per_eye: string | null;
+  refresh_rate: string | null;
+  brightness_nits: string | null;
+  // Sensors & Tracking
+  tracking_type: string | null;
+  slam_support: boolean | null;
+  hand_tracking: boolean | null;
+  eye_tracking: boolean | null;
+  camera_access_for_devs: boolean | null;
+  // AI & Compute
+  soc_processor: string | null;
+  ram: string | null;
+  on_device_ai: boolean | null;
+  voice_assistant: string | null;
+  cloud_dependency: string | null;
+  // Hardware & Connectivity
+  battery_life: string | null;
+  weight: string | null;
+  wifi_bluetooth_version: string | null;
+  cellular_5g: boolean | null;
   created_at: string;
   updated_at: string;
 }

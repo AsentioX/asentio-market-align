@@ -52,6 +52,37 @@ const ProductForm = () => {
     monetization_score: null as number | null,
     platform_viability_score: null as number | null,
     developer_resources_url: '',
+    // Platform & Software
+    operating_system: '',
+    standalone_or_tethered: '',
+    sdk_availability: '',
+    developer_docs_url: '',
+    openxr_compatible: null as boolean | null,
+    app_store_availability: '',
+    sideloading_allowed: null as boolean | null,
+    // Display & Optics
+    optics_type: '',
+    field_of_view: '',
+    resolution_per_eye: '',
+    refresh_rate: '',
+    brightness_nits: '',
+    // Sensors & Tracking
+    tracking_type: '',
+    slam_support: null as boolean | null,
+    hand_tracking: null as boolean | null,
+    eye_tracking: null as boolean | null,
+    camera_access_for_devs: null as boolean | null,
+    // AI & Compute
+    soc_processor: '',
+    ram: '',
+    on_device_ai: null as boolean | null,
+    voice_assistant: '',
+    cloud_dependency: '',
+    // Hardware & Connectivity
+    battery_life: '',
+    weight: '',
+    wifi_bluetooth_version: '',
+    cellular_5g: null as boolean | null,
   });
   
   const [newFeature, setNewFeature] = useState('');
@@ -82,6 +113,32 @@ const ProductForm = () => {
         monetization_score: existingProduct.monetization_score ?? null,
         platform_viability_score: existingProduct.platform_viability_score ?? null,
         developer_resources_url: existingProduct.developer_resources_url || '',
+        operating_system: existingProduct.operating_system || '',
+        standalone_or_tethered: existingProduct.standalone_or_tethered || '',
+        sdk_availability: existingProduct.sdk_availability || '',
+        developer_docs_url: existingProduct.developer_docs_url || '',
+        openxr_compatible: existingProduct.openxr_compatible ?? null,
+        app_store_availability: existingProduct.app_store_availability || '',
+        sideloading_allowed: existingProduct.sideloading_allowed ?? null,
+        optics_type: existingProduct.optics_type || '',
+        field_of_view: existingProduct.field_of_view || '',
+        resolution_per_eye: existingProduct.resolution_per_eye || '',
+        refresh_rate: existingProduct.refresh_rate || '',
+        brightness_nits: existingProduct.brightness_nits || '',
+        tracking_type: existingProduct.tracking_type || '',
+        slam_support: existingProduct.slam_support ?? null,
+        hand_tracking: existingProduct.hand_tracking ?? null,
+        eye_tracking: existingProduct.eye_tracking ?? null,
+        camera_access_for_devs: existingProduct.camera_access_for_devs ?? null,
+        soc_processor: existingProduct.soc_processor || '',
+        ram: existingProduct.ram || '',
+        on_device_ai: existingProduct.on_device_ai ?? null,
+        voice_assistant: existingProduct.voice_assistant || '',
+        cloud_dependency: existingProduct.cloud_dependency || '',
+        battery_life: existingProduct.battery_life || '',
+        weight: existingProduct.weight || '',
+        wifi_bluetooth_version: existingProduct.wifi_bluetooth_version || '',
+        cellular_5g: existingProduct.cellular_5g ?? null,
       });
     }
   }, [existingProduct]);
@@ -152,6 +209,32 @@ const ProductForm = () => {
         monetization_score: formData.monetization_score,
         platform_viability_score: formData.platform_viability_score,
         developer_resources_url: formData.developer_resources_url || null,
+        operating_system: formData.operating_system || null,
+        standalone_or_tethered: formData.standalone_or_tethered || null,
+        sdk_availability: formData.sdk_availability || null,
+        developer_docs_url: formData.developer_docs_url || null,
+        openxr_compatible: formData.openxr_compatible,
+        app_store_availability: formData.app_store_availability || null,
+        sideloading_allowed: formData.sideloading_allowed,
+        optics_type: formData.optics_type || null,
+        field_of_view: formData.field_of_view || null,
+        resolution_per_eye: formData.resolution_per_eye || null,
+        refresh_rate: formData.refresh_rate || null,
+        brightness_nits: formData.brightness_nits || null,
+        tracking_type: formData.tracking_type || null,
+        slam_support: formData.slam_support,
+        hand_tracking: formData.hand_tracking,
+        eye_tracking: formData.eye_tracking,
+        camera_access_for_devs: formData.camera_access_for_devs,
+        soc_processor: formData.soc_processor || null,
+        ram: formData.ram || null,
+        on_device_ai: formData.on_device_ai,
+        voice_assistant: formData.voice_assistant || null,
+        cloud_dependency: formData.cloud_dependency || null,
+        battery_life: formData.battery_life || null,
+        weight: formData.weight || null,
+        wifi_bluetooth_version: formData.wifi_bluetooth_version || null,
+        cellular_5g: formData.cellular_5g,
       };
 
       if (isEditing) {
@@ -413,6 +496,153 @@ const ProductForm = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, developer_resources_url: e.target.value }))}
                   placeholder="https://developer.example.com"
                 />
+              </div>
+
+              {/* 🧠 Platform & Software */}
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <Label className="text-base font-semibold">🧠 Platform & Software</Label>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="operating_system">Operating System</Label>
+                    <Input id="operating_system" value={formData.operating_system} onChange={(e) => setFormData(prev => ({ ...prev, operating_system: e.target.value }))} placeholder="Android XR, custom OS, etc." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="standalone_or_tethered">Standalone or Tethered</Label>
+                    <Input id="standalone_or_tethered" value={formData.standalone_or_tethered} onChange={(e) => setFormData(prev => ({ ...prev, standalone_or_tethered: e.target.value }))} placeholder="Standalone, Tethered, Both" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sdk_availability">SDK Availability</Label>
+                    <Input id="sdk_availability" value={formData.sdk_availability} onChange={(e) => setFormData(prev => ({ ...prev, sdk_availability: e.target.value }))} placeholder="Unity, Unreal, OpenXR" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="developer_docs_url">Developer Docs URL</Label>
+                    <Input id="developer_docs_url" type="url" value={formData.developer_docs_url} onChange={(e) => setFormData(prev => ({ ...prev, developer_docs_url: e.target.value }))} placeholder="https://docs.example.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="app_store_availability">App Store Availability</Label>
+                    <Input id="app_store_availability" value={formData.app_store_availability} onChange={(e) => setFormData(prev => ({ ...prev, app_store_availability: e.target.value }))} placeholder="Google Play, proprietary, etc." />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="openxr_compatible">OpenXR Compatible</Label>
+                    <Switch id="openxr_compatible" checked={formData.openxr_compatible ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, openxr_compatible: checked }))} />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="sideloading_allowed">Sideloading Allowed</Label>
+                    <Switch id="sideloading_allowed" checked={formData.sideloading_allowed ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, sideloading_allowed: checked }))} />
+                  </div>
+                </div>
+              </div>
+
+              {/* 👁 Display & Optics */}
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <Label className="text-base font-semibold">👁 Display & Optics</Label>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="optics_type">Optics Type</Label>
+                    <Input id="optics_type" value={formData.optics_type} onChange={(e) => setFormData(prev => ({ ...prev, optics_type: e.target.value }))} placeholder="Waveguide, Birdbath, etc." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="field_of_view">Field of View</Label>
+                    <Input id="field_of_view" value={formData.field_of_view} onChange={(e) => setFormData(prev => ({ ...prev, field_of_view: e.target.value }))} placeholder="50°" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="resolution_per_eye">Resolution per Eye</Label>
+                    <Input id="resolution_per_eye" value={formData.resolution_per_eye} onChange={(e) => setFormData(prev => ({ ...prev, resolution_per_eye: e.target.value }))} placeholder="1920x1080" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="refresh_rate">Refresh Rate</Label>
+                    <Input id="refresh_rate" value={formData.refresh_rate} onChange={(e) => setFormData(prev => ({ ...prev, refresh_rate: e.target.value }))} placeholder="90Hz" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="brightness_nits">Brightness (nits)</Label>
+                    <Input id="brightness_nits" value={formData.brightness_nits} onChange={(e) => setFormData(prev => ({ ...prev, brightness_nits: e.target.value }))} placeholder="2000 nits" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 📡 Sensors & Tracking */}
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <Label className="text-base font-semibold">📡 Sensors & Tracking</Label>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="tracking_type">Tracking Type</Label>
+                    <Input id="tracking_type" value={formData.tracking_type} onChange={(e) => setFormData(prev => ({ ...prev, tracking_type: e.target.value }))} placeholder="6DoF, 3DoF" />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="slam_support">SLAM Support</Label>
+                    <Switch id="slam_support" checked={formData.slam_support ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, slam_support: checked }))} />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="hand_tracking">Hand Tracking</Label>
+                    <Switch id="hand_tracking" checked={formData.hand_tracking ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, hand_tracking: checked }))} />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="eye_tracking">Eye Tracking</Label>
+                    <Switch id="eye_tracking" checked={formData.eye_tracking ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, eye_tracking: checked }))} />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="camera_access_for_devs">Camera Access for Devs</Label>
+                    <Switch id="camera_access_for_devs" checked={formData.camera_access_for_devs ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, camera_access_for_devs: checked }))} />
+                  </div>
+                </div>
+              </div>
+
+              {/* 🤖 AI & Compute */}
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <Label className="text-base font-semibold">🤖 AI & Compute</Label>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="soc_processor">SoC / Processor</Label>
+                    <Input id="soc_processor" value={formData.soc_processor} onChange={(e) => setFormData(prev => ({ ...prev, soc_processor: e.target.value }))} placeholder="Snapdragon XR2 Gen 2" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ram">RAM</Label>
+                    <Input id="ram" value={formData.ram} onChange={(e) => setFormData(prev => ({ ...prev, ram: e.target.value }))} placeholder="12GB" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="voice_assistant">Voice Assistant</Label>
+                    <Input id="voice_assistant" value={formData.voice_assistant} onChange={(e) => setFormData(prev => ({ ...prev, voice_assistant: e.target.value }))} placeholder="Gemini, Alexa, etc." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cloud_dependency">Cloud Dependency</Label>
+                    <Input id="cloud_dependency" value={formData.cloud_dependency} onChange={(e) => setFormData(prev => ({ ...prev, cloud_dependency: e.target.value }))} placeholder="Required, Optional" />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="on_device_ai">On-device AI</Label>
+                    <Switch id="on_device_ai" checked={formData.on_device_ai ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, on_device_ai: checked }))} />
+                  </div>
+                </div>
+              </div>
+
+              {/* 🔋 Hardware & Connectivity */}
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <Label className="text-base font-semibold">🔋 Hardware & Connectivity</Label>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="battery_life">Battery Life</Label>
+                    <Input id="battery_life" value={formData.battery_life} onChange={(e) => setFormData(prev => ({ ...prev, battery_life: e.target.value }))} placeholder="3 hours" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="weight">Weight</Label>
+                    <Input id="weight" value={formData.weight} onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))} placeholder="226g" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="wifi_bluetooth_version">WiFi / Bluetooth</Label>
+                    <Input id="wifi_bluetooth_version" value={formData.wifi_bluetooth_version} onChange={(e) => setFormData(prev => ({ ...prev, wifi_bluetooth_version: e.target.value }))} placeholder="WiFi 6E, BT 5.3" />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <Label htmlFor="cellular_5g">5G / Cellular</Label>
+                    <Switch id="cellular_5g" checked={formData.cellular_5g ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, cellular_5g: checked }))} />
+                  </div>
+                </div>
               </div>
 
               {/* Submit */}
