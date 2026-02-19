@@ -45,7 +45,13 @@ const ProductForm = () => {
     link: '',
     image_url: '',
     is_editors_pick: false,
-    editors_note: ''
+    editors_note: '',
+    open_ecosystem_score: null as number | null,
+    ai_access_score: null as number | null,
+    spatial_capability_score: null as number | null,
+    monetization_score: null as number | null,
+    platform_viability_score: null as number | null,
+    developer_resources_url: '',
   });
   
   const [newFeature, setNewFeature] = useState('');
@@ -69,7 +75,13 @@ const ProductForm = () => {
         link: existingProduct.link || '',
         image_url: existingProduct.image_url || '',
         is_editors_pick: existingProduct.is_editors_pick,
-        editors_note: existingProduct.editors_note || ''
+        editors_note: existingProduct.editors_note || '',
+        open_ecosystem_score: existingProduct.open_ecosystem_score ?? null,
+        ai_access_score: existingProduct.ai_access_score ?? null,
+        spatial_capability_score: existingProduct.spatial_capability_score ?? null,
+        monetization_score: existingProduct.monetization_score ?? null,
+        platform_viability_score: existingProduct.platform_viability_score ?? null,
+        developer_resources_url: existingProduct.developer_resources_url || '',
       });
     }
   }, [existingProduct]);
@@ -134,6 +146,12 @@ const ProductForm = () => {
         editors_note: formData.editors_note || null,
         key_features: formData.key_features.length > 0 ? formData.key_features : null,
         company_hq: formData.company_hq || null,
+        open_ecosystem_score: formData.open_ecosystem_score,
+        ai_access_score: formData.ai_access_score,
+        spatial_capability_score: formData.spatial_capability_score,
+        monetization_score: formData.monetization_score,
+        platform_viability_score: formData.platform_viability_score,
+        developer_resources_url: formData.developer_resources_url || null,
       };
 
       if (isEditing) {
@@ -346,6 +364,54 @@ const ProductForm = () => {
                   value={formData.image_url}
                   onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
                   placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              {/* Developer Readiness Scores */}
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <div>
+                  <Label className="text-base font-semibold">Developer Readiness Score</Label>
+                  <p className="text-sm text-muted-foreground">Rate each dimension from 1 (lowest) to 5 (highest)</p>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {([
+                    { key: 'open_ecosystem_score', label: 'Open Ecosystem Score' },
+                    { key: 'ai_access_score', label: 'AI Access Score' },
+                    { key: 'spatial_capability_score', label: 'Spatial Capability Score' },
+                    { key: 'monetization_score', label: 'Monetization Score' },
+                    { key: 'platform_viability_score', label: 'Platform Viability Score' },
+                  ] as const).map(({ key, label }) => (
+                    <div key={key} className="space-y-2">
+                      <Label htmlFor={key}>{label} (1–5)</Label>
+                      <Select
+                        value={formData[key]?.toString() || ''}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, [key]: value ? parseInt(value) : null }))}
+                      >
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="—" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border shadow-lg">
+                          <SelectItem value="1">1</SelectItem>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="3">3</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="5">5</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Developer Resources URL */}
+              <div className="space-y-2">
+                <Label htmlFor="developer_resources_url">Developer Resources URL</Label>
+                <Input
+                  id="developer_resources_url"
+                  type="url"
+                  value={formData.developer_resources_url}
+                  onChange={(e) => setFormData(prev => ({ ...prev, developer_resources_url: e.target.value }))}
+                  placeholder="https://developer.example.com"
                 />
               </div>
 

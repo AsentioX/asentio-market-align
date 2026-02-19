@@ -187,63 +187,81 @@ export type Database = {
       }
       xr_products: {
         Row: {
+          ai_access_score: number | null
           ai_integration: string
           category: string
           company: string
           company_hq: string | null
           created_at: string
           description: string | null
+          developer_resources_url: string | null
           editors_note: string | null
           id: string
           image_url: string | null
           is_editors_pick: boolean | null
           key_features: string[] | null
           link: string | null
+          monetization_score: number | null
           name: string
+          open_ecosystem_score: number | null
+          platform_viability_score: number | null
           price_range: string | null
           region: string
           shipping_status: string
           slug: string
+          spatial_capability_score: number | null
           updated_at: string
         }
         Insert: {
+          ai_access_score?: number | null
           ai_integration: string
           category: string
           company: string
           company_hq?: string | null
           created_at?: string
           description?: string | null
+          developer_resources_url?: string | null
           editors_note?: string | null
           id?: string
           image_url?: string | null
           is_editors_pick?: boolean | null
           key_features?: string[] | null
           link?: string | null
+          monetization_score?: number | null
           name: string
+          open_ecosystem_score?: number | null
+          platform_viability_score?: number | null
           price_range?: string | null
           region: string
           shipping_status: string
           slug: string
+          spatial_capability_score?: number | null
           updated_at?: string
         }
         Update: {
+          ai_access_score?: number | null
           ai_integration?: string
           category?: string
           company?: string
           company_hq?: string | null
           created_at?: string
           description?: string | null
+          developer_resources_url?: string | null
           editors_note?: string | null
           id?: string
           image_url?: string | null
           is_editors_pick?: boolean | null
           key_features?: string[] | null
           link?: string | null
+          monetization_score?: number | null
           name?: string
+          open_ecosystem_score?: number | null
+          platform_viability_score?: number | null
           price_range?: string | null
           region?: string
           shipping_status?: string
           slug?: string
+          spatial_capability_score?: number | null
           updated_at?: string
         }
         Relationships: []
