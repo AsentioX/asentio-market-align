@@ -129,7 +129,7 @@ const GlobeGraphic = () => {
             cx={node.x}
             cy={node.y}
             r={node.radius}
-            className={`${node.color === 'red' ? 'fill-asentio-red' : 'fill-asentio-blue'} transition-all duration-75`}
+            className={node.color === 'red' ? 'fill-asentio-red' : 'fill-asentio-blue'}
           />
         ))}
         
