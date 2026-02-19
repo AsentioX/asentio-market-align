@@ -195,14 +195,6 @@ const SpecificationsSection = ({ product }: { product: XRProduct }) => {
             </div>
           ))}
         </div>
-        {product.developer_docs_url && (
-          <div className="mt-6 pt-4 border-t border-border">
-            <a href={product.developer_docs_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-asentio-blue hover:underline">
-              <Code2 className="w-4 h-4" />
-              Developer Documentation →
-            </a>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
