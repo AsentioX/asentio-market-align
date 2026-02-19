@@ -96,6 +96,119 @@ const UseCasesSection = () => {
   );
 };
 
+import { XRProduct } from '@/hooks/useXRProducts';
+
+const SpecRow = ({ label, value }: { label: string; value: string | null | undefined }) => {
+  if (!value) return null;
+  return (
+    <div className="flex justify-between py-2 border-b border-border last:border-b-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium text-foreground text-right">{value}</span>
+    </div>
+  );
+};
+
+const BoolRow = ({ label, value }: { label: string; value: boolean | null | undefined }) => {
+  if (value == null) return null;
+  return (
+    <div className="flex justify-between py-2 border-b border-border last:border-b-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <Badge variant={value ? 'default' : 'secondary'} className="text-xs">{value ? 'Yes' : 'No'}</Badge>
+    </div>
+  );
+};
+
+const SpecificationsSection = ({ product }: { product: XRProduct }) => {
+  const sections = [
+    {
+      title: '🧠 Platform & Software',
+      rows: [
+        { type: 'text' as const, label: 'Operating System', value: product.operating_system },
+        { type: 'text' as const, label: 'Standalone / Tethered', value: product.standalone_or_tethered },
+        { type: 'text' as const, label: 'SDK Availability', value: product.sdk_availability },
+        { type: 'bool' as const, label: 'OpenXR Compatible', value: product.openxr_compatible },
+        { type: 'text' as const, label: 'App Store', value: product.app_store_availability },
+        { type: 'bool' as const, label: 'Sideloading Allowed', value: product.sideloading_allowed },
+      ],
+    },
+    {
+      title: '👁 Display & Optics',
+      rows: [
+        { type: 'text' as const, label: 'Optics Type', value: product.optics_type },
+        { type: 'text' as const, label: 'Field of View', value: product.field_of_view },
+        { type: 'text' as const, label: 'Resolution per Eye', value: product.resolution_per_eye },
+        { type: 'text' as const, label: 'Refresh Rate', value: product.refresh_rate },
+        { type: 'text' as const, label: 'Brightness', value: product.brightness_nits },
+      ],
+    },
+    {
+      title: '📡 Sensors & Tracking',
+      rows: [
+        { type: 'text' as const, label: 'Tracking Type', value: product.tracking_type },
+        { type: 'bool' as const, label: 'SLAM Support', value: product.slam_support },
+        { type: 'bool' as const, label: 'Hand Tracking', value: product.hand_tracking },
+        { type: 'bool' as const, label: 'Eye Tracking', value: product.eye_tracking },
+        { type: 'bool' as const, label: 'Camera Access for Devs', value: product.camera_access_for_devs },
+      ],
+    },
+    {
+      title: '🤖 AI & Compute',
+      rows: [
+        { type: 'text' as const, label: 'SoC / Processor', value: product.soc_processor },
+        { type: 'text' as const, label: 'RAM', value: product.ram },
+        { type: 'bool' as const, label: 'On-device AI', value: product.on_device_ai },
+        { type: 'text' as const, label: 'Voice Assistant', value: product.voice_assistant },
+        { type: 'text' as const, label: 'Cloud Dependency', value: product.cloud_dependency },
+      ],
+    },
+    {
+      title: '🔋 Hardware & Connectivity',
+      rows: [
+        { type: 'text' as const, label: 'Battery Life', value: product.battery_life },
+        { type: 'text' as const, label: 'Weight', value: product.weight },
+        { type: 'text' as const, label: 'WiFi / Bluetooth', value: product.wifi_bluetooth_version },
+        { type: 'bool' as const, label: '5G / Cellular', value: product.cellular_5g },
+      ],
+    },
+  ];
+
+  // Only show sections that have at least one non-null value
+  const visibleSections = sections.filter(s => s.rows.some(r => r.value != null));
+  if (visibleSections.length === 0) return null;
+
+  return (
+    <Card>
+      <CardContent className="p-6 md:p-8">
+        <h2 className="text-xl font-semibold mb-6">Technical Specifications</h2>
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6">
+          {visibleSections.map((section) => (
+            <div key={section.title}>
+              <h3 className="font-medium text-foreground mb-3">{section.title}</h3>
+              <div>
+                {section.rows.map((row) =>
+                  row.type === 'bool' ? (
+                    <BoolRow key={row.label} label={row.label} value={row.value as boolean | null} />
+                  ) : (
+                    <SpecRow key={row.label} label={row.label} value={row.value as string | null} />
+                  )
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        {product.developer_docs_url && (
+          <div className="mt-6 pt-4 border-t border-border">
+            <a href={product.developer_docs_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-asentio-blue hover:underline">
+              <Code2 className="w-4 h-4" />
+              Developer Documentation →
+            </a>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading, error } = useXRProduct(slug || '');
@@ -194,6 +307,9 @@ const ProductDetail = () => {
 
               {/* Use Cases */}
               <UseCasesSection />
+
+              {/* Technical Specifications */}
+              <SpecificationsSection product={product} />
             </div>
 
             {/* Sidebar */}

@@ -189,13 +189,23 @@ export type Database = {
         Row: {
           ai_access_score: number | null
           ai_integration: string
+          app_store_availability: string | null
+          battery_life: string | null
+          brightness_nits: string | null
+          camera_access_for_devs: boolean | null
           category: string
+          cellular_5g: boolean | null
+          cloud_dependency: string | null
           company: string
           company_hq: string | null
           created_at: string
           description: string | null
+          developer_docs_url: string | null
           developer_resources_url: string | null
           editors_note: string | null
+          eye_tracking: boolean | null
+          field_of_view: string | null
+          hand_tracking: boolean | null
           id: string
           image_url: string | null
           is_editors_pick: boolean | null
@@ -203,25 +213,51 @@ export type Database = {
           link: string | null
           monetization_score: number | null
           name: string
+          on_device_ai: boolean | null
           open_ecosystem_score: number | null
+          openxr_compatible: boolean | null
+          operating_system: string | null
+          optics_type: string | null
           platform_viability_score: number | null
           price_range: string | null
+          ram: string | null
+          refresh_rate: string | null
           region: string
+          resolution_per_eye: string | null
+          sdk_availability: string | null
           shipping_status: string
+          sideloading_allowed: boolean | null
+          slam_support: boolean | null
           slug: string
+          soc_processor: string | null
           spatial_capability_score: number | null
+          standalone_or_tethered: string | null
+          tracking_type: string | null
           updated_at: string
+          voice_assistant: string | null
+          weight: string | null
+          wifi_bluetooth_version: string | null
         }
         Insert: {
           ai_access_score?: number | null
           ai_integration: string
+          app_store_availability?: string | null
+          battery_life?: string | null
+          brightness_nits?: string | null
+          camera_access_for_devs?: boolean | null
           category: string
+          cellular_5g?: boolean | null
+          cloud_dependency?: string | null
           company: string
           company_hq?: string | null
           created_at?: string
           description?: string | null
+          developer_docs_url?: string | null
           developer_resources_url?: string | null
           editors_note?: string | null
+          eye_tracking?: boolean | null
+          field_of_view?: string | null
+          hand_tracking?: boolean | null
           id?: string
           image_url?: string | null
           is_editors_pick?: boolean | null
@@ -229,25 +265,51 @@ export type Database = {
           link?: string | null
           monetization_score?: number | null
           name: string
+          on_device_ai?: boolean | null
           open_ecosystem_score?: number | null
+          openxr_compatible?: boolean | null
+          operating_system?: string | null
+          optics_type?: string | null
           platform_viability_score?: number | null
           price_range?: string | null
+          ram?: string | null
+          refresh_rate?: string | null
           region: string
+          resolution_per_eye?: string | null
+          sdk_availability?: string | null
           shipping_status: string
+          sideloading_allowed?: boolean | null
+          slam_support?: boolean | null
           slug: string
+          soc_processor?: string | null
           spatial_capability_score?: number | null
+          standalone_or_tethered?: string | null
+          tracking_type?: string | null
           updated_at?: string
+          voice_assistant?: string | null
+          weight?: string | null
+          wifi_bluetooth_version?: string | null
         }
         Update: {
           ai_access_score?: number | null
           ai_integration?: string
+          app_store_availability?: string | null
+          battery_life?: string | null
+          brightness_nits?: string | null
+          camera_access_for_devs?: boolean | null
           category?: string
+          cellular_5g?: boolean | null
+          cloud_dependency?: string | null
           company?: string
           company_hq?: string | null
           created_at?: string
           description?: string | null
+          developer_docs_url?: string | null
           developer_resources_url?: string | null
           editors_note?: string | null
+          eye_tracking?: boolean | null
+          field_of_view?: string | null
+          hand_tracking?: boolean | null
           id?: string
           image_url?: string | null
           is_editors_pick?: boolean | null
@@ -255,14 +317,30 @@ export type Database = {
           link?: string | null
           monetization_score?: number | null
           name?: string
+          on_device_ai?: boolean | null
           open_ecosystem_score?: number | null
+          openxr_compatible?: boolean | null
+          operating_system?: string | null
+          optics_type?: string | null
           platform_viability_score?: number | null
           price_range?: string | null
+          ram?: string | null
+          refresh_rate?: string | null
           region?: string
+          resolution_per_eye?: string | null
+          sdk_availability?: string | null
           shipping_status?: string
+          sideloading_allowed?: boolean | null
+          slam_support?: boolean | null
           slug?: string
+          soc_processor?: string | null
           spatial_capability_score?: number | null
+          standalone_or_tethered?: string | null
+          tracking_type?: string | null
           updated_at?: string
+          voice_assistant?: string | null
+          weight?: string | null
+          wifi_bluetooth_version?: string | null
         }
         Relationships: []
       }
