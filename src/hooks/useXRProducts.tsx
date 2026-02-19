@@ -55,6 +55,7 @@ export interface XRProduct {
   weight: string | null;
   wifi_bluetooth_version: string | null;
   cellular_5g: boolean | null;
+  additional_images: string[] | null;
   created_at: string;
   updated_at: string;
 }

@@ -8,9 +8,8 @@ import { useXRProduct } from '@/hooks/useXRProducts';
 import { useXRUseCases } from '@/hooks/useXRUseCases';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
 
-const ProductImageCarousel = ({ imageUrl, name }: { imageUrl: string; name: string }) => {
-  // Currently single image; ready for multiple images when DB supports it
-  const images = [imageUrl];
+const ProductImageCarousel = ({ imageUrl, additionalImages, name }: { imageUrl: string; additionalImages?: string[] | null; name: string }) => {
+  const images = [imageUrl, ...(additionalImages || []).filter(Boolean)];
   const [current, setCurrent] = useState(0);
 
   return (
@@ -258,7 +257,7 @@ const ProductDetail = () => {
       <div className="min-h-screen bg-background pt-24">
         {/* Product Image Carousel */}
         {product.image_url && (
-          <ProductImageCarousel imageUrl={product.image_url} name={product.name} />
+          <ProductImageCarousel imageUrl={product.image_url} additionalImages={product.additional_images} name={product.name} />
         )}
 
         <div className="container mx-auto px-4 py-8">
