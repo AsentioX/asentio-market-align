@@ -535,10 +535,6 @@ const ProductForm = () => {
                     <Input id="sdk_availability" value={formData.sdk_availability} onChange={(e) => setFormData(prev => ({ ...prev, sdk_availability: e.target.value }))} placeholder="Unity, Unreal, OpenXR" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="developer_docs_url">Developer Docs URL</Label>
-                    <Input id="developer_docs_url" type="url" value={formData.developer_docs_url} onChange={(e) => setFormData(prev => ({ ...prev, developer_docs_url: e.target.value }))} placeholder="https://docs.example.com" />
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="app_store_availability">App Store Availability</Label>
                     <Input id="app_store_availability" value={formData.app_store_availability} onChange={(e) => setFormData(prev => ({ ...prev, app_store_availability: e.target.value }))} placeholder="Google Play, proprietary, etc." />
                   </div>
