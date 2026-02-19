@@ -260,9 +260,9 @@ const ProductDetail = () => {
           </Link>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Header Card */}
+            {/* Product Info Column */}
+            <div className="space-y-6">
+              {/* Combined Header + Quick Info Card */}
               <Card>
                 <CardContent className="p-6 md:p-8">
                   {product.is_editors_pick && (
@@ -286,29 +286,13 @@ const ProductDetail = () => {
                     </div>
                   )}
 
-
-
                   {product.description && (
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-muted-foreground leading-relaxed mb-6">
                       {product.description}
                     </p>
                   )}
-                </CardContent>
-              </Card>
 
-              {/* Technical Specifications */}
-              <SpecificationsSection product={product} />
-
-              {/* Use Cases */}
-              <UseCasesSection />
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Quick Info Card */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
+                  <div className="border-t border-border pt-6 space-y-4">
                     {product.price_range && (
                       <div>
                         <p className="text-sm text-muted-foreground mb-1">Price Range</p>
@@ -412,6 +396,12 @@ const ProductDetail = () => {
                   </Link>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Specs & Use Cases Column */}
+            <div className="lg:col-span-2 space-y-6">
+              <SpecificationsSection product={product} />
+              <UseCasesSection />
             </div>
           </div>
         </div>
