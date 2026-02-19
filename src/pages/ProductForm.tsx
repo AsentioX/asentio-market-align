@@ -83,6 +83,7 @@ const ProductForm = () => {
     weight: '',
     wifi_bluetooth_version: '',
     cellular_5g: null as boolean | null,
+    additional_images: [] as string[],
   });
   
   const [newFeature, setNewFeature] = useState('');
@@ -139,6 +140,7 @@ const ProductForm = () => {
         weight: existingProduct.weight || '',
         wifi_bluetooth_version: existingProduct.wifi_bluetooth_version || '',
         cellular_5g: existingProduct.cellular_5g ?? null,
+        additional_images: existingProduct.additional_images || [],
       });
     }
   }, [existingProduct]);
@@ -235,6 +237,7 @@ const ProductForm = () => {
         weight: formData.weight || null,
         wifi_bluetooth_version: formData.wifi_bluetooth_version || null,
         cellular_5g: formData.cellular_5g,
+        additional_images: formData.additional_images.filter(u => u.trim()).length > 0 ? formData.additional_images.filter(u => u.trim()) : null,
       };
 
       if (isEditing) {
@@ -438,16 +441,33 @@ const ProductForm = () => {
 
 
 
-              {/* Image URL */}
-              <div className="space-y-2">
-                <Label htmlFor="image_url">Image URL (optional)</Label>
-                <Input
-                  id="image_url"
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-                  placeholder="https://example.com/image.jpg"
-                />
+              {/* Image URLs */}
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="image_url">Main Image URL (optional)</Label>
+                  <Input
+                    id="image_url"
+                    type="url"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                {[0, 1, 2, 3].map((idx) => (
+                  <div key={idx} className="space-y-2">
+                    <Label>Additional Image {idx + 1}</Label>
+                    <Input
+                      type="url"
+                      value={formData.additional_images[idx] || ''}
+                      onChange={(e) => {
+                        const updated = [...formData.additional_images];
+                        updated[idx] = e.target.value;
+                        setFormData(prev => ({ ...prev, additional_images: updated }));
+                      }}
+                      placeholder={`https://example.com/image-${idx + 2}.jpg`}
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Developer Readiness Scores */}

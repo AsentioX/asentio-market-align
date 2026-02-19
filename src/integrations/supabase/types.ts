@@ -187,6 +187,7 @@ export type Database = {
       }
       xr_products: {
         Row: {
+          additional_images: string[] | null
           ai_access_score: number | null
           ai_integration: string
           app_store_availability: string | null
@@ -239,6 +240,7 @@ export type Database = {
           wifi_bluetooth_version: string | null
         }
         Insert: {
+          additional_images?: string[] | null
           ai_access_score?: number | null
           ai_integration: string
           app_store_availability?: string | null
@@ -291,6 +293,7 @@ export type Database = {
           wifi_bluetooth_version?: string | null
         }
         Update: {
+          additional_images?: string[] | null
           ai_access_score?: number | null
           ai_integration?: string
           app_store_availability?: string | null
