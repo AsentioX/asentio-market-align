@@ -18,6 +18,12 @@ export interface XRProduct {
   image_url: string | null;
   is_editors_pick: boolean;
   editors_note: string | null;
+  open_ecosystem_score: number | null;
+  ai_access_score: number | null;
+  spatial_capability_score: number | null;
+  monetization_score: number | null;
+  platform_viability_score: number | null;
+  developer_resources_url: string | null;
   created_at: string;
   updated_at: string;
 }

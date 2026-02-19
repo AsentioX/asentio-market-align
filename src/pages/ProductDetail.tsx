@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ExternalLink, Brain, MapPin, Package, Sparkles, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Brain, MapPin, Package, Sparkles, Check, ChevronLeft, ChevronRight, Code2 } from 'lucide-react';
 import { useXRProduct } from '@/hooks/useXRProducts';
 import { useXRUseCases } from '@/hooks/useXRUseCases';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
@@ -242,9 +242,54 @@ const ProductDetail = () => {
                         </Button>
                       </a>
                     )}
+
+                    {product.developer_resources_url && (
+                      <a
+                        href={product.developer_resources_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block mt-3"
+                      >
+                        <Button variant="outline" className="w-full">
+                          Developer Resources
+                          <Code2 className="ml-2 w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Developer Readiness Score */}
+              {(product.open_ecosystem_score || product.ai_access_score || product.spatial_capability_score || product.monetization_score || product.platform_viability_score) && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold text-foreground mb-4">Developer Readiness</h3>
+                    <div className="space-y-3">
+                      {([
+                        { label: 'Open Ecosystem', value: product.open_ecosystem_score },
+                        { label: 'AI Access', value: product.ai_access_score },
+                        { label: 'Spatial Capability', value: product.spatial_capability_score },
+                        { label: 'Monetization', value: product.monetization_score },
+                        { label: 'Platform Viability', value: product.platform_viability_score },
+                      ] as const).filter(s => s.value != null).map(({ label, value }) => (
+                        <div key={label}>
+                          <div className="flex items-center justify-between text-sm mb-1">
+                            <span className="text-muted-foreground">{label}</span>
+                            <span className="font-semibold text-foreground">{value}/5</span>
+                          </div>
+                          <div className="h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-asentio-blue rounded-full transition-all"
+                              style={{ width: `${(value! / 5) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* CTA Card */}
               <Card className="bg-gradient-to-br from-asentio-blue to-asentio-blue/90 text-white">
