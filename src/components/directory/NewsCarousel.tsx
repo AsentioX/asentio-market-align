@@ -13,12 +13,6 @@ interface NewsItem {
   source: string;
 }
 
-const DEFAULT_FEEDS = [
-  'https://www.roadtovr.com/feed/',
-  'https://mixed-news.com/en/feed/',
-  'https://www.uploadvr.com/feed/',
-];
-
 const NewsCarousel = () => {
   const [items, setItems] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,8 +21,22 @@ const NewsCarousel = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
+        // Fetch active feeds from the database
+        const { data: feeds, error: feedsError } = await supabase
+          .from('rss_feeds')
+          .select('url')
+          .eq('is_active', true);
+
+        if (feedsError) throw feedsError;
+
+        const feedUrls = feeds?.map((f: any) => f.url) || [];
+        if (feedUrls.length === 0) {
+          setIsLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase.functions.invoke('fetch-rss', {
-          body: { feeds: DEFAULT_FEEDS, limit: 15 },
+          body: { feeds: feedUrls, limit: 15 },
         });
 
         if (error) throw error;

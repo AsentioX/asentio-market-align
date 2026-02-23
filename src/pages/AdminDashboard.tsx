@@ -13,9 +13,10 @@ import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCase
 import { useMemo } from 'react';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink, 
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
+import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -177,6 +178,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="use-cases" className="flex items-center gap-2">
               <Layers className="w-4 h-4" />
               Use Cases ({useCases?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="rss-feeds" className="flex items-center gap-2">
+              <Rss className="w-4 h-4" />
+              News Feeds
             </TabsTrigger>
           </TabsList>
 
@@ -566,6 +571,11 @@ const AdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* RSS Feeds Tab */}
+          <TabsContent value="rss-feeds">
+            <RssFeedAdmin />
           </TabsContent>
         </Tabs>
       </div>
