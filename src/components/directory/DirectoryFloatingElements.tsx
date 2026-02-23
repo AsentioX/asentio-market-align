@@ -237,7 +237,7 @@ const DirectoryFloatingElements = () => {
     // Spawn one immediately
     spawnStreak();
     const scheduleNext = () => {
-      const delay = 6000 + Math.random() * 10000;
+      const delay = 15000 + Math.random() * 20000;
       return setTimeout(() => { spawnStreak(); timeoutId = scheduleNext(); }, delay);
     };
     let timeoutId = scheduleNext();
