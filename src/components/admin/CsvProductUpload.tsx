@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, Loader2, Download, AlertCircle } from 'lucide-react';
+import { Upload, Loader2, Download, AlertCircle, Undo2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EXPECTED_HEADERS = [
@@ -81,9 +81,17 @@ const parseArray = (val: string): string[] | null => {
   return val.split(';').map(s => s.trim()).filter(Boolean);
 };
 
+interface RollbackData {
+  updatedProducts: Record<string, any>[];
+  newSlugs: string[];
+  timestamp: Date;
+}
+
 const CsvProductUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
+  const [isRollingBack, setIsRollingBack] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
+  const [rollback, setRollback] = useState<RollbackData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -110,6 +118,39 @@ const CsvProductUpload = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleRollback = async () => {
+    if (!rollback) return;
+    setIsRollingBack(true);
+    try {
+      // Delete newly created products
+      if (rollback.newSlugs.length > 0) {
+        const { error } = await supabase
+          .from('xr_products')
+          .delete()
+          .in('slug', rollback.newSlugs);
+        if (error) throw error;
+      }
+
+      // Restore updated products to their previous state
+      for (const product of rollback.updatedProducts) {
+        const { error } = await supabase
+          .from('xr_products')
+          .update(product)
+          .eq('id', product.id);
+        if (error) throw error;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['xr-products'] });
+      setRollback(null);
+      setResult(null);
+      toast({ title: 'Rollback complete', description: 'All imported changes have been reverted.' });
+    } catch (err: any) {
+      toast({ title: 'Rollback failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsRollingBack(false);
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -121,6 +162,7 @@ const CsvProductUpload = () => {
 
     setIsUploading(true);
     setResult(null);
+    setRollback(null);
 
     try {
       const text = await file.text();
@@ -142,8 +184,22 @@ const CsvProductUpload = () => {
         return;
       }
 
+      // Snapshot existing products that will be affected
+      const incomingSlugs = rows.map(row => {
+        const name = row['product name'] || '';
+        return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }).filter(Boolean);
+
+      const { data: existingProducts } = await supabase
+        .from('xr_products')
+        .select('*')
+        .in('slug', incomingSlugs);
+
+      const existingSlugSet = new Set((existingProducts || []).map((p: any) => p.slug));
+
       let success = 0;
       const errors: string[] = [];
+      const newSlugs: string[] = [];
 
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
@@ -172,7 +228,6 @@ const CsvProductUpload = () => {
             image_url: row['image url'] || null,
             editors_note: row['editors note'] || null,
             is_editors_pick: parseBool(row['editors pick']) ?? false,
-            // Platform & Software
             operating_system: row['operating system'] || null,
             standalone_or_tethered: row['standalone or tethered'] || null,
             sdk_availability: row['sdk availability'] || null,
@@ -180,36 +235,30 @@ const CsvProductUpload = () => {
             openxr_compatible: parseBool(row['openxr compatible']),
             app_store_availability: row['app store availability'] || null,
             sideloading_allowed: parseBool(row['sideloading allowed']),
-            // Display & Optics
             optics_type: row['optics type'] || null,
             field_of_view: row['field of view'] || null,
             resolution_per_eye: row['resolution per eye'] || null,
             refresh_rate: row['refresh rate'] || null,
             brightness_nits: row['brightness nits'] || null,
-            // Sensors & Tracking
             tracking_type: row['tracking type'] || null,
             slam_support: parseBool(row['slam support']),
             hand_tracking: parseBool(row['hand tracking']),
             eye_tracking: parseBool(row['eye tracking']),
             camera_access_for_devs: parseBool(row['camera access for devs']),
-            // AI & Compute
             soc_processor: row['soc processor'] || null,
             ram: row['ram'] || null,
             on_device_ai: parseBool(row['on device ai']),
             voice_assistant: row['voice assistant'] || null,
             cloud_dependency: row['cloud dependency'] || null,
-            // Hardware & Connectivity
             battery_life: row['battery life'] || null,
             weight: row['weight'] || null,
             wifi_bluetooth_version: row['wifi bluetooth version'] || null,
             cellular_5g: parseBool(row['cellular 5g']),
-            // Scores
             open_ecosystem_score: parseScore(row['open ecosystem score']),
             ai_access_score: parseScore(row['ai access score']),
             spatial_capability_score: parseScore(row['spatial capability score']),
             monetization_score: parseScore(row['monetization score']),
             platform_viability_score: parseScore(row['platform viability score']),
-            // Other
             developer_resources_url: row['developer resources url'] || null,
             key_features: parseArray(row['key features']),
             additional_images: parseArray(row['additional images']),
@@ -223,6 +272,9 @@ const CsvProductUpload = () => {
             errors.push(`Row ${i + 2} (${name}): ${error.message}`);
           } else {
             success++;
+            if (!existingSlugSet.has(slug)) {
+              newSlugs.push(slug);
+            }
           }
         } catch (err: any) {
           errors.push(`Row ${i + 2}: ${err.message}`);
@@ -230,6 +282,11 @@ const CsvProductUpload = () => {
       }
 
       setResult({ success, errors });
+      setRollback({
+        updatedProducts: existingProducts || [],
+        newSlugs,
+        timestamp: new Date(),
+      });
       queryClient.invalidateQueries({ queryKey: ['xr-products'] });
 
       toast({
@@ -273,6 +330,28 @@ const CsvProductUpload = () => {
           Template
         </Button>
       </div>
+
+      {rollback && (
+        <Alert className="border-amber-500/50 bg-amber-500/10">
+          <Undo2 className="h-4 w-4 text-amber-500" />
+          <AlertDescription className="flex items-center justify-between">
+            <span className="text-sm">
+              Last import: {rollback.newSlugs.length} new, {rollback.updatedProducts.length} updated
+              <span className="text-muted-foreground ml-1">({rollback.timestamp.toLocaleTimeString()})</span>
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRollback}
+              disabled={isRollingBack}
+              className="ml-2 border-amber-500/50 text-amber-600 hover:bg-amber-500/20"
+            >
+              {isRollingBack ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Undo2 className="w-3 h-3 mr-1" />}
+              Rollback
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {result && result.errors.length > 0 && (
         <Alert variant="destructive">
