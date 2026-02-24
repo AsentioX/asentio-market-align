@@ -8,7 +8,27 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EXPECTED_HEADERS = [
   'company name', 'product name', 'company hq', 'region', 'shipping status',
-  'price', 'category', 'product url', 'description', 'image url'
+  'price', 'category', 'product url', 'description', 'image url',
+  'editors note', 'editors pick',
+  // Platform & Software
+  'operating system', 'standalone or tethered', 'sdk availability',
+  'developer docs url', 'openxr compatible', 'app store availability',
+  'sideloading allowed',
+  // Display & Optics
+  'optics type', 'field of view', 'resolution per eye', 'refresh rate',
+  'brightness nits',
+  // Sensors & Tracking
+  'tracking type', 'slam support', 'hand tracking', 'eye tracking',
+  'camera access for devs',
+  // AI & Compute
+  'soc processor', 'ram', 'on device ai', 'voice assistant', 'cloud dependency',
+  // Hardware & Connectivity
+  'battery life', 'weight', 'wifi bluetooth version', 'cellular 5g',
+  // Scores
+  'open ecosystem score', 'ai access score', 'spatial capability score',
+  'monetization score', 'platform viability score',
+  // Other
+  'developer resources url', 'key features', 'additional images',
 ];
 
 const parseCSV = (text: string): Record<string, string>[] => {
@@ -42,6 +62,25 @@ const parseCSV = (text: string): Record<string, string>[] => {
   });
 };
 
+const parseBool = (val: string): boolean | null => {
+  if (!val) return null;
+  const lower = val.toLowerCase();
+  if (['yes', 'true', '1'].includes(lower)) return true;
+  if (['no', 'false', '0'].includes(lower)) return false;
+  return null;
+};
+
+const parseScore = (val: string): number | null => {
+  if (!val) return null;
+  const n = parseInt(val, 10);
+  return isNaN(n) ? null : n;
+};
+
+const parseArray = (val: string): string[] | null => {
+  if (!val) return null;
+  return val.split(';').map(s => s.trim()).filter(Boolean);
+};
+
 const CsvProductUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
@@ -50,8 +89,18 @@ const CsvProductUpload = () => {
   const queryClient = useQueryClient();
 
   const downloadTemplate = () => {
-    const csv = EXPECTED_HEADERS.map(h => h.charAt(0).toUpperCase() + h.slice(1)).join(',') + '\n' +
-      'XREAL,One Pro,"San Francisco, CA",Global,Shipping,$299,AR Glasses,https://example.com,Great AR glasses,https://example.com/img.jpg';
+    const csv = EXPECTED_HEADERS.map(h =>
+      h.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    ).join(',') + '\n' +
+      'XREAL,One Pro,"San Francisco, CA",Global,Shipping,$299,AR Glasses,https://example.com,Great AR glasses,https://example.com/img.jpg,' +
+      'Top pick,Yes,' +
+      'Android,Standalone,Full SDK,https://docs.example.com,Yes,Own Store,Yes,' +
+      'Waveguide,52°,1920x1080,120Hz,1000,' +
+      '6DoF,Yes,Yes,Yes,Yes,' +
+      'Snapdragon XR2,8GB,Yes,Built-in,Hybrid,' +
+      '3 hours,80g,WiFi 6E / BT 5.3,No,' +
+      '8,7,9,6,8,' +
+      'https://dev.example.com,Spatial mapping;Hand gestures;Voice control,https://img1.jpg;https://img2.jpg';
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -83,7 +132,6 @@ const CsvProductUpload = () => {
         return;
       }
 
-      // Validate required headers
       const firstRow = rows[0];
       const missingHeaders = ['product name', 'company name', 'category', 'shipping status', 'region']
         .filter(h => !(h in firstRow));
@@ -104,7 +152,12 @@ const CsvProductUpload = () => {
           const company = row['company name'] || '';
           const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-          const product = {
+          if (!name || !company) {
+            errors.push(`Row ${i + 2}: Missing product name or company name`);
+            continue;
+          }
+
+          const product: Record<string, any> = {
             name,
             slug,
             company,
@@ -117,20 +170,57 @@ const CsvProductUpload = () => {
             description: row['description'] || null,
             link: row['product url'] || null,
             image_url: row['image url'] || null,
+            editors_note: row['editors note'] || null,
+            is_editors_pick: parseBool(row['editors pick']) ?? false,
+            // Platform & Software
+            operating_system: row['operating system'] || null,
+            standalone_or_tethered: row['standalone or tethered'] || null,
+            sdk_availability: row['sdk availability'] || null,
+            developer_docs_url: row['developer docs url'] || null,
+            openxr_compatible: parseBool(row['openxr compatible']),
+            app_store_availability: row['app store availability'] || null,
+            sideloading_allowed: parseBool(row['sideloading allowed']),
+            // Display & Optics
+            optics_type: row['optics type'] || null,
+            field_of_view: row['field of view'] || null,
+            resolution_per_eye: row['resolution per eye'] || null,
+            refresh_rate: row['refresh rate'] || null,
+            brightness_nits: row['brightness nits'] || null,
+            // Sensors & Tracking
+            tracking_type: row['tracking type'] || null,
+            slam_support: parseBool(row['slam support']),
+            hand_tracking: parseBool(row['hand tracking']),
+            eye_tracking: parseBool(row['eye tracking']),
+            camera_access_for_devs: parseBool(row['camera access for devs']),
+            // AI & Compute
+            soc_processor: row['soc processor'] || null,
+            ram: row['ram'] || null,
+            on_device_ai: parseBool(row['on device ai']),
+            voice_assistant: row['voice assistant'] || null,
+            cloud_dependency: row['cloud dependency'] || null,
+            // Hardware & Connectivity
+            battery_life: row['battery life'] || null,
+            weight: row['weight'] || null,
+            wifi_bluetooth_version: row['wifi bluetooth version'] || null,
+            cellular_5g: parseBool(row['cellular 5g']),
+            // Scores
+            open_ecosystem_score: parseScore(row['open ecosystem score']),
+            ai_access_score: parseScore(row['ai access score']),
+            spatial_capability_score: parseScore(row['spatial capability score']),
+            monetization_score: parseScore(row['monetization score']),
+            platform_viability_score: parseScore(row['platform viability score']),
+            // Other
+            developer_resources_url: row['developer resources url'] || null,
+            key_features: parseArray(row['key features']),
+            additional_images: parseArray(row['additional images']),
           };
 
-          if (!product.name || !product.company) {
-            errors.push(`Row ${i + 2}: Missing product name or company name`);
-            continue;
-          }
-
-          // Upsert by slug
           const { error } = await supabase
             .from('xr_products')
-            .upsert(product, { onConflict: 'slug' });
+            .upsert(product as any, { onConflict: 'slug' });
 
           if (error) {
-            errors.push(`Row ${i + 2} (${row.name}): ${error.message}`);
+            errors.push(`Row ${i + 2} (${name}): ${error.message}`);
           } else {
             success++;
           }
