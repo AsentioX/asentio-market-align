@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { feeds, limit = 12 } = await req.json();
+    const { feeds, limit = 15, offset = 0 } = await req.json();
 
     if (!feeds || !Array.isArray(feeds) || feeds.length === 0) {
       return new Response(
@@ -88,31 +88,35 @@ Deno.serve(async (req) => {
       );
     }
 
-    const allItems: RssItem[] = [];
-
-    for (const feedUrl of feeds) {
-      try {
-        const response = await fetch(feedUrl, {
-          headers: { 'User-Agent': 'Asentio-RSS-Reader/1.0' },
-        });
-        if (!response.ok) continue;
-        const xml = await response.text();
-        const items = parseRss(xml, feedUrl);
-        allItems.push(...items);
-      } catch (e) {
-        console.error(`Failed to fetch feed ${feedUrl}:`, e);
+    // Interleave items: feed1[0], feed2[0], feed3[0], feed1[1], feed2[1], ...
+    const { feedItems } = await (async () => {
+      const perFeed: RssItem[][] = [];
+      let idx = 0;
+      for (const feedUrl of feeds) {
+        try {
+          const response = await fetch(feedUrl, {
+            headers: { 'User-Agent': 'Asentio-RSS-Reader/1.0' },
+          });
+          if (!response.ok) { perFeed.push([]); continue; }
+          const xml = await response.text();
+          perFeed.push(parseRss(xml, feedUrl));
+        } catch {
+          perFeed.push([]);
+        }
+        idx++;
       }
-    }
-
-    // Sort by date descending
-    allItems.sort((a, b) => {
-      const dateA = new Date(a.pubDate).getTime() || 0;
-      const dateB = new Date(b.pubDate).getTime() || 0;
-      return dateB - dateA;
-    });
+      const interleaved: RssItem[] = [];
+      const maxLen = Math.max(...perFeed.map(f => f.length), 0);
+      for (let i = 0; i < maxLen; i++) {
+        for (const feed of perFeed) {
+          if (i < feed.length) interleaved.push(feed[i]);
+        }
+      }
+      return { feedItems: interleaved };
+    })();
 
     return new Response(
-      JSON.stringify({ success: true, items: allItems.slice(0, limit) }),
+      JSON.stringify({ success: true, items: feedItems.slice(offset, offset + limit), total: feedItems.length }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
