@@ -88,32 +88,41 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Interleave items: feed1[0], feed2[0], feed3[0], feed1[1], feed2[1], ...
-    const { feedItems } = await (async () => {
-      const perFeed: RssItem[][] = [];
-      let idx = 0;
-      for (const feedUrl of feeds) {
-        try {
-          const response = await fetch(feedUrl, {
-            headers: { 'User-Agent': 'Asentio-RSS-Reader/1.0' },
-          });
-          if (!response.ok) { perFeed.push([]); continue; }
-          const xml = await response.text();
-          perFeed.push(parseRss(xml, feedUrl));
-        } catch {
-          perFeed.push([]);
+    // Fetch all feeds in parallel, then interleave: feed1[0], feed2[0], feed3[0], feed1[1], ...
+    const fetchFeed = async (feedUrl: string): Promise<RssItem[]> => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(feedUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Asentio-RSS-Reader/1.0)' },
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        if (!response.ok) {
+          console.error(`Feed ${feedUrl} returned ${response.status}`);
+          return [];
         }
-        idx++;
+        const xml = await response.text();
+        const items = parseRss(xml, feedUrl);
+        console.log(`Feed ${feedUrl}: ${items.length} items`);
+        return items;
+      } catch (e) {
+        console.error(`Feed ${feedUrl} failed:`, e instanceof Error ? e.message : e);
+        return [];
       }
-      const interleaved: RssItem[] = [];
-      const maxLen = Math.max(...perFeed.map(f => f.length), 0);
-      for (let i = 0; i < maxLen; i++) {
-        for (const feed of perFeed) {
-          if (i < feed.length) interleaved.push(feed[i]);
-        }
+    };
+
+    const results = await Promise.allSettled(feeds.map(fetchFeed));
+    const perFeed: RssItem[][] = results.map(r => r.status === 'fulfilled' ? r.value : []);
+
+    const interleaved: RssItem[] = [];
+    const maxLen = Math.max(...perFeed.map(f => f.length), 0);
+    for (let i = 0; i < maxLen; i++) {
+      for (const feed of perFeed) {
+        if (i < feed.length) interleaved.push(feed[i]);
       }
-      return { feedItems: interleaved };
-    })();
+    }
+    const feedItems = interleaved;
 
     return new Response(
       JSON.stringify({ success: true, items: feedItems.slice(offset, offset + limit), total: feedItems.length }),
