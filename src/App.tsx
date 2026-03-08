@@ -33,6 +33,12 @@ const AppContent = () => {
   const location = useLocation();
   const hideNavFooter = location.pathname === '/schedule';
 
+  useEffect(() => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', 'G-YMVGV4MD6C', { page_path: location.pathname + location.search });
+    }
+  }, [location]);
+
   return (
     <>
       {!hideNavFooter && <Navbar />}
