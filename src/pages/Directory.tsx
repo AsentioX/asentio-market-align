@@ -8,7 +8,7 @@ import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryV
 import DerivedCompanyGrid from '@/components/directory/DerivedCompanyGrid';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
-import DirectoryCTA from '@/components/directory/DirectoryCTA';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
@@ -102,7 +102,7 @@ const Directory = () => {
         </Tabs>
       </div>
       
-      <DirectoryCTA />
+      
     </div>
   );
 };
