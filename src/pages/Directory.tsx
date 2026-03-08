@@ -102,7 +102,7 @@ const Directory = () => {
         </Tabs>
       </div>
       
-      <DirectoryCTA />
+      
     </div>
   );
 };
