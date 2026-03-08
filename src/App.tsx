@@ -1,3 +1,6 @@
+// GA4 type declaration
+declare global { interface Window { gtag?: (...args: unknown[]) => void } }
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/hooks/useAuth";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -31,6 +35,12 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const location = useLocation();
   const hideNavFooter = location.pathname === '/schedule';
+
+  useEffect(() => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', 'G-YMVGV4MD6C', { page_path: location.pathname + location.search });
+    }
+  }, [location]);
 
   return (
     <>
