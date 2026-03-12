@@ -189,7 +189,7 @@ export async function trackEvent(
     session_id:  sid,
     event_type:  eventType,
     page_path:   pagePath || window.location.pathname,
-    event_data:  eventData || null,
+    event_data:  (eventData || null) as import('@/integrations/supabase/types').Json,
   });
 }
 
