@@ -602,6 +602,11 @@ const AdminDashboard = () => {
           <TabsContent value="rss-feeds">
             <RssFeedAdmin />
           </TabsContent>
+
+          {/* Case Studies Tab */}
+          <TabsContent value="case-studies">
+            <CaseStudiesAdmin />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
