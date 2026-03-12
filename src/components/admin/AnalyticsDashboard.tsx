@@ -790,13 +790,8 @@ export default function AnalyticsDashboard() {
   );
 }
 
-        <SummaryCard icon={MousePointerClick} label="CTA Clicks"      value={fmt(ctaClicks)}       sub={pct(ctaClicks, totalSessions)} />
-        <SummaryCard icon={Mail}            label="Email Clicks"      value={fmt(emailClicks)}      accent />
-        <SummaryCard icon={FileText}        label="Form Submits"      value={fmt(formSubmits)}      accent />
-        <SummaryCard icon={TrendingUp}      label="Conversion Rate"   value={convRate}              sub={`${conversions} converted`} accent />
-      </div>
 
-      {/* ── Visitors & Conversions Over Time ─────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader><CardTitle className="text-base">Sessions Over Time</CardTitle></CardHeader>
