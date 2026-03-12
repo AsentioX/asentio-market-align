@@ -634,7 +634,315 @@ export default function AnalyticsDashboard() {
             <SummaryCard icon={TrendingUp} label="Dir. → Conversion"    value={fmt(directoryConversions)} sub={pct(directoryConversions, directorySessions.length)} accent />
           </div>
 
-          {/* Top products + tab engagement */}
+          {/* ── Row 2: Content type distribution + tab engagement ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Layers className="w-4 h-4" /> Views by Content Type</CardTitle></CardHeader>
+              <CardContent>
+                {typeDistribution.length ? (
+                  <div className="space-y-3">
+                    {typeDistribution.map(({ name, value }) => {
+                      const pctVal = Math.round((value / (dirViewEvents.length || 1)) * 100);
+                      return (
+                        <div key={name} className="flex items-center gap-3">
+                          <span className="text-sm text-muted-foreground w-20 shrink-0">{name}</span>
+                          <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
+                            <div className="h-full bg-primary/70 rounded-full" style={{ width: `${Math.max(pctVal, 2)}%` }} />
+                          </div>
+                          <span className="text-sm font-medium w-24 text-right shrink-0">{value} ({pctVal}%)</span>
+                        </div>
+                      );
+                    })}
+                    <p className="text-xs text-muted-foreground pt-2 border-t">Avg {avgItemsPerSession} items viewed per directory session</p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No directory item views yet.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="text-base">Directory Tab Engagement</CardTitle></CardHeader>
+              <CardContent>
+                {tabData.length ? (
+                  <ResponsiveContainer width="100%" height={180}>
+                    <BarChart data={tabData}>
+                      <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                      <Tooltip />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" name="Views" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-sm text-muted-foreground py-8 text-center">No tab engagement data yet</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ── Row 3: Products + Companies ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Package className="w-4 h-4" /> Top Viewed Products</CardTitle></CardHeader>
+              <CardContent>
+                {topProducts.length ? (
+                  <div className="space-y-1">
+                    {topProducts.map(({ slug, name, sub, views, uniqueVisitors: uv }, i) => (
+                      <div key={slug} className="flex items-center gap-3 py-1.5 border-b last:border-0">
+                        <span className="text-xs text-muted-foreground w-5 shrink-0">#{i + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                          {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Badge variant="secondary" className="text-xs">{views}</Badge>
+                          <span className="text-xs text-muted-foreground">{uv}u</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No product views yet.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Building2 className="w-4 h-4" /> Top Viewed Companies</CardTitle></CardHeader>
+              <CardContent>
+                {topCompanies.length ? (
+                  <div className="space-y-1">
+                    {topCompanies.map(({ slug, name, views, uniqueVisitors: uv }, i) => (
+                      <div key={slug} className="flex items-center gap-3 py-1.5 border-b last:border-0">
+                        <span className="text-xs text-muted-foreground w-5 shrink-0">#{i + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Badge variant="secondary" className="text-xs">{views}</Badge>
+                          <span className="text-xs text-muted-foreground">{uv}u</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No company page views yet.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ── Row 4: Agencies + Use Cases ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Briefcase className="w-4 h-4" /> Top Viewed Agencies</CardTitle></CardHeader>
+              <CardContent>
+                {topAgencies.length ? (
+                  <div className="space-y-1">
+                    {topAgencies.map(({ slug, name, views, uniqueVisitors: uv }, i) => (
+                      <div key={slug} className="flex items-center gap-3 py-1.5 border-b last:border-0">
+                        <span className="text-xs text-muted-foreground w-5 shrink-0">#{i + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Badge variant="secondary" className="text-xs">{views}</Badge>
+                          <span className="text-xs text-muted-foreground">{uv}u</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No agency page views yet.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Layers className="w-4 h-4" /> Top Viewed Use Cases</CardTitle></CardHeader>
+              <CardContent>
+                {topUseCases.length ? (
+                  <div className="space-y-1">
+                    {topUseCases.map(({ slug, name, sub, views, uniqueVisitors: uv }, i) => (
+                      <div key={slug} className="flex items-center gap-3 py-1.5 border-b last:border-0">
+                        <span className="text-xs text-muted-foreground w-5 shrink-0">#{i + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                          {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Badge variant="secondary" className="text-xs">{views}</Badge>
+                          <span className="text-xs text-muted-foreground">{uv}u</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No use case views yet.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ── Row 5: Product category breakdown ── */}
+          {categoryData.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-base">Product Views by Category</CardTitle></CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={categoryData} layout="vertical" margin={{ left: 16 }}>
+                    <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                    <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 11 }} />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="hsl(var(--primary))" name="Views" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* ── Row 6: Items viewed before conversion ── */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <ArrowRight className="w-4 h-4 text-green-600" /> Directory Items Viewed Before Conversion
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {topAssistingItems.length ? (
+                <div className="space-y-1.5">
+                  {topAssistingItems.map(({ name, type, assists }) => (
+                    <div key={name} className="flex items-center justify-between py-1.5 border-b last:border-0">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <Badge variant="outline" className="text-xs shrink-0 capitalize">{type.replace('_', ' ')}</Badge>
+                        <span className="text-sm font-medium text-foreground truncate">{name}</span>
+                      </div>
+                      <Badge className="bg-green-500/10 text-green-700 border-green-200 shrink-0 ml-3">
+                        {assists} assist{assists !== 1 ? 's' : ''}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No conversion assists yet — appears when any directory page is viewed in a session that converts.</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-4 pt-3 border-t">
+                "Assist" = item was viewed in a session that ended with an email click, CTA click, or form submission.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* ── Row 7: How directory visitors arrived ── */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">How Directory Visitors Arrived</CardTitle></CardHeader>
+            <CardContent>
+              {(() => {
+                const dirSrcMap: Record<string, number> = {};
+                directorySessions.forEach((s) => {
+                  let src = 'Direct';
+                  try { src = s.utm_source || (s.referrer ? new URL(s.referrer.startsWith('http') ? s.referrer : `http://${s.referrer}`).hostname.replace('www.', '') : 'Direct'); } catch { /* ignore */ }
+                  dirSrcMap[src] = (dirSrcMap[src] || 0) + 1;
+                });
+                const data = Object.entries(dirSrcMap).sort(([, a], [, b]) => b - a).slice(0, 6).map(([name, value]) => ({ name, value }));
+                return data.length ? (
+                  <div className="space-y-2">
+                    {data.map(({ name, value }) => {
+                      const pctVal = Math.round((value / (directorySessions.length || 1)) * 100);
+                      return (
+                        <div key={name} className="flex items-center gap-3">
+                          <span className="text-sm text-muted-foreground w-28 shrink-0 truncate">{name}</span>
+                          <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
+                            <div className="h-full bg-primary/70 rounded-full" style={{ width: `${Math.max(pctVal, 2)}%` }} />
+                          </div>
+                          <span className="text-sm font-medium w-20 text-right shrink-0">{value} ({pctVal}%)</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : <p className="text-sm text-muted-foreground">No directory visitor data yet</p>;
+              })()}
+            </CardContent>
+          </Card>
+
+          {/* ── Row 8: Recent directory activity feed ── */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">Recent Directory Activity</CardTitle></CardHeader>
+            <CardContent>
+              {recentDirActivity.length ? (
+                <div className="space-y-0">
+                  {recentDirActivity.map((ev, i) => (
+                    <div key={i} className="flex items-center gap-3 py-2 border-b last:border-0">
+                      <Badge variant="outline" className="text-xs shrink-0 w-20 justify-center capitalize">
+                        {ev.itemType.replace('_', ' ')}
+                      </Badge>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{ev.name}</p>
+                        {ev.sub && <p className="text-xs text-muted-foreground">{ev.sub}</p>}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs text-muted-foreground">{ev.device} · {ev.source}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(ev.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No directory activity recorded yet — visit some product, company, agency, or use case pages to see the feed populate.</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* ── Row 9: Directory Insights ── */}
+          <Card className="border-amber-200/50 bg-amber-50/30 dark:bg-amber-900/10">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Lightbulb className="w-4 h-4 text-amber-500" /> Directory Insights
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {(() => {
+                  const insights: string[] = [];
+                  const dirPct = totalSessions ? Math.round((directorySessions.length / totalSessions) * 100) : 0;
+                  if (directorySessions.length === 0) {
+                    insights.push('No directory visitors yet — share individual product pages on LinkedIn or in newsletters to start generating data.');
+                  } else {
+                    insights.push(`${dirPct}% of all sessions engaged with the XR Directory — ${dirPct > 30 ? 'strong indicator the directory is driving traffic.' : 'consider promoting specific product pages to increase this.'}`);
+                    if (directoryConversions > 0) {
+                      insights.push(`${directoryConversions} visitor${directoryConversions > 1 ? 's' : ''} converted after browsing the directory — the directory is contributing to hire-intent signals.`);
+                    } else {
+                      insights.push('No directory visitors have converted yet — add a "Get expert advice on this product" CTA to product detail pages.');
+                    }
+                    if (topProducts.length > 0) {
+                      insights.push(`"${topProducts[0].name}" is the most-viewed product — use it as a case study anchor or reference it in outreach.`);
+                    }
+                    if (deepEngagementSessions > 0) {
+                      insights.push(`${deepEngagementSessions} session${deepEngagementSessions > 1 ? 's' : ''} viewed 3+ items — these are your most qualified directory visitors.`);
+                    }
+                    if (topAgencies.length > 0) {
+                      insights.push(`Agency interest is active — "${topAgencies[0].name}" is the most-viewed agency, which may signal visitors evaluating implementation partners.`);
+                    }
+                    if (tabData.length > 0) {
+                      const topTab = [...tabData].sort((a, b) => b.value - a.value)[0];
+                      insights.push(`The "${topTab.name}" tab is the most browsed section — make sure it has a visible contact CTA.`);
+                    }
+                  }
+                  return insights.map((r, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                      <span className="text-amber-500 mt-0.5">→</span> {r}
+                    </li>
+                  ));
+                })()}
+              </ul>
+            </CardContent>
+          </Card>
+
+        </TabsContent>
+      </Tabs>
+
+    </div>
+  );
+}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
