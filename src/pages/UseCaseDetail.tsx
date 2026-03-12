@@ -1,13 +1,21 @@
 import { useParams, Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useXRUseCase } from '@/hooks/useXRUseCases';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Monitor, Building2, Sparkles, Layers } from 'lucide-react';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const UseCaseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: useCase, isLoading, error } = useXRUseCase(slug || '');
+
+  useEffect(() => {
+    if (!useCase) return;
+    trackPageView();
+    trackEvent('directory_view', { item_type: 'use_case', slug: useCase.slug, title: useCase.title, device: useCase.device });
+  }, [useCase]);
 
   if (isLoading) {
     return (

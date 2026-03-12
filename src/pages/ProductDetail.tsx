@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink, Brain, MapPin, Package, Sparkles, Check, Chevr
 import { useXRProduct } from '@/hooks/useXRProducts';
 import { useXRUseCases } from '@/hooks/useXRUseCases';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const ProductImageCarousel = ({ imageUrl, additionalImages, name }: { imageUrl: string; additionalImages?: string[] | null; name: string }) => {
   const images = [imageUrl, ...(additionalImages || []).filter(Boolean)];
@@ -204,7 +205,7 @@ const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading, error } = useXRProduct(slug || '');
 
-  // SEO meta tags
+  // SEO meta tags + directory tracking
   useEffect(() => {
     if (product) {
       document.title = `${product.name} - XR Directory | Asentio`;
@@ -216,6 +217,17 @@ const ProductDetail = () => {
         document.head.appendChild(metaDesc);
       }
       metaDesc.setAttribute('content', product.description || `${product.name} by ${product.company} - ${product.category}`);
+
+      // Track product detail view for directory analytics
+      trackPageView();
+      trackEvent('directory_view', {
+        item_type: 'product',
+        slug: product.slug,
+        name: product.name,
+        company: product.company,
+        category: product.category,
+        region: product.region,
+      });
     }
 
     return () => {

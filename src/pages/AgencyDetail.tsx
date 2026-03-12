@@ -1,13 +1,21 @@
 import { useParams, Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useXRAgency } from '@/hooks/useXRAgencies';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ExternalLink, Building2, Globe, Sparkles } from 'lucide-react';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const AgencyDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: agency, isLoading, error } = useXRAgency(slug || '');
+
+  useEffect(() => {
+    if (!agency) return;
+    trackPageView();
+    trackEvent('directory_view', { item_type: 'agency', slug: agency.slug, name: agency.name });
+  }, [agency]);
 
   if (isLoading) {
     return (

@@ -8,6 +8,7 @@ import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryV
 import DerivedCompanyGrid from '@/components/directory/DerivedCompanyGrid';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
@@ -29,7 +30,7 @@ const Directory = () => {
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies(agencyFilters);
   const { data: useCases, isLoading: useCasesLoading } = useXRUseCases(useCaseFilters);
 
-  // SEO meta tags
+  // SEO meta tags + page view tracking
   useEffect(() => {
     document.title = 'XR Products, Agencies & Use Cases Directory | Asentio';
     
@@ -41,10 +42,17 @@ const Directory = () => {
     }
     metaDesc.setAttribute('content', 'Discover XR products, find top XR agencies, and explore real-world use cases. Your complete resource for enterprise XR solutions—devices, tech stacks, and implementation partners.');
 
+    trackPageView('/xr-directory');
+
     return () => {
       document.title = 'Asentio';
     };
   }, []);
+
+  // Track tab switches so we know which directory sections are most popular
+  useEffect(() => {
+    trackEvent('directory_tab_view', { tab: activeTab }, '/xr-directory');
+  }, [activeTab]);
 
   return (
     <div className="min-h-screen bg-background">

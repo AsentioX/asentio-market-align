@@ -5,7 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, MapPin, Package, Loader2 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const CompanyDetail = () => {
   const { companyName } = useParams<{ companyName: string }>();
@@ -34,6 +35,13 @@ const CompanyDetail = () => {
     },
     enabled: !!decodedName,
   });
+
+  // Track company page view once products are loaded
+  useEffect(() => {
+    if (!decodedName || companyProducts.length === 0) return;
+    trackPageView();
+    trackEvent('directory_view', { item_type: 'company', name: decodedName, product_count: companyProducts.length });
+  }, [decodedName, companyProducts.length]);
 
   if (isLoading) {
     return (
