@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,10 +8,15 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
 import { Mail, Globe, MessageSquare, Target, Users, Zap } from "lucide-react";
-import { initSession, trackPageView, trackFormStart, trackFormSubmit, trackEmailClick } from "@/lib/analytics";
+import { initSession, trackPageView, trackFormSubmit, trackEmailClick } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const productRef = searchParams.get('product');
+  const refSlug = searchParams.get('ref');
+
   const [formData, setFormData] = useState({
     name: "",
     company: "",
@@ -30,20 +36,35 @@ const Contact = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     trackFormSubmit('contact');
 
-    // Simulate form submission
-    setTimeout(() => {
-      toast({
-        title: t('contact.success.title'),
-        description: t('contact.success.desc'),
+    try {
+      // Save to CRM (anon insert is allowed for source=contact_form)
+      await supabase.from('crm_contacts').insert({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company || null,
+        role: null,
+        message: formData.message || null,
+        source: refSlug ? 'directory_cta' : 'contact_form',
+        source_context: refSlug || null,
+        stage: 'new',
+        follow_up_date: null,
+        tags: productRef ? [productRef] : [],
       });
-      setFormData({ name: "", company: "", email: "", message: "" });
-      setIsSubmitting(false);
-    }, 1500);
+    } catch (_) {
+      // Non-blocking — form still shows success even if CRM save fails
+    }
+
+    toast({
+      title: t('contact.success.title'),
+      description: t('contact.success.desc'),
+    });
+    setFormData({ name: "", company: "", email: "", message: "" });
+    setIsSubmitting(false);
   };
 
 
@@ -90,6 +111,14 @@ const Contact = () => {
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-5xl mx-auto">
+            {/* Context banner when coming from XR directory */}
+            {productRef && (
+              <div className="mb-8 flex items-center gap-3 bg-asentio-blue/10 border border-asentio-blue/20 rounded-lg px-4 py-3">
+                <span className="text-sm text-asentio-blue font-medium">
+                  💡 You're enquiring about <strong>{productRef}</strong> — we'll tailor our response to that.
+                </span>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
               {/* Left side - Contact info */}
               <div>

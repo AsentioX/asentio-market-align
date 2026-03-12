@@ -12,11 +12,12 @@ import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies'
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink,
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import CRMDashboard from '@/components/admin/CRMDashboard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [activeTab, setActiveTab] = useState('crm');
   const [productSearch, setProductSearch] = useState('');
   const [agencySearch, setAgencySearch] = useState('');
   const [companySearch, setCompanySearch] = useState('');
@@ -163,6 +164,10 @@ const AdminDashboard = () => {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 flex-wrap h-auto gap-1">
+            <TabsTrigger value="crm" className="flex items-center gap-2">
+              <Users2 className="w-4 h-4" />
+              CRM
+            </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart2 className="w-4 h-4" />
               Analytics
@@ -188,6 +193,11 @@ const AdminDashboard = () => {
               News Feeds
             </TabsTrigger>
           </TabsList>
+
+          {/* CRM Tab */}
+          <TabsContent value="crm">
+            <CRMDashboard />
+          </TabsContent>
 
           {/* Analytics Tab */}
           <TabsContent value="analytics">
