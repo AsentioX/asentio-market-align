@@ -288,6 +288,56 @@ export default function AnalyticsDashboard() {
 
   const recommendations = generateRecommendations(sessions, events);
 
+  // ── Directory Analytics ─────────────────────────────────────
+
+  // All directory_view events (product/agency/use_case/company detail views)
+  const dirViewEvents = events.filter((e) => e.event_type === 'directory_view');
+
+  // Top viewed products
+  const productViewMap: Record<string, { name: string; company: string; views: number; uniqueSessions: Set<string> }> = {};
+  dirViewEvents
+    .filter((e) => (e.event_data as { item_type?: string })?.item_type === 'product')
+    .forEach((e) => {
+      const d = e.event_data as { slug?: string; name?: string; company?: string };
+      const key = d.slug || d.name || 'unknown';
+      if (!productViewMap[key]) productViewMap[key] = { name: d.name || key, company: d.company || '', views: 0, uniqueSessions: new Set() };
+      productViewMap[key].views++;
+      if (e.session_id) productViewMap[key].uniqueSessions.add(e.session_id);
+    });
+  const topProducts = Object.entries(productViewMap)
+    .sort(([, a], [, b]) => b.views - a.views)
+    .slice(0, 8)
+    .map(([slug, d]) => ({ slug, name: d.name, company: d.company, views: d.views, uniqueVisitors: d.uniqueSessions.size }));
+
+  // Directory tab engagement
+  const tabViewMap: Record<string, number> = {};
+  events.filter((e) => e.event_type === 'directory_tab_view').forEach((e) => {
+    const tab = (e.event_data as { tab?: string })?.tab || 'products';
+    tabViewMap[tab] = (tabViewMap[tab] || 0) + 1;
+  });
+  const tabData = Object.entries(tabViewMap).map(([name, value]) => ({ name, value }));
+
+  // Sessions that visited the directory
+  const directorySessions = sessions.filter((s) =>
+    events.some((e) => e.session_id === s.id && (e.event_type === 'directory_view' || e.event_type === 'directory_tab_view' || e.page_path.startsWith('/xr-directory')))
+  );
+  const directoryConversions = directorySessions.filter((s) => s.converted).length;
+
+  // Products whose detail page was viewed in sessions that eventually converted
+  const convertedSessionIds = new Set(sessions.filter((s) => s.converted).map((s) => s.id));
+  const productConversionAssist: Record<string, { name: string; assists: number }> = {};
+  dirViewEvents
+    .filter((e) => e.session_id && convertedSessionIds.has(e.session_id) && (e.event_data as { item_type?: string })?.item_type === 'product')
+    .forEach((e) => {
+      const d = e.event_data as { slug?: string; name?: string };
+      const key = d.slug || d.name || 'unknown';
+      if (!productConversionAssist[key]) productConversionAssist[key] = { name: d.name || key, assists: 0 };
+      productConversionAssist[key].assists++;
+    });
+  const topAssistingProducts = Object.values(productConversionAssist)
+    .sort((a, b) => b.assists - a.assists)
+    .slice(0, 5);
+
   // ── Render ──────────────────────────────────────────────────
 
   if (loading) {
