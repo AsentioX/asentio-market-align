@@ -11,7 +11,7 @@ import { useXRProducts, useDeleteProduct, XRProduct } from '@/hooks/useXRProduct
 import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies';
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
 import { 
-  Plus, LogOut, Search, Trash2,
+  Plus, LogOut, Search, Trash2, ExternalLink,
   Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
