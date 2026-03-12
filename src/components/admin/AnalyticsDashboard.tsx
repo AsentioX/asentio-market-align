@@ -943,17 +943,6 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Package className="w-4 h-4" /> Top Viewed Products
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {topProducts.length ? (
-                  <div className="space-y-2">
-                    {topProducts.map(({ slug, name, company, views, uniqueVisitors: uv }) => (
                       <div key={slug} className="flex items-center justify-between py-1.5 border-b last:border-0">
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-foreground truncate">{name}</p>
