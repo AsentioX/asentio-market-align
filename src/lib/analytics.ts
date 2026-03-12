@@ -182,8 +182,12 @@ export async function trackEvent(
   eventData?: Record<string, unknown>,
   pagePath?: string
 ) {
-  const sid = sessionId || getSessionId();
-  if (!sid) return;
+  // Auto-init session if not yet started (e.g. landing directly on a deep link)
+  let sid = sessionId || getSessionId();
+  if (!sid) {
+    sid = await initSession();
+  }
+  if (!sid) return; // initSession failed (network error etc.)
 
   await supabase.from('analytics_events').insert({
     session_id:  sid,
