@@ -8,11 +8,12 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
-import { Users, MousePointerClick, Mail, FileText, TrendingUp, Activity, Lightbulb, Target } from 'lucide-react';
+import { Users, MousePointerClick, Mail, FileText, TrendingUp, Activity, Lightbulb, Target, Package, ArrowRight } from 'lucide-react';
 
 // ── Helpers ──────────────────────────────────────────────────
 
