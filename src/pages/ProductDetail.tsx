@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink, Brain, MapPin, Package, Sparkles, Check, Chevr
 import { useXRProduct } from '@/hooks/useXRProducts';
 import { useXRUseCases } from '@/hooks/useXRUseCases';
 import DirectoryCTA from '@/components/directory/DirectoryCTA';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const ProductImageCarousel = ({ imageUrl, additionalImages, name }: { imageUrl: string; additionalImages?: string[] | null; name: string }) => {
   const images = [imageUrl, ...(additionalImages || []).filter(Boolean)];
