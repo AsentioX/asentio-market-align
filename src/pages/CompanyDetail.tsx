@@ -36,6 +36,13 @@ const CompanyDetail = () => {
     enabled: !!decodedName,
   });
 
+  // Track company page view once products are loaded
+  useEffect(() => {
+    if (!decodedName || companyProducts.length === 0) return;
+    trackPageView();
+    trackEvent('directory_view', { item_type: 'company', name: decodedName, product_count: companyProducts.length });
+  }, [decodedName, companyProducts.length]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
