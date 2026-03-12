@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [activeTab, setActiveTab] = useState('crm');
   const [productSearch, setProductSearch] = useState('');
   const [agencySearch, setAgencySearch] = useState('');
   const [companySearch, setCompanySearch] = useState('');

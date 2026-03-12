@@ -397,13 +397,16 @@ const ProductDetail = () => {
               {/* CTA Card */}
               <Card className="bg-gradient-to-br from-asentio-blue to-asentio-blue/90 text-white">
                 <CardContent className="p-6">
-                  <h3 className="font-semibold mb-2">Interested in this product?</h3>
-                  <p className="text-sm text-gray-300 mb-4">
-                    Let Asentio help you evaluate and integrate XR solutions for your business.
+                  <h3 className="font-semibold mb-2">Interested in {product.name}?</h3>
+                  <p className="text-sm text-blue-100 mb-4">
+                    Let Asentio help you evaluate and integrate this XR solution for your business.
                   </p>
-                  <Link to="/contact">
-                    <Button variant="secondary" className="w-full">
-                      Talk to an Expert
+                  <Link
+                    to={`/contact?ref=${product.slug}&product=${encodeURIComponent(product.name)}`}
+                    onClick={() => trackEvent('cta_click', { label: 'Talk to an Expert', context: product.slug, source: 'directory_cta', item_type: 'product' })}
+                  >
+                    <Button variant="secondary" className="w-full font-semibold">
+                      Talk to an Expert →
                     </Button>
                   </Link>
                 </CardContent>
