@@ -12,11 +12,12 @@ import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies'
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink,
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import CRMDashboard from '@/components/admin/CRMDashboard';
 import {
   AlertDialog,
   AlertDialogAction,
