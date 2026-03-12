@@ -112,6 +112,57 @@ export type Database = {
         }
         Relationships: []
       }
+      case_studies: {
+        Row: {
+          challenge: string | null
+          company: string
+          created_at: string
+          description: string
+          id: string
+          image: string | null
+          image_position: string | null
+          image_zoom: number | null
+          is_active: boolean
+          sort_order: number | null
+          tags: string[] | null
+          updated_at: string
+          website: string | null
+          what_we_did: string | null
+        }
+        Insert: {
+          challenge?: string | null
+          company: string
+          created_at?: string
+          description: string
+          id?: string
+          image?: string | null
+          image_position?: string | null
+          image_zoom?: number | null
+          is_active?: boolean
+          sort_order?: number | null
+          tags?: string[] | null
+          updated_at?: string
+          website?: string | null
+          what_we_did?: string | null
+        }
+        Update: {
+          challenge?: string | null
+          company?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image?: string | null
+          image_position?: string | null
+          image_zoom?: number | null
+          is_active?: boolean
+          sort_order?: number | null
+          tags?: string[] | null
+          updated_at?: string
+          website?: string | null
+          what_we_did?: string | null
+        }
+        Relationships: []
+      }
       crm_contacts: {
         Row: {
           company: string | null
