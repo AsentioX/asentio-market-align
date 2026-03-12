@@ -943,21 +943,6 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
-                      <div key={slug} className="flex items-center justify-between py-1.5 border-b last:border-0">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-foreground truncate">{name}</p>
-                          <p className="text-xs text-muted-foreground">{company}</p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-3 shrink-0">
-                          <Badge variant="secondary">{views} views</Badge>
-                          <Badge variant="outline">{uv} unique</Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No product detail views yet. Visitors must open a product page to appear here.</p>
-                )}
               </CardContent>
             </Card>
 
