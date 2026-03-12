@@ -623,18 +623,15 @@ export default function AnalyticsDashboard() {
 
         {/* ═══════════════════════════════════════════════
             TAB 2: XR DIRECTORY ANALYTICS
-            Shows which products/tabs are popular, how
-            directory traffic relates to conversions, and
-            which products were viewed before a hire intent.
         ═══════════════════════════════════════════════ */}
         <TabsContent value="directory" className="space-y-8">
 
-          {/* Summary cards */}
+          {/* ── Row 1: Summary KPIs ── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <SummaryCard icon={Users}      label="Directory Sessions"   value={fmt(directorySessions.length)} sub={`of ${fmt(totalSessions)} total`} />
-            <SummaryCard icon={Package}    label="Product Pages Viewed" value={fmt(dirViewEvents.filter(e => (e.event_data as {item_type?:string})?.item_type === 'product').length)} />
-            <SummaryCard icon={Activity}   label="Dir. → Conversion"    value={fmt(directoryConversions)} sub={pct(directoryConversions, directorySessions.length)} accent />
-            <SummaryCard icon={TrendingUp} label="Distinct Products"    value={fmt(topProducts.length)} sub="seen this period" />
+            <SummaryCard icon={Package}    label="Total Item Views"     value={fmt(dirViewEvents.length)} sub={`${typeDistribution.length} content type${typeDistribution.length !== 1 ? 's' : ''}`} />
+            <SummaryCard icon={Activity}   label="Deep Engagements"     value={fmt(deepEngagementSessions)} sub="viewed 3+ items" accent />
+            <SummaryCard icon={TrendingUp} label="Dir. → Conversion"    value={fmt(directoryConversions)} sub={pct(directoryConversions, directorySessions.length)} accent />
           </div>
 
           {/* Top products + tab engagement */}
