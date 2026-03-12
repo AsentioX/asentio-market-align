@@ -9,6 +9,7 @@ import TopographicPattern from "@/components/TopographicPattern";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import FloatingObjects from "@/components/FloatingObjects";
 import { ArrowRight, CheckCircle2, Globe, Zap, Target } from "lucide-react";
+import { initSession, trackPageView, trackCTAClick, trackEmailClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
 const Index = () => {
   const { t } = useLanguage();
