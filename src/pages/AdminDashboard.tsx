@@ -193,6 +193,10 @@ const AdminDashboard = () => {
               <Rss className="w-4 h-4" />
               News Feeds
             </TabsTrigger>
+            <TabsTrigger value="case-studies" className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4" />
+              Case Studies
+            </TabsTrigger>
           </TabsList>
 
           {/* CRM Tab */}
