@@ -246,21 +246,48 @@ export default function AnalyticsDashboard() {
 
   const dirViewEvents = events.filter((e) => e.event_type === 'directory_view');
 
-  // Top viewed products (with unique visitor counts)
-  const productViewMap: Record<string, { name: string; company: string; views: number; uniqueSessions: Set<string> }> = {};
+  // Helper: build a ranked view map for any item_type
+  function buildViewMap(itemType: string): { slug: string; name: string; sub: string; views: number; uniqueVisitors: number }[] {
+    const map: Record<string, { name: string; sub: string; views: number; sessions: Set<string> }> = {};
+    dirViewEvents
+      .filter((e) => (e.event_data as { item_type?: string })?.item_type === itemType)
+      .forEach((e) => {
+        const d = e.event_data as { slug?: string; name?: string; company?: string; category?: string; services?: string; device?: string };
+        const key = d.slug || d.name || 'unknown';
+        const sub = d.company || d.category || d.device || '';
+        if (!map[key]) map[key] = { name: d.name || key, sub, views: 0, sessions: new Set() };
+        map[key].views++;
+        if (e.session_id) map[key].sessions.add(e.session_id);
+      });
+    return Object.entries(map)
+      .sort(([, a], [, b]) => b.views - a.views)
+      .slice(0, 10)
+      .map(([slug, d]) => ({ slug, name: d.name, sub: d.sub, views: d.views, uniqueVisitors: d.sessions.size }));
+  }
+
+  const topProducts  = buildViewMap('product');
+  const topAgencies  = buildViewMap('agency');
+  const topCompanies = buildViewMap('company');
+  const topUseCases  = buildViewMap('use_case');
+
+  // Content type distribution
+  const typeDistribution = (['product', 'agency', 'company', 'use_case'] as const).map((t) => ({
+    name: t === 'use_case' ? 'Use Case' : t.charAt(0).toUpperCase() + t.slice(1),
+    value: dirViewEvents.filter((e) => (e.event_data as { item_type?: string })?.item_type === t).length,
+  })).filter((d) => d.value > 0);
+
+  // Category breakdown for products
+  const categoryMap: Record<string, number> = {};
   dirViewEvents
     .filter((e) => (e.event_data as { item_type?: string })?.item_type === 'product')
     .forEach((e) => {
-      const d = e.event_data as { slug?: string; name?: string; company?: string };
-      const key = d.slug || d.name || 'unknown';
-      if (!productViewMap[key]) productViewMap[key] = { name: d.name || key, company: d.company || '', views: 0, uniqueSessions: new Set() };
-      productViewMap[key].views++;
-      if (e.session_id) productViewMap[key].uniqueSessions.add(e.session_id);
+      const cat = (e.event_data as { category?: string })?.category || 'Unknown';
+      categoryMap[cat] = (categoryMap[cat] || 0) + 1;
     });
-  const topProducts = Object.entries(productViewMap)
-    .sort(([, a], [, b]) => b.views - a.views)
-    .slice(0, 8)
-    .map(([slug, d]) => ({ slug, name: d.name, company: d.company, views: d.views, uniqueVisitors: d.uniqueSessions.size }));
+  const categoryData = Object.entries(categoryMap)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 6)
+    .map(([name, value]) => ({ name, value }));
 
   // Tab engagement
   const tabViewMap: Record<string, number> = {};
@@ -280,18 +307,49 @@ export default function AnalyticsDashboard() {
   );
   const directoryConversions = directorySessions.filter((s) => s.converted).length;
 
-  // Products viewed in sessions that converted
+  // Average items viewed per directory session
+  const avgItemsPerSession = directorySessions.length
+    ? (dirViewEvents.filter((e) => directorySessions.some((s) => s.id === e.session_id)).length / directorySessions.length).toFixed(1)
+    : '0';
+
+  // Sessions that viewed 3+ directory items (deep engagement)
+  const deepEngagementSessions = directorySessions.filter((s) =>
+    dirViewEvents.filter((e) => e.session_id === s.id).length >= 3
+  ).length;
+
+  // Items viewed in sessions that converted
   const convertedSessionIds = new Set(sessions.filter((s) => s.converted).map((s) => s.id));
-  const productConversionAssist: Record<string, { name: string; assists: number }> = {};
+  const conversionAssist: Record<string, { name: string; type: string; assists: number }> = {};
   dirViewEvents
-    .filter((e) => e.session_id && convertedSessionIds.has(e.session_id) && (e.event_data as { item_type?: string })?.item_type === 'product')
+    .filter((e) => e.session_id && convertedSessionIds.has(e.session_id))
     .forEach((e) => {
-      const d = e.event_data as { slug?: string; name?: string };
+      const d = e.event_data as { slug?: string; name?: string; item_type?: string };
       const key = d.slug || d.name || 'unknown';
-      if (!productConversionAssist[key]) productConversionAssist[key] = { name: d.name || key, assists: 0 };
-      productConversionAssist[key].assists++;
+      if (!conversionAssist[key]) conversionAssist[key] = { name: d.name || key, type: d.item_type || '', assists: 0 };
+      conversionAssist[key].assists++;
     });
-  const topAssistingProducts = Object.values(productConversionAssist).sort((a, b) => b.assists - a.assists).slice(0, 5);
+  const topAssistingItems = Object.values(conversionAssist).sort((a, b) => b.assists - a.assists).slice(0, 8);
+  // Keep backward compat alias
+  const topAssistingProducts = topAssistingItems.filter((i) => i.type === 'product').slice(0, 5);
+
+  // Recent directory activity (last 20 view events)
+  const recentDirActivity = [...dirViewEvents]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 20)
+    .map((e) => {
+      const d = e.event_data as { item_type?: string; name?: string; company?: string; slug?: string };
+      const session = sessions.find((s) => s.id === e.session_id);
+      return {
+        time: e.created_at,
+        itemType: d.item_type || 'unknown',
+        name: d.name || d.slug || '—',
+        sub: d.company || '',
+        device: session?.device_type || 'unknown',
+        source: (() => {
+          try { return session?.utm_source || (session?.referrer ? new URL(session.referrer.startsWith('http') ? session.referrer : `http://${session.referrer}`).hostname.replace('www.', '') : 'Direct'); } catch { return 'Direct'; }
+        })(),
+      };
+    });
 
   // ── Render ──────────────────────────────────────────────────
 
