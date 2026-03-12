@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,10 +8,15 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
 import { Mail, Globe, MessageSquare, Target, Users, Zap } from "lucide-react";
-import { initSession, trackPageView, trackFormStart, trackFormSubmit, trackEmailClick } from "@/lib/analytics";
+import { initSession, trackPageView, trackFormSubmit, trackEmailClick } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const productRef = searchParams.get('product');
+  const refSlug = searchParams.get('ref');
+
   const [formData, setFormData] = useState({
     name: "",
     company: "",
@@ -30,20 +36,35 @@ const Contact = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     trackFormSubmit('contact');
 
-    // Simulate form submission
-    setTimeout(() => {
-      toast({
-        title: t('contact.success.title'),
-        description: t('contact.success.desc'),
+    try {
+      // Save to CRM (anon insert is allowed for source=contact_form)
+      await supabase.from('crm_contacts').insert({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company || null,
+        role: null,
+        message: formData.message || null,
+        source: refSlug ? 'directory_cta' : 'contact_form',
+        source_context: refSlug || null,
+        stage: 'new',
+        follow_up_date: null,
+        tags: productRef ? [productRef] : [],
       });
-      setFormData({ name: "", company: "", email: "", message: "" });
-      setIsSubmitting(false);
-    }, 1500);
+    } catch (_) {
+      // Non-blocking — form still shows success even if CRM save fails
+    }
+
+    toast({
+      title: t('contact.success.title'),
+      description: t('contact.success.desc'),
+    });
+    setFormData({ name: "", company: "", email: "", message: "" });
+    setIsSubmitting(false);
   };
 
 
