@@ -12,7 +12,7 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { Users, MousePointerClick, Mail, FileText, TrendingUp, Activity, Lightbulb, Package, ArrowRight, Building2, Briefcase, Layers } from 'lucide-react';
+import { Users, MousePointerClick, Mail, FileText, TrendingUp, Activity, Lightbulb, Package, ArrowRight, Building2, Briefcase, Layers, Newspaper } from 'lucide-react';
 
 function pct(a: number, b: number) { if (!b) return '0%'; return `${Math.round((a / b) * 100)}%`; }
 function fmt(n: number) { if (n >= 1000) return `${(n / 1000).toFixed(1)}k`; return String(n); }
