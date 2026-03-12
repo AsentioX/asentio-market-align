@@ -87,6 +87,7 @@ const AgencyDetail = () => {
           </div>
 
           {/* Right: Details */}
+          </div>
           <div className="lg:col-span-2 space-y-6">
             {agency.services && agency.services.length > 0 && (
               <Card>
@@ -115,6 +116,24 @@ const AgencyDetail = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* CTA Card */}
+            <Card className="bg-gradient-to-br from-asentio-blue to-asentio-blue/90 text-white">
+              <CardContent className="p-6">
+                <h3 className="font-semibold mb-2">Looking to work with {agency.name}?</h3>
+                <p className="text-sm text-blue-100 mb-4">
+                  Asentio can advise on XR agency selection and help scope your project.
+                </p>
+                <Link
+                  to={`/contact?ref=${agency.slug}&product=${encodeURIComponent(agency.name)}`}
+                  onClick={() => trackEvent('cta_click', { label: 'Talk to an Expert', context: agency.slug, source: 'directory_cta', item_type: 'agency' })}
+                >
+                  <Button variant="secondary" className="w-full font-semibold">
+                    Talk to an Expert →
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
