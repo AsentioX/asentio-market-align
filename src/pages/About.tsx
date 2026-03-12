@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -8,12 +7,16 @@ import TopographicPattern from "@/components/TopographicPattern";
 import { ArrowRight } from "lucide-react";
 import chesterImg from "@/assets/chester.png";
 import jonImg from "@/assets/jon.png";
+import { initSession, trackPageView, trackTimeOnPage } from "@/lib/analytics";
 
 const About = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    initSession().then(() => trackPageView('/about'));
+    const start = Date.now();
+    return () => { trackTimeOnPage(Date.now() - start, '/about'); };
   }, []);
 
   return (

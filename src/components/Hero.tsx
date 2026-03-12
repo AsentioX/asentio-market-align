@@ -22,7 +22,7 @@ const Hero = () => {
 
   useEffect(() => {
     let flashCount = 0;
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const getRandomIndex = (excludeIndex?: number) => {
       let newIndex;

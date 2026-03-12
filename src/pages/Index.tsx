@@ -9,12 +9,24 @@ import TopographicPattern from "@/components/TopographicPattern";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import FloatingObjects from "@/components/FloatingObjects";
 import { ArrowRight, CheckCircle2, Globe, Zap, Target } from "lucide-react";
+import { initSession, trackPageView, trackCTAClick, trackEmailClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
 const Index = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Analytics: init session (no-op if session already exists) + track page view
+    initSession().then(() => trackPageView('/'));
+    // Track time on page
+    const start = Date.now();
+    // Track scroll depth
+    const onScroll = createScrollTracker('/');
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      trackTimeOnPage(Date.now() - start, '/');
+    };
   }, []);
 
   const expertiseItems = [
@@ -173,7 +185,7 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-              <Link to="/contact" className="w-full sm:w-auto">
+              <Link to="/contact" className="w-full sm:w-auto" onClick={() => trackCTAClick('Get in Touch', true)}>
                 <Button 
                   size="lg" 
                   className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 px-8 md:px-10 py-5 md:py-6 text-base font-medium shadow-lg shadow-asentio-blue/20 transition-all hover:shadow-xl"
@@ -181,7 +193,7 @@ const Index = () => {
                   {t('cta.contact')}
                 </Button>
               </Link>
-              <a href="mailto:info@asentio.com" className="w-full sm:w-auto">
+              <a href="mailto:info@asentio.com" className="w-full sm:w-auto" onClick={() => trackEmailClick('info@asentio.com')}>
                 <Button 
                   variant="outline" 
                   size="lg"
@@ -191,6 +203,7 @@ const Index = () => {
                 </Button>
               </a>
             </div>
+
           </div>
         </div>
       </AnimatedSection>

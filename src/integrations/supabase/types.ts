@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          page_path: string
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          page_path?: string
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          page_path?: string
+          session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_sessions: {
+        Row: {
+          converted: boolean
+          country: string | null
+          device_type: string | null
+          id: string
+          intent_level: string
+          intent_score: number
+          landing_page: string
+          last_seen_at: string
+          referrer: string | null
+          region: string | null
+          started_at: string
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          visitor_id: string
+        }
+        Insert: {
+          converted?: boolean
+          country?: string | null
+          device_type?: string | null
+          id?: string
+          intent_level?: string
+          intent_score?: number
+          landing_page?: string
+          last_seen_at?: string
+          referrer?: string | null
+          region?: string | null
+          started_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          visitor_id: string
+        }
+        Update: {
+          converted?: boolean
+          country?: string | null
+          device_type?: string | null
+          id?: string
+          intent_level?: string
+          intent_score?: number
+          landing_page?: string
+          last_seen_at?: string
+          referrer?: string | null
+          region?: string | null
+          started_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

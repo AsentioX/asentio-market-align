@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,13 +10,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { useXRProducts, useDeleteProduct, XRProduct } from '@/hooks/useXRProducts';
 import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies';
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
-import { useMemo } from 'react';
 import { 
-  Plus, LogOut, Search, Trash2, ExternalLink, 
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss
+  Plus, LogOut, Search, Trash2, ExternalLink,
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('products');
+  const [activeTab, setActiveTab] = useState('analytics');
   const [productSearch, setProductSearch] = useState('');
   const [agencySearch, setAgencySearch] = useState('');
   const [companySearch, setCompanySearch] = useState('');
@@ -162,7 +162,11 @@ const AdminDashboard = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto gap-1">
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart2 className="w-4 h-4" />
+              Analytics
+            </TabsTrigger>
             <TabsTrigger value="products" className="flex items-center gap-2">
               <LayoutGrid className="w-4 h-4" />
               Products ({products?.length || 0})
@@ -185,7 +189,13 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
+          {/* Analytics Tab */}
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
+          </TabsContent>
+
           {/* Products Tab */}
+
           <TabsContent value="products">
             <Card>
               <CardHeader>

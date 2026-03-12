@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Target, Rocket, MessageSquare, ArrowRight, CheckCircle, Building2, Users, Code } from "lucide-react";
@@ -9,11 +8,20 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ChannelCard from "@/components/services/ChannelCard";
 import EngagementCard from "@/components/services/EngagementCard";
 import CaseStudyCarousel from "@/components/services/CaseStudyCarousel";
+import { initSession, trackPageView, trackCTAClick, trackEmailClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
 const Services = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    initSession().then(() => trackPageView('/services'));
+    const start = Date.now();
+    const onScroll = createScrollTracker('/services');
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      trackTimeOnPage(Date.now() - start, '/services');
+    };
   }, []);
 
   const services = [

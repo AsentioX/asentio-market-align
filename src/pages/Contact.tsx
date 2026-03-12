@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +7,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
 import { Mail, Globe, MessageSquare, Target, Users, Zap } from "lucide-react";
+import { initSession, trackPageView, trackFormStart, trackFormSubmit, trackEmailClick } from "@/lib/analytics";
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -22,6 +22,7 @@ const Contact = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    initSession().then(() => trackPageView('/contact'));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -32,6 +33,7 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    trackFormSubmit('contact');
 
     // Simulate form submission
     setTimeout(() => {
@@ -39,15 +41,11 @@ const Contact = () => {
         title: t('contact.success.title'),
         description: t('contact.success.desc'),
       });
-      setFormData({
-        name: "",
-        company: "",
-        email: "",
-        message: "",
-      });
+      setFormData({ name: "", company: "", email: "", message: "" });
       setIsSubmitting(false);
     }, 1500);
   };
+
 
   const whyItems = [
     {
@@ -108,7 +106,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold mb-1 text-foreground">{t('contact.form.email')}</h3>
-                      <a href="mailto:info@asentio.com" className="text-asentio-blue hover:text-asentio-red transition-colors">
+                      <a href="mailto:info@asentio.com" onClick={() => trackEmailClick('info@asentio.com')} className="text-asentio-blue hover:text-asentio-red transition-colors">
                         info@asentio.com
                       </a>
                     </div>
