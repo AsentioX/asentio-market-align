@@ -16,6 +16,17 @@ const Index = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Analytics: init session (no-op if session already exists) + track page view
+    initSession().then(() => trackPageView('/'));
+    // Track time on page
+    const start = Date.now();
+    // Track scroll depth
+    const onScroll = createScrollTracker('/');
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      trackTimeOnPage(Date.now() - start, '/');
+    };
   }, []);
 
   const expertiseItems = [
