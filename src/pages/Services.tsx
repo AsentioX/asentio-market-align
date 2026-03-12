@@ -14,6 +14,14 @@ const Services = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    initSession().then(() => trackPageView('/services'));
+    const start = Date.now();
+    const onScroll = createScrollTracker('/services');
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      trackTimeOnPage(Date.now() - start, '/services');
+    };
   }, []);
 
   const services = [
