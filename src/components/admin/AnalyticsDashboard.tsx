@@ -11,9 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, Tooltip, ResponsiveContainer,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
-import { Users, MousePointerClick, Mail, FileText, TrendingUp, Activity, Lightbulb, Target, Package, ArrowRight } from 'lucide-react';
+import { Users, MousePointerClick, Mail, FileText, TrendingUp, Activity, Lightbulb, Package, ArrowRight, Building2, Briefcase, Layers } from 'lucide-react';
 
 // ── Helpers ──────────────────────────────────────────────────
 
