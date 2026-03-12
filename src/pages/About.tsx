@@ -115,7 +115,16 @@ const About = () => {
                     alt="Chester Mui" 
                     className="w-40 h-40 rounded-full object-cover shadow-lg mb-6 ring-4 ring-background"
                   />
-                  <h3 className="text-xl font-semibold mb-3 text-foreground">Chester Mui</h3>
+                  <h3 className="text-xl font-semibold mb-1 text-foreground">Chester Mui</h3>
+                  <a
+                    href="https://www.linkedin.com/in/t01san/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#0A66C2] transition-colors mb-4"
+                  >
+                    <Linkedin className="w-4 h-4" />
+                    Connect on LinkedIn
+                  </a>
                   <p className="text-muted-foreground leading-relaxed">
                     {t('about.team.chester')}
                   </p>
