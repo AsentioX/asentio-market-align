@@ -792,11 +792,8 @@ export default function AnalyticsDashboard() {
 
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Sessions Over Time</CardTitle></CardHeader>
-          <CardContent>
-            {dailyData.length ? (
+
+
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={dailyData}>
                   <XAxis dataKey="date" tick={{ fontSize: 11 }} />
