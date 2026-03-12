@@ -106,7 +106,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold mb-1 text-foreground">{t('contact.form.email')}</h3>
-                      <a href="mailto:info@asentio.com" className="text-asentio-blue hover:text-asentio-red transition-colors">
+                      <a href="mailto:info@asentio.com" onClick={() => trackEmailClick('info@asentio.com')} className="text-asentio-blue hover:text-asentio-red transition-colors">
                         info@asentio.com
                       </a>
                     </div>
