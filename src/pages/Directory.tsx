@@ -8,6 +8,7 @@ import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryV
 import DerivedCompanyGrid from '@/components/directory/DerivedCompanyGrid';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';

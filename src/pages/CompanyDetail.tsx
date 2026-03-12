@@ -5,7 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, MapPin, Package, Loader2 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const CompanyDetail = () => {
   const { companyName } = useParams<{ companyName: string }>();
