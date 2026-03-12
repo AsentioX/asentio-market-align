@@ -22,6 +22,7 @@ const Contact = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    initSession().then(() => trackPageView('/contact'));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -32,6 +33,7 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    trackFormSubmit('contact');
 
     // Simulate form submission
     setTimeout(() => {
@@ -39,15 +41,11 @@ const Contact = () => {
         title: t('contact.success.title'),
         description: t('contact.success.desc'),
       });
-      setFormData({
-        name: "",
-        company: "",
-        email: "",
-        message: "",
-      });
+      setFormData({ name: "", company: "", email: "", message: "" });
       setIsSubmitting(false);
     }, 1500);
   };
+
 
   const whyItems = [
     {
