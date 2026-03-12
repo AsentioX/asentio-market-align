@@ -189,30 +189,13 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <LayoutGrid className="w-4 h-4" />
-              Products ({products?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="companies" className="flex items-center gap-2">
-              <Building className="w-4 h-4" />
-              Companies ({derivedCompanies.length})
-            </TabsTrigger>
-            <TabsTrigger value="agencies" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              Agencies ({agencies?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="use-cases" className="flex items-center gap-2">
-              <Layers className="w-4 h-4" />
-              Use Cases ({useCases?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="rss-feeds" className="flex items-center gap-2">
-              <Rss className="w-4 h-4" />
-              News Feeds
-            </TabsTrigger>
-          </TabsList>
+          {/* Analytics Tab */}
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
+          </TabsContent>
 
           {/* Products Tab */}
+
           <TabsContent value="products">
             <Card>
               <CardHeader>
