@@ -943,11 +943,6 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader><CardTitle className="text-base">Directory Tab Engagement</CardTitle></CardHeader>
               <CardContent>
                 {tabData.length ? (
                   <ResponsiveContainer width="100%" height={200}>
