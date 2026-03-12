@@ -470,7 +470,7 @@ export default function AnalyticsDashboard() {
           </div>
 
           <Card>
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Target className="w-4 h-4" /> Lead Intent Distribution</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Lead Intent Distribution</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="bg-muted/50 rounded-lg p-4">
