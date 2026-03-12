@@ -750,6 +750,195 @@ export default function AnalyticsDashboard() {
           </Card>
 
         </TabsContent>
+
+        {/* ── TAB 3: NEWS FEED ── */}
+        {(() => {
+          const newsClickEvents = events.filter((e) => e.event_type === 'news_click');
+
+          const newsSessions = sessions.filter((s) =>
+            events.some((e) => e.session_id === s.id && e.event_type === 'news_click')
+          );
+          const totalNewsClicks = newsClickEvents.length;
+          const newsConversions = newsSessions.filter((s) => s.converted).length;
+          const directoryNewsSessionsCount = newsSessions.filter((s) =>
+            events.some((e) => e.session_id === s.id && e.page_path?.startsWith('/xr-directory'))
+          ).length;
+
+          const articleMap: Record<string, { title: string; source: string; clicks: number; sessions: Set<string> }> = {};
+          newsClickEvents.forEach((e) => {
+            const d = e.event_data as { title?: string; url?: string; source?: string };
+            const key = d.url || d.title || 'unknown';
+            if (!articleMap[key]) articleMap[key] = { title: d.title || key, source: d.source || '', clicks: 0, sessions: new Set() };
+            articleMap[key].clicks++;
+            if (e.session_id) articleMap[key].sessions.add(e.session_id);
+          });
+          const topArticles = Object.entries(articleMap)
+            .sort(([, a], [, b]) => b.clicks - a.clicks)
+            .slice(0, 15)
+            .map(([url, d]) => ({ url, title: d.title, source: d.source, clicks: d.clicks, uniqueReaders: d.sessions.size }));
+
+          const sourceMap2: Record<string, number> = {};
+          newsClickEvents.forEach((e) => {
+            const src = (e.event_data as { source?: string })?.source || 'Unknown';
+            sourceMap2[src] = (sourceMap2[src] || 0) + 1;
+          });
+          const newsSourceData = Object.entries(sourceMap2).sort(([, a], [, b]) => b - a).map(([name, value]) => ({ name, value }));
+
+          const newsClicksByDay: Record<string, number> = {};
+          newsClickEvents.forEach((e) => { const d = e.created_at.slice(0, 10); newsClicksByDay[d] = (newsClicksByDay[d] || 0) + 1; });
+          const newsClicksDailyData = Object.entries(newsClicksByDay).sort(([a], [b]) => a.localeCompare(b)).map(([date, clicks]) => ({ date: date.slice(5), clicks }));
+
+          return (
+            <TabsContent value="news" className="space-y-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <SummaryCard icon={Newspaper} label="News Clicks" value={fmt(totalNewsClicks)} sub="outbound article clicks" />
+                <SummaryCard icon={Users} label="Readers" value={fmt(newsSessions.length)} sub="unique sessions" />
+                <SummaryCard icon={Activity} label="Dir. + News" value={fmt(directoryNewsSessionsCount)} sub="browsed both" accent />
+                <SummaryCard icon={TrendingUp} label="News → Converted" value={fmt(newsConversions)} sub={pct(newsConversions, newsSessions.length)} accent />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader><CardTitle className="text-base flex items-center gap-2"><Newspaper className="w-4 h-4" /> Clicks Over Time</CardTitle></CardHeader>
+                  <CardContent>
+                    {newsClicksDailyData.length ? (
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={newsClicksDailyData}>
+                          <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                          <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                          <Tooltip />
+                          <Bar dataKey="clicks" fill="hsl(var(--primary))" name="Clicks" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : <p className="text-sm text-muted-foreground py-8 text-center">No news clicks yet — clicks appear here once visitors read articles.</p>}
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader><CardTitle className="text-base">Clicks by Source Publication</CardTitle></CardHeader>
+                  <CardContent>
+                    {newsSourceData.length ? (
+                      <div className="space-y-2">
+                        {newsSourceData.map(({ name, value }) => {
+                          const pctVal = Math.round((value / (totalNewsClicks || 1)) * 100);
+                          return (
+                            <div key={name} className="flex items-center gap-3">
+                              <span className="text-sm text-muted-foreground w-32 shrink-0 truncate">{name}</span>
+                              <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
+                                <div className="h-full bg-primary/70 rounded-full" style={{ width: `${Math.max(pctVal, 2)}%` }} />
+                              </div>
+                              <span className="text-sm font-medium w-20 text-right shrink-0">{value} ({pctVal}%)</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : <p className="text-sm text-muted-foreground">No data yet</p>}
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader><CardTitle className="text-base flex items-center gap-2"><ArrowRight className="w-4 h-4" /> Top Clicked Articles</CardTitle></CardHeader>
+                <CardContent>
+                  {topArticles.length ? (
+                    <div className="space-y-1">
+                      {topArticles.map(({ url, title, source, clicks, uniqueReaders }, i) => (
+                        <div key={url} className="flex items-start gap-3 py-2 border-b last:border-0">
+                          <span className="text-xs text-muted-foreground w-5 shrink-0 pt-0.5">#{i + 1}</span>
+                          <div className="min-w-0 flex-1">
+                            <a href={url} target="_blank" rel="noopener noreferrer"
+                              className="text-sm font-medium text-foreground hover:text-primary transition-colors line-clamp-2 leading-snug">
+                              {title}
+                            </a>
+                            {source && <p className="text-xs text-muted-foreground mt-0.5">{source}</p>}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 pt-0.5">
+                            <Badge variant="secondary" className="text-xs">{clicks} click{clicks !== 1 ? 's' : ''}</Badge>
+                            <span className="text-xs text-muted-foreground">{uniqueReaders}u</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No article clicks tracked yet — tracking starts automatically when visitors click news items in the carousel.</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <ArrowRight className="w-4 h-4 text-green-600" /> Sessions: Read News Then Converted
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {newsConversions > 0 ? (
+                    <div className="space-y-3">
+                      {sessions
+                        .filter((s) => s.converted && newsClickEvents.some((e) => e.session_id === s.id))
+                        .slice(0, 8)
+                        .map((s) => {
+                          const clickedArticles = newsClickEvents.filter((e) => e.session_id === s.id);
+                          const trigger = events.find((e) => e.session_id === s.id && ['email_click', 'form_submit', 'cta_click'].includes(e.event_type));
+                          return (
+                            <div key={s.id} className="flex items-start justify-between py-2 border-b last:border-0 gap-3">
+                              <div className="flex items-start gap-3 min-w-0 flex-1">
+                                <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0" />
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium text-foreground">
+                                    {trigger?.event_type === 'email_click' ? '✉️ Email clicked' :
+                                     trigger?.event_type === 'form_submit' ? '📝 Form submitted' :
+                                     trigger?.event_type === 'cta_click' ? `🖱️ CTA: "${(trigger.event_data as { label?: string })?.label || ''}"` : '✅ Converted'}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Read {clickedArticles.length} article{clickedArticles.length !== 1 ? 's' : ''} · {s.device_type || 'unknown'} · score {s.intent_score}
+                                  </p>
+                                  {clickedArticles[0] && (
+                                    <p className="text-xs text-muted-foreground truncate">
+                                      Last read: "{(clickedArticles[0].event_data as { title?: string })?.title || '—'}"
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <span className="text-xs text-muted-foreground shrink-0">{new Date(s.started_at).toLocaleDateString()}</span>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No news-reading sessions have converted yet — appears when a visitor clicks an article then submits the contact form or clicks an email CTA.</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-4 pt-3 border-t">Included when a session had at least one news click and ended with a conversion event.</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-amber-200/50 bg-amber-50/30 dark:bg-amber-900/10">
+                <CardHeader><CardTitle className="text-base flex items-center gap-2"><Lightbulb className="w-4 h-4 text-amber-500" /> News Feed Insights</CardTitle></CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {(() => {
+                      const insights: string[] = [];
+                      if (totalNewsClicks === 0) {
+                        insights.push('No news clicks yet — tracking fires automatically when visitors click articles in the carousel on the XR Directory page.');
+                      } else {
+                        const ctr = newsSessions.length ? Math.round((totalNewsClicks / newsSessions.length) * 10) / 10 : 0;
+                        insights.push(`Readers click an average of ${ctr} article${ctr !== 1 ? 's' : ''} per session — ${ctr >= 2 ? 'strong engagement, the content is relevant.' : 'consider refreshing feed sources to improve click-through.'}`);
+                        if (newsConversions > 0) insights.push(`${newsConversions} visitor${newsConversions > 1 ? 's' : ''} read news then converted — the news section is building trust and engagement.`);
+                        else insights.push("News readers haven't converted yet — add a subtle CTA below the carousel to capture high-intent visitors.");
+                        if (newsSourceData.length > 0) insights.push(`"${newsSourceData[0].name}" is generating the most clicks — verify it stays active in your RSS feed admin.`);
+                        if (topArticles.length > 0) insights.push(`Top article: "${topArticles[0].title.slice(0, 60)}…" — consider sharing it on LinkedIn to test audience resonance.`);
+                        if (directoryNewsSessionsCount > 0) insights.push(`${directoryNewsSessionsCount} session${directoryNewsSessionsCount > 1 ? 's' : ''} combined news reading with directory browsing — your most engaged visitors.`);
+                      }
+                      return insights.map((r, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-foreground"><span className="text-amber-500 mt-0.5">→</span> {r}</li>
+                      ));
+                    })()}
+                  </ul>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          );
+        })()}
+
       </Tabs>
     </div>
   );
