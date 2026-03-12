@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,13 +10,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { useXRProducts, useDeleteProduct, XRProduct } from '@/hooks/useXRProducts';
 import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies';
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
-import { useMemo } from 'react';
 import { 
-  Plus, LogOut, Search, Trash2, ExternalLink, 
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss
+  Plus, LogOut, Search, Trash2,
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import {
   AlertDialog,
   AlertDialogAction,
