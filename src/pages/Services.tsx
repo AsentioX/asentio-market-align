@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Rocket, MessageSquare, ArrowRight, CheckCircle, Building2, Users, Code } from "lucide-react";
+import { Target, Rocket, MessageSquare, ArrowRight } from "lucide-react";
 import TopographicPattern from "@/components/TopographicPattern";
 import ServiceCard from "@/components/services/ServiceCard";
 import ChannelCard from "@/components/services/ChannelCard";
 import EngagementCard from "@/components/services/EngagementCard";
 import CaseStudyCarousel from "@/components/services/CaseStudyCarousel";
-import { initSession, trackPageView, trackCTAClick, trackEmailClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import { useCaseStudies } from "@/hooks/useCaseStudies";
 
 const Services = () => {
 
