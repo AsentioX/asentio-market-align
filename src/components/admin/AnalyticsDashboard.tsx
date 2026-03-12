@@ -790,10 +790,6 @@ export default function AnalyticsDashboard() {
   );
 }
 
-      {/* ── Executive Summary ────────────────────────────────── */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <SummaryCard icon={Users}           label="Sessions"          value={fmt(totalSessions)}  sub={`${uniqueVisitors} unique`} />
-        <SummaryCard icon={Activity}        label="Engaged"           value={fmt(engagedSessions)} sub={pct(engagedSessions, totalSessions)} />
         <SummaryCard icon={MousePointerClick} label="CTA Clicks"      value={fmt(ctaClicks)}       sub={pct(ctaClicks, totalSessions)} />
         <SummaryCard icon={Mail}            label="Email Clicks"      value={fmt(emailClicks)}      accent />
         <SummaryCard icon={FileText}        label="Form Submits"      value={fmt(formSubmits)}      accent />
