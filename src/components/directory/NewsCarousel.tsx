@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ExternalLink, ChevronLeft, ChevronRight, Newspaper, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { trackEvent } from '@/lib/analytics';
 
 interface NewsItem {
   title: string;
