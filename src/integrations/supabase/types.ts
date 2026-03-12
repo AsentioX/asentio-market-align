@@ -112,6 +112,86 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_contacts: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          follow_up_date: string | null
+          id: string
+          message: string | null
+          name: string
+          role: string | null
+          source: string
+          source_context: string | null
+          stage: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          follow_up_date?: string | null
+          id?: string
+          message?: string | null
+          name: string
+          role?: string | null
+          source?: string
+          source_context?: string | null
+          stage?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          follow_up_date?: string | null
+          id?: string
+          message?: string | null
+          name?: string
+          role?: string | null
+          source?: string
+          source_context?: string | null
+          stage?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_notes: {
+        Row: {
+          body: string
+          contact_id: string
+          created_at: string
+          id: string
+          type: string
+        }
+        Insert: {
+          body: string
+          contact_id: string
+          created_at?: string
+          id?: string
+          type?: string
+        }
+        Update: {
+          body?: string
+          contact_id?: string
+          created_at?: string
+          id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_notes_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
