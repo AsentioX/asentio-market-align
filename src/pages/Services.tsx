@@ -12,6 +12,7 @@ import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from
 import { useCaseStudies } from "@/hooks/useCaseStudies";
 
 const Services = () => {
+  const { data: dbCaseStudies } = useCaseStudies(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
