@@ -185,7 +185,7 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-              <Link to="/contact" className="w-full sm:w-auto">
+              <Link to="/contact" className="w-full sm:w-auto" onClick={() => trackCTAClick('Get in Touch', true)}>
                 <Button 
                   size="lg" 
                   className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 px-8 md:px-10 py-5 md:py-6 text-base font-medium shadow-lg shadow-asentio-blue/20 transition-all hover:shadow-xl"
@@ -193,7 +193,7 @@ const Index = () => {
                   {t('cta.contact')}
                 </Button>
               </Link>
-              <a href="mailto:info@asentio.com" className="w-full sm:w-auto">
+              <a href="mailto:info@asentio.com" className="w-full sm:w-auto" onClick={() => trackEmailClick('info@asentio.com')}>
                 <Button 
                   variant="outline" 
                   size="lg"
@@ -203,6 +203,7 @@ const Index = () => {
                 </Button>
               </a>
             </div>
+
           </div>
         </div>
       </AnimatedSection>
