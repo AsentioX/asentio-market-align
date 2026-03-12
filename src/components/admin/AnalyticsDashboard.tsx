@@ -789,11 +789,6 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
-
-
-
-
-
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={dailyData}>
                   <XAxis dataKey="date" tick={{ fontSize: 11 }} />
