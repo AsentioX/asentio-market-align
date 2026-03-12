@@ -2,15 +2,17 @@ import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Rocket, MessageSquare, ArrowRight, CheckCircle, Building2, Users, Code } from "lucide-react";
+import { Target, Rocket, MessageSquare, ArrowRight } from "lucide-react";
 import TopographicPattern from "@/components/TopographicPattern";
 import ServiceCard from "@/components/services/ServiceCard";
 import ChannelCard from "@/components/services/ChannelCard";
 import EngagementCard from "@/components/services/EngagementCard";
 import CaseStudyCarousel from "@/components/services/CaseStudyCarousel";
-import { initSession, trackPageView, trackCTAClick, trackEmailClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import { useCaseStudies } from "@/hooks/useCaseStudies";
 
 const Services = () => {
+  const { data: dbCaseStudies } = useCaseStudies(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -129,31 +131,17 @@ const Services = () => {
     },
   ];
 
-  const caseStudies = [
-    {
-      company: "BleeqUp",
-      description: "U.S. go-to-market strategy, product feedback, and retail readiness for smart eyewear.",
-      image: "/images/bleeqUp.png",
-      challenge: "A European smart eyewear startup needed to validate product-market fit and build retail-ready positioning for U.S. consumers with no existing presence.",
-      whatWeDid: "Conducted U.S.-focused product and UX evaluation, developed retail-ready messaging, and created a go-to-market roadmap targeting specialty and national retail partners.",
-    },
-    {
-      company: "Xthings",
-      description: "Brand narrative, CES positioning, and enterprise messaging for AIoT and smart home products.",
-      image: "/images/xthings.png",
-      imageZoom: 1.4,
-      imagePosition: "center 70%",
-      challenge: "An AIoT company preparing for CES needed a compelling brand narrative and enterprise messaging that would resonate with U.S. buyers and media.",
-      whatWeDid: "Shaped the brand story, crafted CES-specific positioning, and developed enterprise sales narratives that translated technical capabilities into clear business value.",
-    },
-    {
-      company: "Optix",
-      description: "Market positioning and competitive differentiation for advanced optical and waveguide technologies.",
-      image: "/images/optix.jpg",
-      challenge: "A waveguide technology company needed to differentiate in a crowded AR optics market and communicate technical advantages to non-technical decision makers.",
-      whatWeDid: "Developed competitive positioning frameworks, created clear differentiation narratives, and built sales enablement materials bridging technical depth with business impact.",
-    },
-  ];
+  const caseStudies = (dbCaseStudies || []).map(cs => ({
+    company: cs.company,
+    website: cs.website || undefined,
+    description: cs.description,
+    image: cs.image || '',
+    imageZoom: cs.image_zoom ?? 1,
+    imagePosition: cs.image_position || 'center',
+    challenge: cs.challenge || undefined,
+    whatWeDid: cs.what_we_did || undefined,
+    tags: cs.tags || [],
+  }));
 
   const idealClients = [
     "Are entering or actively scaling in the U.S. market",

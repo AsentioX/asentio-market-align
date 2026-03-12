@@ -12,12 +12,13 @@ import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies'
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink,
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2, Briefcase
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import CRMDashboard from '@/components/admin/CRMDashboard';
+import CaseStudiesAdmin from '@/components/admin/CaseStudiesAdmin';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -191,6 +192,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="rss-feeds" className="flex items-center gap-2">
               <Rss className="w-4 h-4" />
               News Feeds
+            </TabsTrigger>
+            <TabsTrigger value="case-studies" className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4" />
+              Case Studies
             </TabsTrigger>
           </TabsList>
 
@@ -596,6 +601,11 @@ const AdminDashboard = () => {
           {/* RSS Feeds Tab */}
           <TabsContent value="rss-feeds">
             <RssFeedAdmin />
+          </TabsContent>
+
+          {/* Case Studies Tab */}
+          <TabsContent value="case-studies">
+            <CaseStudiesAdmin />
           </TabsContent>
         </Tabs>
       </div>
