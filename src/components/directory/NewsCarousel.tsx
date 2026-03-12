@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ExternalLink, ChevronLeft, ChevronRight, Newspaper, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { trackEvent } from '@/lib/analytics';
 
 interface NewsItem {
   title: string;
@@ -122,6 +123,7 @@ const NewsCarousel = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-shrink-0 w-[300px] group"
+                  onClick={() => trackEvent('news_click', { title: item.title, url: item.link, source: item.source })}
                 >
                   <div className="bg-card border border-border rounded-xl overflow-hidden h-full hover:border-asentio-red/30 hover:shadow-lg transition-all duration-300">
                     <div className="h-40 bg-muted overflow-hidden">
