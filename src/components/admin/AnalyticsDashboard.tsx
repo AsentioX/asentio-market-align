@@ -270,6 +270,7 @@ export default function AnalyticsDashboard() {
         <TabsList className="mb-4">
           <TabsTrigger value="conversion">Conversion</TabsTrigger>
           <TabsTrigger value="directory">XR Directory</TabsTrigger>
+          <TabsTrigger value="news">News Feed</TabsTrigger>
         </TabsList>
 
         {/* ── TAB 1: CONVERSION ── */}
