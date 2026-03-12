@@ -87,7 +87,6 @@ const AgencyDetail = () => {
           </div>
 
           {/* Right: Details */}
-          </div>
           <div className="lg:col-span-2 space-y-6">
             {agency.services && agency.services.length > 0 && (
               <Card>
