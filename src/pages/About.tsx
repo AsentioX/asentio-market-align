@@ -14,6 +14,9 @@ const About = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    initSession().then(() => trackPageView('/about'));
+    const start = Date.now();
+    return () => { trackTimeOnPage(Date.now() - start, '/about'); };
   }, []);
 
   return (

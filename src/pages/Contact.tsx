@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +7,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
 import { Mail, Globe, MessageSquare, Target, Users, Zap } from "lucide-react";
+import { initSession, trackPageView, trackFormStart, trackFormSubmit, trackEmailClick } from "@/lib/analytics";
 
 const Contact = () => {
   const { t } = useLanguage();
