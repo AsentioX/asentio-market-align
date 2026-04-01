@@ -106,6 +106,13 @@ const Navbar = () => {
             >
               XR Directory
             </Link>
+            <Link
+              to="/labs"
+              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Labs
+            </Link>
             <div className="px-4">
               <LanguageToggle />
             </div>
