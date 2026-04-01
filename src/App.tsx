@@ -24,6 +24,7 @@ import AgencyDetail from "./pages/AgencyDetail";
 import UseCaseDetail from "./pages/UseCaseDetail";
 import CompanyForm from "./pages/CompanyForm";
 import UseCaseForm from "./pages/UseCaseForm";
+import Labs from "./pages/Labs";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
