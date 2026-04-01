@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Heart, Check } from 'lucide-react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Heart, Check, Share2 } from 'lucide-react';
 import { calculateScore } from './mockData';
+import { shareContent, buildWorkoutShareText } from './shareUtils';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 
