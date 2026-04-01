@@ -90,40 +90,37 @@ const Labs = () => {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {labApps.map((app) => (
-            <Card
-              key={app.name}
-              className="group relative overflow-hidden border border-border/60 hover:border-asentio-blue/40 transition-all duration-300 hover:shadow-lg cursor-default"
-            >
-              <CardContent className="p-6 flex flex-col h-full">
-                {/* Icon + Status */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 rounded-xl bg-muted text-asentio-blue">
-                    {app.icon}
+          {labApps.map((app) => {
+            const Wrapper = app.link ? Link : 'div';
+            const wrapperProps = app.link ? { to: app.link } : {};
+            return (
+              <Wrapper
+                key={app.name}
+                {...(wrapperProps as any)}
+                className={`group relative overflow-hidden border border-border/60 hover:border-asentio-blue/40 transition-all duration-300 hover:shadow-lg rounded-lg bg-card ${
+                  app.link ? 'cursor-pointer' : 'cursor-default'
+                }`}
+              >
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 rounded-xl bg-muted text-asentio-blue">
+                      {app.icon}
+                    </div>
+                    <Badge variant="secondary" className={`text-xs ${statusColors[app.status]}`}>
+                      {statusLabels[app.status]}
+                    </Badge>
                   </div>
-                  <Badge variant="secondary" className={`text-xs ${statusColors[app.status]}`}>
-                    {statusLabels[app.status]}
-                  </Badge>
-                </div>
-
-                {/* Info */}
-                <h3 className="text-lg font-semibold text-foreground mb-2">{app.name}</h3>
-                <p className="text-sm text-muted-foreground mb-4 flex-1">{app.description}</p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1.5">
-                  {app.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{app.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-4 flex-1">{app.description}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {app.tags.map((tag) => (
+                      <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{tag}</span>
+                    ))}
+                  </div>
+                </CardContent>
+              </Wrapper>
+            );
+          })}
         </div>
       </div>
     </div>
