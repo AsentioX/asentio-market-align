@@ -36,7 +36,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule';
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy';
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
