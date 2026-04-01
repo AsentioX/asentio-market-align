@@ -1,5 +1,6 @@
-import { Calendar, Flame, Dumbbell, Star } from 'lucide-react';
+import { Calendar, Flame, Dumbbell, Star, Share2 } from 'lucide-react';
 import { mockUser, mockAchievements } from './mockData';
+import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
 
 const ProfilePage = () => {
   return (
@@ -13,6 +14,13 @@ const ProfilePage = () => {
           <h2 className="text-xl font-bold">{mockUser.name}</h2>
           <p className="text-xs text-white/40">Member since {mockUser.memberSince} · Level {mockUser.level}</p>
         </div>
+        <button
+          onClick={() => shareContent(buildStatsShareText(mockUser.totalWorkouts, mockUser.totalPoints, mockUser.weeklyStreak))}
+          className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white transition-colors bg-white/5 px-3 py-1.5 rounded-full"
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          Share Stats
+        </button>
       </div>
 
       {/* Stats */}
@@ -73,6 +81,15 @@ const ProfilePage = () => {
               <p className="text-[10px] font-medium leading-tight">{ach.title}</p>
               {ach.unlocked && ach.date && (
                 <p className="text-[9px] text-white/30 mt-0.5">{ach.date}</p>
+              )}
+              {ach.unlocked && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); shareContent(buildAchievementShareText(ach.title, ach.icon)); }}
+                  className="mt-1.5 text-white/30 hover:text-emerald-400 transition-colors"
+                  title="Share achievement"
+                >
+                  <Share2 className="w-3 h-3 mx-auto" />
+                </button>
               )}
             </div>
           ))}
