@@ -13,7 +13,7 @@ interface LabApp {
 
 const labApps: LabApp[] = [
   {
-    name: 'FitXR Tracker',
+    name: 'W.O.Buddy',
     description: 'Track your XR fitness sessions, calories burned, and workout streaks across VR fitness apps.',
     icon: <Dumbbell className="w-8 h-8" />,
     status: 'coming-soon',
