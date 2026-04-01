@@ -14,6 +14,13 @@ const ProfilePage = () => {
           <h2 className="text-xl font-bold">{mockUser.name}</h2>
           <p className="text-xs text-white/40">Member since {mockUser.memberSince} · Level {mockUser.level}</p>
         </div>
+        <button
+          onClick={() => shareContent(buildStatsShareText(mockUser.totalWorkouts, mockUser.totalPoints, mockUser.weeklyStreak))}
+          className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white transition-colors bg-white/5 px-3 py-1.5 rounded-full"
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          Share Stats
+        </button>
       </div>
 
       {/* Stats */}
