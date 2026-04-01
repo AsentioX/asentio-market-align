@@ -54,6 +54,9 @@ const Navbar = () => {
           <Link to="/xr-directory" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/xr-directory") ? "border-b-2 border-asentio-red" : ""}`}>
             XR Directory
           </Link>
+          <Link to="/labs" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/labs") ? "border-b-2 border-asentio-red" : ""}`}>
+            Labs
+          </Link>
           <LanguageToggle />
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
