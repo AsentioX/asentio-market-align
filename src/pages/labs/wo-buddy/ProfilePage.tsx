@@ -1,5 +1,6 @@
-import { Calendar, Flame, Dumbbell, Star } from 'lucide-react';
+import { Calendar, Flame, Dumbbell, Star, Share2 } from 'lucide-react';
 import { mockUser, mockAchievements } from './mockData';
+import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
 
 const ProfilePage = () => {
   return (
