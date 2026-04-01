@@ -15,10 +15,11 @@ interface LabApp {
 const labApps: LabApp[] = [
   {
     name: 'W.O.Buddy',
-    description: 'Track your XR fitness sessions, calories burned, and workout streaks across VR fitness apps.',
+    description: 'Track your workouts, earn scores, compete with friends, and visualize your fitness progress.',
     icon: <Dumbbell className="w-8 h-8" />,
-    status: 'coming-soon',
+    status: 'beta',
     tags: ['Fitness', 'Health', 'VR'],
+    link: '/labs/wo-buddy',
   },
   {
     name: 'XR Product Manager',
