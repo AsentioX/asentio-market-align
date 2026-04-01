@@ -59,6 +59,7 @@ const AppContent = () => {
           <Route path="/xr-directory/use-cases/:slug" element={<UseCaseDetail />} />
           <Route path="/xr-directory/:slug" element={<ProductDetail />} />
           <Route path="/labs" element={<Labs />} />
+          <Route path="/labs/wo-buddy" element={<WOBuddyLayout />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
