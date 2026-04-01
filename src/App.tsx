@@ -24,6 +24,7 @@ import AgencyDetail from "./pages/AgencyDetail";
 import UseCaseDetail from "./pages/UseCaseDetail";
 import CompanyForm from "./pages/CompanyForm";
 import UseCaseForm from "./pages/UseCaseForm";
+import Labs from "./pages/Labs";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -56,6 +57,7 @@ const AppContent = () => {
           <Route path="/xr-directory/agencies/:slug" element={<AgencyDetail />} />
           <Route path="/xr-directory/use-cases/:slug" element={<UseCaseDetail />} />
           <Route path="/xr-directory/:slug" element={<ProductDetail />} />
+          <Route path="/labs" element={<Labs />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
