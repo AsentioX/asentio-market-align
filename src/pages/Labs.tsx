@@ -9,6 +9,7 @@ interface LabApp {
   icon: React.ReactNode;
   status: 'coming-soon' | 'beta' | 'live';
   tags: string[];
+  link?: string;
 }
 
 const labApps: LabApp[] = [
