@@ -98,7 +98,20 @@ const WorkoutPage = () => {
             <span>Score = effort across reps, weight, distance, and time.</span>
           </div>
         </div>
-        <button onClick={handleReset} className="text-sm text-emerald-400 font-medium">Log Another Workout</button>
+        <div className="flex items-center gap-4">
+          <button onClick={handleReset} className="text-sm text-emerald-400 font-medium">Log Another Workout</button>
+          <button
+            onClick={() => shareContent(buildWorkoutShareText(
+              mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
+              score,
+              mode
+            ))}
+            className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors"
+          >
+            <Share2 className="w-4 h-4" />
+            Share
+          </button>
+        </div>
       </div>
     );
   }

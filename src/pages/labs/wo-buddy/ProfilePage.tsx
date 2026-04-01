@@ -82,6 +82,15 @@ const ProfilePage = () => {
               {ach.unlocked && ach.date && (
                 <p className="text-[9px] text-white/30 mt-0.5">{ach.date}</p>
               )}
+              {ach.unlocked && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); shareContent(buildAchievementShareText(ach.title, ach.icon)); }}
+                  className="mt-1.5 text-white/30 hover:text-emerald-400 transition-colors"
+                  title="Share achievement"
+                >
+                  <Share2 className="w-3 h-3 mx-auto" />
+                </button>
+              )}
             </div>
           ))}
         </div>
