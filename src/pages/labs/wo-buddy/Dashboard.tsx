@@ -1,66 +1,74 @@
-import { Activity, Flame, Target, Zap, ChevronRight, Heart } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Activity, Flame, Target, Zap, ChevronRight, Heart, Trophy, Dumbbell, Timer, ArrowRight } from 'lucide-react';
 import { mockUser, mockCompetitions, mockWorkouts } from './mockData';
 
 interface DashboardProps {
   onNavigate: (tab: 'workout' | 'competitions') => void;
 }
 
+const competitionImages: Record<string, { gradient: string; emoji: string; bg: string }> = {
+  '1': { gradient: 'from-amber-500 to-orange-600', emoji: '⚔️', bg: 'bg-amber-900/30' },
+  '2': { gradient: 'from-rose-500 to-pink-600', emoji: '🔥', bg: 'bg-rose-900/30' },
+  '3': { gradient: 'from-blue-500 to-indigo-600', emoji: '💪', bg: 'bg-blue-900/30' },
+  '4': { gradient: 'from-emerald-500 to-teal-600', emoji: '👟', bg: 'bg-emerald-900/30' },
+};
+
 const Dashboard = ({ onNavigate }: DashboardProps) => {
   const readiness = 82;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeCompIdx, setActiveCompIdx] = useState(0);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const el = scrollRef.current;
+    const cardWidth = el.scrollWidth / mockCompetitions.length;
+    const idx = Math.round(el.scrollLeft / cardWidth);
+    setActiveCompIdx(idx);
+  };
 
   return (
-    <div className="space-y-5">
-      {/* Greeting */}
-      <div>
-        <p className="text-white/50 text-sm">Good morning</p>
-        <h2 className="text-2xl font-bold">{mockUser.name}</h2>
-      </div>
-
-      {/* Readiness ring */}
-      <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 rounded-2xl p-5 border border-emerald-500/10">
-        <div className="flex items-center gap-5">
-          <div className="relative w-20 h-20 flex-shrink-0">
-            <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-              <circle
-                cx="40" cy="40" r="34" fill="none"
-                stroke="url(#readinessGrad)" strokeWidth="6" strokeLinecap="round"
-                strokeDasharray={`${(readiness / 100) * 213.6} 213.6`}
-              />
-              <defs>
-                <linearGradient id="readinessGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#34d399" />
-                  <stop offset="100%" stopColor="#10b981" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xl font-bold text-emerald-400">{readiness}</span>
-              <span className="text-[9px] text-white/40 uppercase tracking-wider">Ready</span>
-            </div>
-          </div>
-          <div className="flex-1 space-y-1.5">
-            <p className="text-sm font-medium text-emerald-300">High readiness</p>
-            <p className="text-xs text-white/40">Your recovery looks great. Perfect day for a heavy session.</p>
-            <div className="flex items-center gap-1.5 text-xs text-white/30">
-              <Heart className="w-3 h-3 text-red-400" />
-              <span>Resting HR: 58 bpm</span>
-            </div>
+    <div className="space-y-6">
+      {/* Greeting + Readiness */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-white/40 text-xs uppercase tracking-widest">Good morning</p>
+          <h2 className="text-2xl font-bold mt-0.5">{mockUser.name}</h2>
+        </div>
+        <div className="relative w-16 h-16">
+          <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
+            <circle
+              cx="32" cy="32" r="27" fill="none"
+              stroke="url(#readGrad)" strokeWidth="5" strokeLinecap="round"
+              strokeDasharray={`${(readiness / 100) * 169.6} 169.6`}
+            />
+            <defs>
+              <linearGradient id="readGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#34d399" />
+                <stop offset="100%" stopColor="#10b981" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-lg font-bold text-emerald-400">{readiness}</span>
+            <span className="text-[8px] text-white/40 uppercase tracking-wider">Ready</span>
           </div>
         </div>
       </div>
 
-      {/* Stats row */}
+      {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: <Flame className="w-4 h-4 text-orange-400" />, value: mockUser.dailyProgress, label: 'Points', color: 'orange' },
-          { icon: <Activity className="w-4 h-4 text-blue-400" />, value: mockUser.weeklyProgress, label: `/ ${mockUser.weeklyGoal} days`, color: 'blue' },
-          { icon: <Zap className="w-4 h-4 text-purple-400" />, value: mockUser.weeklyStreak, label: 'Streak', color: 'purple' },
+          { icon: <Flame className="w-4 h-4" />, value: mockUser.dailyProgress, label: 'Points today', color: 'text-orange-400', ring: 'bg-orange-500/10' },
+          { icon: <Activity className="w-4 h-4" />, value: `${mockUser.weeklyProgress}/${mockUser.weeklyGoal}`, label: 'This week', color: 'text-blue-400', ring: 'bg-blue-500/10' },
+          { icon: <Zap className="w-4 h-4" />, value: `${mockUser.weeklyStreak}w`, label: 'Streak', color: 'text-purple-400', ring: 'bg-purple-500/10' },
         ].map((stat, i) => (
-          <div key={i} className="bg-white/[0.03] rounded-xl p-3 border border-white/5">
-            <div className="flex items-center gap-1.5 mb-1">{stat.icon}</div>
-            <p className="text-lg font-bold">{stat.value}</p>
-            <p className="text-[10px] text-white/40">{stat.label}</p>
+          <div key={i} className="bg-white/[0.04] backdrop-blur-sm rounded-2xl p-3.5 border border-white/[0.06]">
+            <div className={`w-8 h-8 rounded-xl ${stat.ring} flex items-center justify-center ${stat.color} mb-2`}>
+              {stat.icon}
+            </div>
+            <p className="text-xl font-bold">{stat.value}</p>
+            <p className="text-[10px] text-white/40 mt-0.5">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -68,65 +76,123 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       {/* Start Workout CTA */}
       <button
         onClick={() => onNavigate('workout')}
-        className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+        className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/25"
       >
-        Start Workout
+        <div className="flex items-center justify-center gap-2">
+          <Dumbbell className="w-5 h-5" />
+          <span>Start Workout</span>
+          <ArrowRight className="w-4 h-4 ml-1" />
+        </div>
       </button>
 
-      {/* Daily goal progress */}
-      <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/5">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <Target className="w-4 h-4 text-emerald-400" />
-            <span className="text-sm font-medium">Daily Goal</span>
-          </div>
-          <span className="text-xs text-white/40">{mockUser.dailyProgress} / {mockUser.dailyGoal} pts</span>
+      {/* Daily Goal */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</h3>
+          <span className="text-xs text-white/30">{mockUser.dailyProgress} / {mockUser.dailyGoal} pts</span>
         </div>
-        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
-            style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
-          />
+        <div className="bg-white/[0.04] rounded-2xl p-4 border border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <Target className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm font-medium">{Math.round((mockUser.dailyProgress / mockUser.dailyGoal) * 100)}% complete</span>
+                <span className="text-xs text-emerald-400">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</span>
+              </div>
+              <div className="h-2.5 bg-white/5 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
+                  style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Active competitions */}
+      {/* Active Competitions — swipeable cards */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold">Active Competitions</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Active Competitions</h3>
           <button onClick={() => onNavigate('competitions')} className="text-xs text-emerald-400 flex items-center gap-0.5">
             See all <ChevronRight className="w-3 h-3" />
           </button>
         </div>
-        <div className="space-y-2.5">
-          {mockCompetitions.filter(c => c.joined).map((comp) => (
-            <div key={comp.id} className="bg-white/[0.03] rounded-xl p-3.5 border border-white/5">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">{comp.title}</span>
-                <span className="text-[10px] text-white/30">{comp.timeRemaining}</span>
+
+        {/* Horizontal scroll */}
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="-mx-4 px-4 flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {mockCompetitions.map((comp) => {
+            const visual = competitionImages[comp.id] || competitionImages['1'];
+            const pct = Math.round((comp.progress / comp.target) * 100);
+            return (
+              <div
+                key={comp.id}
+                className="flex-shrink-0 w-[72vw] max-w-[300px] snap-center rounded-2xl overflow-hidden border border-white/[0.06]"
+              >
+                {/* Visual header */}
+                <div className={`bg-gradient-to-br ${visual.gradient} p-5 pb-8 relative`}>
+                  <div className="absolute top-3 right-3 bg-black/20 backdrop-blur-sm rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1">
+                    <Timer className="w-3 h-3" /> {comp.timeRemaining}
+                  </div>
+                  <span className="text-4xl">{visual.emoji}</span>
+                  <h4 className="text-lg font-bold mt-2">{comp.title}</h4>
+                  <p className="text-xs text-white/70 mt-1">{comp.description}</p>
+                </div>
+                {/* Stats footer */}
+                <div className="bg-white/[0.04] p-4 -mt-3 rounded-t-2xl">
+                  <div className="flex items-center justify-between text-xs mb-2">
+                    <span className="text-white/60">{pct}% complete</span>
+                    <span className="text-white/40">{comp.participants} players</span>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full bg-gradient-to-r ${visual.gradient} rounded-full`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  {!comp.joined && (
+                    <button className="mt-3 w-full text-xs font-semibold py-2 rounded-xl border border-white/10 hover:bg-white/5 transition-colors">
+                      Join Challenge
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mb-1.5">
-                <div
-                  className="h-full bg-emerald-500 rounded-full"
-                  style={{ width: `${(comp.progress / comp.target) * 100}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-white/40">{comp.progress} / {comp.target} — {comp.description}</p>
-            </div>
+            );
+          })}
+        </div>
+
+        {/* Dot indicators */}
+        <div className="flex justify-center gap-1.5 mt-3">
+          {mockCompetitions.map((_, i) => (
+            <div
+              key={i}
+              className={`h-1.5 rounded-full transition-all ${
+                i === activeCompIdx ? 'w-5 bg-emerald-400' : 'w-1.5 bg-white/15'
+              }`}
+            />
           ))}
         </div>
       </div>
 
-      {/* Recent activity */}
+      {/* Recent Activity */}
       <div>
-        <h3 className="text-sm font-semibold mb-3">Recent Activity</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Recent Activity</h3>
+        </div>
         <div className="space-y-2">
           {mockWorkouts.slice(0, 3).map((w) => (
-            <div key={w.id} className="flex items-center gap-3 bg-white/[0.03] rounded-xl p-3 border border-white/5">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm ${
-                w.type === 'strength' ? 'bg-blue-500/10 text-blue-400' :
-                w.type === 'cardio' ? 'bg-orange-500/10 text-orange-400' :
-                'bg-purple-500/10 text-purple-400'
+            <div key={w.id} className="flex items-center gap-3 bg-white/[0.04] rounded-2xl p-3.5 border border-white/[0.06]">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-base ${
+                w.type === 'strength' ? 'bg-blue-500/10' :
+                w.type === 'cardio' ? 'bg-orange-500/10' :
+                'bg-purple-500/10'
               }`}>
                 {w.type === 'strength' ? '🏋️' : w.type === 'cardio' ? '🏃' : '💪'}
               </div>
@@ -134,7 +200,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 <p className="text-sm font-medium truncate">{w.exercise}</p>
                 <p className="text-[10px] text-white/40">{w.date}</p>
               </div>
-              <span className="text-sm font-semibold text-emerald-400">+{w.score}</span>
+              <span className="text-sm font-bold text-emerald-400">+{w.score}</span>
             </div>
           ))}
         </div>
