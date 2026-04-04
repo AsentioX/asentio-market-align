@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Heart, Check, Share2, Sparkles } from 'lucide-react';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
+import CameraTrackingView from './CameraTrackingView';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 
