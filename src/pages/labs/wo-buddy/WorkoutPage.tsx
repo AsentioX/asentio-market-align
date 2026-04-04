@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Heart, Check, Share2, Sparkles } from 'lucide-react';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
