@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Heart, Check, Share2, Sparkles } from 'lucide-react';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
+import CameraTrackingView from './CameraTrackingView';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 
@@ -33,19 +34,10 @@ const WorkoutPage = () => {
   const [bwExercise, setBwExercise] = useState(bodyweightExercises[0]);
   const [bwReps, setBwReps] = useState(20);
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (cameraTracking) {
-      intervalRef.current = setInterval(() => {
-        if (mode === 'strength') setReps(r => r + 1);
-        else if (mode === 'bodyweight') setBwReps(r => r + 1);
-      }, 800);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [cameraTracking, mode]);
+  const handleRepDetected = useCallback(() => {
+    if (mode === 'strength') setReps(r => r + 1);
+    else if (mode === 'bodyweight') setBwReps(r => r + 1);
+  }, [mode]);
 
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
@@ -169,19 +161,15 @@ const WorkoutPage = () => {
         </button>
       )}
 
-      {/* Live feedback */}
+      {/* Camera tracking view */}
       {cameraTracking && (
-        <div className={`bg-gradient-to-r ${intensity.bg} rounded-xl p-4 border border-white/[0.08] space-y-3`}>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-white/40 uppercase tracking-wider">Live Feedback</span>
-            <span className="flex items-center gap-1.5 text-xs bg-red-500/10 px-2.5 py-1 rounded-full border border-red-500/20">
-              <Heart className="w-3 h-3 text-red-400 animate-pulse" />
-              <span className="font-mono text-red-400 font-bold">{heartRate} bpm</span>
-            </span>
-          </div>
-          <p className={`text-sm font-semibold ${intensity.color}`}>{intensity.label}</p>
-          <p className="text-xs text-white/40">{intensity.msg}</p>
-        </div>
+        <CameraTrackingView
+          exercise={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise}
+          repCount={mode === 'strength' ? reps : bwReps}
+          onRepDetected={handleRepDetected}
+          heartRate={heartRate}
+          intensity={intensity}
+        />
       )}
 
       {/* Inputs */}
