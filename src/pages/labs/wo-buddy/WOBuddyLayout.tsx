@@ -1,20 +1,21 @@
 import { useState } from 'react';
-import { Home, Dumbbell, Trophy, TrendingUp, User, ArrowLeft } from 'lucide-react';
+import { Home, Dumbbell, Trophy, TrendingUp, Settings, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import WorkoutPage from './WorkoutPage';
 import CompetitionsPage from './CompetitionsPage';
 import ProgressPage from './ProgressPage';
 import ProfilePage from './ProfilePage';
+import WearableSettings from './WearableSettings';
 
-type Tab = 'dashboard' | 'workout' | 'competitions' | 'progress' | 'profile';
+type Tab = 'dashboard' | 'workout' | 'competitions' | 'progress' | 'settings';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Home', icon: <Home className="w-5 h-5" /> },
   { id: 'workout', label: 'Workout', icon: <Dumbbell className="w-5 h-5" /> },
   { id: 'competitions', label: 'Compete', icon: <Trophy className="w-5 h-5" /> },
   { id: 'progress', label: 'Progress', icon: <TrendingUp className="w-5 h-5" /> },
-  { id: 'profile', label: 'Profile', icon: <User className="w-5 h-5" /> },
+  { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
 
 const WOBuddyLayout = () => {
@@ -26,7 +27,7 @@ const WOBuddyLayout = () => {
       case 'workout': return <WorkoutPage />;
       case 'competitions': return <CompetitionsPage />;
       case 'progress': return <ProgressPage />;
-      case 'profile': return <ProfilePage />;
+      case 'settings': return <WearableSettings />;
     }
   };
 
