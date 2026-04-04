@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Heart, Check, Share2, Sparkles } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks } from 'lucide-react';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
 import CameraTrackingView from './CameraTrackingView';
+import ExerciseWidget, { TrackedExercise } from './ExerciseWidget';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 
@@ -10,10 +11,19 @@ const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press'
 const cardioActivities = ['Run', 'Row', 'Bike'];
 const bodyweightExercises = ['Push-ups', 'Burpees', 'Squats', 'Pull-ups', 'Sit-ups'];
 
+const allExerciseNames = [...strengthExercises, ...bodyweightExercises, ...cardioActivities];
+
 const modeConfig = {
   strength: { icon: <Dumbbell className="w-5 h-5" />, label: 'Strength', emoji: '🏋️', gradient: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/20', active: 'from-blue-500/30 to-blue-600/10', color: 'text-blue-400' },
   cardio: { icon: <Wind className="w-5 h-5" />, label: 'Cardio', emoji: '🏃', gradient: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/20', active: 'from-orange-500/30 to-orange-600/10', color: 'text-orange-400' },
   bodyweight: { icon: <Accessibility className="w-5 h-5" />, label: 'Bodyweight', emoji: '💪', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', active: 'from-purple-500/30 to-purple-600/10', color: 'text-purple-400' },
+};
+
+// Simulated exercise recognition — cycles through exercises
+const exerciseRotation: Record<Mode, string[]> = {
+  strength: ['Bench Press', 'Curls', 'Barbell Row'],
+  cardio: [],
+  bodyweight: ['Push-ups', 'Squats', 'Burpees', 'Sit-ups', 'Pull-ups'],
 };
 
 const WorkoutPage = () => {
@@ -22,23 +32,27 @@ const WorkoutPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
+  // Manual input state
   const [exercise, setExercise] = useState(strengthExercises[0]);
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(10);
   const [weight, setWeight] = useState(135);
-
   const [cardioActivity, setCardioActivity] = useState(cardioActivities[0]);
   const [distance, setDistance] = useState(5);
   const [time, setTime] = useState(25);
-
   const [bwExercise, setBwExercise] = useState(bodyweightExercises[0]);
   const [bwReps, setBwReps] = useState(20);
 
-  const handleRepDetected = useCallback(() => {
-    if (mode === 'strength') setReps(r => r + 1);
-    else if (mode === 'bodyweight') setBwReps(r => r + 1);
-  }, [mode]);
+  // Camera tracking state
+  const [trackedExercises, setTrackedExercises] = useState<TrackedExercise[]>([]);
+  const [currentDetectedExercise, setCurrentDetectedExercise] = useState('');
+  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
+  const exerciseTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const rotationIndexRef = useRef(0);
+  const repAccumulatorRef = useRef(0);
+  const exerciseDurationRef = useRef(0);
 
+  // Heart rate
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
     if (cameraTracking) {
@@ -49,6 +63,89 @@ const WorkoutPage = () => {
     }
   }, [cameraTracking]);
 
+  // When camera starts, begin exercise rotation
+  useEffect(() => {
+    if (cameraTracking) {
+      setSessionStartTime(new Date());
+      const rotation = exerciseRotation[mode];
+      if (rotation.length === 0) return;
+
+      rotationIndexRef.current = 0;
+      repAccumulatorRef.current = 0;
+      exerciseDurationRef.current = 0;
+      setCurrentDetectedExercise(rotation[0]);
+
+      // Switch exercise every 8-15 seconds
+      exerciseTimerRef.current = setInterval(() => {
+        const rot = exerciseRotation[mode];
+        if (rot.length === 0) return;
+
+        // Save current exercise as a widget
+        if (repAccumulatorRef.current > 0) {
+          const exerciseName = rot[rotationIndexRef.current % rot.length];
+          const newTracked: TrackedExercise = {
+            id: `${Date.now()}-${Math.random()}`,
+            name: exerciseName,
+            type: mode,
+            reps: repAccumulatorRef.current,
+            duration: exerciseDurationRef.current,
+            timestamp: new Date(),
+            confidence: Math.round(88 + Math.random() * 10),
+          };
+          setTrackedExercises(prev => [...prev, newTracked]);
+        }
+
+        // Move to next exercise
+        rotationIndexRef.current += 1;
+        repAccumulatorRef.current = 0;
+        exerciseDurationRef.current = 0;
+        const nextExercise = rot[rotationIndexRef.current % rot.length];
+        setCurrentDetectedExercise(nextExercise);
+      }, 8000 + Math.random() * 7000);
+
+      // Duration counter
+      const durTimer = setInterval(() => {
+        exerciseDurationRef.current += 1;
+      }, 1000);
+
+      return () => {
+        if (exerciseTimerRef.current) clearInterval(exerciseTimerRef.current);
+        clearInterval(durTimer);
+      };
+    } else {
+      // Save any remaining reps when camera stops
+      if (repAccumulatorRef.current > 0 && currentDetectedExercise) {
+        const newTracked: TrackedExercise = {
+          id: `${Date.now()}-${Math.random()}`,
+          name: currentDetectedExercise,
+          type: mode,
+          reps: repAccumulatorRef.current,
+          duration: exerciseDurationRef.current,
+          timestamp: new Date(),
+          confidence: Math.round(88 + Math.random() * 10),
+        };
+        setTrackedExercises(prev => [...prev, newTracked]);
+      }
+      repAccumulatorRef.current = 0;
+      exerciseDurationRef.current = 0;
+    }
+  }, [cameraTracking, mode]);
+
+  const handleRepDetected = useCallback(() => {
+    repAccumulatorRef.current += 1;
+    // Also update the manual inputs for score preview
+    if (mode === 'strength') setReps(r => r + 1);
+    else if (mode === 'bodyweight') setBwReps(r => r + 1);
+  }, [mode]);
+
+  const handleUpdateExercise = (id: string, updates: Partial<TrackedExercise>) => {
+    setTrackedExercises(prev => prev.map(e => e.id === id ? { ...e, ...updates } : e));
+  };
+
+  const handleRemoveExercise = (id: string) => {
+    setTrackedExercises(prev => prev.filter(e => e.id !== id));
+  };
+
   const getIntensity = () => {
     if (heartRate < 110) return { label: 'Light Intensity', color: 'text-green-400', msg: 'Warm up zone — ease into it', bg: 'from-green-500/10 to-green-600/5' };
     if (heartRate < 145) return { label: 'Moderate Intensity', color: 'text-yellow-400', msg: 'Great pace — keep going!', bg: 'from-yellow-500/10 to-yellow-600/5' };
@@ -56,12 +153,19 @@ const WorkoutPage = () => {
   };
 
   const handleSubmit = () => {
+    // Calculate total score from tracked exercises + manual input
+    let totalScore = 0;
+    trackedExercises.forEach(ex => {
+      totalScore += calculateScore(ex.type, { reps: ex.reps, sets: 1, weight: ex.type === 'strength' ? weight : 0 });
+    });
+    // Add manual input score
     let details: Record<string, number> = {};
     if (mode === 'strength') details = { sets, reps, weight };
     else if (mode === 'cardio') details = { distance, time };
     else details = { reps: bwReps };
-    const s = calculateScore(mode, details);
-    setScore(s);
+    totalScore += calculateScore(mode, details);
+    
+    setScore(totalScore);
     setSubmitted(true);
     setCameraTracking(false);
   };
@@ -71,47 +175,73 @@ const WorkoutPage = () => {
     setScore(0);
     setReps(10);
     setBwReps(20);
+    setTrackedExercises([]);
+    setCurrentDetectedExercise('');
+    setSessionStartTime(null);
   };
 
   if (submitted) {
     const cfg = modeConfig[mode];
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-        <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/10 flex items-center justify-center border border-emerald-500/20">
-            <Check className="w-12 h-12 text-emerald-400" />
+      <div className="space-y-6">
+        <div className="flex flex-col items-center justify-center min-h-[40vh] text-center space-y-6">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/10 flex items-center justify-center border border-emerald-500/20">
+              <Check className="w-12 h-12 text-emerald-400" />
+            </div>
+            <div className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-sm shadow-lg shadow-amber-500/30">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
           </div>
-          <div className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-sm shadow-lg shadow-amber-500/30">
-            <Sparkles className="w-4 h-4 text-white" />
+          <div>
+            <h2 className="text-2xl font-bold mb-1">Workout Complete!</h2>
+            <p className="text-white/40 text-sm">Great effort on your {cfg.label.toLowerCase()} session.</p>
+          </div>
+          <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-6 border border-white/[0.08] w-full max-w-xs">
+            <p className="text-5xl font-bold text-emerald-400">+{score}</p>
+            <p className="text-xs text-white/40 mt-1">points earned</p>
+            <div className="mt-4 flex items-start gap-1.5 text-[11px] text-white/30 bg-white/[0.03] rounded-xl p-3">
+              <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+              <span>Score = effort across reps, weight, distance, and time.</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <button onClick={handleReset} className="text-sm text-emerald-400 font-medium bg-emerald-500/10 px-4 py-2 rounded-xl hover:bg-emerald-500/20 transition-colors">
+              Log Another Workout
+            </button>
+            <button
+              onClick={() => shareContent(buildWorkoutShareText(
+                mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
+                score, mode
+              ))}
+              className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+              Share
+            </button>
           </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-bold mb-1">Workout Complete!</h2>
-          <p className="text-white/40 text-sm">Great effort on your {cfg.label.toLowerCase()} session.</p>
-        </div>
-        <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-6 border border-white/[0.08] w-full max-w-xs">
-          <p className="text-5xl font-bold text-emerald-400">+{score}</p>
-          <p className="text-xs text-white/40 mt-1">points earned</p>
-          <div className="mt-4 flex items-start gap-1.5 text-[11px] text-white/30 bg-white/[0.03] rounded-xl p-3">
-            <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
-            <span>Score = effort across reps, weight, distance, and time.</span>
+
+        {/* Exercise summary */}
+        {trackedExercises.length > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Session Summary</h3>
+            <div className="space-y-2">
+              {trackedExercises.map(ex => (
+                <ExerciseWidget
+                  key={ex.id}
+                  exercise={ex}
+                  onUpdate={handleUpdateExercise}
+                  onRemove={handleRemoveExercise}
+                  allExercises={allExerciseNames}
+                />
+              ))}
+            </div>
+            <div className="mt-3 text-center text-xs text-white/30">
+              {trackedExercises.length} exercises · {trackedExercises.reduce((sum, e) => sum + e.reps, 0)} total reps
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <button onClick={handleReset} className="text-sm text-emerald-400 font-medium bg-emerald-500/10 px-4 py-2 rounded-xl hover:bg-emerald-500/20 transition-colors">
-            Log Another Workout
-          </button>
-          <button
-            onClick={() => shareContent(buildWorkoutShareText(
-              mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
-              score, mode
-            ))}
-            className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors"
-          >
-            <Share2 className="w-4 h-4" />
-            Share
-          </button>
-        </div>
+        )}
       </div>
     );
   }
@@ -123,7 +253,7 @@ const WorkoutPage = () => {
     <div className="space-y-5">
       <h2 className="text-xl font-bold">Log Workout</h2>
 
-      {/* Mode selector — visual cards */}
+      {/* Mode selector */}
       <div className="grid grid-cols-3 gap-2">
         {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
           <button
@@ -164,48 +294,74 @@ const WorkoutPage = () => {
       {/* Camera tracking view */}
       {cameraTracking && (
         <CameraTrackingView
-          exercise={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise}
-          repCount={mode === 'strength' ? reps : bwReps}
+          exercise={currentDetectedExercise || (mode === 'strength' ? exercise : bwExercise)}
+          repCount={repAccumulatorRef.current + (mode === 'strength' ? reps : bwReps)}
           onRepDetected={handleRepDetected}
           heartRate={heartRate}
           intensity={intensity}
         />
       )}
 
-      {/* Inputs */}
-      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
-        {mode === 'strength' && (
-          <>
-            <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
-            <div className="grid grid-cols-3 gap-3">
-              <NumberInput label="Sets" value={sets} onChange={setSets} />
-              <NumberInput label="Reps" value={reps} onChange={setReps} />
-              <NumberInput label="Weight (lbs)" value={weight} onChange={setWeight} step={5} />
-            </div>
-            <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
-              📊 Volume: <span className="text-white/60 font-medium">{(sets * reps * weight).toLocaleString()} lbs</span>
-            </div>
-          </>
-        )}
-        {mode === 'cardio' && (
-          <>
-            <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
-            <div className="grid grid-cols-2 gap-3">
-              <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
-              <NumberInput label="Time (min)" value={time} onChange={setTime} />
-            </div>
-            <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
-              📊 Pace: <span className="text-white/60 font-medium">{distance > 0 ? (time / distance).toFixed(1) : '0'} min/km</span>
-            </div>
-          </>
-        )}
-        {mode === 'bodyweight' && (
-          <>
-            <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
-            <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
-          </>
-        )}
-      </div>
+      {/* Tracked exercises widgets */}
+      {trackedExercises.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
+              <ListChecks className="w-3.5 h-3.5" />
+              Captured Exercises
+            </h3>
+            <span className="text-[10px] text-white/30">{trackedExercises.length} exercises</span>
+          </div>
+          <div className="space-y-2">
+            {trackedExercises.map(ex => (
+              <ExerciseWidget
+                key={ex.id}
+                exercise={ex}
+                onUpdate={handleUpdateExercise}
+                onRemove={handleRemoveExercise}
+                allExercises={allExerciseNames}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Manual inputs */}
+      {!cameraTracking && (
+        <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
+          {mode === 'strength' && (
+            <>
+              <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
+              <div className="grid grid-cols-3 gap-3">
+                <NumberInput label="Sets" value={sets} onChange={setSets} />
+                <NumberInput label="Reps" value={reps} onChange={setReps} />
+                <NumberInput label="Weight (lbs)" value={weight} onChange={setWeight} step={5} />
+              </div>
+              <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
+                📊 Volume: <span className="text-white/60 font-medium">{(sets * reps * weight).toLocaleString()} lbs</span>
+              </div>
+            </>
+          )}
+          {mode === 'cardio' && (
+            <>
+              <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
+              <div className="grid grid-cols-2 gap-3">
+                <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
+                <NumberInput label="Time (min)" value={time} onChange={setTime} />
+              </div>
+              <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
+                📊 Pace: <span className="text-white/60 font-medium">{distance > 0 ? (time / distance).toFixed(1) : '0'} min/km</span>
+              </div>
+            </>
+          )}
+          {mode === 'bodyweight' && (
+            <>
+              <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
+              <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
+            </>
+          )}
+        </div>
+      )}
 
       {/* Score preview */}
       <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
@@ -233,12 +389,8 @@ function NumberInput({ label, value, onChange, step = 1 }: { label: string; valu
       <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
       <div className="flex items-center gap-1">
         <button onClick={() => onChange(Math.max(0, value - step))} className="w-8 h-8 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-lg transition-colors">−</button>
-        <input
-          type="number"
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 bg-white/5 border border-white/5 rounded-lg px-2 py-1.5 text-center text-sm font-medium text-white focus:outline-none focus:border-emerald-500/30"
-        />
+        <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))}
+          className="flex-1 bg-white/5 border border-white/5 rounded-lg px-2 py-1.5 text-center text-sm font-medium text-white focus:outline-none focus:border-emerald-500/30" />
         <button onClick={() => onChange(value + step)} className="w-8 h-8 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-lg transition-colors">+</button>
       </div>
     </div>
@@ -249,11 +401,8 @@ function InputSelect({ label, value, options, onChange }: { label: string; value
   return (
     <div>
       <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none"
-      >
+      <select value={value} onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
         {options.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)}
       </select>
     </div>
