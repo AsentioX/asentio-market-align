@@ -34,19 +34,10 @@ const WorkoutPage = () => {
   const [bwExercise, setBwExercise] = useState(bodyweightExercises[0]);
   const [bwReps, setBwReps] = useState(20);
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (cameraTracking) {
-      intervalRef.current = setInterval(() => {
-        if (mode === 'strength') setReps(r => r + 1);
-        else if (mode === 'bodyweight') setBwReps(r => r + 1);
-      }, 800);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [cameraTracking, mode]);
+  const handleRepDetected = useCallback(() => {
+    if (mode === 'strength') setReps(r => r + 1);
+    else if (mode === 'bodyweight') setBwReps(r => r + 1);
+  }, [mode]);
 
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
