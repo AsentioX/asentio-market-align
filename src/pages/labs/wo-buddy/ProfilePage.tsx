@@ -1,8 +1,30 @@
-import { Calendar, Flame, Dumbbell, Star, Share2, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Flame, Dumbbell, Star, Share2, Ruler, Weight, Heart, User, Pencil, Check, X } from 'lucide-react';
 import { mockUser, mockAchievements } from './mockData';
 import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
 
 const ProfilePage = () => {
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profile, setProfile] = useState({
+    height: mockUser.height,
+    weight: mockUser.weight,
+    age: mockUser.age,
+    gender: mockUser.gender,
+    goalWeight: mockUser.goalWeight,
+    bodyFat: mockUser.bodyFat,
+    restingHR: mockUser.restingHR,
+  });
+  const [draft, setDraft] = useState({ ...profile });
+
+  const saveProfile = () => {
+    setProfile({ ...draft });
+    setEditingProfile(false);
+  };
+  const cancelEdit = () => {
+    setDraft({ ...profile });
+    setEditingProfile(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Avatar + name — visual hero */}
@@ -46,7 +68,75 @@ const ProfilePage = () => {
         ))}
       </div>
 
-      {/* Weekly consistency */}
+      {/* Body Metrics */}
+      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4 text-violet-400" />
+            <span className="text-sm font-medium">Body Metrics</span>
+          </div>
+          {!editingProfile ? (
+            <button onClick={() => { setDraft({ ...profile }); setEditingProfile(true); }} className="text-white/40 hover:text-white transition-colors">
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={cancelEdit} className="text-white/40 hover:text-red-400 transition-colors"><X className="w-4 h-4" /></button>
+              <button onClick={saveProfile} className="text-white/40 hover:text-emerald-400 transition-colors"><Check className="w-4 h-4" /></button>
+            </div>
+          )}
+        </div>
+
+        {!editingProfile ? (
+          <div className="grid grid-cols-2 gap-2.5">
+            {[
+              { icon: <Ruler className="w-3.5 h-3.5 text-blue-400" />, label: 'Height', value: `${profile.height} cm`, bg: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/10' },
+              { icon: <Weight className="w-3.5 h-3.5 text-green-400" />, label: 'Weight', value: `${profile.weight} kg`, bg: 'from-green-500/15 to-green-600/5', border: 'border-green-500/10' },
+              { icon: <Star className="w-3.5 h-3.5 text-amber-400" />, label: 'Goal Weight', value: `${profile.goalWeight} kg`, bg: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/10' },
+              { icon: <Heart className="w-3.5 h-3.5 text-rose-400" />, label: 'Resting HR', value: `${profile.restingHR} bpm`, bg: 'from-rose-500/15 to-rose-600/5', border: 'border-rose-500/10' },
+              { icon: <User className="w-3.5 h-3.5 text-violet-400" />, label: 'Age / Gender', value: `${profile.age} · ${profile.gender}`, bg: 'from-violet-500/15 to-violet-600/5', border: 'border-violet-500/10' },
+              { icon: <Dumbbell className="w-3.5 h-3.5 text-cyan-400" />, label: 'Body Fat', value: `${profile.bodyFat}%`, bg: 'from-cyan-500/15 to-cyan-600/5', border: 'border-cyan-500/10' },
+            ].map((m, i) => (
+              <div key={i} className={`bg-gradient-to-b ${m.bg} rounded-xl p-3 border ${m.border}`}>
+                <div className="flex items-center gap-1.5 mb-1">{m.icon}<span className="text-[10px] text-white/40">{m.label}</span></div>
+                <p className="text-sm font-semibold">{m.value}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2.5">
+            {[
+              { label: 'Height (cm)', key: 'height' as const, type: 'number' },
+              { label: 'Weight (kg)', key: 'weight' as const, type: 'number' },
+              { label: 'Goal Weight (kg)', key: 'goalWeight' as const, type: 'number' },
+              { label: 'Resting HR', key: 'restingHR' as const, type: 'number' },
+              { label: 'Age', key: 'age' as const, type: 'number' },
+              { label: 'Body Fat %', key: 'bodyFat' as const, type: 'number' },
+            ].map((field) => (
+              <div key={field.key} className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+                <label className="text-[10px] text-white/40 block mb-1">{field.label}</label>
+                <input
+                  type={field.type}
+                  value={draft[field.key]}
+                  onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: field.type === 'number' ? Number(e.target.value) : e.target.value }))}
+                  className="w-full bg-transparent text-sm font-semibold outline-none border-b border-white/10 focus:border-emerald-400/50 pb-0.5 transition-colors"
+                />
+              </div>
+            ))}
+            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06] col-span-2">
+              <label className="text-[10px] text-white/40 block mb-1">Gender</label>
+              <div className="flex gap-2">
+                {['Male', 'Female', 'Other'].map(g => (
+                  <button key={g} onClick={() => setDraft(prev => ({ ...prev, gender: g }))}
+                    className={`flex-1 text-xs py-1.5 rounded-lg border transition-all ${draft.gender === g ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-white/[0.02] border-white/[0.06] text-white/40'}`}>
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
         <div className="flex items-center gap-2 mb-3">
           <Calendar className="w-4 h-4 text-emerald-400" />
