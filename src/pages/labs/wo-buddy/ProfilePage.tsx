@@ -1,4 +1,5 @@
-import { Calendar, Flame, Dumbbell, Star, Share2, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Flame, Dumbbell, Star, Share2, Ruler, Weight, Heart, User, Pencil, Check, X } from 'lucide-react';
 import { mockUser, mockAchievements } from './mockData';
 import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
 

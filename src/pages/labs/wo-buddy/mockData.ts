@@ -50,6 +50,13 @@ export const mockUser = {
   dailyProgress: 340,
   weeklyGoal: 5,
   weeklyProgress: 3,
+  height: 178,
+  weight: 76,
+  age: 28,
+  gender: 'Male',
+  goalWeight: 74,
+  bodyFat: 16,
+  restingHR: 62,
 };
 
 export const mockWorkouts: Workout[] = [
