@@ -8,13 +8,19 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState({
     height: mockUser.height,
     weight: mockUser.weight,
-    age: mockUser.age,
+    birthdate: '1998-01-15',
     gender: mockUser.gender,
+    ethnicity: 'Asian',
     goalWeight: mockUser.goalWeight,
     bodyFat: mockUser.bodyFat,
     restingHR: mockUser.restingHR,
   });
   const [draft, setDraft] = useState({ ...profile });
+
+  const getAge = (bd: string) => {
+    const diff = Date.now() - new Date(bd).getTime();
+    return Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
+  };
 
   const saveProfile = () => {
     setProfile({ ...draft });
