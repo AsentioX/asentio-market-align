@@ -27,7 +27,12 @@ const WOBuddyLayout = () => {
       case 'workout': return <WorkoutPage />;
       case 'competitions': return <CompetitionsPage />;
       case 'progress': return <ProgressPage />;
-      case 'settings': return <WearableSettings />;
+      case 'settings': return (
+        <div className="space-y-6">
+          <ProfilePage />
+          <WearableSettings />
+        </div>
+      );
     }
   };
 
