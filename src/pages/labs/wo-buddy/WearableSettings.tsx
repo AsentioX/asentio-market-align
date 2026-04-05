@@ -22,6 +22,7 @@ const mockDevices: Device[] = [
   { id: '1', name: 'Apple Watch Series 10', type: 'watch', brand: 'Apple', connected: true, battery: 72, lastSync: '2 min ago' },
   { id: '2', name: 'Oura Ring Gen 4', type: 'ring', brand: 'Oura', connected: false, lastSync: undefined },
   { id: '3', name: 'Whoop 5.0', type: 'band', brand: 'Whoop', connected: false, lastSync: undefined },
+  { id: '4', name: 'Withings Body+ Scale', type: 'band', brand: 'Withings', connected: false, lastSync: undefined },
 ];
 
 const availableDevices: { name: string; type: string }[] = [
@@ -206,6 +207,7 @@ const WearableSettings = () => {
           {[
             { name: 'Apple Health', icon: '🍎', connected: true },
             { name: 'Google Fit', icon: '💚', connected: false },
+            { name: 'Samsung Health', icon: '💙', connected: false },
             { name: 'Strava', icon: '🟠', connected: false },
           ].map(integration => (
             <div key={integration.name} className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">

@@ -8,13 +8,19 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState({
     height: mockUser.height,
     weight: mockUser.weight,
-    age: mockUser.age,
+    birthdate: '1998-01-15',
     gender: mockUser.gender,
+    ethnicity: 'Asian',
     goalWeight: mockUser.goalWeight,
     bodyFat: mockUser.bodyFat,
     restingHR: mockUser.restingHR,
   });
   const [draft, setDraft] = useState({ ...profile });
+
+  const getAge = (bd: string) => {
+    const diff = Date.now() - new Date(bd).getTime();
+    return Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
+  };
 
   const saveProfile = () => {
     setProfile({ ...draft });
@@ -93,12 +99,18 @@ const ProfilePage = () => {
               { icon: <Ruler className="w-3.5 h-3.5 text-blue-400" />, label: 'Height', value: `${profile.height} cm`, bg: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/10' },
               { icon: <Weight className="w-3.5 h-3.5 text-green-400" />, label: 'Weight', value: `${profile.weight} kg`, bg: 'from-green-500/15 to-green-600/5', border: 'border-green-500/10' },
               { icon: <Star className="w-3.5 h-3.5 text-amber-400" />, label: 'Goal Weight', value: `${profile.goalWeight} kg`, bg: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/10' },
-              { icon: <Heart className="w-3.5 h-3.5 text-rose-400" />, label: 'Resting HR', value: `${profile.restingHR} bpm`, bg: 'from-rose-500/15 to-rose-600/5', border: 'border-rose-500/10' },
-              { icon: <User className="w-3.5 h-3.5 text-violet-400" />, label: 'Age / Gender', value: `${profile.age} · ${profile.gender}`, bg: 'from-violet-500/15 to-violet-600/5', border: 'border-violet-500/10' },
-              { icon: <Dumbbell className="w-3.5 h-3.5 text-cyan-400" />, label: 'Body Fat', value: `${profile.bodyFat}%`, bg: 'from-cyan-500/15 to-cyan-600/5', border: 'border-cyan-500/10' },
+              { icon: <Heart className="w-3.5 h-3.5 text-rose-400" />, label: 'Resting HR', value: `${profile.restingHR} bpm`, bg: 'from-rose-500/15 to-rose-600/5', border: 'border-rose-500/10', measured: true },
+              { icon: <User className="w-3.5 h-3.5 text-violet-400" />, label: 'Age / Gender', value: `${getAge(profile.birthdate)} · ${profile.gender}`, bg: 'from-violet-500/15 to-violet-600/5', border: 'border-violet-500/10' },
+              { icon: <Dumbbell className="w-3.5 h-3.5 text-cyan-400" />, label: 'Body Fat', value: `${profile.bodyFat}%`, bg: 'from-cyan-500/15 to-cyan-600/5', border: 'border-cyan-500/10', measured: true },
+              { icon: <User className="w-3.5 h-3.5 text-pink-400" />, label: 'Ethnicity', value: profile.ethnicity, bg: 'from-pink-500/15 to-pink-600/5', border: 'border-pink-500/10' },
             ].map((m, i) => (
               <div key={i} className={`bg-gradient-to-b ${m.bg} rounded-xl p-3 border ${m.border}`}>
-                <div className="flex items-center gap-1.5 mb-1">{m.icon}<span className="text-[10px] text-white/40">{m.label}</span></div>
+                <div className="flex items-center gap-1.5 mb-1">
+                  {m.icon}<span className="text-[10px] text-white/40">{m.label}</span>
+                  {'measured' in m && m.measured && (
+                    <span className="text-[8px] bg-white/5 text-white/30 px-1.5 py-0.5 rounded-full ml-auto">measured</span>
+                  )}
+                </div>
                 <p className="text-sm font-semibold">{m.value}</p>
               </div>
             ))}
@@ -109,20 +121,26 @@ const ProfilePage = () => {
               { label: 'Height (cm)', key: 'height' as const, type: 'number' },
               { label: 'Weight (kg)', key: 'weight' as const, type: 'number' },
               { label: 'Goal Weight (kg)', key: 'goalWeight' as const, type: 'number' },
-              { label: 'Resting HR', key: 'restingHR' as const, type: 'number' },
-              { label: 'Age', key: 'age' as const, type: 'number' },
-              { label: 'Body Fat %', key: 'bodyFat' as const, type: 'number' },
             ].map((field) => (
               <div key={field.key} className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
                 <label className="text-[10px] text-white/40 block mb-1">{field.label}</label>
                 <input
-                  type={field.type}
+                  type="number"
                   value={draft[field.key]}
-                  onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: field.type === 'number' ? Number(e.target.value) : e.target.value }))}
+                  onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: Number(e.target.value) }))}
                   className="w-full bg-transparent text-sm font-semibold outline-none border-b border-white/10 focus:border-emerald-400/50 pb-0.5 transition-colors"
                 />
               </div>
             ))}
+            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+              <label className="text-[10px] text-white/40 block mb-1">Birthdate</label>
+              <input
+                type="date"
+                value={draft.birthdate}
+                onChange={(e) => setDraft(prev => ({ ...prev, birthdate: e.target.value }))}
+                className="w-full bg-transparent text-sm font-semibold outline-none border-b border-white/10 focus:border-emerald-400/50 pb-0.5 transition-colors [color-scheme:dark]"
+              />
+            </div>
             <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06] col-span-2">
               <label className="text-[10px] text-white/40 block mb-1">Gender</label>
               <div className="flex gap-2">
@@ -133,6 +151,20 @@ const ProfilePage = () => {
                   </button>
                 ))}
               </div>
+            </div>
+            <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06] col-span-2">
+              <label className="text-[10px] text-white/40 block mb-1">Ethnicity</label>
+              <div className="flex gap-2 flex-wrap">
+                {['Asian', 'Black', 'Hispanic', 'White', 'Mixed', 'Other'].map(e => (
+                  <button key={e} onClick={() => setDraft(prev => ({ ...prev, ethnicity: e }))}
+                    className={`text-xs py-1.5 px-3 rounded-lg border transition-all ${draft.ethnicity === e ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-white/[0.02] border-white/[0.06] text-white/40'}`}>
+                    {e}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="col-span-2 bg-white/[0.02] rounded-xl p-3 border border-dashed border-white/[0.06]">
+              <p className="text-[10px] text-white/30 text-center">💡 Resting HR and Body Fat % are measured from your wearable device and cannot be edited manually.</p>
             </div>
           </div>
         )}
