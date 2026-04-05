@@ -207,6 +207,7 @@ const WearableSettings = () => {
           {[
             { name: 'Apple Health', icon: '🍎', connected: true },
             { name: 'Google Fit', icon: '💚', connected: false },
+            { name: 'Samsung Health', icon: '💙', connected: false },
             { name: 'Strava', icon: '🟠', connected: false },
           ].map(integration => (
             <div key={integration.name} className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
