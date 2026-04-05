@@ -4,6 +4,27 @@ import { mockUser, mockAchievements } from './mockData';
 import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
 
 const ProfilePage = () => {
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profile, setProfile] = useState({
+    height: mockUser.height,
+    weight: mockUser.weight,
+    age: mockUser.age,
+    gender: mockUser.gender,
+    goalWeight: mockUser.goalWeight,
+    bodyFat: mockUser.bodyFat,
+    restingHR: mockUser.restingHR,
+  });
+  const [draft, setDraft] = useState({ ...profile });
+
+  const saveProfile = () => {
+    setProfile({ ...draft });
+    setEditingProfile(false);
+  };
+  const cancelEdit = () => {
+    setDraft({ ...profile });
+    setEditingProfile(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Avatar + name — visual hero */}
