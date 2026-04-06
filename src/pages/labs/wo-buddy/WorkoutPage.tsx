@@ -40,6 +40,15 @@ function formatTimer(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+interface CompletedWorkoutDetail {
+  id: string;
+  date: string;
+  duration: number; // seconds
+  score: number;
+  mode: string;
+  exercises: Array<{ name: string; type: string; reps?: number; sets?: number; weight?: number; duration?: string }>;
+}
+
 const WorkoutPage = () => {
   const [view, setView] = useState<View>('log');
   const [mode, setMode] = useState<Mode>('strength');
@@ -47,6 +56,7 @@ const WorkoutPage = () => {
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [completedWorkouts, setCompletedWorkouts] = useState<CompletedWorkoutDetail[]>([]);
 
   // Workout timer
   const [workoutStarted, setWorkoutStarted] = useState(false);
@@ -361,6 +371,25 @@ const WorkoutPage = () => {
     setWorkoutStarted(false);
     setWorkoutPaused(false);
 
+    // Collect completed plan exercises
+    const planExercises: CompletedWorkoutDetail['exercises'] = [];
+    if (todayPlan) {
+      todayPlan.sessions.forEach((session, si) => {
+        session.exercises.forEach((ex, ei) => {
+          const key = `${si}-${ei}`;
+          if (exerciseActions[key] === 'completed') {
+            planExercises.push({
+              name: ex.name, type: ex.type,
+              reps: manualReps[key] || ex.reps,
+              sets: manualSets[key] || ex.sets,
+              weight: manualWeight[key] || undefined,
+              duration: ex.duration,
+            });
+          }
+        });
+      });
+    }
+
     const allExercises = [
       ...trackedExercises.map(ex => ({
         name: ex.name, type: ex.type, reps: ex.reps, sets: 1,
@@ -377,6 +406,21 @@ const WorkoutPage = () => {
         duration: mode === 'cardio' ? time * 60 : 0,
       }
     ];
+
+    // Save to local completed workouts list
+    const completedDetail: CompletedWorkoutDetail = {
+      id: `local-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0],
+      duration: elapsedSeconds,
+      score: totalScore,
+      mode,
+      exercises: planExercises.length > 0 ? planExercises : allExercises.map(e => ({
+        name: e.name, type: e.type, reps: e.reps, sets: e.sets,
+        weight: e.weight, duration: typeof e.duration === 'number' ? (e.duration > 0 ? `${Math.round(e.duration / 60)} min` : undefined) : undefined,
+      })),
+    };
+    setCompletedWorkouts(prev => [completedDetail, ...prev]);
+
     await saveWorkout(mode, totalScore, allExercises);
   };
 
@@ -926,33 +970,7 @@ const WorkoutPage = () => {
               </button>
 
               {/* Past Workouts */}
-              {workouts.length > 0 && (
-                <div className="space-y-3 pt-2">
-                  <p className="text-xs font-semibold text-white/50 text-center">Past Workouts</p>
-                  {Object.entries(
-                    workouts.reduce<Record<string, typeof workouts>>((acc, w) => {
-                      if (!acc[w.date]) acc[w.date] = [];
-                      acc[w.date].push(w);
-                      return acc;
-                    }, {})
-                  ).slice(0, 5).map(([date, dayWorkouts]) => {
-                    const totalDuration = dayWorkouts.length * 15;
-                    return (
-                      <div key={date} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
-                        <div className="flex items-center justify-between p-3.5">
-                          <p className="text-sm font-medium text-white/80">
-                            {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-white/50">Duration: <span className="text-white/70 font-medium">{totalDuration} min</span></span>
-                            <ChevronDown className="w-4 h-4 text-white/30" />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <PastWorkoutsList completedWorkouts={completedWorkouts} workouts={workouts} />
             </div>
           )}
 
@@ -1251,6 +1269,106 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
           }
         </div>
       )}
+    </div>
+  );
+};
+
+// ---- Past Workouts List with expand/collapse ----
+interface PastWorkoutsListProps {
+  completedWorkouts: CompletedWorkoutDetail[];
+  workouts: Array<{ id: string; type: 'strength' | 'cardio' | 'bodyweight'; exercise: string; score: number; date: string }>;
+}
+
+const PastWorkoutsList = ({ completedWorkouts, workouts }: PastWorkoutsListProps) => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  // Merge completed local workouts with DB workouts (avoid duplicates by date)
+  const allItems: CompletedWorkoutDetail[] = [...completedWorkouts];
+  const localDates = new Set(completedWorkouts.map(w => w.date));
+
+  // Group DB workouts by date and add those not already covered
+  const dbGrouped = workouts.reduce<Record<string, typeof workouts>>((acc, w) => {
+    if (!acc[w.date]) acc[w.date] = [];
+    acc[w.date].push(w);
+    return acc;
+  }, {});
+
+  Object.entries(dbGrouped).forEach(([date, dayWorkouts]) => {
+    if (!localDates.has(date)) {
+      allItems.push({
+        id: `db-${date}`,
+        date,
+        duration: dayWorkouts.length * 15 * 60,
+        score: dayWorkouts.reduce((s, w) => s + w.score, 0),
+        mode: dayWorkouts[0].type,
+        exercises: dayWorkouts.map(w => ({ name: w.exercise, type: w.type })),
+      });
+    }
+  });
+
+  if (allItems.length === 0) return null;
+
+  return (
+    <div className="space-y-3 pt-2">
+      <p className="text-xs font-semibold text-white/50 text-center">Past Workouts</p>
+      {allItems.slice(0, 10).map(item => {
+        const isExpanded = expandedId === item.id;
+        const durationMin = Math.round(item.duration / 60);
+        const cfg = modeConfig[item.mode as Mode] || modeConfig.strength;
+
+        return (
+          <div key={item.id} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
+            <button
+              onClick={() => setExpandedId(isExpanded ? null : item.id)}
+              className="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.02] transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg flex-shrink-0">
+                  {cfg.emoji}
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-medium text-white/80">
+                    {new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                  <p className="text-[10px] text-white/40">
+                    {item.exercises.length} exercise{item.exercises.length !== 1 ? 's' : ''} · {durationMin > 0 ? `${durationMin} min` : '<1 min'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg">+{item.score}</span>
+                <ChevronDown className={`w-4 h-4 text-white/30 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+              </div>
+            </button>
+
+            {isExpanded && (
+              <div className="px-3.5 pb-3.5 space-y-1.5 border-t border-white/[0.06] pt-3">
+                {item.exercises.map((ex, i) => {
+                  const exIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
+                  return (
+                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
+                      <span className="text-base w-6 text-center">{exIcon.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-white/70">{ex.name}</p>
+                        <p className="text-[10px] text-white/30">
+                          {[
+                            ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.reps ? `${ex.reps} reps` : null,
+                            ex.weight ? `${ex.weight} lbs` : null,
+                            ex.duration || null,
+                          ].filter(Boolean).join(' · ') || ex.type}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+                {item.exercises.length === 0 && (
+                  <p className="text-xs text-white/30 text-center py-2">No exercise details recorded</p>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
