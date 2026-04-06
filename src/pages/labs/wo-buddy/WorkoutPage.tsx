@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays } from 'lucide-react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays, Play, Pause, Timer, ChevronDown } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine, Area, AreaChart, CartesianGrid } from 'recharts';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
@@ -13,13 +13,12 @@ import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExerci
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 type View = 'log' | 'history';
-
+type WorkoutPath = 'choose' | 'plan' | 'new';
 type ExerciseAction = 'pending' | 'completed' | 'dismissed' | 'deferred';
 
 const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press', 'Barbell Row', 'Curls'];
 const cardioActivities = ['Run', 'Row', 'Bike'];
 const bodyweightExercises = ['Push-ups', 'Burpees', 'Squats', 'Pull-ups', 'Sit-ups'];
-
 const allExerciseNames = [...strengthExercises, ...bodyweightExercises, ...cardioActivities];
 
 const modeConfig = {
@@ -34,12 +33,26 @@ const exerciseRotation: Record<Mode, string[]> = {
   bodyweight: ['Push-ups', 'Squats', 'Burpees', 'Sit-ups', 'Pull-ups'],
 };
 
+// Format seconds to mm:ss
+function formatTimer(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
 const WorkoutPage = () => {
   const [view, setView] = useState<View>('log');
   const [mode, setMode] = useState<Mode>('strength');
+  const [workoutPath, setWorkoutPath] = useState<WorkoutPath>('choose');
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+
+  // Workout timer
+  const [workoutStarted, setWorkoutStarted] = useState(false);
+  const [workoutPaused, setWorkoutPaused] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [exercise, setExercise] = useState(strengthExercises[0]);
   const [sets, setSets] = useState(3);
@@ -68,6 +81,25 @@ const WorkoutPage = () => {
   const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
 
+  // Workout timer logic
+  useEffect(() => {
+    if (workoutStarted && !workoutPaused) {
+      timerRef.current = setInterval(() => setElapsedSeconds(s => s + 1), 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [workoutStarted, workoutPaused]);
+
+  const handleStartWorkout = () => {
+    setWorkoutStarted(true);
+    setWorkoutPaused(false);
+    setElapsedSeconds(0);
+    setSessionStartTime(new Date());
+  };
+
+  const handlePauseWorkout = () => setWorkoutPaused(!workoutPaused);
+
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
     if (cameraTracking) {
@@ -83,7 +115,6 @@ const WorkoutPage = () => {
       setSessionStartTime(new Date());
       const rotation = exerciseRotation[mode];
       if (rotation.length === 0) return;
-
       rotationIndexRef.current = 0;
       repAccumulatorRef.current = 0;
       exerciseDurationRef.current = 0;
@@ -92,7 +123,6 @@ const WorkoutPage = () => {
       exerciseTimerRef.current = setInterval(() => {
         const rot = exerciseRotation[mode];
         if (rot.length === 0) return;
-
         if (repAccumulatorRef.current > 0) {
           const exerciseName = rot[rotationIndexRef.current % rot.length];
           const newTracked: TrackedExercise = {
@@ -106,7 +136,6 @@ const WorkoutPage = () => {
           };
           setTrackedExercises(prev => [...prev, newTracked]);
         }
-
         rotationIndexRef.current += 1;
         repAccumulatorRef.current = 0;
         exerciseDurationRef.current = 0;
@@ -114,10 +143,7 @@ const WorkoutPage = () => {
         setCurrentDetectedExercise(nextExercise);
       }, 8000 + Math.random() * 7000);
 
-      const durTimer = setInterval(() => {
-        exerciseDurationRef.current += 1;
-      }, 1000);
-
+      const durTimer = setInterval(() => { exerciseDurationRef.current += 1; }, 1000);
       return () => {
         if (exerciseTimerRef.current) clearInterval(exerciseTimerRef.current);
         clearInterval(durTimer);
@@ -160,7 +186,6 @@ const WorkoutPage = () => {
     return { label: 'High Intensity', color: 'text-red-400', msg: 'You\'re pushing hard — stay strong!', bg: 'from-red-500/10 to-red-600/5' };
   };
 
-  // Gather all exercise names used in this session for goal impact
   const getSessionExerciseNames = (): string[] => {
     const names = new Set<string>();
     trackedExercises.forEach(ex => names.add(ex.name));
@@ -170,7 +195,6 @@ const WorkoutPage = () => {
     return Array.from(names);
   };
 
-  // Compute goal impact from session exercises
   const getGoalImpact = () => {
     const exerciseNames = getSessionExerciseNames();
     const activatedDrivers = new Set<string>();
@@ -178,15 +202,44 @@ const WorkoutPage = () => {
       const drivers = ACTIVITY_DRIVER_MAP[name] || [];
       drivers.forEach(d => activatedDrivers.add(d));
     });
+    const impactedGoals = goals.filter(g => g.drivers.some(d => activatedDrivers.has(d)));
+    return { drivers: Array.from(activatedDrivers), goals: impactedGoals };
+  };
 
-    const impactedGoals = goals.filter(g =>
-      g.drivers.some(d => activatedDrivers.has(d))
-    );
+  const handleExerciseAction = (sessionIdx: number, exIdx: number, action: ExerciseAction) => {
+    const key = `${sessionIdx}-${exIdx}`;
+    setExerciseActions(prev => ({ ...prev, [key]: action }));
 
-    return {
-      drivers: Array.from(activatedDrivers),
-      goals: impactedGoals,
-    };
+    // Auto-start workout timer on first "completed" action
+    if (action === 'completed' && !workoutStarted) {
+      handleStartWorkout();
+    }
+
+    if (action === 'completed') {
+      const session = todayPlan!.sessions[sessionIdx];
+      const ex = session.exercises[exIdx];
+      const drivers = ACTIVITY_DRIVER_MAP[ex.name] || session.focusDrivers;
+      const impactedGoals = goals.filter(g =>
+        g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
+      );
+      impactedGoals.forEach(g => {
+        const increment = Math.max(1, Math.round(g.target_value * 0.02));
+        const newVal = Math.min(g.current_value + increment, g.target_value);
+        const newStatus = newVal >= g.target_value ? 'achieved' : newVal >= g.target_value * 0.6 ? 'on_track' : 'at_risk';
+        updateGoal(g.id, { current_value: newVal, status: newStatus });
+      });
+    } else if (action === 'dismissed') {
+      const session = todayPlan!.sessions[sessionIdx];
+      const drivers = ACTIVITY_DRIVER_MAP[session.exercises[exIdx].name] || session.focusDrivers;
+      const impactedGoals = goals.filter(g =>
+        g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
+      );
+      impactedGoals.forEach(g => {
+        if (g.current_value < g.target_value * 0.7) {
+          updateGoal(g.id, { status: 'at_risk' });
+        }
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -203,17 +256,14 @@ const WorkoutPage = () => {
     setScore(totalScore);
     setSubmitted(true);
     setCameraTracking(false);
+    setWorkoutStarted(false);
+    setWorkoutPaused(false);
 
-    // Save to DB
     const allExercises = [
       ...trackedExercises.map(ex => ({
-        name: ex.name,
-        type: ex.type,
-        reps: ex.reps,
-        sets: 1,
+        name: ex.name, type: ex.type, reps: ex.reps, sets: 1,
         weight: ex.type === 'strength' ? weight : undefined,
-        duration: ex.duration,
-        confidence: ex.confidence,
+        duration: ex.duration, confidence: ex.confidence,
       })),
       {
         name: mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
@@ -236,16 +286,20 @@ const WorkoutPage = () => {
     setTrackedExercises([]);
     setCurrentDetectedExercise('');
     setSessionStartTime(null);
+    setWorkoutStarted(false);
+    setWorkoutPaused(false);
+    setElapsedSeconds(0);
+    setWorkoutPath('choose');
+    setExerciseActions({});
   };
 
-  // ---- SUBMITTED: Post-workout summary with goal impact ----
+  // ---- SUBMITTED: Post-workout summary ----
   if (submitted) {
     const cfg = modeConfig[mode];
     const impact = getGoalImpact();
 
     return (
       <div className="space-y-6">
-        {/* Completion header */}
         <div className="flex flex-col items-center justify-center text-center space-y-5 pt-2">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/10 flex items-center justify-center border border-emerald-500/20">
@@ -257,7 +311,10 @@ const WorkoutPage = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold mb-1">Workout Complete!</h2>
-            <p className="text-white/40 text-sm">Great effort on your {cfg.label.toLowerCase()} session.</p>
+            <p className="text-white/40 text-sm">
+              {elapsedSeconds > 0 && <span className="text-white/60">{formatTimer(elapsedSeconds)} · </span>}
+              Great effort on your {cfg.label.toLowerCase()} session.
+            </p>
           </div>
           <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-6 border border-white/[0.08] w-full max-w-xs">
             <p className="text-5xl font-bold text-emerald-400">+{score}</p>
@@ -269,7 +326,6 @@ const WorkoutPage = () => {
           </div>
         </div>
 
-        {/* Performance Drivers Activated */}
         {impact.drivers.length > 0 && (
           <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
             <div className="flex items-center gap-2 mb-3">
@@ -293,7 +349,6 @@ const WorkoutPage = () => {
           </div>
         )}
 
-        {/* Goal Impact */}
         {impact.goals.length > 0 && (
           <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-600/[0.02] rounded-2xl p-4 border border-emerald-500/10">
             <div className="flex items-center gap-2 mb-3">
@@ -312,9 +367,7 @@ const WorkoutPage = () => {
                         <span className="text-base">{catCfg.icon}</span>
                         <div>
                           <p className="text-sm font-medium">{g.name}</p>
-                          <p className="text-[10px] text-white/30">
-                            {g.drivers.join(', ')}
-                          </p>
+                          <p className="text-[10px] text-white/30">{g.drivers.join(', ')}</p>
                         </div>
                       </div>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.text} font-medium`}>
@@ -324,10 +377,7 @@ const WorkoutPage = () => {
                     <div className="flex items-center gap-3">
                       <div className="flex-1">
                         <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
-                            style={{ width: `${Math.min(pct, 100)}%` }}
-                          />
+                          <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%` }} />
                         </div>
                       </div>
                       <span className="text-xs text-white/50 font-medium tabular-nums">{pct}%</span>
@@ -342,7 +392,6 @@ const WorkoutPage = () => {
           </div>
         )}
 
-        {/* No connected goals prompt */}
         {impact.goals.length === 0 && (
           <div className="bg-gradient-to-br from-amber-500/5 to-amber-600/[0.02] rounded-2xl p-4 border border-amber-500/10 text-center">
             <Target className="w-6 h-6 text-amber-400/60 mx-auto mb-2" />
@@ -351,19 +400,12 @@ const WorkoutPage = () => {
           </div>
         )}
 
-        {/* Exercise summary */}
         {trackedExercises.length > 0 && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Session Exercises</h3>
             <div className="space-y-2">
               {trackedExercises.map(ex => (
-                <ExerciseWidget
-                  key={ex.id}
-                  exercise={ex}
-                  onUpdate={handleUpdateExercise}
-                  onRemove={handleRemoveExercise}
-                  allExercises={allExerciseNames}
-                />
+                <ExerciseWidget key={ex.id} exercise={ex} onUpdate={handleUpdateExercise} onRemove={handleRemoveExercise} allExercises={allExerciseNames} />
               ))}
             </div>
             <div className="mt-3 text-center text-xs text-white/30">
@@ -372,7 +414,6 @@ const WorkoutPage = () => {
           </div>
         )}
 
-        {/* Actions */}
         <div className="flex items-center gap-4 justify-center pb-4">
           <button onClick={handleReset} className="text-sm text-emerald-400 font-medium bg-emerald-500/10 px-5 py-2.5 rounded-xl hover:bg-emerald-500/20 transition-colors">
             Log Another Workout
@@ -394,6 +435,11 @@ const WorkoutPage = () => {
 
   const intensity = getIntensity();
   const currentScore = calculateScore(mode, mode === 'strength' ? { sets, reps, weight } : mode === 'cardio' ? { distance, time } : { reps: bwReps });
+
+  const hasSessions = todayPlan && todayPlan.sessions.length > 0 && !todayPlan.isRest;
+  const allPlanExercises = todayPlan ? getAllExercisesForDay(todayPlan) : [];
+  const totalPlanCount = allPlanExercises.length;
+  const completedPlanCount = Object.entries(exerciseActions).filter(([, a]) => a === 'completed').length;
 
   return (
     <div className="space-y-5">
@@ -422,155 +468,454 @@ const WorkoutPage = () => {
         <WorkoutHistory workouts={workouts} />
       ) : (
         <>
-          {/* Unified Plan + Mode Grid */}
-          <UnifiedPlanGrid
-            todayPlan={todayPlan}
-            exerciseActions={exerciseActions}
-            onExerciseAction={(sessionIdx, exIdx, action) => {
-              const key = `${sessionIdx}-${exIdx}`;
-              setExerciseActions(prev => ({ ...prev, [key]: action }));
-              if (action === 'completed') {
-                const session = todayPlan!.sessions[sessionIdx];
-                const ex = session.exercises[exIdx];
-                const drivers = ACTIVITY_DRIVER_MAP[ex.name] || session.focusDrivers;
-                const impactedGoals = goals.filter(g =>
-                  g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
-                );
-                impactedGoals.forEach(g => {
-                  const increment = Math.max(1, Math.round(g.target_value * 0.02));
-                  const newVal = Math.min(g.current_value + increment, g.target_value);
-                  const newStatus = newVal >= g.target_value ? 'achieved' : newVal >= g.target_value * 0.6 ? 'on_track' : 'at_risk';
-                  updateGoal(g.id, { current_value: newVal, status: newStatus });
-                });
-              } else if (action === 'dismissed') {
-                const session = todayPlan!.sessions[sessionIdx];
-                const drivers = ACTIVITY_DRIVER_MAP[session.exercises[exIdx].name] || session.focusDrivers;
-                const impactedGoals = goals.filter(g =>
-                  g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
-                );
-                impactedGoals.forEach(g => {
-                  if (g.current_value < g.target_value * 0.7) {
-                    updateGoal(g.id, { status: 'at_risk' });
-                  }
-                });
-              }
-            }}
-            mode={mode}
-            onModeSelect={(id) => { setMode(id); setCameraTracking(false); }}
-          />
-
-          {/* Camera tracking toggle */}
-          {mode !== 'cardio' && (
-            <button
-              onClick={() => setCameraTracking(!cameraTracking)}
-              className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition-all ${
-                cameraTracking
-                  ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-                  : 'bg-white/[0.03] border-white/5 text-white/40'
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
-                Camera Tracking (Demo)
-              </span>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
-                {cameraTracking ? 'ON' : 'OFF'}
-              </span>
-            </button>
-          )}
-
-          {/* Camera tracking view */}
-          {cameraTracking && (
-            <CameraTrackingView
-              exercise={currentDetectedExercise || (mode === 'strength' ? exercise : bwExercise)}
-              repCount={repAccumulatorRef.current + (mode === 'strength' ? reps : bwReps)}
-              onRepDetected={handleRepDetected}
-              heartRate={heartRate}
-              intensity={intensity}
-            />
-          )}
-
-          {/* Tracked exercises widgets */}
-          {trackedExercises.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
-                  <ListChecks className="w-3.5 h-3.5" />
-                  Captured Exercises
-                </h3>
-                <span className="text-[10px] text-white/30">{trackedExercises.length} exercises</span>
+          {/* ===== WORKOUT TIMER BAR ===== */}
+          {workoutStarted && (
+            <div className="flex items-center justify-between bg-gradient-to-r from-emerald-500/15 to-emerald-600/5 rounded-2xl p-3.5 border border-emerald-500/20">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${workoutPaused ? 'bg-amber-500/20' : 'bg-emerald-500/20'}`}>
+                  <Timer className={`w-5 h-5 ${workoutPaused ? 'text-amber-400' : 'text-emerald-400'}`} />
+                </div>
+                <div>
+                  <p className="text-lg font-bold tabular-nums text-white">{formatTimer(elapsedSeconds)}</p>
+                  <p className="text-[10px] text-white/40">{workoutPaused ? 'Paused' : 'Workout in progress'}</p>
+                </div>
               </div>
-              <div className="space-y-2">
-                {trackedExercises.map(ex => (
-                  <ExerciseWidget
-                    key={ex.id}
-                    exercise={ex}
-                    onUpdate={handleUpdateExercise}
-                    onRemove={handleRemoveExercise}
-                    allExercises={allExerciseNames}
-                  />
+              <button
+                onClick={handlePauseWorkout}
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  workoutPaused
+                    ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+                    : 'bg-amber-500/15 text-amber-400 hover:bg-amber-500/25'
+                }`}
+              >
+                {workoutPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+                {workoutPaused ? 'Resume' : 'Pause'}
+              </button>
+            </div>
+          )}
+
+          {/* ===== CHOICE SCREEN: Plan vs New Exercise ===== */}
+          {workoutPath === 'choose' && (
+            <div className="space-y-3">
+              {/* Today's Plan option */}
+              {hasSessions && (
+                <button
+                  onClick={() => setWorkoutPath('plan')}
+                  className="w-full text-left rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 p-4 hover:from-emerald-500/15 hover:to-emerald-600/10 transition-all group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                        <CalendarDays className="w-6 h-6 text-emerald-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">Today's Plan</p>
+                        <p className="text-[11px] text-white/40 mt-0.5">
+                          {todayPlan!.sessions.length} session{todayPlan!.sessions.length > 1 ? 's' : ''} · {totalPlanCount} exercise{totalPlanCount !== 1 ? 's' : ''}
+                        </p>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          {todayPlan!.sessions.map((s, i) => {
+                            const st = SESSION_TYPE_STYLES[s.workoutType] || SESSION_TYPE_STYLES.strength;
+                            return <span key={i} className="text-sm" title={s.label}>{st.emoji}</span>;
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-white/20 group-hover:text-emerald-400 transition-colors" />
+                  </div>
+                  {completedPlanCount > 0 && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${(completedPlanCount / totalPlanCount) * 100}%` }} />
+                      </div>
+                      <span className="text-[10px] text-emerald-400 font-medium">{completedPlanCount}/{totalPlanCount}</span>
+                    </div>
+                  )}
+                </button>
+              )}
+
+              {/* Rest day notice */}
+              {todayPlan?.isRest && todayPlan.sessions.length === 0 && (
+                <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+                  <span className="text-2xl">😴</span>
+                  <p className="text-sm text-white/50 mt-2">Today is a rest day</p>
+                  <p className="text-[11px] text-white/30 mt-1">{todayPlan.restReason}</p>
+                </div>
+              )}
+
+              {/* New Exercise option */}
+              <button
+                onClick={() => setWorkoutPath('new')}
+                className="w-full text-left rounded-2xl border border-white/[0.08] bg-gradient-to-r from-white/[0.04] to-white/[0.02] p-4 hover:from-white/[0.06] hover:to-white/[0.03] transition-all group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
+                      <Plus className="w-6 h-6 text-white/50" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">Log New Exercise</p>
+                      <p className="text-[11px] text-white/40 mt-0.5">Strength, Cardio, or Bodyweight</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-sm">🏋️</span>
+                        <span className="text-sm">🏃</span>
+                        <span className="text-sm">💪</span>
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-white/20 group-hover:text-white/40 transition-colors" />
+                </div>
+              </button>
+
+              {/* START WORKOUT button (if not started yet) */}
+              {!workoutStarted && (
+                <button
+                  onClick={handleStartWorkout}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+                >
+                  <Play className="w-5 h-5" />
+                  <span>Start Workout</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* ===== PLAN PATH: Today's sessions ===== */}
+          {workoutPath === 'plan' && (
+            <div className="space-y-3">
+              <button onClick={() => setWorkoutPath('choose')} className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/60 transition-colors">
+                <ArrowRight className="w-3 h-3 rotate-180" /> Back
+              </button>
+
+              <PlanSessionCards
+                todayPlan={todayPlan!}
+                exerciseActions={exerciseActions}
+                onExerciseAction={handleExerciseAction}
+                totalPlanCount={totalPlanCount}
+                completedPlanCount={completedPlanCount}
+              />
+
+              {/* After all plan exercises are handled, show option to log new or finish */}
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  onClick={() => setWorkoutPath('new')}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-white/50 hover:bg-white/[0.08] transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Exercise
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-emerald-500/15 border border-emerald-500/20 text-xs text-emerald-400 font-semibold hover:bg-emerald-500/25 transition-colors"
+                >
+                  <Check className="w-3.5 h-3.5" /> Finish Workout
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ===== NEW EXERCISE PATH ===== */}
+          {workoutPath === 'new' && (
+            <>
+              <button onClick={() => setWorkoutPath('choose')} className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/60 transition-colors">
+                <ArrowRight className="w-3 h-3 rotate-180" /> Back
+              </button>
+
+              {/* Mode selector */}
+              <div className="grid grid-cols-3 gap-2">
+                {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
+                  <button
+                    key={id}
+                    onClick={() => { setMode(id); setCameraTracking(false); }}
+                    className={`flex flex-col items-center gap-2 py-4 px-2 rounded-2xl text-xs font-medium transition-all border ${
+                      mode === id
+                        ? `bg-gradient-to-b ${cfg.active} ${cfg.border} ${cfg.color} shadow-lg`
+                        : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    <span className="text-2xl">{cfg.emoji}</span>
+                    <span className="flex items-center gap-1">{cfg.icon}{cfg.label}</span>
+                  </button>
                 ))}
               </div>
-            </div>
+
+              {/* Camera tracking toggle */}
+              {mode !== 'cardio' && (
+                <button
+                  onClick={() => setCameraTracking(!cameraTracking)}
+                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition-all ${
+                    cameraTracking
+                      ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
+                      : 'bg-white/[0.03] border-white/5 text-white/40'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
+                    Camera Tracking (Demo)
+                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
+                    {cameraTracking ? 'ON' : 'OFF'}
+                  </span>
+                </button>
+              )}
+
+              {cameraTracking && (
+                <CameraTrackingView
+                  exercise={currentDetectedExercise || (mode === 'strength' ? exercise : bwExercise)}
+                  repCount={repAccumulatorRef.current + (mode === 'strength' ? reps : bwReps)}
+                  onRepDetected={handleRepDetected}
+                  heartRate={heartRate}
+                  intensity={intensity}
+                />
+              )}
+
+              {trackedExercises.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
+                      <ListChecks className="w-3.5 h-3.5" /> Captured Exercises
+                    </h3>
+                    <span className="text-[10px] text-white/30">{trackedExercises.length} exercises</span>
+                  </div>
+                  <div className="space-y-2">
+                    {trackedExercises.map(ex => (
+                      <ExerciseWidget key={ex.id} exercise={ex} onUpdate={handleUpdateExercise} onRemove={handleRemoveExercise} allExercises={allExerciseNames} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Manual inputs */}
+              {!cameraTracking && (
+                <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
+                  {mode === 'strength' && (
+                    <>
+                      <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
+                      <div className="grid grid-cols-3 gap-3">
+                        <NumberInput label="Sets" value={sets} onChange={setSets} />
+                        <NumberInput label="Reps" value={reps} onChange={setReps} />
+                        <NumberInput label="Weight (lbs)" value={weight} onChange={setWeight} step={5} />
+                      </div>
+                      <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
+                        📊 Volume: <span className="text-white/60 font-medium">{(sets * reps * weight).toLocaleString()} lbs</span>
+                      </div>
+                    </>
+                  )}
+                  {mode === 'cardio' && (
+                    <>
+                      <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
+                      <div className="grid grid-cols-2 gap-3">
+                        <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
+                        <NumberInput label="Time (min)" value={time} onChange={setTime} />
+                      </div>
+                      <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
+                        📊 Pace: <span className="text-white/60 font-medium">{distance > 0 ? (time / distance).toFixed(1) : '0'} min/km</span>
+                      </div>
+                    </>
+                  )}
+                  {mode === 'bodyweight' && (
+                    <>
+                      <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
+                      <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
+                    </>
+                  )}
+                </div>
+              )}
+
+              <WhyThisMatters activityName={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise} />
+
+              <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-white/40 uppercase tracking-wider">Estimated Score</span>
+                  <p className="text-xs text-white/50 mt-0.5">Based on your current inputs</p>
+                </div>
+                <span className="text-2xl font-bold text-emerald-400">+{currentScore}</span>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.15),transparent)]" />
+                <span className="relative">Complete Workout</span>
+              </button>
+            </>
           )}
-
-          {/* Manual inputs */}
-          {!cameraTracking && (
-            <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
-              {mode === 'strength' && (
-                <>
-                  <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
-                  <div className="grid grid-cols-3 gap-3">
-                    <NumberInput label="Sets" value={sets} onChange={setSets} />
-                    <NumberInput label="Reps" value={reps} onChange={setReps} />
-                    <NumberInput label="Weight (lbs)" value={weight} onChange={setWeight} step={5} />
-                  </div>
-                  <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
-                    📊 Volume: <span className="text-white/60 font-medium">{(sets * reps * weight).toLocaleString()} lbs</span>
-                  </div>
-                </>
-              )}
-              {mode === 'cardio' && (
-                <>
-                  <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
-                  <div className="grid grid-cols-2 gap-3">
-                    <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
-                    <NumberInput label="Time (min)" value={time} onChange={setTime} />
-                  </div>
-                  <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
-                    📊 Pace: <span className="text-white/60 font-medium">{distance > 0 ? (time / distance).toFixed(1) : '0'} min/km</span>
-                  </div>
-                </>
-              )}
-              {mode === 'bodyweight' && (
-                <>
-                  <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
-                  <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Why This Matters */}
-          <WhyThisMatters activityName={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise} />
-
-          {/* Score preview */}
-          <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
-            <div>
-              <span className="text-[10px] text-white/40 uppercase tracking-wider">Estimated Score</span>
-              <p className="text-xs text-white/50 mt-0.5">Based on your current inputs</p>
-            </div>
-            <span className="text-2xl font-bold text-emerald-400">+{currentScore}</span>
-          </div>
-
-          <button
-            onClick={handleSubmit}
-            className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.15),transparent)]" />
-            <span className="relative">Complete Workout</span>
-          </button>
         </>
+      )}
+    </div>
+  );
+};
+
+// ---- Plan Session Cards ----
+const SESSION_TYPE_STYLES: Record<string, { emoji: string; color: string; gradient: string; border: string; activeGradient: string }> = {
+  strength: { emoji: '🏋️', color: 'text-blue-400', gradient: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/20', activeGradient: 'from-blue-500/30 to-blue-600/10' },
+  cardio: { emoji: '🏃', color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/20', activeGradient: 'from-orange-500/30 to-orange-600/10' },
+  bodyweight: { emoji: '💪', color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', activeGradient: 'from-purple-500/30 to-purple-600/10' },
+  active_recovery: { emoji: '🧘', color: 'text-teal-400', gradient: 'from-teal-500/20 to-teal-600/5', border: 'border-teal-500/20', activeGradient: 'from-teal-500/30 to-teal-600/10' },
+  rest: { emoji: '😴', color: 'text-white/40', gradient: 'from-white/5 to-white/[0.02]', border: 'border-white/[0.06]', activeGradient: 'from-white/10 to-white/5' },
+};
+
+interface PlanSessionCardsProps {
+  todayPlan: PlanDay;
+  exerciseActions: Record<string, ExerciseAction>;
+  onExerciseAction: (sessionIdx: number, exIdx: number, action: ExerciseAction) => void;
+  totalPlanCount: number;
+  completedPlanCount: number;
+}
+
+const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount }: PlanSessionCardsProps) => {
+  const [expandedSession, setExpandedSession] = useState<number | null>(0); // Start first session expanded
+  const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-emerald-400" />
+          <div>
+            <p className="text-xs font-semibold text-white">Today's Plan</p>
+            <p className="text-[10px] text-white/40">{todayPlan.sessions.length} session{todayPlan.sessions.length > 1 ? 's' : ''}</p>
+          </div>
+        </div>
+        {totalPlanCount > 0 && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
+            {completedPlanCount}/{totalPlanCount}
+          </span>
+        )}
+      </div>
+
+      {/* Session cards */}
+      <div className="space-y-2.5">
+        {todayPlan.sessions.map((session, si) => {
+          const style = SESSION_TYPE_STYLES[session.workoutType] || SESSION_TYPE_STYLES.strength;
+          const sessionExCount = session.exercises.length;
+          const sessionCompleted = session.exercises.filter((_, ei) =>
+            exerciseActions[`${si}-${ei}`] === 'completed'
+          ).length;
+          const sessionAllDone = sessionExCount > 0 && session.exercises.every((_, ei) =>
+            exerciseActions[`${si}-${ei}`] && exerciseActions[`${si}-${ei}`] !== 'pending'
+          );
+          const isExpanded = expandedSession === si;
+          const exerciseTypes = [...new Set(session.exercises.map(e => e.type))];
+
+          return (
+            <div key={si} className={`rounded-2xl border overflow-hidden transition-all ${style.border} ${sessionAllDone ? 'opacity-60' : ''}`}>
+              <button
+                onClick={() => setExpandedSession(isExpanded ? null : si)}
+                className={`w-full flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient} transition-all`}
+              >
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl flex-shrink-0">
+                  {style.emoji}
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-white truncate">{session.label}</p>
+                    {todayPlan.sessions.length > 1 && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 shrink-0">Session {si + 1}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-1">
+                      {exerciseTypes.map(t => (
+                        <span key={t} className="text-xs" title={t}>{EXERCISE_TYPE_ICONS[t]?.emoji || '⚡'}</span>
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-white/30">{sessionExCount} exercise{sessionExCount !== 1 ? 's' : ''}</span>
+                    {sessionCompleted > 0 && (
+                      <span className="text-[10px] text-emerald-400">{sessionCompleted}/{sessionExCount} done</span>
+                    )}
+                  </div>
+                  {session.reason && (
+                    <p className="text-[10px] text-emerald-400/60 mt-0.5 flex items-center gap-1 truncate">
+                      <Sparkles className="w-2.5 h-2.5 shrink-0" /> {session.reason}
+                    </p>
+                  )}
+                </div>
+                <ChevronDown className={`w-4 h-4 text-white/20 transition-transform shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isExpanded && (
+                <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
+                  {session.exercises.map((ex, ei) => {
+                    const key = `${si}-${ei}`;
+                    const action = exerciseActions[key] || 'pending';
+                    const isDone = action !== 'pending';
+                    const isExExpanded = expandedExercise === key;
+                    const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
+
+                    return (
+                      <div key={ei} className="relative">
+                        <button
+                          onClick={() => { if (!isDone) setExpandedExercise(isExExpanded ? null : key); }}
+                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${
+                            action === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/15'
+                            : action === 'dismissed' ? 'bg-red-500/5 border border-red-500/10 opacity-50'
+                            : action === 'deferred' ? 'bg-amber-500/5 border border-amber-500/10 opacity-60'
+                            : 'bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06]'
+                          }`}
+                        >
+                          <span className="text-lg w-7 text-center">
+                            {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : action === 'deferred' ? '⏭️' : exTypeIcon.emoji}
+                          </span>
+                          <div className="flex-1 min-w-0 text-left">
+                            <p className={`text-xs font-medium ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
+                            <p className="text-[10px] text-white/30">
+                              {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
+                            </p>
+                          </div>
+                          {!isDone && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
+                        </button>
+
+                        {isExExpanded && !isDone && (
+                          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-white/10">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'completed'); setExpandedExercise(null); }}
+                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
+                            >
+                              <Check className="w-3.5 h-3.5" /> Start
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'deferred'); setExpandedExercise(null); }}
+                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/25 transition-colors"
+                            >
+                              <ArrowRight className="w-3.5 h-3.5" /> Defer
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'dismissed'); setExpandedExercise(null); }}
+                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* All done summary */}
+      {totalPlanCount > 0 && Object.keys(exerciseActions).length >= totalPlanCount &&
+        Object.values(exerciseActions).every(a => a !== 'pending') && (
+        <div className={`rounded-xl p-2.5 text-center text-[11px] font-medium ${
+          completedPlanCount === totalPlanCount
+            ? 'bg-emerald-500/10 text-emerald-400'
+            : completedPlanCount >= totalPlanCount / 2
+              ? 'bg-amber-500/10 text-amber-400'
+              : 'bg-red-500/10 text-red-400'
+        }`}>
+          {completedPlanCount === totalPlanCount
+            ? '🎉 Plan complete! Great discipline.'
+            : completedPlanCount >= totalPlanCount / 2
+              ? `⚠️ ${totalPlanCount - completedPlanCount} exercise${totalPlanCount - completedPlanCount > 1 ? 's' : ''} skipped/deferred`
+              : `🔴 Most exercises skipped — this impacts your burndown`
+          }
+        </div>
       )}
     </div>
   );
@@ -578,13 +923,7 @@ const WorkoutPage = () => {
 
 // ---- Workout History Component with Goal Burndown ----
 interface WorkoutHistoryProps {
-  workouts: Array<{
-    id: string;
-    type: 'strength' | 'cardio' | 'bodyweight';
-    exercise: string;
-    score: number;
-    date: string;
-  }>;
+  workouts: Array<{ id: string; type: 'strength' | 'cardio' | 'bodyweight'; exercise: string; score: number; date: string }>;
 }
 
 const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
@@ -594,32 +933,20 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
   const activeGoals = goals.filter(g => g.status !== 'achieved');
   const selectedGoal = activeGoals.find(g => g.id === selectedGoalId) || activeGoals[0] || null;
 
-  // Build burndown data
   const burndownData = useMemo(() => {
     if (!selectedGoal) return [];
-
     const remaining = selectedGoal.target_value - selectedGoal.current_value;
     if (remaining <= 0) return [];
-
-    // Determine timeframe: use deadline or default 30 days
     const startDate = new Date(selectedGoal.created_at);
     const endDate = selectedGoal.deadline
       ? new Date(selectedGoal.deadline + 'T23:59:59')
       : new Date(startDate.getTime() + 30 * 86400000);
     const today = new Date();
-
     const totalDays = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / 86400000));
-
-    // Build day-by-day data
     const data: { day: number; label: string; ideal: number; actual: number | null; skipped: boolean; date: string }[] = [];
-
-    // Count workouts per date
     const workoutDates = new Set(workouts.map(w => w.date));
-
-    // Calculate points contributed per workout day (simplified: even distribution)
     const totalWorkoutDays = workoutDates.size;
     const pointsPerWorkoutDay = totalWorkoutDays > 0 ? selectedGoal.target_value / Math.max(totalDays, totalWorkoutDays) : 0;
-
     let cumulativeProgress = 0;
     const idealPerDay = selectedGoal.target_value / totalDays;
 
@@ -628,39 +955,24 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
       const dateStr = dayDate.toISOString().split('T')[0];
       const isPast = dayDate <= today;
       const hadWorkout = workoutDates.has(dateStr);
-
-      // Ideal burndown: remaining work decreases linearly
       const idealRemaining = Math.max(0, selectedGoal.target_value - idealPerDay * i);
-
-      if (hadWorkout) {
-        cumulativeProgress += pointsPerWorkoutDay;
-      }
-
-      const actualRemaining = isPast
-        ? Math.max(0, selectedGoal.target_value - cumulativeProgress)
-        : null;
-
+      if (hadWorkout) cumulativeProgress += pointsPerWorkoutDay;
+      const actualRemaining = isPast ? Math.max(0, selectedGoal.target_value - cumulativeProgress) : null;
       const dayLabel = dayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
       data.push({
-        day: i,
-        label: i % Math.max(1, Math.floor(totalDays / 7)) === 0 ? dayLabel : '',
+        day: i, label: i % Math.max(1, Math.floor(totalDays / 7)) === 0 ? dayLabel : '',
         ideal: Math.round(idealRemaining * 10) / 10,
         actual: actualRemaining !== null ? Math.round(actualRemaining * 10) / 10 : null,
-        skipped: isPast && !hadWorkout && dayDate.getDay() !== 0, // Sun = planned rest
-        date: dateStr,
+        skipped: isPast && !hadWorkout && dayDate.getDay() !== 0, date: dateStr,
       });
     }
-
     return data;
   }, [selectedGoal, workouts]);
 
-  // Stats
   const skippedDays = burndownData.filter(d => d.skipped && d.actual !== null).length;
   const pastData = burndownData.filter(d => d.actual !== null);
   const lastActual = pastData.length > 0 ? pastData[pastData.length - 1] : null;
-  const lastIdeal = lastActual;
-  const drift = lastActual && lastIdeal ? Math.round(lastActual.actual! - lastIdeal.ideal) : 0;
+  const drift = lastActual ? Math.round(lastActual.actual! - lastActual.ideal) : 0;
 
   if (workouts.length === 0 && activeGoals.length === 0) {
     return (
@@ -674,7 +986,6 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
     );
   }
 
-  // Group workouts by date
   const grouped = workouts.reduce<Record<string, typeof workouts>>((acc, w) => {
     if (!acc[w.date]) acc[w.date] = [];
     acc[w.date].push(w);
@@ -693,7 +1004,6 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
 
   return (
     <div className="space-y-5">
-      {/* Summary stats */}
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-gradient-to-b from-white/[0.05] to-white/[0.02] rounded-xl p-3 border border-white/[0.06] text-center">
           <p className="text-xl font-bold">{workouts.length}</p>
@@ -709,7 +1019,6 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
         </div>
       </div>
 
-      {/* Goal Burndown Section */}
       {activeGoals.length > 0 && (
         <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-2xl border border-white/[0.08] overflow-hidden">
           <div className="p-4 pb-2">
@@ -717,44 +1026,27 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
               <TrendingUp className="w-4 h-4 text-blue-400" />
               <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Goal Burndown</span>
             </div>
-
-            {/* Goal selector */}
             {activeGoals.length > 1 && (
               <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
                 {activeGoals.map(g => (
-                  <button
-                    key={g.id}
-                    onClick={() => setSelectedGoalId(g.id)}
+                  <button key={g.id} onClick={() => setSelectedGoalId(g.id)}
                     className={`shrink-0 text-[11px] px-2.5 py-1 rounded-lg border transition-colors ${
-                      (selectedGoal?.id === g.id)
-                        ? 'bg-blue-500/15 border-blue-500/20 text-blue-400'
-                        : 'bg-white/[0.03] border-white/[0.06] text-white/40 hover:bg-white/[0.06]'
-                    }`}
-                  >
-                    {g.name}
-                  </button>
+                      (selectedGoal?.id === g.id) ? 'bg-blue-500/15 border-blue-500/20 text-blue-400' : 'bg-white/[0.03] border-white/[0.06] text-white/40 hover:bg-white/[0.06]'
+                    }`}>{g.name}</button>
                 ))}
               </div>
             )}
-
             {selectedGoal && (
               <div className="mt-2 flex items-center gap-3 text-[10px] text-white/30">
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-0.5 bg-white/20 rounded" /> Ideal
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-0.5 bg-emerald-400 rounded" /> Actual
-                </span>
+                <span className="flex items-center gap-1"><span className="w-2 h-0.5 bg-white/20 rounded" /> Ideal</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-0.5 bg-emerald-400 rounded" /> Actual</span>
                 {skippedDays > 0 && (
-                  <span className="flex items-center gap-1 text-amber-400/60">
-                    <AlertTriangle className="w-2.5 h-2.5" /> {skippedDays} skipped
-                  </span>
+                  <span className="flex items-center gap-1 text-amber-400/60"><AlertTriangle className="w-2.5 h-2.5" /> {skippedDays} skipped</span>
                 )}
               </div>
             )}
           </div>
 
-          {/* Chart */}
           {selectedGoal && burndownData.length > 0 && (
             <div className="h-44 px-2 pb-3">
               <ResponsiveContainer width="100%" height="100%">
@@ -766,76 +1058,21 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)' }}
-                    axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)' }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: 'rgba(15,15,25,0.95)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '10px',
-                      fontSize: '11px',
-                      color: 'white',
-                    }}
-                    formatter={(value: number, name: string) => [
-                      `${value} remaining`,
-                      name === 'ideal' ? 'Ideal' : 'Actual',
-                    ]}
-                    labelFormatter={(_, payload) => {
-                      const item = payload?.[0]?.payload;
-                      if (!item) return '';
-                      return `${item.date}${item.skipped ? ' ⚠️ Skipped' : ''}`;
-                    }}
-                  />
-                  {/* Ideal line (dashed) */}
-                  <Line
-                    type="monotone"
-                    dataKey="ideal"
-                    stroke="rgba(255,255,255,0.15)"
-                    strokeDasharray="6 3"
-                    strokeWidth={1.5}
-                    dot={false}
-                    connectNulls
-                  />
-                  {/* Actual progress area */}
-                  <Area
-                    type="monotone"
-                    dataKey="actual"
-                    stroke="#34d399"
-                    strokeWidth={2}
-                    fill="url(#actualGrad)"
+                  <XAxis dataKey="label" tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)' }} axisLine={{ stroke: 'rgba(255,255,255,0.06)' }} tickLine={false} />
+                  <YAxis tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)' }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ background: 'rgba(15,15,25,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', fontSize: '11px', color: 'white' }} />
+                  <Line type="monotone" dataKey="ideal" stroke="rgba(255,255,255,0.15)" strokeDasharray="6 3" strokeWidth={1.5} dot={false} connectNulls />
+                  <Area type="monotone" dataKey="actual" stroke="#34d399" strokeWidth={2} fill="url(#actualGrad)"
                     dot={(props: any) => {
                       const { cx, cy, payload } = props;
                       if (!payload.skipped || payload.actual === null) return <circle key={props.key} cx={0} cy={0} r={0} />;
-                      return (
-                        <circle
-                          key={props.key}
-                          cx={cx}
-                          cy={cy}
-                          r={3}
-                          fill="#f59e0b"
-                          stroke="#f59e0b"
-                          strokeWidth={1}
-                          opacity={0.8}
-                        />
-                      );
-                    }}
-                    connectNulls
-                  />
+                      return <circle key={props.key} cx={cx} cy={cy} r={3} fill="#f59e0b" stroke="#f59e0b" strokeWidth={1} opacity={0.8} />;
+                    }} connectNulls />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           )}
 
-          {/* Drift alert */}
           {drift > 0 && selectedGoal && (
             <div className="mx-4 mb-4 rounded-xl bg-amber-500/[0.08] border border-amber-500/10 p-3 flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
@@ -862,7 +1099,6 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
         </div>
       )}
 
-      {/* Grouped workouts */}
       {Object.entries(grouped).map(([date, dayWorkouts]) => (
         <div key={date}>
           <div className="flex items-center gap-2 mb-2">
@@ -875,9 +1111,7 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
               const cfg = modeConfig[w.type] || modeConfig.strength;
               return (
                 <div key={w.id} className={`flex items-center gap-3 bg-gradient-to-r ${cfg.gradient} rounded-2xl p-3.5 border ${cfg.border}`}>
-                  <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-lg flex-shrink-0">
-                    {cfg.emoji}
-                  </div>
+                  <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-lg flex-shrink-0">{cfg.emoji}</div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{w.exercise}</p>
                     <p className="text-[10px] text-white/40 capitalize">{w.type}</p>
@@ -918,249 +1152,5 @@ function InputSelect({ label, value, options, onChange }: { label: string; value
     </div>
   );
 }
-
-// ---- Unified Plan + Mode Grid (Session-Based) ----
-interface UnifiedPlanGridProps {
-  todayPlan: PlanDay | null;
-  exerciseActions: Record<string, ExerciseAction>;
-  onExerciseAction: (sessionIdx: number, exIdx: number, action: ExerciseAction) => void;
-  mode: Mode;
-  onModeSelect: (m: Mode) => void;
-}
-
-const SESSION_TYPE_STYLES: Record<string, { emoji: string; color: string; gradient: string; border: string; activeGradient: string }> = {
-  strength: { emoji: '🏋️', color: 'text-blue-400', gradient: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/20', activeGradient: 'from-blue-500/30 to-blue-600/10' },
-  cardio: { emoji: '🏃', color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/20', activeGradient: 'from-orange-500/30 to-orange-600/10' },
-  bodyweight: { emoji: '💪', color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', activeGradient: 'from-purple-500/30 to-purple-600/10' },
-  active_recovery: { emoji: '🧘', color: 'text-teal-400', gradient: 'from-teal-500/20 to-teal-600/5', border: 'border-teal-500/20', activeGradient: 'from-teal-500/30 to-teal-600/10' },
-  rest: { emoji: '😴', color: 'text-white/40', gradient: 'from-white/5 to-white/[0.02]', border: 'border-white/[0.06]', activeGradient: 'from-white/10 to-white/5' },
-};
-
-const UnifiedPlanGrid = ({ todayPlan, exerciseActions, onExerciseAction, mode, onModeSelect }: UnifiedPlanGridProps) => {
-  const [expandedSession, setExpandedSession] = useState<number | null>(null);
-  const [expandedExercise, setExpandedExercise] = useState<string | null>(null); // "sessionIdx-exIdx"
-
-  const hasSessions = todayPlan && todayPlan.sessions.length > 0 && !todayPlan.isRest;
-
-  // Count completed across all sessions
-  const allExercises = todayPlan ? getAllExercisesForDay(todayPlan) : [];
-  const totalCount = allExercises.length;
-  const completedCount = Object.entries(exerciseActions).filter(([, a]) => a === 'completed').length;
-  const allDone = totalCount > 0 && Object.keys(exerciseActions).length >= totalCount &&
-    Object.values(exerciseActions).every(a => a !== 'pending');
-
-  return (
-    <div className="space-y-3">
-      {/* Header */}
-      {todayPlan && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CalendarDays className="w-4 h-4 text-emerald-400" />
-            <div>
-              <p className="text-xs font-semibold text-white">Today's Plan</p>
-              <p className="text-[10px] text-white/40">
-                {todayPlan.isRest
-                  ? (todayPlan.restReason || 'Rest day')
-                  : `${todayPlan.sessions.length} session${todayPlan.sessions.length > 1 ? 's' : ''}`
-                }
-              </p>
-            </div>
-          </div>
-          {totalCount > 0 && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
-              {completedCount}/{totalCount}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Rest day */}
-      {todayPlan?.isRest && todayPlan.sessions.length === 0 && (
-        <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
-          <span className="text-2xl">😴</span>
-          <p className="text-sm text-white/50 mt-2">Today is a rest day</p>
-          <p className="text-[11px] text-white/30 mt-1">{todayPlan.restReason}</p>
-        </div>
-      )}
-
-      {/* Session cards */}
-      {hasSessions && (
-        <div className="space-y-2.5">
-          {todayPlan.sessions.map((session, si) => {
-            const style = SESSION_TYPE_STYLES[session.workoutType] || SESSION_TYPE_STYLES.strength;
-            const sessionExerciseCount = session.exercises.length;
-            const sessionCompleted = session.exercises.filter((_, ei) =>
-              exerciseActions[`${si}-${ei}`] === 'completed'
-            ).length;
-            const sessionAllDone = sessionExerciseCount > 0 && session.exercises.every((_, ei) =>
-              exerciseActions[`${si}-${ei}`] && exerciseActions[`${si}-${ei}`] !== 'pending'
-            );
-            const isExpanded = expandedSession === si;
-
-            // Get unique exercise types for icon display
-            const exerciseTypes = [...new Set(session.exercises.map(e => e.type))];
-
-            return (
-              <div key={si} className={`rounded-2xl border overflow-hidden transition-all ${style.border} ${
-                sessionAllDone ? 'opacity-60' : ''
-              }`}>
-                {/* Session header - clickable to expand */}
-                <button
-                  onClick={() => setExpandedSession(isExpanded ? null : si)}
-                  className={`w-full flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient} transition-all`}
-                >
-                  {/* Session icon */}
-                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl flex-shrink-0">
-                    {style.emoji}
-                  </div>
-
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-white truncate">{session.label}</p>
-                      {todayPlan.sessions.length > 1 && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 shrink-0">
-                          Session {si + 1}
-                        </span>
-                      )}
-                    </div>
-                    {/* Exercise type icons row */}
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex items-center gap-1">
-                        {exerciseTypes.map(t => (
-                          <span key={t} className="text-xs" title={t}>
-                            {EXERCISE_TYPE_ICONS[t]?.emoji || '⚡'}
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-[10px] text-white/30">
-                        {sessionExerciseCount} exercise{sessionExerciseCount !== 1 ? 's' : ''}
-                      </span>
-                      {sessionCompleted > 0 && (
-                        <span className="text-[10px] text-emerald-400">
-                          {sessionCompleted}/{sessionExerciseCount} done
-                        </span>
-                      )}
-                    </div>
-                    {session.reason && (
-                      <p className="text-[10px] text-emerald-400/60 mt-0.5 flex items-center gap-1 truncate">
-                        <Sparkles className="w-2.5 h-2.5 shrink-0" /> {session.reason}
-                      </p>
-                    )}
-                  </div>
-
-                  <ChevronRight className={`w-4 h-4 text-white/20 transition-transform shrink-0 ${isExpanded ? 'rotate-90' : ''}`} />
-                </button>
-
-                {/* Expanded exercises list */}
-                {isExpanded && (
-                  <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
-                    {session.exercises.map((ex, ei) => {
-                      const key = `${si}-${ei}`;
-                      const action = exerciseActions[key] || 'pending';
-                      const isDone = action !== 'pending';
-                      const isExExpanded = expandedExercise === key;
-                      const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
-
-                      return (
-                        <div key={ei} className="relative">
-                          <button
-                            onClick={() => {
-                              if (isDone) return;
-                              setExpandedExercise(isExExpanded ? null : key);
-                            }}
-                            className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${
-                              action === 'completed'
-                                ? 'bg-emerald-500/10 border border-emerald-500/15'
-                                : action === 'dismissed'
-                                  ? 'bg-red-500/5 border border-red-500/10 opacity-50'
-                                  : action === 'deferred'
-                                    ? 'bg-amber-500/5 border border-amber-500/10 opacity-60'
-                                    : 'bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06]'
-                            }`}
-                          >
-                            <span className="text-lg w-7 text-center">
-                              {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : action === 'deferred' ? '⏭️' : exTypeIcon.emoji}
-                            </span>
-                            <div className="flex-1 min-w-0 text-left">
-                              <p className={`text-xs font-medium ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
-                              <p className="text-[10px] text-white/30">
-                                {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
-                              </p>
-                            </div>
-                            {!isDone && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
-                          </button>
-
-                          {/* Exercise action overlay */}
-                          {isExExpanded && !isDone && (
-                            <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-white/10">
-                              <button
-                                onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'completed'); setExpandedExercise(null); }}
-                                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
-                              >
-                                <Check className="w-3.5 h-3.5" /> Start
-                              </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'deferred'); setExpandedExercise(null); }}
-                                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/25 transition-colors"
-                              >
-                                <ArrowRight className="w-3.5 h-3.5" /> Defer
-                              </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'dismissed'); setExpandedExercise(null); }}
-                                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Completion summary */}
-      {allDone && totalCount > 0 && (
-        <div className={`rounded-xl p-2.5 text-center text-[11px] font-medium ${
-          completedCount === totalCount
-            ? 'bg-emerald-500/10 text-emerald-400'
-            : completedCount >= totalCount / 2
-              ? 'bg-amber-500/10 text-amber-400'
-              : 'bg-red-500/10 text-red-400'
-        }`}>
-          {completedCount === totalCount
-            ? '🎉 Plan complete! Great discipline.'
-            : completedCount >= totalCount / 2
-              ? `⚠️ ${totalCount - completedCount} exercise${totalCount - completedCount > 1 ? 's' : ''} skipped/deferred — may slow goal progress`
-              : `🔴 Most exercises skipped — this impacts your burndown toward goals`
-          }
-        </div>
-      )}
-
-      {/* Mode selector row */}
-      <div className="grid grid-cols-3 gap-2">
-        {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
-          <button
-            key={id}
-            onClick={() => onModeSelect(id)}
-            className={`flex flex-col items-center gap-2 py-4 px-2 rounded-2xl text-xs font-medium transition-all border ${
-              mode === id
-                ? `bg-gradient-to-b ${cfg.active} ${cfg.border} ${cfg.color} shadow-lg`
-                : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-            }`}
-          >
-            <span className="text-2xl">{cfg.emoji}</span>
-            <span className="flex items-center gap-1">{cfg.icon}{cfg.label}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 export default WorkoutPage;
