@@ -26,7 +26,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const [activeCompIdx, setActiveCompIdx] = useState(0);
   const { goals } = useWOBuddyGoals();
   const insights = generateInsights(goals);
-  const [activeCompIdx, setActiveCompIdx] = useState(0);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
