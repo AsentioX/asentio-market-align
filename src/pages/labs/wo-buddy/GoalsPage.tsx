@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw } from 'lucide-react';
+import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight } from 'lucide-react';
 import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals';
 import {
   GOAL_CATEGORIES, METRICS, PERFORMANCE_DRIVERS, GOAL_TEMPLATES,
@@ -9,7 +9,7 @@ import { generatePlanFromGoals, getTodayIndex, DAY_SHORT, type PlanDay } from '.
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-type GoalsView = 'goals' | 'plan';
+type GoalsView = 'goals' | 'training' | 'plan';
 
 const WORKOUT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; color: string; bg: string }> = {
   strength: { icon: <Dumbbell className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-500/15' },
