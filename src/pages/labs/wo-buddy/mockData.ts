@@ -117,6 +117,68 @@ export const mockWeeklyTrend = [
   { week: 'W8', score: 2900 },
 ];
 
+export interface ExerciseStats {
+  name: string;
+  icon: string;
+  type: 'strength' | 'cardio' | 'bodyweight';
+  allTime: { value: number; unit: string };
+  month: { value: number; unit: string };
+  week: { value: number; unit: string };
+  pr?: string;
+}
+
+export const mockExerciseStats: ExerciseStats[] = [
+  { name: 'Running', icon: '🏃', type: 'cardio', allTime: { value: 312, unit: 'mi' }, month: { value: 42, unit: 'mi' }, week: { value: 12.4, unit: 'mi' }, pr: '7:12/mi' },
+  { name: 'Bench Press', icon: '🏋️', type: 'strength', allTime: { value: 148200, unit: 'lbs' }, month: { value: 18400, unit: 'lbs' }, week: { value: 5920, unit: 'lbs' }, pr: '225 lbs' },
+  { name: 'Squats', icon: '🦵', type: 'strength', allTime: { value: 186400, unit: 'lbs' }, month: { value: 24800, unit: 'lbs' }, week: { value: 6750, unit: 'lbs' }, pr: '315 lbs' },
+  { name: 'Push-ups', icon: '💪', type: 'bodyweight', allTime: { value: 8420, unit: 'reps' }, month: { value: 1240, unit: 'reps' }, week: { value: 310, unit: 'reps' } },
+  { name: 'Sit-ups', icon: '🔄', type: 'bodyweight', allTime: { value: 6180, unit: 'reps' }, month: { value: 880, unit: 'reps' }, week: { value: 220, unit: 'reps' } },
+  { name: 'Pull-ups', icon: '🧗', type: 'bodyweight', allTime: { value: 2640, unit: 'reps' }, month: { value: 360, unit: 'reps' }, week: { value: 85, unit: 'reps' } },
+  { name: 'Deadlift', icon: '⬆️', type: 'strength', allTime: { value: 210600, unit: 'lbs' }, month: { value: 28400, unit: 'lbs' }, week: { value: 7200, unit: 'lbs' }, pr: '365 lbs' },
+  { name: 'Rowing', icon: '🚣', type: 'cardio', allTime: { value: 86.4, unit: 'mi' }, month: { value: 12.2, unit: 'mi' }, week: { value: 3.0, unit: 'mi' }, pr: '1:52/500m' },
+];
+
+export interface BodyTrendPoint {
+  date: string;
+  weight: number;
+  bodyFat: number;
+  muscleMass: number;
+}
+
+export const mockBodyTrend: BodyTrendPoint[] = [
+  { date: 'Jan', weight: 82, bodyFat: 20, muscleMass: 36 },
+  { date: 'Feb', weight: 80.5, bodyFat: 19.2, muscleMass: 36.4 },
+  { date: 'Mar', weight: 78.8, bodyFat: 18, muscleMass: 37.0 },
+  { date: 'Apr', weight: 76, bodyFat: 16, muscleMass: 37.8 },
+];
+
+export const mockMonthlyOverview = {
+  workouts: 22,
+  totalVolume: 71600,
+  totalDistance: 54.2,
+  totalReps: 2480,
+  avgDuration: 48,
+  caloriesBurned: 18400,
+};
+
+export const mockAllTimeOverview = {
+  workouts: 147,
+  totalVolume: 545200,
+  totalDistance: 312,
+  totalReps: 17240,
+  avgDuration: 45,
+  caloriesBurned: 124600,
+};
+
+export const mockWeeklyOverview = {
+  workouts: 5,
+  totalVolume: 19870,
+  totalDistance: 15.4,
+  totalReps: 615,
+  avgDuration: 52,
+  caloriesBurned: 4200,
+};
+
 export function calculateScore(type: 'strength' | 'cardio' | 'bodyweight', details: Record<string, number>): number {
   switch (type) {
     case 'strength':
