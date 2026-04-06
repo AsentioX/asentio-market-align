@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Trophy, Dumbbell, Timer, ArrowRight } from 'lucide-react';
+import { Activity, Flame, Target, Zap, ChevronRight, Trophy, Dumbbell, Timer, ArrowRight, Sparkles } from 'lucide-react';
 import { mockUser, mockCompetitions, mockWorkouts } from './mockData';
+import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
+import { generateInsights } from './goalMappings';
 import heroBg from '@/assets/wo-buddy/hero-bg.jpg';
 import compWarrior from '@/assets/wo-buddy/comp-warrior.jpg';
 import compBurn from '@/assets/wo-buddy/comp-burn.jpg';
@@ -8,7 +10,7 @@ import compStrength from '@/assets/wo-buddy/comp-strength.jpg';
 import compCardio from '@/assets/wo-buddy/comp-cardio.jpg';
 
 interface DashboardProps {
-  onNavigate: (tab: 'workout' | 'competitions' | 'settings') => void;
+  onNavigate: (tab: 'workout' | 'competitions' | 'settings' | 'goals') => void;
 }
 
 const competitionImages: Record<string, { image: string; gradient: string }> = {
@@ -22,6 +24,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const readiness = 82;
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeCompIdx, setActiveCompIdx] = useState(0);
+  const { goals } = useWOBuddyGoals();
+  const insights = generateInsights(goals);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -122,6 +126,24 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           </div>
         </div>
       </div>
+
+      {/* Coaching Insights */}
+      {goals.length > 0 && (
+        <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+          <div className="flex items-center justify-between mb-2.5">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Coaching</span>
+            </div>
+            <button onClick={() => onNavigate('goals')} className="text-xs text-emerald-400 flex items-center gap-0.5 font-medium">
+              Goals <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+          {insights.slice(0, 2).map((insight, i) => (
+            <p key={i} className="text-[12px] text-white/60 leading-relaxed">{insight}</p>
+          ))}
+        </div>
+      )}
 
       {/* Active Competitions — large image cards */}
       <div>

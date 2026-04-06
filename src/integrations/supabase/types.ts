@@ -372,6 +372,36 @@ export type Database = {
         }
         Relationships: []
       }
+      wobuddy_activity_enrichments: {
+        Row: {
+          activity_name: string
+          created_at: string | null
+          driver_name: string
+          explanation: string | null
+          id: string
+          target_suggestion: string | null
+          training_purpose: string | null
+        }
+        Insert: {
+          activity_name: string
+          created_at?: string | null
+          driver_name: string
+          explanation?: string | null
+          id?: string
+          target_suggestion?: string | null
+          training_purpose?: string | null
+        }
+        Update: {
+          activity_name?: string
+          created_at?: string | null
+          driver_name?: string
+          explanation?: string | null
+          id?: string
+          target_suggestion?: string | null
+          training_purpose?: string | null
+        }
+        Relationships: []
+      }
       wobuddy_competition_participants: {
         Row: {
           competition_id: string
@@ -498,6 +528,108 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      wobuddy_goal_drivers: {
+        Row: {
+          driver_id: string
+          goal_id: string
+          id: string
+        }
+        Insert: {
+          driver_id: string
+          goal_id: string
+          id?: string
+        }
+        Update: {
+          driver_id?: string
+          goal_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_goal_drivers_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_performance_drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wobuddy_goal_drivers_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_goals: {
+        Row: {
+          category: string
+          created_at: string | null
+          current_value: number | null
+          deadline: string | null
+          id: string
+          metric: string
+          name: string
+          status: string | null
+          target_value: number
+          timeframe: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          current_value?: number | null
+          deadline?: string | null
+          id?: string
+          metric?: string
+          name: string
+          status?: string | null
+          target_value: number
+          timeframe?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          current_value?: number | null
+          deadline?: string | null
+          id?: string
+          metric?: string
+          name?: string
+          status?: string | null
+          target_value?: number
+          timeframe?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wobuddy_performance_drivers: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       wobuddy_profiles: {
         Row: {
