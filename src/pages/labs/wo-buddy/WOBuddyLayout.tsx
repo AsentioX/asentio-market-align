@@ -28,8 +28,8 @@ const WOBuddyLayout = () => {
       case 'dashboard': return <Dashboard onNavigate={setActiveTab} />;
       case 'workout': return <WorkoutPage />;
       case 'competitions': return <CompetitionsPage />;
-      case 'competitions': return <CompetitionsPage />;
       case 'goals': return <GoalsPage />;
+      case 'plan': return <TrainingPlanPage />;
       case 'settings': return (
         <div className="space-y-6">
           <ProfilePage />
