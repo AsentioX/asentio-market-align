@@ -631,6 +631,47 @@ export type Database = {
         }
         Relationships: []
       }
+      wobuddy_plan_days: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          exercises: Json
+          focus_drivers: string[]
+          id: string
+          notes: string | null
+          plan_id: string
+          workout_type: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          exercises?: Json
+          focus_drivers?: string[]
+          id?: string
+          notes?: string | null
+          plan_id: string
+          workout_type?: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          exercises?: Json
+          focus_drivers?: string[]
+          id?: string
+          notes?: string | null
+          plan_id?: string
+          workout_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_plan_days_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_workout_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wobuddy_profiles: {
         Row: {
           avatar_initials: string
@@ -685,6 +726,33 @@ export type Database = {
           user_id?: string
           weekly_goal?: number
           weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      wobuddy_workout_plans: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+          week_start?: string
         }
         Relationships: []
       }
