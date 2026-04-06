@@ -81,6 +81,16 @@ const WorkoutPage = () => {
   const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
 
+  // Active exercise tracking for workout-in-progress
+  const [activeExerciseKey, setActiveExerciseKey] = useState<string | null>(null);
+  const [exerciseElapsed, setExerciseElapsed] = useState(0);
+  const exerciseTimerActiveRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [showNextConfirm, setShowNextConfirm] = useState<string | null>(null); // key of exercise being confirmed
+  const [exerciseInputMode, setExerciseInputMode] = useState<Record<string, 'camera' | 'photo' | 'reps' | null>>({});
+  const [manualReps, setManualReps] = useState<Record<string, number>>({});
+  const [manualSets, setManualSets] = useState<Record<string, number>>({});
+  const [manualWeight, setManualWeight] = useState<Record<string, number>>({});
+
   // Workout timer logic
   useEffect(() => {
     if (workoutStarted && !workoutPaused) {
