@@ -600,27 +600,7 @@ const WorkoutPage = () => {
           </div>
         </div>
 
-        {/* Rest period card */}
-        {isResting && nextExerciseAfterRest && (
-          <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-amber-600/5 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">😮‍💨</span>
-                <div>
-                  <p className="text-sm font-semibold text-amber-300">Rest</p>
-                  <p className="text-[10px] text-white/40">Recover before next exercise</p>
-                </div>
-              </div>
-              <span className="text-2xl font-bold tabular-nums text-amber-400">{formatTimer(restElapsed)}</span>
-            </div>
-            <button
-              onClick={finishRest}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/30 transition-colors"
-            >
-              <Check className="w-4 h-4" /> Done Resting — Next Exercise
-            </button>
-          </div>
-        )}
+        {/* Rest card is now rendered inline between exercises below */}
 
         {/* "Next Exercise?" confirmation overlay */}
         {showNextConfirm && (
