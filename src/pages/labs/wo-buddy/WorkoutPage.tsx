@@ -553,38 +553,6 @@ const WorkoutPage = () => {
             </div>
           )}
 
-          {/* ===== PLAN PATH: Today's sessions ===== */}
-          {workoutPath === 'plan' && (
-            <div className="space-y-3">
-              <button onClick={() => setWorkoutPath('choose')} className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/60 transition-colors">
-                <ArrowRight className="w-3 h-3 rotate-180" /> Back
-              </button>
-
-              <PlanSessionCards
-                todayPlan={todayPlan!}
-                exerciseActions={exerciseActions}
-                onExerciseAction={handleExerciseAction}
-                totalPlanCount={totalPlanCount}
-                completedPlanCount={completedPlanCount}
-              />
-
-              {/* After all plan exercises are handled, show option to log new or finish */}
-              <div className="flex items-center gap-2 pt-1">
-                <button
-                  onClick={() => setWorkoutPath('new')}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-white/50 hover:bg-white/[0.08] transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Add Exercise
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-emerald-500/15 border border-emerald-500/20 text-xs text-emerald-400 font-semibold hover:bg-emerald-500/25 transition-colors"
-                >
-                  <Check className="w-3.5 h-3.5" /> Finish Workout
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* ===== NEW EXERCISE PATH ===== */}
           {workoutPath === 'new' && (
