@@ -553,7 +553,7 @@ const WorkoutPage = () => {
   );
 };
 
-// ---- Workout History Component ----
+// ---- Workout History Component with Goal Burndown ----
 interface WorkoutHistoryProps {
   workouts: Array<{
     id: string;
@@ -565,7 +565,80 @@ interface WorkoutHistoryProps {
 }
 
 const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
-  if (workouts.length === 0) {
+  const { goals } = useWOBuddyGoals();
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+
+  const activeGoals = goals.filter(g => g.status !== 'achieved');
+  const selectedGoal = activeGoals.find(g => g.id === selectedGoalId) || activeGoals[0] || null;
+
+  // Build burndown data
+  const burndownData = useMemo(() => {
+    if (!selectedGoal) return [];
+
+    const remaining = selectedGoal.target_value - selectedGoal.current_value;
+    if (remaining <= 0) return [];
+
+    // Determine timeframe: use deadline or default 30 days
+    const startDate = new Date(selectedGoal.created_at);
+    const endDate = selectedGoal.deadline
+      ? new Date(selectedGoal.deadline + 'T23:59:59')
+      : new Date(startDate.getTime() + 30 * 86400000);
+    const today = new Date();
+
+    const totalDays = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / 86400000));
+
+    // Build day-by-day data
+    const data: { day: number; label: string; ideal: number; actual: number | null; skipped: boolean; date: string }[] = [];
+
+    // Count workouts per date
+    const workoutDates = new Set(workouts.map(w => w.date));
+
+    // Calculate points contributed per workout day (simplified: even distribution)
+    const totalWorkoutDays = workoutDates.size;
+    const pointsPerWorkoutDay = totalWorkoutDays > 0 ? selectedGoal.target_value / Math.max(totalDays, totalWorkoutDays) : 0;
+
+    let cumulativeProgress = 0;
+    const idealPerDay = selectedGoal.target_value / totalDays;
+
+    for (let i = 0; i <= totalDays; i++) {
+      const dayDate = new Date(startDate.getTime() + i * 86400000);
+      const dateStr = dayDate.toISOString().split('T')[0];
+      const isPast = dayDate <= today;
+      const hadWorkout = workoutDates.has(dateStr);
+
+      // Ideal burndown: remaining work decreases linearly
+      const idealRemaining = Math.max(0, selectedGoal.target_value - idealPerDay * i);
+
+      if (hadWorkout) {
+        cumulativeProgress += pointsPerWorkoutDay;
+      }
+
+      const actualRemaining = isPast
+        ? Math.max(0, selectedGoal.target_value - cumulativeProgress)
+        : null;
+
+      const dayLabel = dayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      data.push({
+        day: i,
+        label: i % Math.max(1, Math.floor(totalDays / 7)) === 0 ? dayLabel : '',
+        ideal: Math.round(idealRemaining * 10) / 10,
+        actual: actualRemaining !== null ? Math.round(actualRemaining * 10) / 10 : null,
+        skipped: isPast && !hadWorkout && dayDate.getDay() !== 0, // Sun = planned rest
+        date: dateStr,
+      });
+    }
+
+    return data;
+  }, [selectedGoal, workouts]);
+
+  // Stats
+  const skippedDays = burndownData.filter(d => d.skipped && d.actual !== null).length;
+  const lastActual = burndownData.filter(d => d.actual !== null).at(-1);
+  const lastIdeal = burndownData.filter(d => d.actual !== null).at(-1);
+  const drift = lastActual && lastIdeal ? Math.round(lastActual.actual! - lastIdeal.ideal) : 0;
+
+  if (workouts.length === 0 && activeGoals.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
@@ -577,11 +650,10 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
     );
   }
 
-  // Group by date
+  // Group workouts by date
   const grouped = workouts.reduce<Record<string, typeof workouts>>((acc, w) => {
-    const date = w.date;
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(w);
+    if (!acc[w.date]) acc[w.date] = [];
+    acc[w.date].push(w);
     return acc;
   }, {});
 
@@ -590,7 +662,6 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
     const today = new Date();
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-
     if (d.toDateString() === today.toDateString()) return 'Today';
     if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
@@ -613,6 +684,159 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
           <p className="text-[10px] text-white/40 mt-0.5">Days</p>
         </div>
       </div>
+
+      {/* Goal Burndown Section */}
+      {activeGoals.length > 0 && (
+        <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-2xl border border-white/[0.08] overflow-hidden">
+          <div className="p-4 pb-2">
+            <div className="flex items-center gap-2 mb-3">
+              <TrendingUp className="w-4 h-4 text-blue-400" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Goal Burndown</span>
+            </div>
+
+            {/* Goal selector */}
+            {activeGoals.length > 1 && (
+              <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+                {activeGoals.map(g => (
+                  <button
+                    key={g.id}
+                    onClick={() => setSelectedGoalId(g.id)}
+                    className={`shrink-0 text-[11px] px-2.5 py-1 rounded-lg border transition-colors ${
+                      (selectedGoal?.id === g.id)
+                        ? 'bg-blue-500/15 border-blue-500/20 text-blue-400'
+                        : 'bg-white/[0.03] border-white/[0.06] text-white/40 hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    {g.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {selectedGoal && (
+              <div className="mt-2 flex items-center gap-3 text-[10px] text-white/30">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-0.5 bg-white/20 rounded" /> Ideal
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-0.5 bg-emerald-400 rounded" /> Actual
+                </span>
+                {skippedDays > 0 && (
+                  <span className="flex items-center gap-1 text-amber-400/60">
+                    <AlertTriangle className="w-2.5 h-2.5" /> {skippedDays} skipped
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Chart */}
+          {selectedGoal && burndownData.length > 0 && (
+            <div className="h-44 px-2 pb-3">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={burndownData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#34d399" stopOpacity={0.2} />
+                      <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)' }}
+                    axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'rgba(15,15,25,0.95)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '10px',
+                      fontSize: '11px',
+                      color: 'white',
+                    }}
+                    formatter={(value: number, name: string) => [
+                      `${value} remaining`,
+                      name === 'ideal' ? 'Ideal' : 'Actual',
+                    ]}
+                    labelFormatter={(_, payload) => {
+                      const item = payload?.[0]?.payload;
+                      if (!item) return '';
+                      return `${item.date}${item.skipped ? ' ⚠️ Skipped' : ''}`;
+                    }}
+                  />
+                  {/* Ideal line (dashed) */}
+                  <Line
+                    type="monotone"
+                    dataKey="ideal"
+                    stroke="rgba(255,255,255,0.15)"
+                    strokeDasharray="6 3"
+                    strokeWidth={1.5}
+                    dot={false}
+                    connectNulls
+                  />
+                  {/* Actual progress area */}
+                  <Area
+                    type="monotone"
+                    dataKey="actual"
+                    stroke="#34d399"
+                    strokeWidth={2}
+                    fill="url(#actualGrad)"
+                    dot={(props: any) => {
+                      const { cx, cy, payload } = props;
+                      if (!payload.skipped || payload.actual === null) return <circle key={props.key} cx={0} cy={0} r={0} />;
+                      return (
+                        <circle
+                          key={props.key}
+                          cx={cx}
+                          cy={cy}
+                          r={3}
+                          fill="#f59e0b"
+                          stroke="#f59e0b"
+                          strokeWidth={1}
+                          opacity={0.8}
+                        />
+                      );
+                    }}
+                    connectNulls
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Drift alert */}
+          {drift > 0 && selectedGoal && (
+            <div className="mx-4 mb-4 rounded-xl bg-amber-500/[0.08] border border-amber-500/10 p-3 flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-amber-400">Behind schedule</p>
+                <p className="text-[11px] text-white/40 mt-0.5">
+                  You have <span className="text-amber-400 font-medium">{drift} {selectedGoal.metric}</span> more remaining than planned.
+                  {skippedDays > 0 && ` ${skippedDays} skipped day${skippedDays > 1 ? 's' : ''} contributed to this drift.`}
+                </p>
+              </div>
+            </div>
+          )}
+          {drift <= 0 && selectedGoal && burndownData.length > 0 && (
+            <div className="mx-4 mb-4 rounded-xl bg-emerald-500/[0.08] border border-emerald-500/10 p-3 flex items-start gap-2.5">
+              <Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-emerald-400">On track or ahead</p>
+                <p className="text-[11px] text-white/40 mt-0.5">
+                  You're {drift === 0 ? 'right on' : `${Math.abs(drift)} ${selectedGoal.metric} ahead of`} schedule. Keep it up!
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Grouped workouts */}
       {Object.entries(grouped).map(([date, dayWorkouts]) => (
