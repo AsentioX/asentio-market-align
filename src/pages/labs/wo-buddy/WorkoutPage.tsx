@@ -847,6 +847,17 @@ const WorkoutPage = () => {
                       completedPlanCount={completedPlanCount}
                     />
                   </div>
+
+                  {/* Add Exercise — inside the plan card */}
+                  <div className="px-3 pb-3">
+                    <button
+                      onClick={() => setWorkoutPath('new')}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3 transition-all"
+                    >
+                      <Plus className="w-4 h-4 text-white/50" />
+                      <span className="text-sm font-medium text-white/70">Add Exercise</span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -859,16 +870,6 @@ const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* Add Exercise */}
-              <button
-                onClick={() => setWorkoutPath('new')}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3.5 transition-all"
-              >
-                <Plus className="w-4 h-4 text-white/50" />
-                <span className="text-sm font-medium text-white/70">Add Exercise</span>
-              </button>
-
-              {/* Start Workout */}
               <button
                 onClick={handleStartWorkout}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
@@ -1065,21 +1066,14 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
 
   return (
     <div className="space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-emerald-400" />
-          <div>
-            <p className="text-xs font-semibold text-white">Today's Plan</p>
-            <p className="text-[10px] text-white/40">{todayPlan.sessions.length} session{todayPlan.sessions.length > 1 ? 's' : ''}</p>
-          </div>
-        </div>
-        {totalPlanCount > 0 && (
+      {/* Progress count */}
+      {totalPlanCount > 0 && (
+        <div className="flex items-center justify-end">
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
             {completedPlanCount}/{totalPlanCount}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Session cards */}
       <div className="space-y-2.5">
