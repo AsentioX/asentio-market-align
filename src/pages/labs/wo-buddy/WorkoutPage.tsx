@@ -40,6 +40,15 @@ function formatTimer(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+interface CompletedWorkoutDetail {
+  id: string;
+  date: string;
+  duration: number; // seconds
+  score: number;
+  mode: string;
+  exercises: Array<{ name: string; type: string; reps?: number; sets?: number; weight?: number; duration?: string }>;
+}
+
 const WorkoutPage = () => {
   const [view, setView] = useState<View>('log');
   const [mode, setMode] = useState<Mode>('strength');
@@ -47,6 +56,7 @@ const WorkoutPage = () => {
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [completedWorkouts, setCompletedWorkouts] = useState<CompletedWorkoutDetail[]>([]);
 
   // Workout timer
   const [workoutStarted, setWorkoutStarted] = useState(false);
