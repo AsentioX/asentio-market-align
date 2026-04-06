@@ -970,33 +970,7 @@ const WorkoutPage = () => {
               </button>
 
               {/* Past Workouts */}
-              {workouts.length > 0 && (
-                <div className="space-y-3 pt-2">
-                  <p className="text-xs font-semibold text-white/50 text-center">Past Workouts</p>
-                  {Object.entries(
-                    workouts.reduce<Record<string, typeof workouts>>((acc, w) => {
-                      if (!acc[w.date]) acc[w.date] = [];
-                      acc[w.date].push(w);
-                      return acc;
-                    }, {})
-                  ).slice(0, 5).map(([date, dayWorkouts]) => {
-                    const totalDuration = dayWorkouts.length * 15;
-                    return (
-                      <div key={date} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
-                        <div className="flex items-center justify-between p-3.5">
-                          <p className="text-sm font-medium text-white/80">
-                            {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-white/50">Duration: <span className="text-white/70 font-medium">{totalDuration} min</span></span>
-                            <ChevronDown className="w-4 h-4 text-white/30" />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <PastWorkoutsList completedWorkouts={completedWorkouts} workouts={workouts} />
             </div>
           )}
 
