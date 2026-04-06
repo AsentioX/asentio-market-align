@@ -400,6 +400,9 @@ const WorkoutPage = () => {
     setManualReps({});
     setManualSets({});
     setManualWeight({});
+    setIsResting(false);
+    setRestElapsed(0);
+    setNextExerciseAfterRest(null);
   };
 
   // ---- SUBMITTED: Post-workout summary ----
