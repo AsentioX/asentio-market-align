@@ -19,7 +19,172 @@ const WORKOUT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; color: string
   active_recovery: { icon: <RotateCcw className="w-4 h-4" />, color: 'text-emerald-400', bg: 'bg-emerald-500/15' },
 };
 
-const GoalsPage = () => {
+/* =================== TRAINING PLAN (MACRO) COMPONENT =================== */
+const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
+  goals: ReturnType<typeof useWOBuddyGoals>['goals'];
+  activeGoals: ReturnType<typeof useWOBuddyGoals>['goals'];
+  plan: PlanDay[];
+  onSwitchToWeekly: () => void;
+}) => {
+  // Aggregate driver frequency across all active goals
+  const driverFrequency: Record<string, number> = {};
+  activeGoals.forEach(g => g.drivers.forEach(d => {
+    driverFrequency[d] = (driverFrequency[d] || 0) + 1;
+  }));
+  const sortedDrivers = Object.entries(driverFrequency).sort(([, a], [, b]) => b - a);
+  const totalDriverRefs = sortedDrivers.reduce((sum, [, v]) => sum + v, 0);
+
+  // Compute training volume distribution
+  const trainingDays = plan.filter(p => !p.isRest);
+  const sessionsByType: Record<string, number> = {};
+  plan.forEach(d => d.sessions.forEach(s => {
+    sessionsByType[s.workoutType] = (sessionsByType[s.workoutType] || 0) + 1;
+  }));
+
+  // Phases based on goal count and types
+  const hasStrengthGoals = activeGoals.some(g => g.drivers.includes('Strength') || g.drivers.includes('Power'));
+  const hasEnduranceGoals = activeGoals.some(g => g.drivers.includes('Endurance') || g.drivers.includes('Efficiency'));
+  const hasMobilityGoals = activeGoals.some(g => g.drivers.includes('Mobility'));
+
+  const phases = [];
+  if (hasStrengthGoals) phases.push({ name: 'Strength Foundation', weeks: '1–4', focus: 'Build base strength with progressive overload', icon: '💪', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/15' });
+  if (hasEnduranceGoals) phases.push({ name: 'Aerobic Base', weeks: hasStrengthGoals ? '2–6' : '1–4', focus: 'Develop cardiovascular endurance and efficiency', icon: '🫁', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/15' });
+  if (hasStrengthGoals) phases.push({ name: 'Power Development', weeks: '5–8', focus: 'Convert strength into explosive power', icon: '⚡', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/15' });
+  if (hasMobilityGoals) phases.push({ name: 'Mobility Integration', weeks: 'Ongoing', focus: 'Maintain range of motion and injury prevention', icon: '🧘', color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/15' });
+  if (phases.length === 0) phases.push(
+    { name: 'General Fitness', weeks: '1–4', focus: 'Build a balanced fitness foundation', icon: '🏋️', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
+    { name: 'Progressive Overload', weeks: '5–8', focus: 'Increase intensity and volume gradually', icon: '📈', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/15' },
+  );
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-lg font-bold text-white">Training Plan</h2>
+        <p className="text-xs text-white/40 mt-0.5">Your overall strategy to achieve your goals</p>
+      </div>
+
+      {/* Summary metrics */}
+      <div className="flex gap-2">
+        <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
+          <p className="text-lg font-bold text-white">{activeGoals.length}</p>
+          <p className="text-[10px] text-white/40">Active Goals</p>
+        </div>
+        <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
+          <p className="text-lg font-bold text-white">{sortedDrivers.length}</p>
+          <p className="text-[10px] text-white/40">Focus Areas</p>
+        </div>
+        <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
+          <p className="text-lg font-bold text-white">{trainingDays.length}</p>
+          <p className="text-[10px] text-white/40">Days/Week</p>
+        </div>
+      </div>
+
+      {/* Driver Priority */}
+      {sortedDrivers.length > 0 && (
+        <div className="rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] p-4 space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Driver Priority</h3>
+          <div className="space-y-2">
+            {sortedDrivers.map(([name, count]) => {
+              const driverInfo = PERFORMANCE_DRIVERS.find(d => d.name === name);
+              const pct = totalDriverRefs > 0 ? Math.round((count / totalDriverRefs) * 100) : 0;
+              return (
+                <div key={name} className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-xs text-white/70">
+                      <span>{driverInfo?.icon || '⚡'}</span> {name}
+                    </span>
+                    <span className="text-[10px] text-white/40 font-mono">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Training Phases */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Training Phases</h3>
+        <div className="relative">
+          {/* Vertical connector */}
+          <div className="absolute left-[18px] top-4 bottom-4 w-px bg-white/[0.06]" />
+          <div className="space-y-2">
+            {phases.map((phase, i) => (
+              <div key={i} className={`relative flex items-start gap-3 rounded-xl ${phase.bg} border ${phase.border} p-3`}>
+                <div className={`w-9 h-9 rounded-lg bg-white/[0.06] flex items-center justify-center text-base shrink-0 z-10`}>
+                  {phase.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm font-medium ${phase.color}`}>{phase.name}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 font-mono">{phase.weeks}</span>
+                  </div>
+                  <p className="text-[11px] text-white/40 mt-0.5">{phase.focus}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Goal-to-Driver Mapping */}
+      {activeGoals.length > 0 && (
+        <div className="rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] p-4 space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Goal Connections</h3>
+          {activeGoals.map(g => {
+            const cat = getCategoryConfig(g.category);
+            const pct = g.target_value > 0 ? Math.round((g.current_value / g.target_value) * 100) : 0;
+            return (
+              <div key={g.id} className="flex items-center gap-3 bg-white/[0.03] rounded-xl p-2.5">
+                <span className="text-base">{cat.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-white/80 truncate">{g.name}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    {g.drivers.map(d => {
+                      const di = PERFORMANCE_DRIVERS.find(pd => pd.name === d);
+                      return <span key={d} className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40">{di?.icon} {d}</span>;
+                    })}
+                  </div>
+                </div>
+                <span className="text-xs text-emerald-400 font-mono">{pct}%</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Weekly volume breakdown */}
+      <div className="rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] p-4 space-y-3">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Weekly Volume</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {Object.entries(sessionsByType).map(([type, count]) => {
+            const config = WORKOUT_TYPE_CONFIG[type] || WORKOUT_TYPE_CONFIG.rest;
+            return (
+              <div key={type} className={`flex items-center gap-2 ${config.bg} rounded-xl p-2.5`}>
+                <span className={config.color}>{config.icon}</span>
+                <div>
+                  <p className="text-xs font-medium text-white/70 capitalize">{type.replace('_', ' ')}</p>
+                  <p className="text-[10px] text-white/40">{count} session{count > 1 ? 's' : ''}/week</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* CTA to weekly plan */}
+      <button onClick={onSwitchToWeekly}
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/15 text-emerald-400 text-sm font-medium hover:bg-emerald-500/15 transition-colors">
+        View This Week's Plan <ArrowRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
+
   const { goals, loading, createGoal, updateGoal, deleteGoal, isAuthenticated } = useWOBuddyGoals();
   const drivers = usePerformanceDrivers();
   const { user } = useAuth();
