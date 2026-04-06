@@ -397,12 +397,11 @@ const WorkoutPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* View toggle: Log vs History vs Plan */}
+      {/* View toggle: Log vs History */}
       <div className="flex items-center gap-1.5">
         {([
           { id: 'log' as View, icon: <Plus className="w-3.5 h-3.5" />, label: 'Log' },
           { id: 'history' as View, icon: <History className="w-3.5 h-3.5" />, label: 'History' },
-          { id: 'plan' as View, icon: <CalendarDays className="w-3.5 h-3.5" />, label: 'Plan' },
         ]).map(v => (
           <button
             key={v.id}
@@ -421,10 +420,55 @@ const WorkoutPage = () => {
 
       {view === 'history' ? (
         <WorkoutHistory workouts={workouts} />
-      ) : view === 'plan' ? (
-        <WorkoutPlanPage />
       ) : (
         <>
+          {/* Today's Plan Card */}
+          {todayPlan && todayPlan.exercises.length > 0 && (
+            <TodaysPlanCard
+              plan={todayPlan}
+              exerciseActions={exerciseActions}
+              onAction={(idx, action) => {
+                setExerciseActions(prev => ({ ...prev, [idx]: action }));
+                // Impact: completing adds progress, dismissing/deferring doesn't
+                if (action === 'completed') {
+                  // Find goals connected via drivers and nudge progress
+                  const ex = todayPlan.exercises[idx];
+                  const drivers = ACTIVITY_DRIVER_MAP[ex.name] || todayPlan.focusDrivers;
+                  const impactedGoals = goals.filter(g =>
+                    g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
+                  );
+                  impactedGoals.forEach(g => {
+                    const increment = Math.max(1, Math.round(g.target_value * 0.02));
+                    const newVal = Math.min(g.current_value + increment, g.target_value);
+                    const newStatus = newVal >= g.target_value ? 'achieved' : newVal >= g.target_value * 0.6 ? 'on_track' : 'at_risk';
+                    updateGoal(g.id, { current_value: newVal, status: newStatus });
+                  });
+                } else if (action === 'dismissed') {
+                  // Dismissed = skipped, hurts burndown (reduce status confidence)
+                  const drivers = ACTIVITY_DRIVER_MAP[todayPlan.exercises[idx].name] || todayPlan.focusDrivers;
+                  const impactedGoals = goals.filter(g =>
+                    g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
+                  );
+                  impactedGoals.forEach(g => {
+                    if (g.current_value < g.target_value * 0.7) {
+                      updateGoal(g.id, { status: 'at_risk' });
+                    }
+                  });
+                }
+                // Deferred = pushed to tomorrow, no immediate impact but no progress either
+              }}
+            />
+          )}
+
+          {/* Rest day message */}
+          {todayPlan && todayPlan.exercises.length === 0 && (
+            <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+              <span className="text-2xl">😴</span>
+              <p className="text-sm text-white/50 mt-2">Today is a {todayPlan.workoutType.replace('_', ' ')} day</p>
+              <p className="text-[11px] text-white/30 mt-1">{todayPlan.reason}</p>
+            </div>
+          )}
+
           {/* Mode selector */}
           <div className="grid grid-cols-3 gap-2">
             {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
