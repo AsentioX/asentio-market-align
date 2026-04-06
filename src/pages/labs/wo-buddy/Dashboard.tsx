@@ -79,30 +79,13 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <Target className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</span>
-          </div>
-          <span className="text-xs text-white/30">{mockUser.dailyProgress} / {mockUser.dailyGoal} pts</span>
-        </div>
-        <div className="h-3 bg-white/5 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all shadow-[0_0_12px_rgba(52,211,153,0.4)]"
-            style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
-          />
-        </div>
-        <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
-      </div>
-
-      {/* This Week Calendar */}
+      {/* This Week + Daily Goal combined */}
       <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
         <div className="flex items-center gap-2 mb-3">
           <Calendar className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">This Week</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-4">
           {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
             const active = i < mockUser.weeklyProgress;
             const isToday = i === mockUser.weeklyProgress;
@@ -118,6 +101,23 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 <span className={`text-[9px] ${active ? 'text-emerald-400/60' : 'text-white/30'}`}>{day}</span>
               </div>
             );
+          })}
+        </div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Target className="w-4 h-4 text-emerald-400" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</span>
+          </div>
+          <span className="text-xs text-white/30">{mockUser.dailyProgress} / {mockUser.dailyGoal} pts</span>
+        </div>
+        <div className="h-3 bg-white/5 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all shadow-[0_0_12px_rgba(52,211,153,0.4)]"
+            style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
+          />
+        </div>
+        <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
+      </div>
           })}
         </div>
       </div>
