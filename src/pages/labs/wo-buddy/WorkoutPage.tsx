@@ -371,6 +371,25 @@ const WorkoutPage = () => {
     setWorkoutStarted(false);
     setWorkoutPaused(false);
 
+    // Collect completed plan exercises
+    const planExercises: CompletedWorkoutDetail['exercises'] = [];
+    if (todayPlan) {
+      todayPlan.sessions.forEach((session, si) => {
+        session.exercises.forEach((ex, ei) => {
+          const key = `${si}-${ei}`;
+          if (exerciseActions[key] === 'completed') {
+            planExercises.push({
+              name: ex.name, type: ex.type,
+              reps: manualReps[key] || ex.reps,
+              sets: manualSets[key] || ex.sets,
+              weight: manualWeight[key] || undefined,
+              duration: ex.duration,
+            });
+          }
+        });
+      });
+    }
+
     const allExercises = [
       ...trackedExercises.map(ex => ({
         name: ex.name, type: ex.type, reps: ex.reps, sets: 1,
@@ -387,6 +406,21 @@ const WorkoutPage = () => {
         duration: mode === 'cardio' ? time * 60 : 0,
       }
     ];
+
+    // Save to local completed workouts list
+    const completedDetail: CompletedWorkoutDetail = {
+      id: `local-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0],
+      duration: elapsedSeconds,
+      score: totalScore,
+      mode,
+      exercises: planExercises.length > 0 ? planExercises : allExercises.map(e => ({
+        name: e.name, type: e.type, reps: e.reps, sets: e.sets,
+        weight: e.weight, duration: typeof e.duration === 'number' ? (e.duration > 0 ? `${Math.round(e.duration / 60)} min` : undefined) : undefined,
+      })),
+    };
+    setCompletedWorkouts(prev => [completedDetail, ...prev]);
+
     await saveWorkout(mode, totalScore, allExercises);
   };
 
