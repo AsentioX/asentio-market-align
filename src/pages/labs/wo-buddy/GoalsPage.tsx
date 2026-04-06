@@ -90,8 +90,11 @@ const GoalsPage = () => {
 
     if (newPlan) {
       const days = plan.map(d => ({
-        plan_id: newPlan.id, day_of_week: d.dayOfWeek, workout_type: d.workoutType,
-        focus_drivers: d.focusDrivers, exercises: JSON.parse(JSON.stringify(d.exercises)), notes: d.reason,
+        plan_id: newPlan.id, day_of_week: d.dayOfWeek,
+        workout_type: d.isRest ? 'rest' : (d.sessions[0]?.workoutType || 'rest'),
+        focus_drivers: d.sessions.flatMap(s => s.focusDrivers),
+        exercises: JSON.parse(JSON.stringify(d.sessions.flatMap(s => s.exercises))),
+        notes: d.isRest ? (d.restReason || 'Rest') : d.sessions.map(s => s.reason).join('; '),
       }));
       await supabase.from('wobuddy_plan_days').insert(days);
     }
