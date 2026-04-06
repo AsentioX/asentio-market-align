@@ -101,11 +101,59 @@ const WorkoutPage = () => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [workoutStarted, workoutPaused]);
 
+  // Per-exercise timer
+  useEffect(() => {
+    if (activeExerciseKey && workoutStarted && !workoutPaused) {
+      exerciseTimerActiveRef.current = setInterval(() => setExerciseElapsed(s => s + 1), 1000);
+    } else {
+      if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current);
+    }
+    return () => { if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current); };
+  }, [activeExerciseKey, workoutStarted, workoutPaused]);
+
+  const activateExercise = (key: string) => {
+    setActiveExerciseKey(key);
+    setExerciseElapsed(0);
+    setExerciseInputMode(prev => ({ ...prev, [key]: null }));
+  };
+
+  const completeActiveExercise = (si: number, ei: number) => {
+    const key = `${si}-${ei}`;
+    handleExerciseAction(si, ei, 'completed');
+    setActiveExerciseKey(null);
+    setExerciseElapsed(0);
+    setExerciseInputMode(prev => ({ ...prev, [key]: null }));
+    // Auto-advance to next pending exercise
+    if (todayPlan) {
+      for (const [ssi, session] of todayPlan.sessions.entries()) {
+        for (const [eei] of session.exercises.entries()) {
+          const nk = `${ssi}-${eei}`;
+          if (nk > key && (!exerciseActions[nk] || exerciseActions[nk] === 'pending')) {
+            activateExercise(nk);
+            return;
+          }
+        }
+      }
+    }
+  };
+
   const handleStartWorkout = () => {
     setWorkoutStarted(true);
     setWorkoutPaused(false);
     setElapsedSeconds(0);
     setSessionStartTime(new Date());
+    // Auto-activate first exercise
+    if (todayPlan) {
+      for (const [si, session] of todayPlan.sessions.entries()) {
+        for (const [ei] of session.exercises.entries()) {
+          const key = `${si}-${ei}`;
+          if (!exerciseActions[key] || exerciseActions[key] === 'pending') {
+            activateExercise(key);
+            return;
+          }
+        }
+      }
+    }
   };
 
   const handlePauseWorkout = () => setWorkoutPaused(!workoutPaused);
