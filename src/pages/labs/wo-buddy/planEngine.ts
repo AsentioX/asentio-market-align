@@ -7,14 +7,22 @@ export interface PlanExercise {
   reps?: number;
   duration?: string;
   note?: string;
+  type: 'strength' | 'cardio' | 'bodyweight' | 'flexibility';
+}
+
+export interface PlanSession {
+  label: string;
+  workoutType: 'strength' | 'cardio' | 'bodyweight' | 'rest' | 'active_recovery';
+  exercises: PlanExercise[];
+  focusDrivers: string[];
+  reason: string;
 }
 
 export interface PlanDay {
   dayOfWeek: number;
-  workoutType: 'strength' | 'cardio' | 'bodyweight' | 'rest' | 'active_recovery';
-  focusDrivers: string[];
-  exercises: PlanExercise[];
-  reason: string;
+  sessions: PlanSession[];
+  isRest: boolean;
+  restReason?: string;
 }
 
 export const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
