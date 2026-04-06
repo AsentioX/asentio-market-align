@@ -15,7 +15,7 @@ const ProfilePage = () => {
   };
 
   const saveProfile = () => {
-    setProfile({ ...draft });
+    updateProfile({ ...draft });
     setEditingProfile(false);
   };
   const cancelEdit = () => {
