@@ -497,6 +497,16 @@ const WorkoutPage = () => {
           {/* ===== CHOICE SCREEN: Plan expanded + Add Exercise ===== */}
           {workoutPath === 'choose' && (
             <div className="space-y-3">
+              {/* Back button when workout is active */}
+              {workoutStarted && (
+                <button
+                  onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); }}
+                  className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/60 transition-colors"
+                >
+                  <ArrowRight className="w-3 h-3 rotate-180" /> Back
+                </button>
+              )}
+
               {/* Today's Plan - expanded inline */}
               {hasSessions && (
                 <div className="space-y-3">
@@ -548,6 +558,17 @@ const WorkoutPage = () => {
                 >
                   <Play className="w-5 h-5" />
                   <span>Start Workout</span>
+                </button>
+              )}
+
+              {/* FINISH WORKOUT button (when workout is active) */}
+              {workoutStarted && (
+                <button
+                  onClick={handleSubmit}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-red-500/20"
+                >
+                  <Check className="w-5 h-5" />
+                  <span>Finish Workout</span>
                 </button>
               )}
             </div>
