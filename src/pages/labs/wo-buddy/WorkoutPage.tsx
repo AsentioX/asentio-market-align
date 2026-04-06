@@ -919,16 +919,16 @@ function InputSelect({ label, value, options, onChange }: { label: string; value
   );
 }
 
-// ---- Unified Plan + Mode Grid ----
+// ---- Unified Plan + Mode Grid (Session-Based) ----
 interface UnifiedPlanGridProps {
   todayPlan: PlanDay | null;
-  exerciseActions: Record<number, ExerciseAction>;
-  onExerciseAction: (idx: number, action: ExerciseAction) => void;
+  exerciseActions: Record<string, ExerciseAction>;
+  onExerciseAction: (sessionIdx: number, exIdx: number, action: ExerciseAction) => void;
   mode: Mode;
   onModeSelect: (m: Mode) => void;
 }
 
-const exerciseTypeConfig: Record<string, { emoji: string; color: string; gradient: string; border: string; activeGradient: string }> = {
+const SESSION_TYPE_STYLES: Record<string, { emoji: string; color: string; gradient: string; border: string; activeGradient: string }> = {
   strength: { emoji: '🏋️', color: 'text-blue-400', gradient: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/20', activeGradient: 'from-blue-500/30 to-blue-600/10' },
   cardio: { emoji: '🏃', color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/20', activeGradient: 'from-orange-500/30 to-orange-600/10' },
   bodyweight: { emoji: '💪', color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', activeGradient: 'from-purple-500/30 to-purple-600/10' },
@@ -936,19 +936,18 @@ const exerciseTypeConfig: Record<string, { emoji: string; color: string; gradien
   rest: { emoji: '😴', color: 'text-white/40', gradient: 'from-white/5 to-white/[0.02]', border: 'border-white/[0.06]', activeGradient: 'from-white/10 to-white/5' },
 };
 
-function getExerciseTypeStyle(workoutType: string) {
-  return exerciseTypeConfig[workoutType] || exerciseTypeConfig.strength;
-}
-
 const UnifiedPlanGrid = ({ todayPlan, exerciseActions, onExerciseAction, mode, onModeSelect }: UnifiedPlanGridProps) => {
-  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const [expandedSession, setExpandedSession] = useState<number | null>(null);
+  const [expandedExercise, setExpandedExercise] = useState<string | null>(null); // "sessionIdx-exIdx"
 
-  const hasExercises = todayPlan && todayPlan.exercises.length > 0;
-  const isRestDay = todayPlan && todayPlan.exercises.length === 0;
-  const completedCount = Object.values(exerciseActions).filter(a => a === 'completed').length;
-  const totalCount = todayPlan?.exercises.length || 0;
-  const allDone = totalCount > 0 && todayPlan!.exercises.every((_, i) => exerciseActions[i] && exerciseActions[i] !== 'pending');
-  const typeStyle = getExerciseTypeStyle(todayPlan?.workoutType || 'strength');
+  const hasSessions = todayPlan && todayPlan.sessions.length > 0 && !todayPlan.isRest;
+
+  // Count completed across all sessions
+  const allExercises = todayPlan ? getAllExercisesForDay(todayPlan) : [];
+  const totalCount = allExercises.length;
+  const completedCount = Object.entries(exerciseActions).filter(([, a]) => a === 'completed').length;
+  const allDone = totalCount > 0 && Object.keys(exerciseActions).length >= totalCount &&
+    Object.values(exerciseActions).every(a => a !== 'pending');
 
   return (
     <div className="space-y-3">
@@ -959,8 +958,11 @@ const UnifiedPlanGrid = ({ todayPlan, exerciseActions, onExerciseAction, mode, o
             <CalendarDays className="w-4 h-4 text-emerald-400" />
             <div>
               <p className="text-xs font-semibold text-white">Today's Plan</p>
-              <p className="text-[10px] text-white/40 capitalize">
-                {todayPlan.workoutType.replace('_', ' ')} · {todayPlan.focusDrivers.join(', ')}
+              <p className="text-[10px] text-white/40">
+                {todayPlan.isRest
+                  ? (todayPlan.restReason || 'Rest day')
+                  : `${todayPlan.sessions.length} session${todayPlan.sessions.length > 1 ? 's' : ''}`
+                }
               </p>
             </div>
           </div>
@@ -972,78 +974,148 @@ const UnifiedPlanGrid = ({ todayPlan, exerciseActions, onExerciseAction, mode, o
         </div>
       )}
 
-      {todayPlan?.reason && (
-        <p className="text-[10px] text-emerald-400/60 flex items-center gap-1 -mt-1">
-          <Sparkles className="w-3 h-3" /> {todayPlan.reason}
-        </p>
-      )}
-
       {/* Rest day */}
-      {isRestDay && (
+      {todayPlan?.isRest && todayPlan.sessions.length === 0 && (
         <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
           <span className="text-2xl">😴</span>
-          <p className="text-sm text-white/50 mt-2">Today is a {todayPlan.workoutType.replace('_', ' ')} day</p>
-          <p className="text-[11px] text-white/30 mt-1">{todayPlan.reason}</p>
+          <p className="text-sm text-white/50 mt-2">Today is a rest day</p>
+          <p className="text-[11px] text-white/30 mt-1">{todayPlan.restReason}</p>
         </div>
       )}
 
-      {/* Exercise squares grid */}
-      {hasExercises && (
-        <div className="grid grid-cols-3 gap-2">
-          {todayPlan.exercises.map((ex, i) => {
-            const action = exerciseActions[i] || 'pending';
-            const isExpanded = expandedIdx === i;
-            const isDone = action !== 'pending';
+      {/* Session cards */}
+      {hasSessions && (
+        <div className="space-y-2.5">
+          {todayPlan.sessions.map((session, si) => {
+            const style = SESSION_TYPE_STYLES[session.workoutType] || SESSION_TYPE_STYLES.strength;
+            const sessionExerciseCount = session.exercises.length;
+            const sessionCompleted = session.exercises.filter((_, ei) =>
+              exerciseActions[`${si}-${ei}`] === 'completed'
+            ).length;
+            const sessionAllDone = sessionExerciseCount > 0 && session.exercises.every((_, ei) =>
+              exerciseActions[`${si}-${ei}`] && exerciseActions[`${si}-${ei}`] !== 'pending'
+            );
+            const isExpanded = expandedSession === si;
+
+            // Get unique exercise types for icon display
+            const exerciseTypes = [...new Set(session.exercises.map(e => e.type))];
 
             return (
-              <div key={i} className="relative">
+              <div key={si} className={`rounded-2xl border overflow-hidden transition-all ${style.border} ${
+                sessionAllDone ? 'opacity-60' : ''
+              }`}>
+                {/* Session header - clickable to expand */}
                 <button
-                  onClick={() => {
-                    if (isDone) return;
-                    setExpandedIdx(isExpanded ? null : i);
-                  }}
-                  className={`w-full aspect-square flex flex-col items-center justify-center gap-1.5 rounded-2xl text-xs font-medium transition-all border ${
-                    action === 'completed'
-                      ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-                      : action === 'dismissed'
-                        ? 'bg-gradient-to-b from-red-500/10 to-red-600/5 border-red-500/10 text-white/30 opacity-50'
-                        : action === 'deferred'
-                          ? 'bg-gradient-to-b from-amber-500/10 to-amber-600/5 border-amber-500/10 text-amber-400 opacity-60'
-                          : isExpanded
-                            ? `bg-gradient-to-b ${typeStyle.activeGradient} ${typeStyle.border} ${typeStyle.color} shadow-lg ring-1 ring-white/10`
-                            : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-                  }`}
+                  onClick={() => setExpandedSession(isExpanded ? null : si)}
+                  className={`w-full flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient} transition-all`}
                 >
-                  <span className="text-2xl">
-                    {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : action === 'deferred' ? '⏭️' : typeStyle.emoji}
-                  </span>
-                  <span className="px-1 text-center leading-tight line-clamp-2">{ex.name}</span>
-                  <span className="text-[9px] text-white/30">
-                    {ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}
-                  </span>
+                  {/* Session icon */}
+                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl flex-shrink-0">
+                    {style.emoji}
+                  </div>
+
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-white truncate">{session.label}</p>
+                      {todayPlan.sessions.length > 1 && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 shrink-0">
+                          Session {si + 1}
+                        </span>
+                      )}
+                    </div>
+                    {/* Exercise type icons row */}
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-1">
+                        {exerciseTypes.map(t => (
+                          <span key={t} className="text-xs" title={t}>
+                            {EXERCISE_TYPE_ICONS[t]?.emoji || '⚡'}
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-white/30">
+                        {sessionExerciseCount} exercise{sessionExerciseCount !== 1 ? 's' : ''}
+                      </span>
+                      {sessionCompleted > 0 && (
+                        <span className="text-[10px] text-emerald-400">
+                          {sessionCompleted}/{sessionExerciseCount} done
+                        </span>
+                      )}
+                    </div>
+                    {session.reason && (
+                      <p className="text-[10px] text-emerald-400/60 mt-0.5 flex items-center gap-1 truncate">
+                        <Sparkles className="w-2.5 h-2.5 shrink-0" /> {session.reason}
+                      </p>
+                    )}
+                  </div>
+
+                  <ChevronRight className={`w-4 h-4 text-white/20 transition-transform shrink-0 ${isExpanded ? 'rotate-90' : ''}`} />
                 </button>
 
-                {/* Expanded action overlay */}
-                {isExpanded && !isDone && (
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-black/80 backdrop-blur-sm border border-white/10">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onExerciseAction(i, 'completed'); setExpandedIdx(null); }}
-                      className="w-[85%] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
-                    >
-                      <Check className="w-3.5 h-3.5" /> Start
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onExerciseAction(i, 'deferred'); setExpandedIdx(null); }}
-                      className="w-[85%] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-amber-500/15 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/25 transition-colors"
-                    >
-                      <ArrowRight className="w-3.5 h-3.5" /> Defer
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onExerciseAction(i, 'dismissed'); setExpandedIdx(null); }}
-                      className="w-[85%] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
-                    >
-                      <span>✕</span> Dismiss
-                    </button>
+                {/* Expanded exercises list */}
+                {isExpanded && (
+                  <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
+                    {session.exercises.map((ex, ei) => {
+                      const key = `${si}-${ei}`;
+                      const action = exerciseActions[key] || 'pending';
+                      const isDone = action !== 'pending';
+                      const isExExpanded = expandedExercise === key;
+                      const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
+
+                      return (
+                        <div key={ei} className="relative">
+                          <button
+                            onClick={() => {
+                              if (isDone) return;
+                              setExpandedExercise(isExExpanded ? null : key);
+                            }}
+                            className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${
+                              action === 'completed'
+                                ? 'bg-emerald-500/10 border border-emerald-500/15'
+                                : action === 'dismissed'
+                                  ? 'bg-red-500/5 border border-red-500/10 opacity-50'
+                                  : action === 'deferred'
+                                    ? 'bg-amber-500/5 border border-amber-500/10 opacity-60'
+                                    : 'bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06]'
+                            }`}
+                          >
+                            <span className="text-lg w-7 text-center">
+                              {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : action === 'deferred' ? '⏭️' : exTypeIcon.emoji}
+                            </span>
+                            <div className="flex-1 min-w-0 text-left">
+                              <p className={`text-xs font-medium ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
+                              <p className="text-[10px] text-white/30">
+                                {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
+                              </p>
+                            </div>
+                            {!isDone && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
+                          </button>
+
+                          {/* Exercise action overlay */}
+                          {isExExpanded && !isDone && (
+                            <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-white/10">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'completed'); setExpandedExercise(null); }}
+                                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
+                              >
+                                <Check className="w-3.5 h-3.5" /> Start
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'deferred'); setExpandedExercise(null); }}
+                                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/25 transition-colors"
+                              >
+                                <ArrowRight className="w-3.5 h-3.5" /> Defer
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'dismissed'); setExpandedExercise(null); }}
+                                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
