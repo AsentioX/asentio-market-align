@@ -1,20 +1,19 @@
 import { useState } from 'react';
-import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft, CalendarDays } from 'lucide-react';
+import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import WorkoutPage from './WorkoutPage';
 import CompetitionsPage from './CompetitionsPage';
 import GoalsPage from './GoalsPage';
-import WorkoutPlanPage from './WorkoutPlanPage';
 import ProfilePage from './ProfilePage';
 import WearableSettings from './WearableSettings';
 
-type Tab = 'dashboard' | 'workout' | 'plan' | 'competitions' | 'goals' | 'settings';
+type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Home', icon: <Home className="w-5 h-5" /> },
   { id: 'workout', label: 'Workout', icon: <Dumbbell className="w-5 h-5" /> },
-  { id: 'plan', label: 'Plan', icon: <CalendarDays className="w-5 h-5" /> },
+  { id: 'competitions', label: 'Compete', icon: <Trophy className="w-5 h-5" /> },
   { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
