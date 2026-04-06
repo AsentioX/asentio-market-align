@@ -217,24 +217,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Coaching Insights */}
-      {goals.length > 0 && (
-        <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
-          <div className="flex items-center justify-between mb-2.5">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Coaching</span>
-            </div>
-            <button onClick={() => onNavigate('goals')} className="text-xs text-emerald-400 flex items-center gap-0.5 font-medium">
-              Goals <ChevronRight className="w-3 h-3" />
-            </button>
-          </div>
-          {insights.slice(0, 2).map((insight, i) => (
-            <p key={i} className="text-[12px] text-white/60 leading-relaxed">{insight}</p>
-          ))}
-        </div>
-      )}
-
       {/* Achievements */}
       <div>
         <div className="flex items-center justify-between mb-3">
