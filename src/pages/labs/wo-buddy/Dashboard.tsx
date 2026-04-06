@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Trophy, Dumbbell, Timer, ArrowRight } from 'lucide-react';
+import { Activity, Flame, Target, Zap, ChevronRight, Trophy, Dumbbell, Timer, ArrowRight, Sparkles } from 'lucide-react';
 import { mockUser, mockCompetitions, mockWorkouts } from './mockData';
+import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
+import { generateInsights } from './goalMappings';
 import heroBg from '@/assets/wo-buddy/hero-bg.jpg';
 import compWarrior from '@/assets/wo-buddy/comp-warrior.jpg';
 import compBurn from '@/assets/wo-buddy/comp-burn.jpg';
