@@ -426,11 +426,13 @@ const WorkoutPage = () => {
           <UnifiedPlanGrid
             todayPlan={todayPlan}
             exerciseActions={exerciseActions}
-            onExerciseAction={(idx, action) => {
-              setExerciseActions(prev => ({ ...prev, [idx]: action }));
+            onExerciseAction={(sessionIdx, exIdx, action) => {
+              const key = `${sessionIdx}-${exIdx}`;
+              setExerciseActions(prev => ({ ...prev, [key]: action }));
               if (action === 'completed') {
-                const ex = todayPlan!.exercises[idx];
-                const drivers = ACTIVITY_DRIVER_MAP[ex.name] || todayPlan!.focusDrivers;
+                const session = todayPlan!.sessions[sessionIdx];
+                const ex = session.exercises[exIdx];
+                const drivers = ACTIVITY_DRIVER_MAP[ex.name] || session.focusDrivers;
                 const impactedGoals = goals.filter(g =>
                   g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
                 );
@@ -441,7 +443,8 @@ const WorkoutPage = () => {
                   updateGoal(g.id, { current_value: newVal, status: newStatus });
                 });
               } else if (action === 'dismissed') {
-                const drivers = ACTIVITY_DRIVER_MAP[todayPlan!.exercises[idx].name] || todayPlan!.focusDrivers;
+                const session = todayPlan!.sessions[sessionIdx];
+                const drivers = ACTIVITY_DRIVER_MAP[session.exercises[exIdx].name] || session.focusDrivers;
                 const impactedGoals = goals.filter(g =>
                   g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
                 );
