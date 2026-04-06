@@ -364,6 +364,9 @@ const WorkoutPage = () => {
         </div>
       )}
 
+      {/* Why This Matters */}
+      <WhyThisMatters activityName={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise} />
+
       {/* Score preview */}
       <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
         <div>
