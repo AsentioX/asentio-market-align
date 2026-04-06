@@ -118,9 +118,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
         <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
       </div>
-          })}
-        </div>
-      </div>
 
       {/* Period Toggle */}
       <div className="flex items-center gap-1.5 bg-white/[0.03] rounded-xl p-1 border border-white/[0.06]">
