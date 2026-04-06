@@ -349,6 +349,13 @@ const WorkoutPage = () => {
     setElapsedSeconds(0);
     setWorkoutPath('choose');
     setExerciseActions({});
+    setActiveExerciseKey(null);
+    setExerciseElapsed(0);
+    setShowNextConfirm(null);
+    setExerciseInputMode({});
+    setManualReps({});
+    setManualSets({});
+    setManualWeight({});
   };
 
   // ---- SUBMITTED: Post-workout summary ----
