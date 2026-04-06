@@ -554,7 +554,7 @@ const WorkoutPage = () => {
                       <Plus className="w-6 h-6 text-white/50" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">Log New Exercise</p>
+                      <p className="text-sm font-semibold text-white">Add Exercise</p>
                       <p className="text-[11px] text-white/40 mt-0.5">Strength, Cardio, or Bodyweight</p>
                       <div className="flex items-center gap-1.5 mt-1">
                         <span className="text-sm">🏋️</span>
