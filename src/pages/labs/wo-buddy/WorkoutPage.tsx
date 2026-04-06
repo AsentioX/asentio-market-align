@@ -634,8 +634,9 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
 
   // Stats
   const skippedDays = burndownData.filter(d => d.skipped && d.actual !== null).length;
-  const lastActual = burndownData.filter(d => d.actual !== null).at(-1);
-  const lastIdeal = burndownData.filter(d => d.actual !== null).at(-1);
+  const pastData = burndownData.filter(d => d.actual !== null);
+  const lastActual = pastData.length > 0 ? pastData[pastData.length - 1] : null;
+  const lastIdeal = lastActual;
   const drift = lastActual && lastIdeal ? Math.round(lastActual.actual! - lastIdeal.ideal) : 0;
 
   if (workouts.length === 0 && activeGoals.length === 0) {
