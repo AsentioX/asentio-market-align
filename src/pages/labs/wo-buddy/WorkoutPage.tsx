@@ -422,70 +422,39 @@ const WorkoutPage = () => {
         <WorkoutHistory workouts={workouts} />
       ) : (
         <>
-          {/* Today's Plan Card */}
-          {todayPlan && todayPlan.exercises.length > 0 && (
-            <TodaysPlanCard
-              plan={todayPlan}
-              exerciseActions={exerciseActions}
-              onAction={(idx, action) => {
-                setExerciseActions(prev => ({ ...prev, [idx]: action }));
-                // Impact: completing adds progress, dismissing/deferring doesn't
-                if (action === 'completed') {
-                  // Find goals connected via drivers and nudge progress
-                  const ex = todayPlan.exercises[idx];
-                  const drivers = ACTIVITY_DRIVER_MAP[ex.name] || todayPlan.focusDrivers;
-                  const impactedGoals = goals.filter(g =>
-                    g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
-                  );
-                  impactedGoals.forEach(g => {
-                    const increment = Math.max(1, Math.round(g.target_value * 0.02));
-                    const newVal = Math.min(g.current_value + increment, g.target_value);
-                    const newStatus = newVal >= g.target_value ? 'achieved' : newVal >= g.target_value * 0.6 ? 'on_track' : 'at_risk';
-                    updateGoal(g.id, { current_value: newVal, status: newStatus });
-                  });
-                } else if (action === 'dismissed') {
-                  // Dismissed = skipped, hurts burndown (reduce status confidence)
-                  const drivers = ACTIVITY_DRIVER_MAP[todayPlan.exercises[idx].name] || todayPlan.focusDrivers;
-                  const impactedGoals = goals.filter(g =>
-                    g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
-                  );
-                  impactedGoals.forEach(g => {
-                    if (g.current_value < g.target_value * 0.7) {
-                      updateGoal(g.id, { status: 'at_risk' });
-                    }
-                  });
-                }
-                // Deferred = pushed to tomorrow, no immediate impact but no progress either
-              }}
-            />
-          )}
-
-          {/* Rest day message */}
-          {todayPlan && todayPlan.exercises.length === 0 && (
-            <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
-              <span className="text-2xl">😴</span>
-              <p className="text-sm text-white/50 mt-2">Today is a {todayPlan.workoutType.replace('_', ' ')} day</p>
-              <p className="text-[11px] text-white/30 mt-1">{todayPlan.reason}</p>
-            </div>
-          )}
-
-          {/* Mode selector */}
-          <div className="grid grid-cols-3 gap-2">
-            {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
-              <button
-                key={id}
-                onClick={() => { setMode(id); setCameraTracking(false); }}
-                className={`flex flex-col items-center gap-2 py-4 px-2 rounded-2xl text-xs font-medium transition-all border ${
-                  mode === id
-                    ? `bg-gradient-to-b ${cfg.active} ${cfg.border} ${cfg.color} shadow-lg`
-                    : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-                }`}
-              >
-                <span className="text-2xl">{cfg.emoji}</span>
-                <span className="flex items-center gap-1">{cfg.icon}{cfg.label}</span>
-              </button>
-            ))}
-          </div>
+          {/* Unified Plan + Mode Grid */}
+          <UnifiedPlanGrid
+            todayPlan={todayPlan}
+            exerciseActions={exerciseActions}
+            onExerciseAction={(idx, action) => {
+              setExerciseActions(prev => ({ ...prev, [idx]: action }));
+              if (action === 'completed') {
+                const ex = todayPlan!.exercises[idx];
+                const drivers = ACTIVITY_DRIVER_MAP[ex.name] || todayPlan!.focusDrivers;
+                const impactedGoals = goals.filter(g =>
+                  g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
+                );
+                impactedGoals.forEach(g => {
+                  const increment = Math.max(1, Math.round(g.target_value * 0.02));
+                  const newVal = Math.min(g.current_value + increment, g.target_value);
+                  const newStatus = newVal >= g.target_value ? 'achieved' : newVal >= g.target_value * 0.6 ? 'on_track' : 'at_risk';
+                  updateGoal(g.id, { current_value: newVal, status: newStatus });
+                });
+              } else if (action === 'dismissed') {
+                const drivers = ACTIVITY_DRIVER_MAP[todayPlan!.exercises[idx].name] || todayPlan!.focusDrivers;
+                const impactedGoals = goals.filter(g =>
+                  g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
+                );
+                impactedGoals.forEach(g => {
+                  if (g.current_value < g.target_value * 0.7) {
+                    updateGoal(g.id, { status: 'at_risk' });
+                  }
+                });
+              }
+            }}
+            mode={mode}
+            onModeSelect={(id) => { setMode(id); setCameraTracking(false); }}
+          />
 
           {/* Camera tracking toggle */}
           {mode !== 'cardio' && (
@@ -947,113 +916,174 @@ function InputSelect({ label, value, options, onChange }: { label: string; value
   );
 }
 
-// ---- Today's Plan Card ----
-interface TodaysPlanCardProps {
-  plan: PlanDay;
+// ---- Unified Plan + Mode Grid ----
+interface UnifiedPlanGridProps {
+  todayPlan: PlanDay | null;
   exerciseActions: Record<number, ExerciseAction>;
-  onAction: (idx: number, action: ExerciseAction) => void;
+  onExerciseAction: (idx: number, action: ExerciseAction) => void;
+  mode: Mode;
+  onModeSelect: (m: Mode) => void;
 }
 
-const TodaysPlanCard = ({ plan, exerciseActions, onAction }: TodaysPlanCardProps) => {
-  const allDone = plan.exercises.every((_, i) => exerciseActions[i] && exerciseActions[i] !== 'pending');
+const exerciseTypeConfig: Record<string, { emoji: string; color: string; gradient: string; border: string; activeGradient: string }> = {
+  strength: { emoji: '🏋️', color: 'text-blue-400', gradient: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/20', activeGradient: 'from-blue-500/30 to-blue-600/10' },
+  cardio: { emoji: '🏃', color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/20', activeGradient: 'from-orange-500/30 to-orange-600/10' },
+  bodyweight: { emoji: '💪', color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', activeGradient: 'from-purple-500/30 to-purple-600/10' },
+  active_recovery: { emoji: '🧘', color: 'text-teal-400', gradient: 'from-teal-500/20 to-teal-600/5', border: 'border-teal-500/20', activeGradient: 'from-teal-500/30 to-teal-600/10' },
+  rest: { emoji: '😴', color: 'text-white/40', gradient: 'from-white/5 to-white/[0.02]', border: 'border-white/[0.06]', activeGradient: 'from-white/10 to-white/5' },
+};
+
+function getExerciseTypeStyle(workoutType: string) {
+  return exerciseTypeConfig[workoutType] || exerciseTypeConfig.strength;
+}
+
+const UnifiedPlanGrid = ({ todayPlan, exerciseActions, onExerciseAction, mode, onModeSelect }: UnifiedPlanGridProps) => {
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+
+  const hasExercises = todayPlan && todayPlan.exercises.length > 0;
+  const isRestDay = todayPlan && todayPlan.exercises.length === 0;
   const completedCount = Object.values(exerciseActions).filter(a => a === 'completed').length;
-  const totalCount = plan.exercises.length;
+  const totalCount = todayPlan?.exercises.length || 0;
+  const allDone = totalCount > 0 && todayPlan!.exercises.every((_, i) => exerciseActions[i] && exerciseActions[i] !== 'pending');
+  const typeStyle = getExerciseTypeStyle(todayPlan?.workoutType || 'strength');
 
   return (
-    <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.06] to-emerald-600/[0.02] overflow-hidden">
-      <div className="p-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-emerald-400" />
-          <div>
-            <p className="text-xs font-semibold text-white">Today's Plan</p>
-            <p className="text-[10px] text-white/40 capitalize">
-              {plan.workoutType.replace('_', ' ')} · {plan.focusDrivers.join(', ')}
-            </p>
+    <div className="space-y-3">
+      {/* Header */}
+      {todayPlan && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="w-4 h-4 text-emerald-400" />
+            <div>
+              <p className="text-xs font-semibold text-white">Today's Plan</p>
+              <p className="text-[10px] text-white/40 capitalize">
+                {todayPlan.workoutType.replace('_', ' ')} · {todayPlan.focusDrivers.join(', ')}
+              </p>
+            </div>
           </div>
+          {totalCount > 0 && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
+              {completedCount}/{totalCount}
+            </span>
+          )}
         </div>
-        {totalCount > 0 && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
-            {completedCount}/{totalCount}
-          </span>
-        )}
-      </div>
+      )}
 
-      {plan.reason && (
-        <p className="px-3 pb-1 text-[10px] text-emerald-400/60 flex items-center gap-1">
-          <Sparkles className="w-3 h-3" /> {plan.reason}
+      {todayPlan?.reason && (
+        <p className="text-[10px] text-emerald-400/60 flex items-center gap-1 -mt-1">
+          <Sparkles className="w-3 h-3" /> {todayPlan.reason}
         </p>
       )}
 
-      <div className="px-3 pb-3 space-y-1.5 mt-1">
-        {plan.exercises.map((ex, i) => {
-          const action = exerciseActions[i] || 'pending';
-          return (
-            <div key={i} className={`rounded-xl border transition-all ${
-              action === 'completed' ? 'bg-emerald-500/10 border-emerald-500/15' :
-              action === 'dismissed' ? 'bg-red-500/5 border-red-500/10 opacity-50' :
-              action === 'deferred' ? 'bg-amber-500/5 border-amber-500/10 opacity-60' :
-              'bg-white/[0.03] border-white/[0.06]'
-            }`}>
-              <div className="flex items-center gap-2 p-2.5">
-                <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-medium ${action === 'completed' ? 'text-emerald-400 line-through' : action === 'dismissed' ? 'text-white/30 line-through' : 'text-white/80'}`}>
-                    {ex.name}
-                  </p>
-                  <p className="text-[10px] text-white/30">
-                    {ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}
-                  </p>
-                </div>
-                {action === 'pending' ? (
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => onAction(i, 'completed')}
-                      className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/25 transition-colors"
-                      title="Complete">
-                      <Check className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => onAction(i, 'deferred')}
-                      className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center hover:bg-amber-500/20 transition-colors"
-                      title="Push to tomorrow">
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => onAction(i, 'dismissed')}
-                      className="w-7 h-7 rounded-lg bg-white/5 text-white/30 flex items-center justify-center hover:bg-red-500/10 hover:text-red-400 transition-colors"
-                      title="Skip">
-                      <span className="text-xs">✕</span>
-                    </button>
-                  </div>
-                ) : (
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
-                    action === 'completed' ? 'bg-emerald-500/15 text-emerald-400' :
-                    action === 'deferred' ? 'bg-amber-500/10 text-amber-400' :
-                    'bg-red-500/10 text-red-400'
-                  }`}>
-                    {action === 'completed' ? '✓ Done' : action === 'deferred' ? '→ Tomorrow' : '✕ Skipped'}
-                  </span>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {allDone && totalCount > 0 && (
-        <div className="px-3 pb-3">
-          <div className={`rounded-xl p-2.5 text-center text-[11px] font-medium ${
-            completedCount === totalCount
-              ? 'bg-emerald-500/10 text-emerald-400'
-              : completedCount >= totalCount / 2
-                ? 'bg-amber-500/10 text-amber-400'
-                : 'bg-red-500/10 text-red-400'
-          }`}>
-            {completedCount === totalCount
-              ? '🎉 Plan complete! Great discipline.'
-              : completedCount >= totalCount / 2
-                ? `⚠️ ${totalCount - completedCount} exercise${totalCount - completedCount > 1 ? 's' : ''} skipped/deferred — may slow goal progress`
-                : `🔴 Most exercises skipped — this impacts your burndown toward goals`
-            }
-          </div>
+      {/* Rest day */}
+      {isRestDay && (
+        <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+          <span className="text-2xl">😴</span>
+          <p className="text-sm text-white/50 mt-2">Today is a {todayPlan.workoutType.replace('_', ' ')} day</p>
+          <p className="text-[11px] text-white/30 mt-1">{todayPlan.reason}</p>
         </div>
       )}
+
+      {/* Exercise squares grid */}
+      {hasExercises && (
+        <div className="grid grid-cols-3 gap-2">
+          {todayPlan.exercises.map((ex, i) => {
+            const action = exerciseActions[i] || 'pending';
+            const isExpanded = expandedIdx === i;
+            const isDone = action !== 'pending';
+
+            return (
+              <div key={i} className="relative">
+                <button
+                  onClick={() => {
+                    if (isDone) return;
+                    setExpandedIdx(isExpanded ? null : i);
+                  }}
+                  className={`w-full aspect-square flex flex-col items-center justify-center gap-1.5 rounded-2xl text-xs font-medium transition-all border ${
+                    action === 'completed'
+                      ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
+                      : action === 'dismissed'
+                        ? 'bg-gradient-to-b from-red-500/10 to-red-600/5 border-red-500/10 text-white/30 opacity-50'
+                        : action === 'deferred'
+                          ? 'bg-gradient-to-b from-amber-500/10 to-amber-600/5 border-amber-500/10 text-amber-400 opacity-60'
+                          : isExpanded
+                            ? `bg-gradient-to-b ${typeStyle.activeGradient} ${typeStyle.border} ${typeStyle.color} shadow-lg ring-1 ring-white/10`
+                            : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
+                  }`}
+                >
+                  <span className="text-2xl">
+                    {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : action === 'deferred' ? '⏭️' : typeStyle.emoji}
+                  </span>
+                  <span className="px-1 text-center leading-tight line-clamp-2">{ex.name}</span>
+                  <span className="text-[9px] text-white/30">
+                    {ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}
+                  </span>
+                </button>
+
+                {/* Expanded action overlay */}
+                {isExpanded && !isDone && (
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-black/80 backdrop-blur-sm border border-white/10">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onExerciseAction(i, 'completed'); setExpandedIdx(null); }}
+                      className="w-[85%] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
+                    >
+                      <Check className="w-3.5 h-3.5" /> Start
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onExerciseAction(i, 'deferred'); setExpandedIdx(null); }}
+                      className="w-[85%] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-amber-500/15 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/25 transition-colors"
+                    >
+                      <ArrowRight className="w-3.5 h-3.5" /> Defer
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onExerciseAction(i, 'dismissed'); setExpandedIdx(null); }}
+                      className="w-[85%] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
+                    >
+                      <span>✕</span> Dismiss
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Completion summary */}
+      {allDone && totalCount > 0 && (
+        <div className={`rounded-xl p-2.5 text-center text-[11px] font-medium ${
+          completedCount === totalCount
+            ? 'bg-emerald-500/10 text-emerald-400'
+            : completedCount >= totalCount / 2
+              ? 'bg-amber-500/10 text-amber-400'
+              : 'bg-red-500/10 text-red-400'
+        }`}>
+          {completedCount === totalCount
+            ? '🎉 Plan complete! Great discipline.'
+            : completedCount >= totalCount / 2
+              ? `⚠️ ${totalCount - completedCount} exercise${totalCount - completedCount > 1 ? 's' : ''} skipped/deferred — may slow goal progress`
+              : `🔴 Most exercises skipped — this impacts your burndown toward goals`
+          }
+        </div>
+      )}
+
+      {/* Mode selector row */}
+      <div className="grid grid-cols-3 gap-2">
+        {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
+          <button
+            key={id}
+            onClick={() => onModeSelect(id)}
+            className={`flex flex-col items-center gap-2 py-4 px-2 rounded-2xl text-xs font-medium transition-all border ${
+              mode === id
+                ? `bg-gradient-to-b ${cfg.active} ${cfg.border} ${cfg.color} shadow-lg`
+                : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
+            }`}
+          >
+            <span className="text-2xl">{cfg.emoji}</span>
+            <span className="flex items-center gap-1">{cfg.icon}{cfg.label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
