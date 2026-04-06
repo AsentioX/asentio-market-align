@@ -861,7 +861,15 @@ const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* Start Workout */}
+              {/* Rest day */}
+              {todayPlan?.isRest && todayPlan.sessions.length === 0 && (
+                <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+                  <span className="text-2xl">😴</span>
+                  <p className="text-sm text-white/50 mt-2">Today is a rest day</p>
+                  <p className="text-[11px] text-white/30 mt-1">{todayPlan.restReason}</p>
+                </div>
+              )}
+
               <button
                 onClick={handleStartWorkout}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
