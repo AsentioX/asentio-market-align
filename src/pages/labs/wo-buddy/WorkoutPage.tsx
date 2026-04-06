@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays, Play, Pause, Timer, ChevronDown } from 'lucide-react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays, Play, Pause, Timer, ChevronDown, Hash, ImageIcon, SkipForward } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine, Area, AreaChart, CartesianGrid } from 'recharts';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
@@ -81,6 +81,16 @@ const WorkoutPage = () => {
   const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
 
+  // Active exercise tracking for workout-in-progress
+  const [activeExerciseKey, setActiveExerciseKey] = useState<string | null>(null);
+  const [exerciseElapsed, setExerciseElapsed] = useState(0);
+  const exerciseTimerActiveRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [showNextConfirm, setShowNextConfirm] = useState<string | null>(null); // key of exercise being confirmed
+  const [exerciseInputMode, setExerciseInputMode] = useState<Record<string, 'camera' | 'photo' | 'reps' | null>>({});
+  const [manualReps, setManualReps] = useState<Record<string, number>>({});
+  const [manualSets, setManualSets] = useState<Record<string, number>>({});
+  const [manualWeight, setManualWeight] = useState<Record<string, number>>({});
+
   // Workout timer logic
   useEffect(() => {
     if (workoutStarted && !workoutPaused) {
@@ -91,11 +101,59 @@ const WorkoutPage = () => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [workoutStarted, workoutPaused]);
 
+  // Per-exercise timer
+  useEffect(() => {
+    if (activeExerciseKey && workoutStarted && !workoutPaused) {
+      exerciseTimerActiveRef.current = setInterval(() => setExerciseElapsed(s => s + 1), 1000);
+    } else {
+      if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current);
+    }
+    return () => { if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current); };
+  }, [activeExerciseKey, workoutStarted, workoutPaused]);
+
+  const activateExercise = (key: string) => {
+    setActiveExerciseKey(key);
+    setExerciseElapsed(0);
+    setExerciseInputMode(prev => ({ ...prev, [key]: null }));
+  };
+
+  const completeActiveExercise = (si: number, ei: number) => {
+    const key = `${si}-${ei}`;
+    handleExerciseAction(si, ei, 'completed');
+    setActiveExerciseKey(null);
+    setExerciseElapsed(0);
+    setExerciseInputMode(prev => ({ ...prev, [key]: null }));
+    // Auto-advance to next pending exercise
+    if (todayPlan) {
+      for (const [ssi, session] of todayPlan.sessions.entries()) {
+        for (const [eei] of session.exercises.entries()) {
+          const nk = `${ssi}-${eei}`;
+          if (nk > key && (!exerciseActions[nk] || exerciseActions[nk] === 'pending')) {
+            activateExercise(nk);
+            return;
+          }
+        }
+      }
+    }
+  };
+
   const handleStartWorkout = () => {
     setWorkoutStarted(true);
     setWorkoutPaused(false);
     setElapsedSeconds(0);
     setSessionStartTime(new Date());
+    // Auto-activate first exercise
+    if (todayPlan) {
+      for (const [si, session] of todayPlan.sessions.entries()) {
+        for (const [ei] of session.exercises.entries()) {
+          const key = `${si}-${ei}`;
+          if (!exerciseActions[key] || exerciseActions[key] === 'pending') {
+            activateExercise(key);
+            return;
+          }
+        }
+      }
+    }
   };
 
   const handlePauseWorkout = () => setWorkoutPaused(!workoutPaused);
@@ -291,6 +349,13 @@ const WorkoutPage = () => {
     setElapsedSeconds(0);
     setWorkoutPath('choose');
     setExerciseActions({});
+    setActiveExerciseKey(null);
+    setExerciseElapsed(0);
+    setShowNextConfirm(null);
+    setExerciseInputMode({});
+    setManualReps({});
+    setManualSets({});
+    setManualWeight({});
   };
 
   // ---- SUBMITTED: Post-workout summary ----
@@ -451,12 +516,22 @@ const WorkoutPage = () => {
 
   // ---- WORKOUT IN PROGRESS MODE ----
   if (workoutStarted) {
+    // Build flat list of exercise keys for ordering
+    const allKeys: { key: string; si: number; ei: number }[] = [];
+    if (todayPlan) {
+      todayPlan.sessions.forEach((session, si) => {
+        session.exercises.forEach((_, ei) => {
+          allKeys.push({ key: `${si}-${ei}`, si, ei });
+        });
+      });
+    }
+
     return (
       <div className="space-y-4">
         {/* Header with back button */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); }}
+            onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); setActiveExerciseKey(null); }}
             className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
           >
             <ArrowRight className="w-4 h-4 text-white/60 rotate-180" />
@@ -485,6 +560,38 @@ const WorkoutPage = () => {
           </button>
         </div>
 
+        {/* "Next Exercise?" confirmation overlay */}
+        {showNextConfirm && (
+          <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-amber-600/5 p-4">
+            <p className="text-sm font-semibold text-white mb-1">Skip to next exercise?</p>
+            <p className="text-xs text-white/40 mb-3">Your current exercise will be marked as done.</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  // Complete current active exercise first
+                  if (activeExerciseKey) {
+                    const [asi, aei] = activeExerciseKey.split('-').map(Number);
+                    handleExerciseAction(asi, aei, 'completed');
+                  }
+                  // Activate the confirmed exercise
+                  const [nsi, nei] = showNextConfirm.split('-').map(Number);
+                  activateExercise(showNextConfirm);
+                  setShowNextConfirm(null);
+                }}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 text-xs font-semibold hover:bg-emerald-500/30 transition-colors"
+              >
+                <SkipForward className="w-3.5 h-3.5" /> Yes, Next Exercise
+              </button>
+              <button
+                onClick={() => setShowNextConfirm(null)}
+                className="px-4 py-2.5 rounded-xl bg-white/5 text-white/50 text-xs font-semibold hover:bg-white/10 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Active exercises from plan */}
         {hasSessions && (
           <div className="space-y-2">
@@ -494,41 +601,172 @@ const WorkoutPage = () => {
                 const action = exerciseActions[key] || 'pending';
                 const isDone = action === 'completed' || action === 'dismissed';
                 const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
-                const isFirst = !isDone && !Object.entries(exerciseActions).some(
-                  ([k, a]) => k < key && (a === 'pending' || !a)
-                );
+                const isActive = activeExerciseKey === key;
+                const inputMode = exerciseInputMode[key] || null;
 
                 if (action === 'dismissed') return null;
 
                 return (
                   <div key={key} className={`rounded-2xl border overflow-hidden transition-all ${
+                    isActive ? 'border-emerald-500/30 shadow-lg shadow-emerald-500/10' :
                     action === 'completed' ? 'border-emerald-500/15 opacity-50' : 'border-white/[0.08]'
                   }`}>
-                    <div className={`p-4 ${isFirst && !isDone ? 'bg-gradient-to-r from-white/[0.06] to-white/[0.02]' : 'bg-white/[0.03]'}`}>
+                    <div
+                      className={`p-4 transition-all ${
+                        isActive ? 'bg-gradient-to-r from-emerald-500/15 to-emerald-600/5' :
+                        isDone ? 'bg-white/[0.02]' : 'bg-white/[0.03]'
+                      }`}
+                      onClick={() => {
+                        if (!isDone && !isActive) {
+                          // Tapping a future exercise → ask "Next Exercise?"
+                          if (activeExerciseKey && activeExerciseKey !== key) {
+                            setShowNextConfirm(key);
+                          } else {
+                            activateExercise(key);
+                          }
+                        }
+                      }}
+                    >
                       <div className="flex items-center gap-3">
                         <span className="text-xl w-8 text-center">
                           {action === 'completed' ? '✅' : exTypeIcon.emoji}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-semibold ${isDone ? 'text-white/40 line-through' : 'text-white'}`}>{ex.name}</p>
+                          <p className={`text-sm font-semibold ${isDone ? 'text-white/40 line-through' : isActive ? 'text-emerald-300' : 'text-white'}`}>{ex.name}</p>
                           <p className="text-xs text-white/40">
-                            Duration: {ex.duration || (ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : '10 min')}
+                            {ex.duration || (ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : '10 min')}
                           </p>
                         </div>
-                        {!isDone && (
-                          <button
-                            onClick={() => handleExerciseAction(si, ei, 'completed')}
-                            className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-semibold hover:bg-emerald-500/30 transition-colors"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                          </button>
+                        {/* Active exercise timer */}
+                        {isActive && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold tabular-nums text-emerald-400">{formatTimer(exerciseElapsed)}</span>
+                          </div>
+                        )}
+                        {isDone && (
+                          <span className="text-[10px] text-emerald-400/60 font-medium">Done</span>
                         )}
                       </div>
-                      {/* Show description for first pending exercise */}
-                      {isFirst && !isDone && ex.note && (
+
+                      {/* Active exercise: description */}
+                      {isActive && ex.note && (
                         <p className="text-xs text-white/40 mt-3 ml-11 leading-relaxed">{ex.note}</p>
                       )}
                     </div>
+
+                    {/* Active exercise: input options */}
+                    {isActive && (
+                      <div className="px-4 pb-4 bg-gradient-to-r from-emerald-500/5 to-transparent space-y-3">
+                        {/* Option buttons */}
+                        {!inputMode && (
+                          <div className="grid grid-cols-3 gap-2 pt-2">
+                            <button
+                              onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'camera' }))}
+                              className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all"
+                            >
+                              <Camera className="w-5 h-5 text-emerald-400" />
+                              <span className="text-[10px] text-white/60 font-medium">Camera</span>
+                            </button>
+                            <button
+                              onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'photo' }))}
+                              className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] hover:bg-blue-500/10 hover:border-blue-500/20 transition-all"
+                            >
+                              <ImageIcon className="w-5 h-5 text-blue-400" />
+                              <span className="text-[10px] text-white/60 font-medium">Photo</span>
+                            </button>
+                            <button
+                              onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'reps' }))}
+                              className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] hover:bg-purple-500/10 hover:border-purple-500/20 transition-all"
+                            >
+                              <Hash className="w-5 h-5 text-purple-400" />
+                              <span className="text-[10px] text-white/60 font-medium">Manual</span>
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Camera tracking mode */}
+                        {inputMode === 'camera' && (
+                          <div className="space-y-2 pt-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-emerald-400 font-medium flex items-center gap-1"><Camera className="w-3 h-3" /> Camera Tracking</span>
+                              <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
+                            </div>
+                            <CameraTrackingView
+                              exercise={ex.name}
+                              repCount={manualReps[key] || 0}
+                              onRepDetected={() => setManualReps(prev => ({ ...prev, [key]: (prev[key] || 0) + 1 }))}
+                              heartRate={heartRate}
+                              intensity={intensity}
+                            />
+                          </div>
+                        )}
+
+                        {/* Photo mode */}
+                        {inputMode === 'photo' && (
+                          <div className="space-y-2 pt-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-blue-400 font-medium flex items-center gap-1"><ImageIcon className="w-3 h-3" /> Take Photo</span>
+                              <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
+                            </div>
+                            <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-6 text-center">
+                              <ImageIcon className="w-10 h-10 text-white/15 mx-auto mb-2" />
+                              <p className="text-xs text-white/40">Take a photo of your exercise machine or setup</p>
+                              <button className="mt-3 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-semibold hover:bg-blue-500/30 transition-colors">
+                                📸 Open Camera
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Manual reps input */}
+                        {inputMode === 'reps' && (
+                          <div className="space-y-3 pt-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-purple-400 font-medium flex items-center gap-1"><Hash className="w-3 h-3" /> Manual Entry</span>
+                              <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="space-y-1">
+                                <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
+                                <input
+                                  type="number"
+                                  value={manualSets[key] || ex.sets || 3}
+                                  onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                  className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-[10px] text-white/40 uppercase tracking-wider">Reps</label>
+                                <input
+                                  type="number"
+                                  value={manualReps[key] || ex.reps || 10}
+                                  onChange={e => setManualReps(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                  className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-[10px] text-white/40 uppercase tracking-wider">Weight</label>
+                                <input
+                                  type="number"
+                                  value={manualWeight[key] || 0}
+                                  onChange={e => setManualWeight(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                  className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                  placeholder="lbs"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Done button for active exercise */}
+                        <button
+                          onClick={() => completeActiveExercise(si, ei)}
+                          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/30 transition-colors"
+                        >
+                          <Check className="w-4 h-4" /> Mark as Done
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })
