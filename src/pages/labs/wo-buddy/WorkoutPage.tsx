@@ -847,26 +847,19 @@ const WorkoutPage = () => {
                       completedPlanCount={completedPlanCount}
                     />
                   </div>
+
+                  {/* Add Exercise — inside the plan card */}
+                  <div className="px-3 pb-3">
+                    <button
+                      onClick={() => setWorkoutPath('new')}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3 transition-all"
+                    >
+                      <Plus className="w-4 h-4 text-white/50" />
+                      <span className="text-sm font-medium text-white/70">Add Exercise</span>
+                    </button>
+                  </div>
                 </div>
               )}
-
-              {/* Rest day */}
-              {todayPlan?.isRest && todayPlan.sessions.length === 0 && (
-                <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
-                  <span className="text-2xl">😴</span>
-                  <p className="text-sm text-white/50 mt-2">Today is a rest day</p>
-                  <p className="text-[11px] text-white/30 mt-1">{todayPlan.restReason}</p>
-                </div>
-              )}
-
-              {/* Add Exercise */}
-              <button
-                onClick={() => setWorkoutPath('new')}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3.5 transition-all"
-              >
-                <Plus className="w-4 h-4 text-white/50" />
-                <span className="text-sm font-medium text-white/70">Add Exercise</span>
-              </button>
 
               {/* Start Workout */}
               <button
