@@ -25,7 +25,7 @@ const WOBuddyLayout = () => {
     switch (activeTab) {
       case 'dashboard': return <Dashboard onNavigate={setActiveTab} />;
       case 'workout': return <WorkoutPage />;
-      case 'plan': return <WorkoutPlanPage />;
+      case 'competitions': return <CompetitionsPage />;
       case 'competitions': return <CompetitionsPage />;
       case 'goals': return <GoalsPage />;
       case 'settings': return (

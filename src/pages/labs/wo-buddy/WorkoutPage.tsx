@@ -11,7 +11,8 @@ import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
-type View = 'log' | 'history';
+type View = 'log' | 'history' | 'plan';
+import WorkoutPlanPage from './WorkoutPlanPage';
 
 const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press', 'Barbell Row', 'Curls'];
 const cardioActivities = ['Run', 'Row', 'Bike'];
