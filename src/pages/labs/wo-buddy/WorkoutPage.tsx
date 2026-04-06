@@ -1065,21 +1065,14 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
 
   return (
     <div className="space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-emerald-400" />
-          <div>
-            <p className="text-xs font-semibold text-white">Today's Plan</p>
-            <p className="text-[10px] text-white/40">{todayPlan.sessions.length} session{todayPlan.sessions.length > 1 ? 's' : ''}</p>
-          </div>
-        </div>
-        {totalPlanCount > 0 && (
+      {/* Progress count */}
+      {totalPlanCount > 0 && (
+        <div className="flex items-center justify-end">
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
             {completedPlanCount}/{totalPlanCount}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Session cards */}
       <div className="space-y-2.5">
