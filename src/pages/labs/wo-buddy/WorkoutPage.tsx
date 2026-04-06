@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks } from 'lucide-react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight } from 'lucide-react';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
 import CameraTrackingView from './CameraTrackingView';
 import ExerciseWidget, { TrackedExercise } from './ExerciseWidget';
 import WhyThisMatters from './WhyThisMatters';
+import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
+import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
+import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
+type View = 'log' | 'history';
 
 const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press', 'Barbell Row', 'Curls'];
 const cardioActivities = ['Run', 'Row', 'Bike'];
@@ -20,7 +24,6 @@ const modeConfig = {
   bodyweight: { icon: <Accessibility className="w-5 h-5" />, label: 'Bodyweight', emoji: '💪', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', active: 'from-purple-500/30 to-purple-600/10', color: 'text-purple-400' },
 };
 
-// Simulated exercise recognition — cycles through exercises
 const exerciseRotation: Record<Mode, string[]> = {
   strength: ['Bench Press', 'Curls', 'Barbell Row'],
   cardio: [],
@@ -28,12 +31,12 @@ const exerciseRotation: Record<Mode, string[]> = {
 };
 
 const WorkoutPage = () => {
+  const [view, setView] = useState<View>('log');
   const [mode, setMode] = useState<Mode>('strength');
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  // Manual input state
   const [exercise, setExercise] = useState(strengthExercises[0]);
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(10);
@@ -44,7 +47,6 @@ const WorkoutPage = () => {
   const [bwExercise, setBwExercise] = useState(bodyweightExercises[0]);
   const [bwReps, setBwReps] = useState(20);
 
-  // Camera tracking state
   const [trackedExercises, setTrackedExercises] = useState<TrackedExercise[]>([]);
   const [currentDetectedExercise, setCurrentDetectedExercise] = useState('');
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
@@ -53,7 +55,9 @@ const WorkoutPage = () => {
   const repAccumulatorRef = useRef(0);
   const exerciseDurationRef = useRef(0);
 
-  // Heart rate
+  const { workouts, saveWorkout } = useWOBuddyWorkouts();
+  const { goals } = useWOBuddyGoals();
+
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
     if (cameraTracking) {
@@ -64,7 +68,6 @@ const WorkoutPage = () => {
     }
   }, [cameraTracking]);
 
-  // When camera starts, begin exercise rotation
   useEffect(() => {
     if (cameraTracking) {
       setSessionStartTime(new Date());
@@ -76,12 +79,10 @@ const WorkoutPage = () => {
       exerciseDurationRef.current = 0;
       setCurrentDetectedExercise(rotation[0]);
 
-      // Switch exercise every 8-15 seconds
       exerciseTimerRef.current = setInterval(() => {
         const rot = exerciseRotation[mode];
         if (rot.length === 0) return;
 
-        // Save current exercise as a widget
         if (repAccumulatorRef.current > 0) {
           const exerciseName = rot[rotationIndexRef.current % rot.length];
           const newTracked: TrackedExercise = {
@@ -96,7 +97,6 @@ const WorkoutPage = () => {
           setTrackedExercises(prev => [...prev, newTracked]);
         }
 
-        // Move to next exercise
         rotationIndexRef.current += 1;
         repAccumulatorRef.current = 0;
         exerciseDurationRef.current = 0;
@@ -104,7 +104,6 @@ const WorkoutPage = () => {
         setCurrentDetectedExercise(nextExercise);
       }, 8000 + Math.random() * 7000);
 
-      // Duration counter
       const durTimer = setInterval(() => {
         exerciseDurationRef.current += 1;
       }, 1000);
@@ -114,7 +113,6 @@ const WorkoutPage = () => {
         clearInterval(durTimer);
       };
     } else {
-      // Save any remaining reps when camera stops
       if (repAccumulatorRef.current > 0 && currentDetectedExercise) {
         const newTracked: TrackedExercise = {
           id: `${Date.now()}-${Math.random()}`,
@@ -134,7 +132,6 @@ const WorkoutPage = () => {
 
   const handleRepDetected = useCallback(() => {
     repAccumulatorRef.current += 1;
-    // Also update the manual inputs for score preview
     if (mode === 'strength') setReps(r => r + 1);
     else if (mode === 'bodyweight') setBwReps(r => r + 1);
   }, [mode]);
@@ -153,22 +150,72 @@ const WorkoutPage = () => {
     return { label: 'High Intensity', color: 'text-red-400', msg: 'You\'re pushing hard — stay strong!', bg: 'from-red-500/10 to-red-600/5' };
   };
 
-  const handleSubmit = () => {
-    // Calculate total score from tracked exercises + manual input
+  // Gather all exercise names used in this session for goal impact
+  const getSessionExerciseNames = (): string[] => {
+    const names = new Set<string>();
+    trackedExercises.forEach(ex => names.add(ex.name));
+    if (mode === 'strength') names.add(exercise);
+    else if (mode === 'cardio') names.add(cardioActivity);
+    else names.add(bwExercise);
+    return Array.from(names);
+  };
+
+  // Compute goal impact from session exercises
+  const getGoalImpact = () => {
+    const exerciseNames = getSessionExerciseNames();
+    const activatedDrivers = new Set<string>();
+    exerciseNames.forEach(name => {
+      const drivers = ACTIVITY_DRIVER_MAP[name] || [];
+      drivers.forEach(d => activatedDrivers.add(d));
+    });
+
+    const impactedGoals = goals.filter(g =>
+      g.drivers.some(d => activatedDrivers.has(d))
+    );
+
+    return {
+      drivers: Array.from(activatedDrivers),
+      goals: impactedGoals,
+    };
+  };
+
+  const handleSubmit = async () => {
     let totalScore = 0;
     trackedExercises.forEach(ex => {
       totalScore += calculateScore(ex.type, { reps: ex.reps, sets: 1, weight: ex.type === 'strength' ? weight : 0 });
     });
-    // Add manual input score
     let details: Record<string, number> = {};
     if (mode === 'strength') details = { sets, reps, weight };
     else if (mode === 'cardio') details = { distance, time };
     else details = { reps: bwReps };
     totalScore += calculateScore(mode, details);
-    
+
     setScore(totalScore);
     setSubmitted(true);
     setCameraTracking(false);
+
+    // Save to DB
+    const allExercises = [
+      ...trackedExercises.map(ex => ({
+        name: ex.name,
+        type: ex.type,
+        reps: ex.reps,
+        sets: 1,
+        weight: ex.type === 'strength' ? weight : undefined,
+        duration: ex.duration,
+        confidence: ex.confidence,
+      })),
+      {
+        name: mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
+        type: mode,
+        reps: mode === 'cardio' ? 0 : (mode === 'strength' ? reps : bwReps),
+        sets: mode === 'strength' ? sets : 1,
+        weight: mode === 'strength' ? weight : undefined,
+        distance: mode === 'cardio' ? distance : undefined,
+        duration: mode === 'cardio' ? time * 60 : 0,
+      }
+    ];
+    await saveWorkout(mode, totalScore, allExercises);
   };
 
   const handleReset = () => {
@@ -181,11 +228,15 @@ const WorkoutPage = () => {
     setSessionStartTime(null);
   };
 
+  // ---- SUBMITTED: Post-workout summary with goal impact ----
   if (submitted) {
     const cfg = modeConfig[mode];
+    const impact = getGoalImpact();
+
     return (
       <div className="space-y-6">
-        <div className="flex flex-col items-center justify-center min-h-[40vh] text-center space-y-6">
+        {/* Completion header */}
+        <div className="flex flex-col items-center justify-center text-center space-y-5 pt-2">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/10 flex items-center justify-center border border-emerald-500/20">
               <Check className="w-12 h-12 text-emerald-400" />
@@ -206,27 +257,94 @@ const WorkoutPage = () => {
               <span>Score = effort across reps, weight, distance, and time.</span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <button onClick={handleReset} className="text-sm text-emerald-400 font-medium bg-emerald-500/10 px-4 py-2 rounded-xl hover:bg-emerald-500/20 transition-colors">
-              Log Another Workout
-            </button>
-            <button
-              onClick={() => shareContent(buildWorkoutShareText(
-                mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
-                score, mode
-              ))}
-              className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors"
-            >
-              <Share2 className="w-4 h-4" />
-              Share
-            </button>
-          </div>
         </div>
+
+        {/* Performance Drivers Activated */}
+        {impact.drivers.length > 0 && (
+          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+            <div className="flex items-center gap-2 mb-3">
+              <TrendingUp className="w-4 h-4 text-blue-400" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Drivers Activated</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {impact.drivers.map(d => {
+                const info = PERFORMANCE_DRIVERS.find(p => p.name === d);
+                return (
+                  <div key={d} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/[0.08]">
+                    <span className="text-base">{info?.icon || '⚡'}</span>
+                    <div>
+                      <p className="text-xs font-medium text-white/80">{d}</p>
+                      <p className="text-[9px] text-white/30">{info?.description || ''}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Goal Impact */}
+        {impact.goals.length > 0 && (
+          <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-600/[0.02] rounded-2xl p-4 border border-emerald-500/10">
+            <div className="flex items-center gap-2 mb-3">
+              <Target className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Goal Impact</span>
+            </div>
+            <div className="space-y-3">
+              {impact.goals.map(g => {
+                const pct = g.target_value > 0 ? Math.round((g.current_value / g.target_value) * 100) : 0;
+                const statusCfg = getGoalStatusColor(g.status);
+                const catCfg = getCategoryConfig(g.category);
+                return (
+                  <div key={g.id} className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">{catCfg.icon}</span>
+                        <div>
+                          <p className="text-sm font-medium">{g.name}</p>
+                          <p className="text-[10px] text-white/30">
+                            {g.drivers.join(', ')}
+                          </p>
+                        </div>
+                      </div>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.text} font-medium`}>
+                        {statusCfg.label}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
+                            style={{ width: `${Math.min(pct, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-xs text-white/50 font-medium tabular-nums">{pct}%</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-400/70 mt-2">
+                      ✅ This workout contributed to your {g.drivers.filter(d => impact.drivers.includes(d)).join(' & ')} development
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* No connected goals prompt */}
+        {impact.goals.length === 0 && (
+          <div className="bg-gradient-to-br from-amber-500/5 to-amber-600/[0.02] rounded-2xl p-4 border border-amber-500/10 text-center">
+            <Target className="w-6 h-6 text-amber-400/60 mx-auto mb-2" />
+            <p className="text-xs text-white/50">No goals connected to this workout yet.</p>
+            <p className="text-[11px] text-amber-400/60 mt-1">Set goals to see how each workout drives your progress.</p>
+          </div>
+        )}
 
         {/* Exercise summary */}
         {trackedExercises.length > 0 && (
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Session Summary</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Session Exercises</h3>
             <div className="space-y-2">
               {trackedExercises.map(ex => (
                 <ExerciseWidget
@@ -243,6 +361,23 @@ const WorkoutPage = () => {
             </div>
           </div>
         )}
+
+        {/* Actions */}
+        <div className="flex items-center gap-4 justify-center pb-4">
+          <button onClick={handleReset} className="text-sm text-emerald-400 font-medium bg-emerald-500/10 px-5 py-2.5 rounded-xl hover:bg-emerald-500/20 transition-colors">
+            Log Another Workout
+          </button>
+          <button
+            onClick={() => shareContent(buildWorkoutShareText(
+              mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
+              score, mode
+            ))}
+            className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors"
+          >
+            <Share2 className="w-4 h-4" />
+            Share
+          </button>
+        </div>
       </div>
     );
   }
@@ -252,137 +387,259 @@ const WorkoutPage = () => {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-bold">Log Workout</h2>
-
-      {/* Mode selector */}
-      <div className="grid grid-cols-3 gap-2">
-        {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
-          <button
-            key={id}
-            onClick={() => { setMode(id); setCameraTracking(false); }}
-            className={`flex flex-col items-center gap-2 py-4 px-2 rounded-2xl text-xs font-medium transition-all border ${
-              mode === id
-                ? `bg-gradient-to-b ${cfg.active} ${cfg.border} ${cfg.color} shadow-lg`
-                : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-            }`}
-          >
-            <span className="text-2xl">{cfg.emoji}</span>
-            <span className="flex items-center gap-1">{cfg.icon}{cfg.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Camera tracking toggle */}
-      {mode !== 'cardio' && (
+      {/* View toggle: Log vs History */}
+      <div className="flex items-center gap-2">
         <button
-          onClick={() => setCameraTracking(!cameraTracking)}
-          className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition-all ${
-            cameraTracking
-              ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-              : 'bg-white/[0.03] border-white/5 text-white/40'
+          onClick={() => setView('log')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all border ${
+            view === 'log'
+              ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
+              : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
           }`}
         >
-          <span className="flex items-center gap-2">
-            {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
-            Camera Tracking (Demo)
-          </span>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
-            {cameraTracking ? 'ON' : 'OFF'}
-          </span>
+          <Plus className="w-4 h-4" />
+          Log Workout
         </button>
-      )}
-
-      {/* Camera tracking view */}
-      {cameraTracking && (
-        <CameraTrackingView
-          exercise={currentDetectedExercise || (mode === 'strength' ? exercise : bwExercise)}
-          repCount={repAccumulatorRef.current + (mode === 'strength' ? reps : bwReps)}
-          onRepDetected={handleRepDetected}
-          heartRate={heartRate}
-          intensity={intensity}
-        />
-      )}
-
-      {/* Tracked exercises widgets */}
-      {trackedExercises.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
-              <ListChecks className="w-3.5 h-3.5" />
-              Captured Exercises
-            </h3>
-            <span className="text-[10px] text-white/30">{trackedExercises.length} exercises</span>
-          </div>
-          <div className="space-y-2">
-            {trackedExercises.map(ex => (
-              <ExerciseWidget
-                key={ex.id}
-                exercise={ex}
-                onUpdate={handleUpdateExercise}
-                onRemove={handleRemoveExercise}
-                allExercises={allExerciseNames}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Manual inputs */}
-      {!cameraTracking && (
-        <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
-          {mode === 'strength' && (
-            <>
-              <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
-              <div className="grid grid-cols-3 gap-3">
-                <NumberInput label="Sets" value={sets} onChange={setSets} />
-                <NumberInput label="Reps" value={reps} onChange={setReps} />
-                <NumberInput label="Weight (lbs)" value={weight} onChange={setWeight} step={5} />
-              </div>
-              <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
-                📊 Volume: <span className="text-white/60 font-medium">{(sets * reps * weight).toLocaleString()} lbs</span>
-              </div>
-            </>
-          )}
-          {mode === 'cardio' && (
-            <>
-              <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
-              <div className="grid grid-cols-2 gap-3">
-                <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
-                <NumberInput label="Time (min)" value={time} onChange={setTime} />
-              </div>
-              <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
-                📊 Pace: <span className="text-white/60 font-medium">{distance > 0 ? (time / distance).toFixed(1) : '0'} min/km</span>
-              </div>
-            </>
-          )}
-          {mode === 'bodyweight' && (
-            <>
-              <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
-              <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Why This Matters */}
-      <WhyThisMatters activityName={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise} />
-
-      {/* Score preview */}
-      <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
-        <div>
-          <span className="text-[10px] text-white/40 uppercase tracking-wider">Estimated Score</span>
-          <p className="text-xs text-white/50 mt-0.5">Based on your current inputs</p>
-        </div>
-        <span className="text-2xl font-bold text-emerald-400">+{currentScore}</span>
+        <button
+          onClick={() => setView('history')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all border ${
+            view === 'history'
+              ? 'bg-gradient-to-b from-blue-500/20 to-blue-600/5 border-blue-500/20 text-blue-400'
+              : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
+          }`}
+        >
+          <History className="w-4 h-4" />
+          History
+        </button>
       </div>
 
-      <button
-        onClick={handleSubmit}
-        className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.15),transparent)]" />
-        <span className="relative">Complete Workout</span>
-      </button>
+      {view === 'history' ? (
+        <WorkoutHistory workouts={workouts} />
+      ) : (
+        <>
+          {/* Mode selector */}
+          <div className="grid grid-cols-3 gap-2">
+            {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
+              <button
+                key={id}
+                onClick={() => { setMode(id); setCameraTracking(false); }}
+                className={`flex flex-col items-center gap-2 py-4 px-2 rounded-2xl text-xs font-medium transition-all border ${
+                  mode === id
+                    ? `bg-gradient-to-b ${cfg.active} ${cfg.border} ${cfg.color} shadow-lg`
+                    : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
+                }`}
+              >
+                <span className="text-2xl">{cfg.emoji}</span>
+                <span className="flex items-center gap-1">{cfg.icon}{cfg.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Camera tracking toggle */}
+          {mode !== 'cardio' && (
+            <button
+              onClick={() => setCameraTracking(!cameraTracking)}
+              className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition-all ${
+                cameraTracking
+                  ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
+                  : 'bg-white/[0.03] border-white/5 text-white/40'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
+                Camera Tracking (Demo)
+              </span>
+              <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
+                {cameraTracking ? 'ON' : 'OFF'}
+              </span>
+            </button>
+          )}
+
+          {/* Camera tracking view */}
+          {cameraTracking && (
+            <CameraTrackingView
+              exercise={currentDetectedExercise || (mode === 'strength' ? exercise : bwExercise)}
+              repCount={repAccumulatorRef.current + (mode === 'strength' ? reps : bwReps)}
+              onRepDetected={handleRepDetected}
+              heartRate={heartRate}
+              intensity={intensity}
+            />
+          )}
+
+          {/* Tracked exercises widgets */}
+          {trackedExercises.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
+                  <ListChecks className="w-3.5 h-3.5" />
+                  Captured Exercises
+                </h3>
+                <span className="text-[10px] text-white/30">{trackedExercises.length} exercises</span>
+              </div>
+              <div className="space-y-2">
+                {trackedExercises.map(ex => (
+                  <ExerciseWidget
+                    key={ex.id}
+                    exercise={ex}
+                    onUpdate={handleUpdateExercise}
+                    onRemove={handleRemoveExercise}
+                    allExercises={allExerciseNames}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Manual inputs */}
+          {!cameraTracking && (
+            <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
+              {mode === 'strength' && (
+                <>
+                  <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
+                  <div className="grid grid-cols-3 gap-3">
+                    <NumberInput label="Sets" value={sets} onChange={setSets} />
+                    <NumberInput label="Reps" value={reps} onChange={setReps} />
+                    <NumberInput label="Weight (lbs)" value={weight} onChange={setWeight} step={5} />
+                  </div>
+                  <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
+                    📊 Volume: <span className="text-white/60 font-medium">{(sets * reps * weight).toLocaleString()} lbs</span>
+                  </div>
+                </>
+              )}
+              {mode === 'cardio' && (
+                <>
+                  <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
+                    <NumberInput label="Time (min)" value={time} onChange={setTime} />
+                  </div>
+                  <div className="text-xs text-white/30 bg-white/[0.03] rounded-lg px-3 py-2">
+                    📊 Pace: <span className="text-white/60 font-medium">{distance > 0 ? (time / distance).toFixed(1) : '0'} min/km</span>
+                  </div>
+                </>
+              )}
+              {mode === 'bodyweight' && (
+                <>
+                  <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
+                  <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Why This Matters */}
+          <WhyThisMatters activityName={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise} />
+
+          {/* Score preview */}
+          <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] text-white/40 uppercase tracking-wider">Estimated Score</span>
+              <p className="text-xs text-white/50 mt-0.5">Based on your current inputs</p>
+            </div>
+            <span className="text-2xl font-bold text-emerald-400">+{currentScore}</span>
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.15),transparent)]" />
+            <span className="relative">Complete Workout</span>
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
+// ---- Workout History Component ----
+interface WorkoutHistoryProps {
+  workouts: Array<{
+    id: string;
+    type: 'strength' | 'cardio' | 'bodyweight';
+    exercise: string;
+    score: number;
+    date: string;
+  }>;
+}
+
+const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
+  if (workouts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
+          <History className="w-8 h-8 text-white/20" />
+        </div>
+        <p className="text-sm text-white/40">No workouts logged yet</p>
+        <p className="text-xs text-white/25 mt-1">Complete a workout to see your history here.</p>
+      </div>
+    );
+  }
+
+  // Group by date
+  const grouped = workouts.reduce<Record<string, typeof workouts>>((acc, w) => {
+    const date = w.date;
+    if (!acc[date]) acc[date] = [];
+    acc[date].push(w);
+    return acc;
+  }, {});
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (d.toDateString() === today.toDateString()) return 'Today';
+    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Summary stats */}
+      <div className="grid grid-cols-3 gap-2">
+        <div className="bg-gradient-to-b from-white/[0.05] to-white/[0.02] rounded-xl p-3 border border-white/[0.06] text-center">
+          <p className="text-xl font-bold">{workouts.length}</p>
+          <p className="text-[10px] text-white/40 mt-0.5">Total</p>
+        </div>
+        <div className="bg-gradient-to-b from-white/[0.05] to-white/[0.02] rounded-xl p-3 border border-white/[0.06] text-center">
+          <p className="text-xl font-bold text-emerald-400">{workouts.reduce((s, w) => s + w.score, 0).toLocaleString()}</p>
+          <p className="text-[10px] text-white/40 mt-0.5">Points</p>
+        </div>
+        <div className="bg-gradient-to-b from-white/[0.05] to-white/[0.02] rounded-xl p-3 border border-white/[0.06] text-center">
+          <p className="text-xl font-bold">{Object.keys(grouped).length}</p>
+          <p className="text-[10px] text-white/40 mt-0.5">Days</p>
+        </div>
+      </div>
+
+      {/* Grouped workouts */}
+      {Object.entries(grouped).map(([date, dayWorkouts]) => (
+        <div key={date}>
+          <div className="flex items-center gap-2 mb-2">
+            <Calendar className="w-3 h-3 text-white/30" />
+            <span className="text-xs font-semibold text-white/50">{formatDate(date)}</span>
+            <span className="text-[10px] text-white/25">· {dayWorkouts.reduce((s, w) => s + w.score, 0)} pts</span>
+          </div>
+          <div className="space-y-2">
+            {dayWorkouts.map(w => {
+              const cfg = modeConfig[w.type] || modeConfig.strength;
+              return (
+                <div key={w.id} className={`flex items-center gap-3 bg-gradient-to-r ${cfg.gradient} rounded-2xl p-3.5 border ${cfg.border}`}>
+                  <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-lg flex-shrink-0">
+                    {cfg.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{w.exercise}</p>
+                    <p className="text-[10px] text-white/40 capitalize">{w.type}</p>
+                  </div>
+                  <span className="text-sm font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">+{w.score}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
