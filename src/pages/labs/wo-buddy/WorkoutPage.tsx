@@ -66,7 +66,7 @@ const WorkoutPage = () => {
   const plan = useMemo(() => generatePlanFromGoals(goals), [goals]);
   const todayIndex = getTodayIndex();
   const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
-  const [exerciseActions, setExerciseActions] = useState<Record<number, ExerciseAction>>({});
+  const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
 
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
