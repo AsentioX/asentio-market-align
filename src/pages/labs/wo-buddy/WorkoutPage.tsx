@@ -9,10 +9,12 @@ import WhyThisMatters from './WhyThisMatters';
 import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
+import { generatePlanFromGoals, getTodayIndex, type PlanDay, type PlanExercise } from './planEngine';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
-type View = 'log' | 'history' | 'plan';
-import WorkoutPlanPage from './WorkoutPlanPage';
+type View = 'log' | 'history';
+
+type ExerciseAction = 'pending' | 'completed' | 'dismissed' | 'deferred';
 
 const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press', 'Barbell Row', 'Curls'];
 const cardioActivities = ['Run', 'Row', 'Bike'];
@@ -58,7 +60,13 @@ const WorkoutPage = () => {
   const exerciseDurationRef = useRef(0);
 
   const { workouts, saveWorkout } = useWOBuddyWorkouts();
-  const { goals } = useWOBuddyGoals();
+  const { goals, updateGoal } = useWOBuddyGoals();
+
+  // Today's plan
+  const plan = useMemo(() => generatePlanFromGoals(goals), [goals]);
+  const todayIndex = getTodayIndex();
+  const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
+  const [exerciseActions, setExerciseActions] = useState<Record<number, ExerciseAction>>({});
 
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
@@ -389,12 +397,11 @@ const WorkoutPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* View toggle: Log vs History vs Plan */}
+      {/* View toggle: Log vs History */}
       <div className="flex items-center gap-1.5">
         {([
           { id: 'log' as View, icon: <Plus className="w-3.5 h-3.5" />, label: 'Log' },
           { id: 'history' as View, icon: <History className="w-3.5 h-3.5" />, label: 'History' },
-          { id: 'plan' as View, icon: <CalendarDays className="w-3.5 h-3.5" />, label: 'Plan' },
         ]).map(v => (
           <button
             key={v.id}
@@ -413,10 +420,55 @@ const WorkoutPage = () => {
 
       {view === 'history' ? (
         <WorkoutHistory workouts={workouts} />
-      ) : view === 'plan' ? (
-        <WorkoutPlanPage />
       ) : (
         <>
+          {/* Today's Plan Card */}
+          {todayPlan && todayPlan.exercises.length > 0 && (
+            <TodaysPlanCard
+              plan={todayPlan}
+              exerciseActions={exerciseActions}
+              onAction={(idx, action) => {
+                setExerciseActions(prev => ({ ...prev, [idx]: action }));
+                // Impact: completing adds progress, dismissing/deferring doesn't
+                if (action === 'completed') {
+                  // Find goals connected via drivers and nudge progress
+                  const ex = todayPlan.exercises[idx];
+                  const drivers = ACTIVITY_DRIVER_MAP[ex.name] || todayPlan.focusDrivers;
+                  const impactedGoals = goals.filter(g =>
+                    g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
+                  );
+                  impactedGoals.forEach(g => {
+                    const increment = Math.max(1, Math.round(g.target_value * 0.02));
+                    const newVal = Math.min(g.current_value + increment, g.target_value);
+                    const newStatus = newVal >= g.target_value ? 'achieved' : newVal >= g.target_value * 0.6 ? 'on_track' : 'at_risk';
+                    updateGoal(g.id, { current_value: newVal, status: newStatus });
+                  });
+                } else if (action === 'dismissed') {
+                  // Dismissed = skipped, hurts burndown (reduce status confidence)
+                  const drivers = ACTIVITY_DRIVER_MAP[todayPlan.exercises[idx].name] || todayPlan.focusDrivers;
+                  const impactedGoals = goals.filter(g =>
+                    g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
+                  );
+                  impactedGoals.forEach(g => {
+                    if (g.current_value < g.target_value * 0.7) {
+                      updateGoal(g.id, { status: 'at_risk' });
+                    }
+                  });
+                }
+                // Deferred = pushed to tomorrow, no immediate impact but no progress either
+              }}
+            />
+          )}
+
+          {/* Rest day message */}
+          {todayPlan && todayPlan.exercises.length === 0 && (
+            <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+              <span className="text-2xl">😴</span>
+              <p className="text-sm text-white/50 mt-2">Today is a {todayPlan.workoutType.replace('_', ' ')} day</p>
+              <p className="text-[11px] text-white/30 mt-1">{todayPlan.reason}</p>
+            </div>
+          )}
+
           {/* Mode selector */}
           <div className="grid grid-cols-3 gap-2">
             {(Object.entries(modeConfig) as [Mode, typeof modeConfig.strength][]).map(([id, cfg]) => (
@@ -894,5 +946,116 @@ function InputSelect({ label, value, options, onChange }: { label: string; value
     </div>
   );
 }
+
+// ---- Today's Plan Card ----
+interface TodaysPlanCardProps {
+  plan: PlanDay;
+  exerciseActions: Record<number, ExerciseAction>;
+  onAction: (idx: number, action: ExerciseAction) => void;
+}
+
+const TodaysPlanCard = ({ plan, exerciseActions, onAction }: TodaysPlanCardProps) => {
+  const allDone = plan.exercises.every((_, i) => exerciseActions[i] && exerciseActions[i] !== 'pending');
+  const completedCount = Object.values(exerciseActions).filter(a => a === 'completed').length;
+  const totalCount = plan.exercises.length;
+
+  return (
+    <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.06] to-emerald-600/[0.02] overflow-hidden">
+      <div className="p-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-emerald-400" />
+          <div>
+            <p className="text-xs font-semibold text-white">Today's Plan</p>
+            <p className="text-[10px] text-white/40 capitalize">
+              {plan.workoutType.replace('_', ' ')} · {plan.focusDrivers.join(', ')}
+            </p>
+          </div>
+        </div>
+        {totalCount > 0 && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
+            {completedCount}/{totalCount}
+          </span>
+        )}
+      </div>
+
+      {plan.reason && (
+        <p className="px-3 pb-1 text-[10px] text-emerald-400/60 flex items-center gap-1">
+          <Sparkles className="w-3 h-3" /> {plan.reason}
+        </p>
+      )}
+
+      <div className="px-3 pb-3 space-y-1.5 mt-1">
+        {plan.exercises.map((ex, i) => {
+          const action = exerciseActions[i] || 'pending';
+          return (
+            <div key={i} className={`rounded-xl border transition-all ${
+              action === 'completed' ? 'bg-emerald-500/10 border-emerald-500/15' :
+              action === 'dismissed' ? 'bg-red-500/5 border-red-500/10 opacity-50' :
+              action === 'deferred' ? 'bg-amber-500/5 border-amber-500/10 opacity-60' :
+              'bg-white/[0.03] border-white/[0.06]'
+            }`}>
+              <div className="flex items-center gap-2 p-2.5">
+                <div className="flex-1 min-w-0">
+                  <p className={`text-xs font-medium ${action === 'completed' ? 'text-emerald-400 line-through' : action === 'dismissed' ? 'text-white/30 line-through' : 'text-white/80'}`}>
+                    {ex.name}
+                  </p>
+                  <p className="text-[10px] text-white/30">
+                    {ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}
+                  </p>
+                </div>
+                {action === 'pending' ? (
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => onAction(i, 'completed')}
+                      className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/25 transition-colors"
+                      title="Complete">
+                      <Check className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => onAction(i, 'deferred')}
+                      className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center hover:bg-amber-500/20 transition-colors"
+                      title="Push to tomorrow">
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => onAction(i, 'dismissed')}
+                      className="w-7 h-7 rounded-lg bg-white/5 text-white/30 flex items-center justify-center hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                      title="Skip">
+                      <span className="text-xs">✕</span>
+                    </button>
+                  </div>
+                ) : (
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
+                    action === 'completed' ? 'bg-emerald-500/15 text-emerald-400' :
+                    action === 'deferred' ? 'bg-amber-500/10 text-amber-400' :
+                    'bg-red-500/10 text-red-400'
+                  }`}>
+                    {action === 'completed' ? '✓ Done' : action === 'deferred' ? '→ Tomorrow' : '✕ Skipped'}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {allDone && totalCount > 0 && (
+        <div className="px-3 pb-3">
+          <div className={`rounded-xl p-2.5 text-center text-[11px] font-medium ${
+            completedCount === totalCount
+              ? 'bg-emerald-500/10 text-emerald-400'
+              : completedCount >= totalCount / 2
+                ? 'bg-amber-500/10 text-amber-400'
+                : 'bg-red-500/10 text-red-400'
+          }`}>
+            {completedCount === totalCount
+              ? '🎉 Plan complete! Great discipline.'
+              : completedCount >= totalCount / 2
+                ? `⚠️ ${totalCount - completedCount} exercise${totalCount - completedCount > 1 ? 's' : ''} skipped/deferred — may slow goal progress`
+                : `🔴 Most exercises skipped — this impacts your burndown toward goals`
+            }
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default WorkoutPage;
