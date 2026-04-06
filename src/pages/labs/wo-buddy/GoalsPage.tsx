@@ -158,11 +158,11 @@ const GoalsPage = () => {
           {/* Summary strip */}
           <div className="flex gap-2">
             <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-              <p className="text-lg font-bold text-white">{plan.filter(p => p.workoutType !== 'rest').length}</p>
+              <p className="text-lg font-bold text-white">{plan.filter(p => !p.isRest).length}</p>
               <p className="text-[10px] text-white/40">Training</p>
             </div>
             <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-              <p className="text-lg font-bold text-white">{plan.filter(p => p.workoutType === 'rest').length}</p>
+              <p className="text-lg font-bold text-white">{plan.filter(p => p.isRest).length}</p>
               <p className="text-[10px] text-white/40">Rest</p>
             </div>
             <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
