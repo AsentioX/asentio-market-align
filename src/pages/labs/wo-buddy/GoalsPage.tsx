@@ -309,8 +309,8 @@ const GoalsPage = () => {
         <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-white">Weekly Plan</h2>
-              <p className="text-xs text-white/40 mt-0.5">Auto-generated from your goals</p>
+              <h2 className="text-lg font-bold text-white">This Week's Plan</h2>
+              <p className="text-xs text-white/40 mt-0.5">Your schedule for the current week</p>
             </div>
             <button onClick={savePlan} disabled={!user || saving}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 text-xs font-medium hover:bg-emerald-500/25 transition-colors disabled:opacity-40">
