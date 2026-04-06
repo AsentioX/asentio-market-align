@@ -797,31 +797,6 @@ const WorkoutPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* View toggle: Log vs History */}
-      <div className="flex items-center gap-1.5">
-        {([
-          { id: 'log' as View, icon: <Plus className="w-3.5 h-3.5" />, label: 'Log' },
-          { id: 'history' as View, icon: <History className="w-3.5 h-3.5" />, label: 'History' },
-        ]).map(v => (
-          <button
-            key={v.id}
-            onClick={() => setView(v.id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all border ${
-              view === v.id
-                ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-                : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-            }`}
-          >
-            {v.icon}
-            {v.label}
-          </button>
-        ))}
-      </div>
-
-      {view === 'history' ? (
-        <WorkoutHistory workouts={workouts} />
-      ) : (
-        <>
           {/* ===== CHOICE SCREEN: Plan card + Add Exercise + Start ===== */}
           {workoutPath === 'choose' && (
             <div className="space-y-4">
@@ -870,6 +845,7 @@ const WorkoutPage = () => {
                 </div>
               )}
 
+              {/* Start Workout */}
               <button
                 onClick={handleStartWorkout}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
@@ -889,8 +865,7 @@ const WorkoutPage = () => {
                       return acc;
                     }, {})
                   ).slice(0, 5).map(([date, dayWorkouts]) => {
-                    const totalDuration = dayWorkouts.length * 15; // estimate
-                    const [expanded, setExpanded] = [false, () => {}]; // collapsed by default
+                    const totalDuration = dayWorkouts.length * 15;
                     return (
                       <div key={date} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
                         <div className="flex items-center justify-between p-3.5">
@@ -1037,8 +1012,6 @@ const WorkoutPage = () => {
               </button>
             </>
           )}
-        </>
-      )}
     </div>
   );
 };
