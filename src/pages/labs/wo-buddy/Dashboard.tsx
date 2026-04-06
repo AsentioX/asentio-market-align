@@ -1,40 +1,33 @@
 import { useState, useRef } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Trophy, Dumbbell, Timer, ArrowRight, Sparkles, Calendar, Star, Share2 } from 'lucide-react';
-import { mockUser, mockCompetitions, mockWorkouts, mockAchievements } from './mockData';
+import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, ArrowRight, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Weight, Minus } from 'lucide-react';
+import { mockUser, mockAchievements, mockExerciseStats, mockBodyTrend, mockMonthlyOverview, mockAllTimeOverview, mockWeeklyOverview, mockWorkouts } from './mockData';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { generateInsights } from './goalMappings';
 import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
 import heroBg from '@/assets/wo-buddy/hero-bg.jpg';
-import compWarrior from '@/assets/wo-buddy/comp-warrior.jpg';
-import compBurn from '@/assets/wo-buddy/comp-burn.jpg';
-import compStrength from '@/assets/wo-buddy/comp-strength.jpg';
-import compCardio from '@/assets/wo-buddy/comp-cardio.jpg';
 
 interface DashboardProps {
   onNavigate: (tab: 'workout' | 'competitions' | 'settings' | 'goals') => void;
 }
 
-const competitionImages: Record<string, { image: string; gradient: string }> = {
-  '1': { image: compWarrior, gradient: 'from-amber-500/80 to-orange-600/80' },
-  '2': { image: compBurn, gradient: 'from-rose-500/80 to-pink-600/80' },
-  '3': { image: compStrength, gradient: 'from-blue-500/80 to-indigo-600/80' },
-  '4': { image: compCardio, gradient: 'from-emerald-500/80 to-teal-600/80' },
-};
+type Period = 'week' | 'month' | 'all';
+
+const formatNum = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
   const readiness = 82;
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeCompIdx, setActiveCompIdx] = useState(0);
+  const [period, setPeriod] = useState<Period>('week');
   const { goals } = useWOBuddyGoals();
   const insights = generateInsights(goals);
 
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-    const el = scrollRef.current;
-    const cardWidth = el.scrollWidth / mockCompetitions.length;
-    const idx = Math.round(el.scrollLeft / cardWidth);
-    setActiveCompIdx(idx);
-  };
+  const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
+  const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
+
+  const bodyLatest = mockBodyTrend[mockBodyTrend.length - 1];
+  const bodyPrev = mockBodyTrend[mockBodyTrend.length - 2];
+  const weightDelta = bodyLatest.weight - bodyPrev.weight;
+  const fatDelta = bodyLatest.bodyFat - bodyPrev.bodyFat;
+  const muscleDelta = bodyLatest.muscleMass - bodyPrev.muscleMass;
 
   return (
     <div className="space-y-6">
@@ -46,7 +39,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           <div>
             <p className="text-white/50 text-[10px] uppercase tracking-[0.2em]">Good morning</p>
             <h2 className="text-2xl font-bold mt-1">{mockUser.name}</h2>
-            <p className="text-emerald-400 text-xs mt-1 font-medium">Level {18} · 12w streak 🔥</p>
+            <p className="text-emerald-400 text-xs mt-1 font-medium">Level {mockUser.level} · {mockUser.weeklyStreak}w streak 🔥</p>
           </div>
           <div className="relative w-20 h-20">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
@@ -67,23 +60,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { icon: <Flame className="w-4 h-4" />, value: mockUser.dailyProgress, label: 'Points today', color: 'text-orange-400', bg: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/10' },
-          { icon: <Activity className="w-4 h-4" />, value: `${mockUser.weeklyProgress}/${mockUser.weeklyGoal}`, label: 'This week', color: 'text-blue-400', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10' },
-          { icon: <Zap className="w-4 h-4" />, value: `${mockUser.weeklyStreak}w`, label: 'Streak', color: 'text-purple-400', bg: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/10' },
-        ].map((stat, i) => (
-          <div key={i} className={`bg-gradient-to-b ${stat.bg} backdrop-blur-sm rounded-2xl p-3.5 border ${stat.border}`}>
-            <div className={`w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center ${stat.color} mb-2`}>
-              {stat.icon}
-            </div>
-            <p className="text-xl font-bold">{stat.value}</p>
-            <p className="text-[10px] text-white/40 mt-0.5">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-
       {/* Start Workout CTA */}
       <button
         onClick={() => onNavigate('workout')}
@@ -98,33 +74,24 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       </button>
 
       {/* Daily Goal */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</h3>
+      <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Target className="w-4 h-4 text-emerald-400" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</span>
+          </div>
           <span className="text-xs text-white/30">{mockUser.dailyProgress} / {mockUser.dailyGoal} pts</span>
         </div>
-        <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center border border-emerald-500/10">
-              <Target className="w-6 h-6 text-emerald-400" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm font-medium">{Math.round((mockUser.dailyProgress / mockUser.dailyGoal) * 100)}% complete</span>
-                <span className="text-xs text-emerald-400 font-medium">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</span>
-              </div>
-              <div className="h-3 bg-white/5 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all shadow-[0_0_12px_rgba(52,211,153,0.4)]"
-                  style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
-                />
-              </div>
-            </div>
-          </div>
+        <div className="h-3 bg-white/5 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all shadow-[0_0_12px_rgba(52,211,153,0.4)]"
+            style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
+          />
         </div>
+        <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
       </div>
 
-      {/* This Week */}
+      {/* This Week Calendar */}
       <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
         <div className="flex items-center gap-2 mb-3">
           <Calendar className="w-4 h-4 text-emerald-400" />
@@ -150,29 +117,115 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Total Stats */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Total Dashboard</h3>
+      {/* Period Toggle */}
+      <div className="flex items-center gap-1.5 bg-white/[0.03] rounded-xl p-1 border border-white/[0.06]">
+        {(['week', 'month', 'all'] as Period[]).map(p => (
           <button
-            onClick={() => shareContent(buildStatsShareText(mockUser.totalWorkouts, mockUser.totalPoints, mockUser.weeklyStreak))}
-            className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/50 transition-colors"
+            key={p}
+            onClick={() => setPeriod(p)}
+            className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${
+              period === p
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 shadow-sm'
+                : 'text-white/40 hover:text-white/60'
+            }`}
           >
-            <Share2 className="w-3 h-3" /> Share
+            {p === 'week' ? 'This Week' : p === 'month' ? 'This Month' : 'All Time'}
           </button>
-        </div>
+        ))}
+      </div>
+
+      {/* Overview Stats */}
+      <div>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">{periodLabel} Overview</h3>
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: <Dumbbell className="w-4 h-4 text-blue-400" />, value: mockUser.totalWorkouts, label: 'Workouts', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10' },
-            { icon: <Star className="w-4 h-4 text-amber-400" />, value: mockUser.totalPoints.toLocaleString(), label: 'Total Points', bg: 'from-amber-500/20 to-amber-600/5', border: 'border-amber-500/10' },
-            { icon: <Flame className="w-4 h-4 text-orange-400" />, value: `${mockUser.weeklyStreak}w`, label: 'Streak', bg: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/10' },
+            { icon: <Dumbbell className="w-4 h-4" />, value: overview.workouts, label: 'Workouts', color: 'text-blue-400', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10' },
+            { icon: <Flame className="w-4 h-4" />, value: formatNum(overview.caloriesBurned), label: 'Calories', color: 'text-orange-400', bg: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/10' },
+            { icon: <Zap className="w-4 h-4" />, value: `${overview.avgDuration}m`, label: 'Avg Duration', color: 'text-purple-400', bg: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/10' },
+            { icon: <Activity className="w-4 h-4" />, value: formatNum(overview.totalVolume), label: 'Volume (lbs)', color: 'text-cyan-400', bg: 'from-cyan-500/20 to-cyan-600/5', border: 'border-cyan-500/10' },
+            { icon: <Star className="w-4 h-4" />, value: `${overview.totalDistance}`, label: 'Miles', color: 'text-amber-400', bg: 'from-amber-500/20 to-amber-600/5', border: 'border-amber-500/10' },
+            { icon: <Target className="w-4 h-4" />, value: formatNum(overview.totalReps), label: 'Total Reps', color: 'text-emerald-400', bg: 'from-emerald-500/20 to-emerald-600/5', border: 'border-emerald-500/10' },
           ].map((stat, i) => (
-            <div key={i} className={`bg-gradient-to-b ${stat.bg} rounded-2xl p-3.5 border ${stat.border} text-center`}>
-              <div className="flex justify-center mb-1.5">{stat.icon}</div>
-              <p className="text-lg font-bold">{stat.value}</p>
-              <p className="text-[10px] text-white/40">{stat.label}</p>
+            <div key={i} className={`bg-gradient-to-b ${stat.bg} backdrop-blur-sm rounded-2xl p-3.5 border ${stat.border}`}>
+              <div className={`w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center ${stat.color} mb-2`}>
+                {stat.icon}
+              </div>
+              <p className="text-xl font-bold">{stat.value}</p>
+              <p className="text-[10px] text-white/40 mt-0.5">{stat.label}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Exercise Breakdowns */}
+      <div>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Exercise Totals — {periodLabel}</h3>
+        <div className="space-y-2">
+          {mockExerciseStats.map((ex) => {
+            const stat = period === 'all' ? ex.allTime : period === 'month' ? ex.month : ex.week;
+            return (
+              <div key={ex.name} className="flex items-center gap-3 bg-gradient-to-r from-white/[0.05] to-white/[0.02] rounded-2xl p-3.5 border border-white/[0.06]">
+                <span className="text-2xl w-10 text-center">{ex.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">{ex.name}</p>
+                  <p className="text-[10px] text-white/40">{ex.type === 'cardio' ? 'Distance' : ex.type === 'strength' ? 'Volume lifted' : 'Reps completed'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{typeof stat.value === 'number' && stat.value >= 1000 ? formatNum(stat.value) : stat.value} <span className="text-[10px] text-white/40 font-normal">{stat.unit}</span></p>
+                  {ex.pr && <p className="text-[9px] text-amber-400">PR: {ex.pr}</p>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Body Composition Trends */}
+      <div>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Body Composition</h3>
+        <div className="grid grid-cols-3 gap-3 mb-3">
+          {[
+            { label: 'Weight', value: `${bodyLatest.weight}`, unit: 'kg', delta: weightDelta, color: 'text-blue-400', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10', invertGood: true },
+            { label: 'Body Fat', value: `${bodyLatest.bodyFat}`, unit: '%', delta: fatDelta, color: 'text-rose-400', bg: 'from-rose-500/20 to-rose-600/5', border: 'border-rose-500/10', invertGood: true },
+            { label: 'Muscle', value: `${bodyLatest.muscleMass}`, unit: 'kg', delta: muscleDelta, color: 'text-emerald-400', bg: 'from-emerald-500/20 to-emerald-600/5', border: 'border-emerald-500/10', invertGood: false },
+          ].map((m, i) => {
+            const isGood = m.invertGood ? m.delta < 0 : m.delta > 0;
+            const isNeutral = m.delta === 0;
+            return (
+              <div key={i} className={`bg-gradient-to-b ${m.bg} rounded-2xl p-3.5 border ${m.border}`}>
+                <p className="text-[10px] text-white/40 mb-1">{m.label}</p>
+                <p className="text-xl font-bold">{m.value}<span className="text-[10px] text-white/40 font-normal ml-0.5">{m.unit}</span></p>
+                <div className={`flex items-center gap-0.5 mt-1 text-[10px] font-medium ${isNeutral ? 'text-white/30' : isGood ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {isNeutral ? <Minus className="w-3 h-3" /> : isGood ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
+                  {Math.abs(m.delta).toFixed(1)} {m.unit}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {/* Mini trend bars */}
+        <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+          <div className="flex items-center justify-between text-[10px] text-white/30 mb-2">
+            <span>Weight trend</span>
+            <span>{mockBodyTrend[0].date} → {bodyLatest.date}</span>
+          </div>
+          <div className="flex items-end gap-1 h-12">
+            {mockBodyTrend.map((p, i) => {
+              const minW = Math.min(...mockBodyTrend.map(t => t.weight));
+              const maxW = Math.max(...mockBodyTrend.map(t => t.weight));
+              const range = maxW - minW || 1;
+              const pct = ((p.weight - minW) / range) * 100;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div
+                    className="w-full rounded-t-md bg-gradient-to-t from-blue-500/40 to-blue-400/20 transition-all"
+                    style={{ height: `${20 + pct * 0.8}%` }}
+                  />
+                  <span className="text-[8px] text-white/30">{p.date}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -194,61 +247,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-      {/* Active Competitions */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Active Competitions</h3>
-          <button onClick={() => onNavigate('competitions')} className="text-xs text-emerald-400 flex items-center gap-0.5 font-medium">
-            See all <ChevronRight className="w-3 h-3" />
-          </button>
-        </div>
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="-mx-4 px-4 flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {mockCompetitions.map((comp) => {
-            const visual = competitionImages[comp.id] || competitionImages['1'];
-            const pct = Math.round((comp.progress / comp.target) * 100);
-            return (
-              <div key={comp.id} className="flex-shrink-0 w-[75vw] max-w-[320px] snap-center rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20">
-                <div className="relative h-44">
-                  <img src={visual.image} alt={comp.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" width={640} height={640} />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${visual.gradient} via-transparent to-black/60`} />
-                  <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-md rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1 border border-white/10">
-                    <Timer className="w-3 h-3" /> {comp.timeRemaining}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h4 className="text-lg font-bold drop-shadow-lg">{comp.title}</h4>
-                    <p className="text-xs text-white/80 mt-0.5 drop-shadow-md">{comp.description}</p>
-                  </div>
-                </div>
-                <div className="bg-white/[0.04] p-4">
-                  <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-white/60 font-medium">{pct}% complete</span>
-                    <span className="text-white/40">{comp.participants} players</span>
-                  </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.3)]" style={{ width: `${pct}%` }} />
-                  </div>
-                  {!comp.joined && (
-                    <button className="mt-3 w-full text-xs font-semibold py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                      Join Challenge
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex justify-center gap-1.5 mt-3">
-          {mockCompetitions.map((_, i) => (
-            <div key={i} className={`h-1.5 rounded-full transition-all ${i === activeCompIdx ? 'w-6 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]' : 'w-1.5 bg-white/15'}`} />
-          ))}
-        </div>
-      </div>
-
       {/* Achievements */}
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -267,14 +265,11 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             >
               <span className="text-3xl block mb-1.5">{ach.icon}</span>
               <p className="text-[10px] font-medium leading-tight">{ach.title}</p>
-              {ach.unlocked && ach.date && (
-                <p className="text-[9px] text-white/30 mt-0.5">{ach.date}</p>
-              )}
+              {ach.unlocked && ach.date && <p className="text-[9px] text-white/30 mt-0.5">{ach.date}</p>}
               {ach.unlocked && (
                 <button
                   onClick={(e) => { e.stopPropagation(); shareContent(buildAchievementShareText(ach.title, ach.icon)); }}
                   className="mt-1.5 text-white/30 hover:text-emerald-400 transition-colors"
-                  title="Share achievement"
                 >
                   <Share2 className="w-3 h-3 mx-auto" />
                 </button>
