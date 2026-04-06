@@ -525,8 +525,8 @@ const WorkoutPage = () => {
                         )}
                       </div>
                       {/* Show description for first pending exercise */}
-                      {isFirst && !isDone && ex.description && (
-                        <p className="text-xs text-white/40 mt-3 ml-11 leading-relaxed">{ex.description}</p>
+                      {isFirst && !isDone && ex.note && (
+                        <p className="text-xs text-white/40 mt-3 ml-11 leading-relaxed">{ex.note}</p>
                       )}
                     </div>
                   </div>
