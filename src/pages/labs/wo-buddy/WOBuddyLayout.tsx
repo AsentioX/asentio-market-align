@@ -12,9 +12,9 @@ type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Home', icon: <Home className="w-5 h-5" /> },
+  { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
   { id: 'workout', label: 'Workout', icon: <Dumbbell className="w-5 h-5" /> },
   { id: 'competitions', label: 'Compete', icon: <Trophy className="w-5 h-5" /> },
-  { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
 
