@@ -60,7 +60,13 @@ const WorkoutPage = () => {
   const exerciseDurationRef = useRef(0);
 
   const { workouts, saveWorkout } = useWOBuddyWorkouts();
-  const { goals } = useWOBuddyGoals();
+  const { goals, updateGoal } = useWOBuddyGoals();
+
+  // Today's plan
+  const plan = useMemo(() => generatePlanFromGoals(goals), [goals]);
+  const todayIndex = getTodayIndex();
+  const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
+  const [exerciseActions, setExerciseActions] = useState<Record<number, ExerciseAction>>({});
 
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
