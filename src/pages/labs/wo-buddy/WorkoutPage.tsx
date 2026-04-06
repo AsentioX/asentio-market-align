@@ -572,37 +572,52 @@ const WorkoutPage = () => {
 
     return (
       <div className="space-y-4">
-        {/* Header with back button */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); setActiveExerciseKey(null); }}
-            className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-          >
-            <ArrowRight className="w-4 h-4 text-white/60 rotate-180" />
-          </button>
-          <h2 className="text-sm font-semibold text-white">Workout in Progress</h2>
+        {/* Header with back button + total elapsed time */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); setActiveExerciseKey(null); setIsResting(false); }}
+              className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+            >
+              <ArrowRight className="w-4 h-4 text-white/60 rotate-180" />
+            </button>
+            <h2 className="text-sm font-semibold text-white">Workout in Progress</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <Timer className="w-3.5 h-3.5 text-white/40" />
+            <span className="text-sm font-bold tabular-nums text-white/70">{formatTimer(elapsedSeconds)}</span>
+            <button
+              onClick={handlePauseWorkout}
+              className={`ml-1 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+                workoutPaused ? 'bg-emerald-500/20' : 'bg-red-500/15'
+              }`}
+            >
+              {workoutPaused ? <Play className="w-3 h-3 text-emerald-400" /> : <Pause className="w-3 h-3 text-red-400" />}
+            </button>
+          </div>
         </div>
 
-        {/* Timer bar */}
-        <div className="flex items-center justify-between bg-gradient-to-r from-emerald-500/15 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/20">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${workoutPaused ? 'bg-amber-500/20' : 'bg-emerald-500/20'}`}>
-              <Timer className={`w-5 h-5 ${workoutPaused ? 'text-amber-400' : 'text-emerald-400'}`} />
+        {/* Rest period card */}
+        {isResting && nextExerciseAfterRest && (
+          <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-amber-600/5 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">😮‍💨</span>
+                <div>
+                  <p className="text-sm font-semibold text-amber-300">Rest</p>
+                  <p className="text-[10px] text-white/40">Recover before next exercise</p>
+                </div>
+              </div>
+              <span className="text-2xl font-bold tabular-nums text-amber-400">{formatTimer(restElapsed)}</span>
             </div>
-            <p className="text-2xl font-bold tabular-nums text-white">{formatTimer(elapsedSeconds)}</p>
+            <button
+              onClick={finishRest}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/30 transition-colors"
+            >
+              <Check className="w-4 h-4" /> Done Resting — Next Exercise
+            </button>
           </div>
-          <button
-            onClick={handlePauseWorkout}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-              workoutPaused
-                ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
-                : 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
-            }`}
-          >
-            {workoutPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
-            {workoutPaused ? 'Resume' : 'Pause'}
-          </button>
-        </div>
+        )}
 
         {/* "Next Exercise?" confirmation overlay */}
         {showNextConfirm && (
