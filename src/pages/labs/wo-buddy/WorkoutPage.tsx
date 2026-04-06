@@ -9,6 +9,7 @@ import WhyThisMatters from './WhyThisMatters';
 import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
+import { generatePlanFromGoals, getTodayIndex, type PlanDay, type PlanExercise } from './planEngine';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 type View = 'log' | 'history' | 'plan';
