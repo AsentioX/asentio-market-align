@@ -494,44 +494,32 @@ const WorkoutPage = () => {
             </div>
           )}
 
-          {/* ===== CHOICE SCREEN: Plan vs New Exercise ===== */}
+          {/* ===== CHOICE SCREEN: Plan expanded + Add Exercise ===== */}
           {workoutPath === 'choose' && (
             <div className="space-y-3">
-              {/* Today's Plan option */}
+              {/* Today's Plan - expanded inline */}
               {hasSessions && (
-                <button
-                  onClick={() => setWorkoutPath('plan')}
-                  className="w-full text-left rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 p-4 hover:from-emerald-500/15 hover:to-emerald-600/10 transition-all group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center">
-                        <CalendarDays className="w-6 h-6 text-emerald-400" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">Today's Plan</p>
-                        <p className="text-[11px] text-white/40 mt-0.5">
-                          {todayPlan!.sessions.length} session{todayPlan!.sessions.length > 1 ? 's' : ''} · {totalPlanCount} exercise{totalPlanCount !== 1 ? 's' : ''}
-                        </p>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          {todayPlan!.sessions.map((s, i) => {
-                            const st = SESSION_TYPE_STYLES[s.workoutType] || SESSION_TYPE_STYLES.strength;
-                            return <span key={i} className="text-sm" title={s.label}>{st.emoji}</span>;
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-white/20 group-hover:text-emerald-400 transition-colors" />
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CalendarDays className="w-4 h-4 text-emerald-400" />
+                    <p className="text-sm font-semibold text-white">Today's Plan</p>
+                    {completedPlanCount > 0 && (
+                      <span className="text-[10px] text-emerald-400 font-medium ml-auto">{completedPlanCount}/{totalPlanCount}</span>
+                    )}
                   </div>
                   {completedPlanCount > 0 && (
-                    <div className="mt-3 flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${(completedPlanCount / totalPlanCount) * 100}%` }} />
-                      </div>
-                      <span className="text-[10px] text-emerald-400 font-medium">{completedPlanCount}/{totalPlanCount}</span>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${(completedPlanCount / totalPlanCount) * 100}%` }} />
                     </div>
                   )}
-                </button>
+                  <PlanSessionCards
+                    todayPlan={todayPlan!}
+                    exerciseActions={exerciseActions}
+                    onExerciseAction={handleExerciseAction}
+                    totalPlanCount={totalPlanCount}
+                    completedPlanCount={completedPlanCount}
+                  />
+                </div>
               )}
 
               {/* Rest day notice */}
@@ -543,28 +531,13 @@ const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* New Exercise option */}
+              {/* Add Exercise button */}
               <button
                 onClick={() => setWorkoutPath('new')}
-                className="w-full text-left rounded-2xl border border-white/[0.08] bg-gradient-to-r from-white/[0.04] to-white/[0.02] p-4 hover:from-white/[0.06] hover:to-white/[0.03] transition-all group"
+                className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3.5 transition-all"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                      <Plus className="w-6 h-6 text-white/50" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">Add Exercise</p>
-                      <p className="text-[11px] text-white/40 mt-0.5">Strength, Cardio, or Bodyweight</p>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-sm">🏋️</span>
-                        <span className="text-sm">🏃</span>
-                        <span className="text-sm">💪</span>
-                      </div>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-white/20 group-hover:text-white/40 transition-colors" />
-                </div>
+                <Plus className="w-4 h-4 text-white/50" />
+                <span className="text-sm font-medium text-white/70">Add Exercise</span>
               </button>
 
               {/* START WORKOUT button (if not started yet) */}
