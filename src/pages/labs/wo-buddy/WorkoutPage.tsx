@@ -85,11 +85,17 @@ const WorkoutPage = () => {
   const [activeExerciseKey, setActiveExerciseKey] = useState<string | null>(null);
   const [exerciseElapsed, setExerciseElapsed] = useState(0);
   const exerciseTimerActiveRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [showNextConfirm, setShowNextConfirm] = useState<string | null>(null); // key of exercise being confirmed
+  const [showNextConfirm, setShowNextConfirm] = useState<string | null>(null);
   const [exerciseInputMode, setExerciseInputMode] = useState<Record<string, 'camera' | 'photo' | 'reps' | null>>({});
   const [manualReps, setManualReps] = useState<Record<string, number>>({});
   const [manualSets, setManualSets] = useState<Record<string, number>>({});
   const [manualWeight, setManualWeight] = useState<Record<string, number>>({});
+
+  // Rest between exercises
+  const [isResting, setIsResting] = useState(false);
+  const [restElapsed, setRestElapsed] = useState(0);
+  const [nextExerciseAfterRest, setNextExerciseAfterRest] = useState<string | null>(null);
+  const restTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Workout timer logic
   useEffect(() => {
@@ -103,38 +109,76 @@ const WorkoutPage = () => {
 
   // Per-exercise timer
   useEffect(() => {
-    if (activeExerciseKey && workoutStarted && !workoutPaused) {
+    if (activeExerciseKey && !isResting && workoutStarted && !workoutPaused) {
       exerciseTimerActiveRef.current = setInterval(() => setExerciseElapsed(s => s + 1), 1000);
     } else {
       if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current);
     }
     return () => { if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current); };
-  }, [activeExerciseKey, workoutStarted, workoutPaused]);
+  }, [activeExerciseKey, isResting, workoutStarted, workoutPaused]);
+
+  // Rest timer
+  useEffect(() => {
+    if (isResting && workoutStarted && !workoutPaused) {
+      restTimerRef.current = setInterval(() => setRestElapsed(s => s + 1), 1000);
+    } else {
+      if (restTimerRef.current) clearInterval(restTimerRef.current);
+    }
+    return () => { if (restTimerRef.current) clearInterval(restTimerRef.current); };
+  }, [isResting, workoutStarted, workoutPaused]);
 
   const activateExercise = (key: string) => {
     setActiveExerciseKey(key);
     setExerciseElapsed(0);
+    setIsResting(false);
+    setRestElapsed(0);
+    setNextExerciseAfterRest(null);
     setExerciseInputMode(prev => ({ ...prev, [key]: null }));
+  };
+
+  // Find next pending exercise key after a given key
+  const findNextPendingKey = (afterKey: string): string | null => {
+    if (!todayPlan) return null;
+    for (const [ssi, session] of todayPlan.sessions.entries()) {
+      for (const [eei] of session.exercises.entries()) {
+        const nk = `${ssi}-${eei}`;
+        if (nk > afterKey && (!exerciseActions[nk] || exerciseActions[nk] === 'pending')) {
+          return nk;
+        }
+      }
+    }
+    return null;
   };
 
   const completeActiveExercise = (si: number, ei: number) => {
     const key = `${si}-${ei}`;
     handleExerciseAction(si, ei, 'completed');
-    setActiveExerciseKey(null);
-    setExerciseElapsed(0);
     setExerciseInputMode(prev => ({ ...prev, [key]: null }));
-    // Auto-advance to next pending exercise
-    if (todayPlan) {
-      for (const [ssi, session] of todayPlan.sessions.entries()) {
-        for (const [eei] of session.exercises.entries()) {
-          const nk = `${ssi}-${eei}`;
-          if (nk > key && (!exerciseActions[nk] || exerciseActions[nk] === 'pending')) {
-            activateExercise(nk);
-            return;
-          }
-        }
-      }
+
+    // Find next exercise
+    const nextKey = findNextPendingKey(key);
+    if (nextKey) {
+      // Enter rest mode
+      setActiveExerciseKey(null);
+      setExerciseElapsed(0);
+      setIsResting(true);
+      setRestElapsed(0);
+      setNextExerciseAfterRest(nextKey);
+    } else {
+      // No more exercises
+      setActiveExerciseKey(null);
+      setExerciseElapsed(0);
+      setIsResting(false);
     }
+  };
+
+  const finishRest = () => {
+    if (nextExerciseAfterRest) {
+      activateExercise(nextExerciseAfterRest);
+    }
+    setIsResting(false);
+    setRestElapsed(0);
+    setNextExerciseAfterRest(null);
   };
 
   const handleStartWorkout = () => {
@@ -356,6 +400,9 @@ const WorkoutPage = () => {
     setManualReps({});
     setManualSets({});
     setManualWeight({});
+    setIsResting(false);
+    setRestElapsed(0);
+    setNextExerciseAfterRest(null);
   };
 
   // ---- SUBMITTED: Post-workout summary ----
@@ -528,37 +575,52 @@ const WorkoutPage = () => {
 
     return (
       <div className="space-y-4">
-        {/* Header with back button */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); setActiveExerciseKey(null); }}
-            className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-          >
-            <ArrowRight className="w-4 h-4 text-white/60 rotate-180" />
-          </button>
-          <h2 className="text-sm font-semibold text-white">Workout in Progress</h2>
+        {/* Header with back button + total elapsed time */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); setActiveExerciseKey(null); setIsResting(false); }}
+              className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+            >
+              <ArrowRight className="w-4 h-4 text-white/60 rotate-180" />
+            </button>
+            <h2 className="text-sm font-semibold text-white">Workout in Progress</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <Timer className="w-3.5 h-3.5 text-white/40" />
+            <span className="text-sm font-bold tabular-nums text-white/70">{formatTimer(elapsedSeconds)}</span>
+            <button
+              onClick={handlePauseWorkout}
+              className={`ml-1 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+                workoutPaused ? 'bg-emerald-500/20' : 'bg-red-500/15'
+              }`}
+            >
+              {workoutPaused ? <Play className="w-3 h-3 text-emerald-400" /> : <Pause className="w-3 h-3 text-red-400" />}
+            </button>
+          </div>
         </div>
 
-        {/* Timer bar */}
-        <div className="flex items-center justify-between bg-gradient-to-r from-emerald-500/15 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/20">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${workoutPaused ? 'bg-amber-500/20' : 'bg-emerald-500/20'}`}>
-              <Timer className={`w-5 h-5 ${workoutPaused ? 'text-amber-400' : 'text-emerald-400'}`} />
+        {/* Rest period card */}
+        {isResting && nextExerciseAfterRest && (
+          <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-amber-600/5 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">😮‍💨</span>
+                <div>
+                  <p className="text-sm font-semibold text-amber-300">Rest</p>
+                  <p className="text-[10px] text-white/40">Recover before next exercise</p>
+                </div>
+              </div>
+              <span className="text-2xl font-bold tabular-nums text-amber-400">{formatTimer(restElapsed)}</span>
             </div>
-            <p className="text-2xl font-bold tabular-nums text-white">{formatTimer(elapsedSeconds)}</p>
+            <button
+              onClick={finishRest}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/30 transition-colors"
+            >
+              <Check className="w-4 h-4" /> Done Resting — Next Exercise
+            </button>
           </div>
-          <button
-            onClick={handlePauseWorkout}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-              workoutPaused
-                ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
-                : 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
-            }`}
-          >
-            {workoutPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
-            {workoutPaused ? 'Resume' : 'Pause'}
-          </button>
-        </div>
+        )}
 
         {/* "Next Exercise?" confirmation overlay */}
         {showNextConfirm && (
