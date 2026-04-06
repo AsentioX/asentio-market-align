@@ -85,11 +85,17 @@ const WorkoutPage = () => {
   const [activeExerciseKey, setActiveExerciseKey] = useState<string | null>(null);
   const [exerciseElapsed, setExerciseElapsed] = useState(0);
   const exerciseTimerActiveRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [showNextConfirm, setShowNextConfirm] = useState<string | null>(null); // key of exercise being confirmed
+  const [showNextConfirm, setShowNextConfirm] = useState<string | null>(null);
   const [exerciseInputMode, setExerciseInputMode] = useState<Record<string, 'camera' | 'photo' | 'reps' | null>>({});
   const [manualReps, setManualReps] = useState<Record<string, number>>({});
   const [manualSets, setManualSets] = useState<Record<string, number>>({});
   const [manualWeight, setManualWeight] = useState<Record<string, number>>({});
+
+  // Rest between exercises
+  const [isResting, setIsResting] = useState(false);
+  const [restElapsed, setRestElapsed] = useState(0);
+  const [nextExerciseAfterRest, setNextExerciseAfterRest] = useState<string | null>(null);
+  const restTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Workout timer logic
   useEffect(() => {
@@ -103,38 +109,76 @@ const WorkoutPage = () => {
 
   // Per-exercise timer
   useEffect(() => {
-    if (activeExerciseKey && workoutStarted && !workoutPaused) {
+    if (activeExerciseKey && !isResting && workoutStarted && !workoutPaused) {
       exerciseTimerActiveRef.current = setInterval(() => setExerciseElapsed(s => s + 1), 1000);
     } else {
       if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current);
     }
     return () => { if (exerciseTimerActiveRef.current) clearInterval(exerciseTimerActiveRef.current); };
-  }, [activeExerciseKey, workoutStarted, workoutPaused]);
+  }, [activeExerciseKey, isResting, workoutStarted, workoutPaused]);
+
+  // Rest timer
+  useEffect(() => {
+    if (isResting && workoutStarted && !workoutPaused) {
+      restTimerRef.current = setInterval(() => setRestElapsed(s => s + 1), 1000);
+    } else {
+      if (restTimerRef.current) clearInterval(restTimerRef.current);
+    }
+    return () => { if (restTimerRef.current) clearInterval(restTimerRef.current); };
+  }, [isResting, workoutStarted, workoutPaused]);
 
   const activateExercise = (key: string) => {
     setActiveExerciseKey(key);
     setExerciseElapsed(0);
+    setIsResting(false);
+    setRestElapsed(0);
+    setNextExerciseAfterRest(null);
     setExerciseInputMode(prev => ({ ...prev, [key]: null }));
+  };
+
+  // Find next pending exercise key after a given key
+  const findNextPendingKey = (afterKey: string): string | null => {
+    if (!todayPlan) return null;
+    for (const [ssi, session] of todayPlan.sessions.entries()) {
+      for (const [eei] of session.exercises.entries()) {
+        const nk = `${ssi}-${eei}`;
+        if (nk > afterKey && (!exerciseActions[nk] || exerciseActions[nk] === 'pending')) {
+          return nk;
+        }
+      }
+    }
+    return null;
   };
 
   const completeActiveExercise = (si: number, ei: number) => {
     const key = `${si}-${ei}`;
     handleExerciseAction(si, ei, 'completed');
-    setActiveExerciseKey(null);
-    setExerciseElapsed(0);
     setExerciseInputMode(prev => ({ ...prev, [key]: null }));
-    // Auto-advance to next pending exercise
-    if (todayPlan) {
-      for (const [ssi, session] of todayPlan.sessions.entries()) {
-        for (const [eei] of session.exercises.entries()) {
-          const nk = `${ssi}-${eei}`;
-          if (nk > key && (!exerciseActions[nk] || exerciseActions[nk] === 'pending')) {
-            activateExercise(nk);
-            return;
-          }
-        }
-      }
+
+    // Find next exercise
+    const nextKey = findNextPendingKey(key);
+    if (nextKey) {
+      // Enter rest mode
+      setActiveExerciseKey(null);
+      setExerciseElapsed(0);
+      setIsResting(true);
+      setRestElapsed(0);
+      setNextExerciseAfterRest(nextKey);
+    } else {
+      // No more exercises
+      setActiveExerciseKey(null);
+      setExerciseElapsed(0);
+      setIsResting(false);
     }
+  };
+
+  const finishRest = () => {
+    if (nextExerciseAfterRest) {
+      activateExercise(nextExerciseAfterRest);
+    }
+    setIsResting(false);
+    setRestElapsed(0);
+    setNextExerciseAfterRest(null);
   };
 
   const handleStartWorkout = () => {
