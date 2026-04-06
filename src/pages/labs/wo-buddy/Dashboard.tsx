@@ -60,18 +60,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Start Workout CTA */}
-      <button
-        onClick={() => onNavigate('workout')}
-        className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/25"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.15),transparent)]" />
-        <div className="relative flex items-center justify-center gap-2">
-          <Dumbbell className="w-5 h-5" />
-          <span>Start Workout</span>
-          <ArrowRight className="w-4 h-4 ml-1" />
-        </div>
-      </button>
 
       {/* Daily Goal */}
       <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
