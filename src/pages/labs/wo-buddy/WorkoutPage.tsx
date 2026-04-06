@@ -12,8 +12,9 @@ import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCatego
 import { generatePlanFromGoals, getTodayIndex, type PlanDay, type PlanExercise } from './planEngine';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
-type View = 'log' | 'history' | 'plan';
-import WorkoutPlanPage from './WorkoutPlanPage';
+type View = 'log' | 'history';
+
+type ExerciseAction = 'pending' | 'completed' | 'dismissed' | 'deferred';
 
 const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press', 'Barbell Row', 'Curls'];
 const cardioActivities = ['Run', 'Row', 'Bike'];
