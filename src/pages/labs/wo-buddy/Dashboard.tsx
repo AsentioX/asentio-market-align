@@ -10,7 +10,7 @@ import compStrength from '@/assets/wo-buddy/comp-strength.jpg';
 import compCardio from '@/assets/wo-buddy/comp-cardio.jpg';
 
 interface DashboardProps {
-  onNavigate: (tab: 'workout' | 'competitions' | 'settings') => void;
+  onNavigate: (tab: 'workout' | 'competitions' | 'settings' | 'goals') => void;
 }
 
 const competitionImages: Record<string, { image: string; gradient: string }> = {
