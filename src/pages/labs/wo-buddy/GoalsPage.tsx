@@ -184,7 +184,7 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
   );
 };
 
-
+const GoalsPage = () => {
   const { goals, loading, createGoal, updateGoal, deleteGoal, isAuthenticated } = useWOBuddyGoals();
   const drivers = usePerformanceDrivers();
   const { user } = useAuth();
