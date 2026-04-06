@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle } from 'lucide-react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine, Area, AreaChart, CartesianGrid } from 'recharts';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
@@ -11,7 +11,8 @@ import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
-type View = 'log' | 'history';
+type View = 'log' | 'history' | 'plan';
+import WorkoutPlanPage from './WorkoutPlanPage';
 
 const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press', 'Barbell Row', 'Curls'];
 const cardioActivities = ['Run', 'Row', 'Bike'];
@@ -388,34 +389,32 @@ const WorkoutPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* View toggle: Log vs History */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setView('log')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all border ${
-            view === 'log'
-              ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-              : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-          }`}
-        >
-          <Plus className="w-4 h-4" />
-          Log Workout
-        </button>
-        <button
-          onClick={() => setView('history')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all border ${
-            view === 'history'
-              ? 'bg-gradient-to-b from-blue-500/20 to-blue-600/5 border-blue-500/20 text-blue-400'
-              : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-          }`}
-        >
-          <History className="w-4 h-4" />
-          History
-        </button>
+      {/* View toggle: Log vs History vs Plan */}
+      <div className="flex items-center gap-1.5">
+        {([
+          { id: 'log' as View, icon: <Plus className="w-3.5 h-3.5" />, label: 'Log' },
+          { id: 'history' as View, icon: <History className="w-3.5 h-3.5" />, label: 'History' },
+          { id: 'plan' as View, icon: <CalendarDays className="w-3.5 h-3.5" />, label: 'Plan' },
+        ]).map(v => (
+          <button
+            key={v.id}
+            onClick={() => setView(v.id)}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all border ${
+              view === v.id
+                ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
+                : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
+            }`}
+          >
+            {v.icon}
+            {v.label}
+          </button>
+        ))}
       </div>
 
       {view === 'history' ? (
         <WorkoutHistory workouts={workouts} />
+      ) : view === 'plan' ? (
+        <WorkoutPlanPage />
       ) : (
         <>
           {/* Mode selector */}
