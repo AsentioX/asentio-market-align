@@ -4,6 +4,7 @@ import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
 import CameraTrackingView from './CameraTrackingView';
 import ExerciseWidget, { TrackedExercise } from './ExerciseWidget';
+import WhyThisMatters from './WhyThisMatters';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 
