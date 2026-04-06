@@ -190,9 +190,11 @@ const GoalsPage = () => {
           {/* Day cards */}
           <div className="space-y-2">
             {plan.map((day) => {
-              const config = WORKOUT_TYPE_CONFIG[day.workoutType] || WORKOUT_TYPE_CONFIG.rest;
+              const primarySession = day.sessions[0];
+              const config = WORKOUT_TYPE_CONFIG[primarySession?.workoutType || 'rest'] || WORKOUT_TYPE_CONFIG.rest;
               const isToday = day.dayOfWeek === todayIndex;
               const isExpanded = expandedDay === day.dayOfWeek;
+              const allDrivers = day.sessions.flatMap(s => s.focusDrivers);
 
               return (
                 <button key={day.dayOfWeek}
@@ -208,9 +210,10 @@ const GoalsPage = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-white">{DAY_SHORT[day.dayOfWeek]}</span>
                         {isToday && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">TODAY</span>}
+                        {day.sessions.length > 1 && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">{day.sessions.length} sessions</span>}
                       </div>
                       <p className="text-[11px] text-white/40 capitalize mt-0.5">
-                        {day.workoutType.replace('_', ' ')}{day.focusDrivers.length > 0 && ` · ${day.focusDrivers.join(', ')}`}
+                        {day.isRest ? (day.restReason || 'Rest day') : day.sessions.map(s => s.label).join(' + ')}
                       </p>
                     </div>
                     <div className="text-white/20">
@@ -218,20 +221,30 @@ const GoalsPage = () => {
                     </div>
                   </div>
                   {isExpanded && (
-                    <div className="px-3 pb-3 border-t border-white/[0.04] pt-2 space-y-2">
-                      {day.reason && (
-                        <p className="text-[11px] text-emerald-400/80 flex items-center gap-1"><Sparkles className="w-3 h-3" />{day.reason}</p>
-                      )}
-                      {day.exercises.length > 0 ? (
-                        <div className="space-y-1.5">
-                          {day.exercises.map((ex, i) => (
-                            <div key={i} className="flex items-center justify-between bg-white/[0.03] rounded-lg px-2.5 py-2">
-                              <span className="text-xs text-white/70">{ex.name}</span>
-                              <span className="text-[10px] text-white/40">{ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}</span>
+                    <div className="px-3 pb-3 border-t border-white/[0.04] pt-2 space-y-3">
+                      {day.sessions.map((session, si) => (
+                        <div key={si}>
+                          {day.sessions.length > 1 && (
+                            <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mb-1.5">{session.label}</p>
+                          )}
+                          {session.reason && (
+                            <p className="text-[11px] text-emerald-400/80 flex items-center gap-1 mb-1.5"><Sparkles className="w-3 h-3" />{session.reason}</p>
+                          )}
+                          {session.exercises.length > 0 ? (
+                            <div className="space-y-1.5">
+                              {session.exercises.map((ex, i) => (
+                                <div key={i} className="flex items-center justify-between bg-white/[0.03] rounded-lg px-2.5 py-2">
+                                  <span className="text-xs text-white/70">{ex.name}</span>
+                                  <span className="text-[10px] text-white/40">{ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}</span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          ) : (
+                            <p className="text-[11px] text-white/30 italic">No exercises — enjoy the rest!</p>
+                          )}
                         </div>
-                      ) : (
+                      ))}
+                      {day.isRest && day.sessions.length === 0 && (
                         <p className="text-[11px] text-white/30 italic">No exercises — enjoy the rest!</p>
                       )}
                     </div>
