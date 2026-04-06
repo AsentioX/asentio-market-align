@@ -2,19 +2,11 @@ import { useState } from 'react';
 import { Calendar, Flame, Dumbbell, Star, Share2, Ruler, Weight, Heart, User, Pencil, Check, X } from 'lucide-react';
 import { mockUser, mockAchievements } from './mockData';
 import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
+import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
 
 const ProfilePage = () => {
+  const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
   const [editingProfile, setEditingProfile] = useState(false);
-  const [profile, setProfile] = useState({
-    height: mockUser.height,
-    weight: mockUser.weight,
-    birthdate: '1998-01-15',
-    gender: mockUser.gender,
-    ethnicity: 'Asian',
-    goalWeight: mockUser.goalWeight,
-    bodyFat: mockUser.bodyFat,
-    restingHR: mockUser.restingHR,
-  });
   const [draft, setDraft] = useState({ ...profile });
 
   const getAge = (bd: string) => {
