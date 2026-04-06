@@ -91,7 +91,7 @@ const GoalsPage = () => {
     if (newPlan) {
       const days = plan.map(d => ({
         plan_id: newPlan.id, day_of_week: d.dayOfWeek, workout_type: d.workoutType,
-        focus_drivers: d.focusDrivers, exercises: d.exercises, notes: d.reason,
+        focus_drivers: d.focusDrivers, exercises: JSON.parse(JSON.stringify(d.exercises)), notes: d.reason,
       }));
       await supabase.from('wobuddy_plan_days').insert(days);
     }
