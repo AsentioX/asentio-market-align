@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Trophy, Dumbbell, Timer, ArrowRight, Sparkles } from 'lucide-react';
-import { mockUser, mockCompetitions, mockWorkouts } from './mockData';
+import { Activity, Flame, Target, Zap, ChevronRight, Trophy, Dumbbell, Timer, ArrowRight, Sparkles, Calendar, Star, Share2 } from 'lucide-react';
+import { mockUser, mockCompetitions, mockWorkouts, mockAchievements } from './mockData';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { generateInsights } from './goalMappings';
+import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
 import heroBg from '@/assets/wo-buddy/hero-bg.jpg';
 import compWarrior from '@/assets/wo-buddy/comp-warrior.jpg';
 import compBurn from '@/assets/wo-buddy/comp-burn.jpg';
@@ -50,11 +51,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           <div className="relative w-20 h-20">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
               <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
-              <circle
-                cx="40" cy="40" r="34" fill="none"
-                stroke="url(#readGrad)" strokeWidth="6" strokeLinecap="round"
-                strokeDasharray={`${(readiness / 100) * 213.6} 213.6`}
-              />
+              <circle cx="40" cy="40" r="34" fill="none" stroke="url(#readGrad)" strokeWidth="6" strokeLinecap="round" strokeDasharray={`${(readiness / 100) * 213.6} 213.6`} />
               <defs>
                 <linearGradient id="readGrad" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="#34d399" />
@@ -127,6 +124,58 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
+      {/* This Week */}
+      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+        <div className="flex items-center gap-2 mb-3">
+          <Calendar className="w-4 h-4 text-emerald-400" />
+          <span className="text-sm font-medium">This Week</span>
+        </div>
+        <div className="flex gap-2">
+          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+            const active = i < mockUser.weeklyProgress;
+            const isToday = i === mockUser.weeklyProgress;
+            return (
+              <div key={day} className="flex-1 flex flex-col items-center gap-1.5">
+                <div className={`w-full aspect-square rounded-xl flex items-center justify-center text-xs transition-all ${
+                  active ? 'bg-gradient-to-b from-emerald-500/30 to-emerald-600/10 text-emerald-400 border border-emerald-500/20 shadow-md shadow-emerald-500/10' :
+                  isToday ? 'bg-white/5 border border-emerald-500/20 text-white/60 ring-1 ring-emerald-400/30' :
+                  'bg-white/[0.02] border border-white/5 text-white/20'
+                }`}>
+                  {active ? '✓' : ''}
+                </div>
+                <span className={`text-[9px] ${active ? 'text-emerald-400/60' : 'text-white/30'}`}>{day}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Total Stats */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Total Dashboard</h3>
+          <button
+            onClick={() => shareContent(buildStatsShareText(mockUser.totalWorkouts, mockUser.totalPoints, mockUser.weeklyStreak))}
+            className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/50 transition-colors"
+          >
+            <Share2 className="w-3 h-3" /> Share
+          </button>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { icon: <Dumbbell className="w-4 h-4 text-blue-400" />, value: mockUser.totalWorkouts, label: 'Workouts', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10' },
+            { icon: <Star className="w-4 h-4 text-amber-400" />, value: mockUser.totalPoints.toLocaleString(), label: 'Total Points', bg: 'from-amber-500/20 to-amber-600/5', border: 'border-amber-500/10' },
+            { icon: <Flame className="w-4 h-4 text-orange-400" />, value: `${mockUser.weeklyStreak}w`, label: 'Streak', bg: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/10' },
+          ].map((stat, i) => (
+            <div key={i} className={`bg-gradient-to-b ${stat.bg} rounded-2xl p-3.5 border ${stat.border} text-center`}>
+              <div className="flex justify-center mb-1.5">{stat.icon}</div>
+              <p className="text-lg font-bold">{stat.value}</p>
+              <p className="text-[10px] text-white/40">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Coaching Insights */}
       {goals.length > 0 && (
         <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
@@ -145,7 +194,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-      {/* Active Competitions — large image cards */}
+      {/* Active Competitions */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Active Competitions</h3>
@@ -153,7 +202,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             See all <ChevronRight className="w-3 h-3" />
           </button>
         </div>
-
         <div
           ref={scrollRef}
           onScroll={handleScroll}
@@ -164,11 +212,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             const visual = competitionImages[comp.id] || competitionImages['1'];
             const pct = Math.round((comp.progress / comp.target) * 100);
             return (
-              <div
-                key={comp.id}
-                className="flex-shrink-0 w-[75vw] max-w-[320px] snap-center rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20"
-              >
-                {/* Image header */}
+              <div key={comp.id} className="flex-shrink-0 w-[75vw] max-w-[320px] snap-center rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20">
                 <div className="relative h-44">
                   <img src={visual.image} alt={comp.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" width={640} height={640} />
                   <div className={`absolute inset-0 bg-gradient-to-t ${visual.gradient} via-transparent to-black/60`} />
@@ -180,17 +224,13 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                     <p className="text-xs text-white/80 mt-0.5 drop-shadow-md">{comp.description}</p>
                   </div>
                 </div>
-                {/* Stats footer */}
                 <div className="bg-white/[0.04] p-4">
                   <div className="flex items-center justify-between text-xs mb-2">
                     <span className="text-white/60 font-medium">{pct}% complete</span>
                     <span className="text-white/40">{comp.participants} players</span>
                   </div>
                   <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.3)]"
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.3)]" style={{ width: `${pct}%` }} />
                   </div>
                   {!comp.joined && (
                     <button className="mt-3 w-full text-xs font-semibold py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
@@ -202,16 +242,44 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             );
           })}
         </div>
-
-        {/* Dot indicators */}
         <div className="flex justify-center gap-1.5 mt-3">
           {mockCompetitions.map((_, i) => (
+            <div key={i} className={`h-1.5 rounded-full transition-all ${i === activeCompIdx ? 'w-6 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]' : 'w-1.5 bg-white/15'}`} />
+          ))}
+        </div>
+      </div>
+
+      {/* Achievements */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Achievements</h3>
+          <span className="text-[10px] text-white/30">{mockAchievements.filter(a => a.unlocked).length}/{mockAchievements.length} unlocked</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2.5">
+          {mockAchievements.map((ach) => (
             <div
-              key={i}
-              className={`h-1.5 rounded-full transition-all ${
-                i === activeCompIdx ? 'w-6 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]' : 'w-1.5 bg-white/15'
+              key={ach.id}
+              className={`rounded-2xl p-3.5 border text-center transition-all ${
+                ach.unlocked
+                  ? 'bg-gradient-to-b from-white/[0.06] to-white/[0.02] border-white/[0.08] hover:border-white/[0.15]'
+                  : 'bg-white/[0.01] border-white/[0.03] opacity-40 grayscale'
               }`}
-            />
+            >
+              <span className="text-3xl block mb-1.5">{ach.icon}</span>
+              <p className="text-[10px] font-medium leading-tight">{ach.title}</p>
+              {ach.unlocked && ach.date && (
+                <p className="text-[9px] text-white/30 mt-0.5">{ach.date}</p>
+              )}
+              {ach.unlocked && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); shareContent(buildAchievementShareText(ach.title, ach.icon)); }}
+                  className="mt-1.5 text-white/30 hover:text-emerald-400 transition-colors"
+                  title="Share achievement"
+                >
+                  <Share2 className="w-3 h-3 mx-auto" />
+                </button>
+              )}
+            </div>
           ))}
         </div>
       </div>
