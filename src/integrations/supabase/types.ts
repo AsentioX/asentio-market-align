@@ -339,6 +339,253 @@ export type Database = {
         }
         Relationships: []
       }
+      wobuddy_achievements: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          title: string
+          unlocked: boolean
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          title: string
+          unlocked?: boolean
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          title?: string
+          unlocked?: boolean
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wobuddy_competition_participants: {
+        Row: {
+          competition_id: string
+          id: string
+          joined_at: string
+          progress: number
+          user_id: string
+        }
+        Insert: {
+          competition_id: string
+          id?: string
+          joined_at?: string
+          progress?: number
+          user_id: string
+        }
+        Update: {
+          competition_id?: string
+          id?: string
+          joined_at?: string
+          progress?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_competition_participants_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_competitions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          target: number
+          time_remaining: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          target: number
+          time_remaining?: string | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          target?: number
+          time_remaining?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wobuddy_exercises: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          distance_km: number | null
+          duration_seconds: number
+          id: string
+          name: string
+          reps: number
+          sets: number
+          timestamp: string
+          type: string
+          user_id: string
+          weight_lbs: number | null
+          workout_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          distance_km?: number | null
+          duration_seconds?: number
+          id?: string
+          name: string
+          reps?: number
+          sets?: number
+          timestamp?: string
+          type: string
+          user_id: string
+          weight_lbs?: number | null
+          workout_id: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          distance_km?: number | null
+          duration_seconds?: number
+          id?: string
+          name?: string
+          reps?: number
+          sets?: number
+          timestamp?: string
+          type?: string
+          user_id?: string
+          weight_lbs?: number | null
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_exercises_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_profiles: {
+        Row: {
+          avatar_initials: string
+          birthdate: string | null
+          body_fat_pct: number | null
+          created_at: string
+          daily_goal: number
+          display_name: string
+          ethnicity: string | null
+          gender: string | null
+          goal_weight_kg: number | null
+          height_cm: number | null
+          id: string
+          resting_hr: number | null
+          updated_at: string
+          user_id: string
+          weekly_goal: number
+          weight_kg: number | null
+        }
+        Insert: {
+          avatar_initials?: string
+          birthdate?: string | null
+          body_fat_pct?: number | null
+          created_at?: string
+          daily_goal?: number
+          display_name?: string
+          ethnicity?: string | null
+          gender?: string | null
+          goal_weight_kg?: number | null
+          height_cm?: number | null
+          id?: string
+          resting_hr?: number | null
+          updated_at?: string
+          user_id: string
+          weekly_goal?: number
+          weight_kg?: number | null
+        }
+        Update: {
+          avatar_initials?: string
+          birthdate?: string | null
+          body_fat_pct?: number | null
+          created_at?: string
+          daily_goal?: number
+          display_name?: string
+          ethnicity?: string | null
+          gender?: string | null
+          goal_weight_kg?: number | null
+          height_cm?: number | null
+          id?: string
+          resting_hr?: number | null
+          updated_at?: string
+          user_id?: string
+          weekly_goal?: number
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      wobuddy_workouts: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          mode: string
+          started_at: string
+          total_score: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          mode: string
+          started_at?: string
+          total_score?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          mode?: string
+          started_at?: string
+          total_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       xr_agencies: {
         Row: {
           created_at: string
