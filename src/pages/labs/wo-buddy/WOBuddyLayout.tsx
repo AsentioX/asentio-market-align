@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft } from 'lucide-react';
+import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft, BookOpen, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import WorkoutPage from './WorkoutPage';
@@ -7,15 +7,17 @@ import CompetitionsPage from './CompetitionsPage';
 import GoalsPage from './GoalsPage';
 import ProfilePage from './ProfilePage';
 import WearableSettings from './WearableSettings';
+import ExerciseLibraryPage from './ExerciseLibraryPage';
+import ProgressAnalytics from './ProgressAnalytics';
 
-type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings';
+type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings' | 'library' | 'progress';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Home', icon: <Home className="w-5 h-5" /> },
   { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
   { id: 'workout', label: 'Workout', icon: <Dumbbell className="w-5 h-5" /> },
-  { id: 'competitions', label: 'Compete', icon: <Trophy className="w-5 h-5" /> },
-  { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
+  { id: 'library', label: 'Library', icon: <BookOpen className="w-5 h-5" /> },
+  { id: 'progress', label: 'Progress', icon: <TrendingUp className="w-5 h-5" /> },
 ];
 
 const WOBuddyLayout = () => {
@@ -26,8 +28,9 @@ const WOBuddyLayout = () => {
       case 'dashboard': return <Dashboard onNavigate={setActiveTab} />;
       case 'workout': return <WorkoutPage />;
       case 'competitions': return <CompetitionsPage />;
-      case 'competitions': return <CompetitionsPage />;
       case 'goals': return <GoalsPage />;
+      case 'library': return <ExerciseLibraryPage onBack={() => setActiveTab('dashboard')} />;
+      case 'progress': return <ProgressAnalytics />;
       case 'settings': return (
         <div className="space-y-6">
           <ProfilePage />
@@ -48,7 +51,9 @@ const WOBuddyLayout = () => {
           <h1 className="text-base font-bold tracking-tight">
             W.O.<span className="text-emerald-400">Buddy</span>
           </h1>
-          <div className="w-12" />
+          <button onClick={() => setActiveTab('settings')} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white/60">
+            <Settings className="w-4 h-4" />
+          </button>
         </div>
       </header>
 
