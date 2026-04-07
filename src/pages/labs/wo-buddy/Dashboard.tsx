@@ -185,22 +185,36 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           <span className="text-sm font-medium">This Week</span>
         </div>
         <div className="flex gap-2 mb-4">
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
-            const active = i < mockUser.weeklyProgress;
-            const isToday = i === mockUser.weeklyProgress;
-            return (
-              <div key={day} className="flex-1 flex flex-col items-center gap-1.5">
-                <div className={`w-full aspect-square rounded-xl flex items-center justify-center text-xs transition-all ${
-                  active ? 'bg-gradient-to-b from-emerald-500/30 to-emerald-600/10 text-emerald-400 border border-emerald-500/20 shadow-md shadow-emerald-500/10' :
-                  isToday ? 'bg-white/5 border border-emerald-500/20 text-white/60 ring-1 ring-emerald-400/30' :
-                  'bg-white/[0.02] border border-white/5 text-white/20'
-                }`}>
-                  {active ? '✓' : ''}
+          {(() => {
+            const dailyPcts = [92, 78, 65, 0, 0, 0, 0]; // Mon–Sun completion %
+            const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const todayIdx = mockUser.weeklyProgress;
+            return dayLabels.map((day, i) => {
+              const pct = dailyPcts[i];
+              const isToday = i === todayIdx;
+              const isPast = i < todayIdx;
+              const hasData = pct > 0;
+              return (
+                <div key={day} className="flex-1 flex flex-col items-center gap-1.5">
+                  <div className={`w-full rounded-xl relative overflow-hidden flex flex-col items-center justify-end transition-all ${
+                    isToday ? 'border border-emerald-500/30 ring-1 ring-emerald-400/20' : 'border border-white/5'
+                  }`} style={{ height: 56 }}>
+                    {/* Background fill */}
+                    <div className={`absolute bottom-0 left-0 right-0 rounded-b-lg transition-all ${
+                      hasData ? 'bg-gradient-to-t from-emerald-500/30 to-emerald-600/10' : ''
+                    }`} style={{ height: `${pct}%` }} />
+                    {/* Percentage label */}
+                    <span className={`relative z-10 text-[10px] font-semibold mb-1 ${
+                      hasData ? (pct >= 80 ? 'text-emerald-400' : 'text-emerald-400/70') : 'text-white/15'
+                    }`}>
+                      {isPast || isToday ? `${pct}%` : ''}
+                    </span>
+                  </div>
+                  <span className={`text-[9px] ${hasData ? 'text-emerald-400/60' : isToday ? 'text-white/50' : 'text-white/30'}`}>{day}</span>
                 </div>
-                <span className={`text-[9px] ${active ? 'text-emerald-400/60' : 'text-white/30'}`}>{day}</span>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
         </div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
