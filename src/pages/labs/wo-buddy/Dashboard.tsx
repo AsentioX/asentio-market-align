@@ -391,37 +391,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Achievements */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Achievements</h3>
-          <span className="text-[10px] text-white/30">{mockAchievements.filter(a => a.unlocked).length}/{mockAchievements.length} unlocked</span>
-        </div>
-        <div className="grid grid-cols-3 gap-2.5">
-          {mockAchievements.map((ach) => (
-            <div
-              key={ach.id}
-              className={`rounded-2xl p-3.5 border text-center transition-all ${
-                ach.unlocked
-                  ? 'bg-gradient-to-b from-white/[0.06] to-white/[0.02] border-white/[0.08] hover:border-white/[0.15]'
-                  : 'bg-white/[0.01] border-white/[0.03] opacity-40 grayscale'
-              }`}
-            >
-              <span className="text-3xl block mb-1.5">{ach.icon}</span>
-              <p className="text-[10px] font-medium leading-tight">{ach.title}</p>
-              {ach.unlocked && ach.date && <p className="text-[9px] text-white/30 mt-0.5">{ach.date}</p>}
-              {ach.unlocked && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); shareContent(buildAchievementShareText(ach.title, ach.icon)); }}
-                  className="mt-1.5 text-white/30 hover:text-emerald-400 transition-colors"
-                >
-                  <Share2 className="w-3 h-3 mx-auto" />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
 
     </div>
   );
