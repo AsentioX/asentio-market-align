@@ -30,9 +30,9 @@ const modeConfig = {
 };
 
 const exerciseRotation: Record<Mode, string[]> = {
-  strength: ['Bench Press', 'Curls', 'Barbell Row'],
+  strength: strengthExercises.slice(0, 3),
   cardio: [],
-  bodyweight: ['Push-ups', 'Squats', 'Burpees', 'Sit-ups', 'Pull-ups'],
+  bodyweight: bodyweightExercises.slice(0, 5),
 };
 
 // Format seconds to mm:ss
