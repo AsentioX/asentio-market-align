@@ -1,10 +1,21 @@
-import { useState, useRef } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, ArrowRight, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Weight, Minus } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, MapPin } from 'lucide-react';
 import { mockUser, mockAchievements, mockExerciseStats, mockBodyTrend, mockMonthlyOverview, mockAllTimeOverview, mockWeeklyOverview, mockWorkouts } from './mockData';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { generateInsights } from './goalMappings';
-import { shareContent, buildStatsShareText, buildAchievementShareText } from './shareUtils';
+import { shareContent, buildAchievementShareText } from './shareUtils';
 import heroBg from '@/assets/wo-buddy/hero-bg.jpg';
+
+/* ── Fun Distance Milestones ─────────────────────────────── */
+const DISTANCE_MILESTONES = [
+  { miles: 26.2, emoji: '🏅', title: 'Marathon Runner', desc: "You've run a full marathon!", color: 'from-amber-500/30 to-amber-600/10', border: 'border-amber-500/20', accent: 'text-amber-400' },
+  { miles: 100, emoji: '🗽', title: 'NYC to Philly', desc: "You've covered the distance from New York to Philadelphia!", color: 'from-blue-500/30 to-blue-600/10', border: 'border-blue-500/20', accent: 'text-blue-400' },
+  { miles: 238, emoji: '🇬🇧', title: 'London to Paris', desc: "You've run the distance from London to Paris!", color: 'from-rose-500/30 to-rose-600/10', border: 'border-rose-500/20', accent: 'text-rose-400' },
+  { miles: 500, emoji: '🏔️', title: 'Camino de Santiago', desc: "You've walked the legendary Camino pilgrimage route!", color: 'from-emerald-500/30 to-emerald-600/10', border: 'border-emerald-500/20', accent: 'text-emerald-400' },
+  { miles: 2450, emoji: '🌄', title: 'Appalachian Trail', desc: "You've conquered the full Appalachian Trail distance!", color: 'from-green-500/30 to-green-600/10', border: 'border-green-500/20', accent: 'text-green-400' },
+  { miles: 3100, emoji: '🇺🇸', title: 'Coast to Coast', desc: "You've run across the entire United States!", color: 'from-indigo-500/30 to-indigo-600/10', border: 'border-indigo-500/20', accent: 'text-indigo-400' },
+  { miles: 13171, emoji: '🐉', title: 'Great Wall of China', desc: "You've run the full length of the Great Wall of China!", color: 'from-red-500/30 to-red-600/10', border: 'border-red-500/20', accent: 'text-red-400' },
+];
 
 interface DashboardProps {
   onNavigate: (tab: 'workout' | 'competitions' | 'settings' | 'goals') => void;
