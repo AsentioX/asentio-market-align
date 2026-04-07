@@ -89,23 +89,23 @@ export function useMyDJ() {
     }
   }, [bio, mode, intensity, isPlaying]);
 
-  // Auto-select track when params change significantly or track ends
+  // Auto-select track when track ends
   useEffect(() => {
     if (!isPlaying) return;
-    if (!nowPlaying || elapsedRef.current >= (nowPlaying.duration - 5)) {
-      const track = selectTrack(musicParams);
-      elapsedRef.current = 0;
-      setNowPlaying({
-        title: track.title,
-        artist: track.artist,
-        genre: track.genre,
-        duration: track.duration,
-        elapsed: 0,
-        params: musicParams,
-      });
-      setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
-    }
-  }, [musicParams, isPlaying, nowPlaying]);
+    if (nowPlaying && elapsedRef.current < (nowPlaying.duration - 5)) return;
+    const track = selectTrack(musicParams);
+    elapsedRef.current = 0;
+    setNowPlaying({
+      title: track.title,
+      artist: track.artist,
+      genre: track.genre,
+      duration: track.duration,
+      elapsed: 0,
+      params: musicParams,
+    });
+    setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying]);
 
   // Elapsed time ticker
   useEffect(() => {
