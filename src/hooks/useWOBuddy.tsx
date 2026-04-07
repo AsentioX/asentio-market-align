@@ -21,6 +21,8 @@ export interface WOBuddyProfile {
   avatarInitials: string;
   dailyGoal: number;
   weeklyGoal: number;
+  avatarUrl: string | null;
+  backgroundUrl: string | null;
 }
 
 const defaultProfile: WOBuddyProfile = {
@@ -36,6 +38,8 @@ const defaultProfile: WOBuddyProfile = {
   avatarInitials: mockUser.avatar,
   dailyGoal: mockUser.dailyGoal,
   weeklyGoal: mockUser.weeklyGoal,
+  avatarUrl: null,
+  backgroundUrl: null,
 };
 
 export function useWOBuddyProfile() {
@@ -67,6 +71,8 @@ export function useWOBuddyProfile() {
           avatarInitials: data.avatar_initials || '',
           dailyGoal: data.daily_goal,
           weeklyGoal: data.weekly_goal,
+          avatarUrl: (data as any).avatar_url || null,
+          backgroundUrl: (data as any).background_url || null,
         });
       } else {
         // Create profile for new user
@@ -100,7 +106,9 @@ export function useWOBuddyProfile() {
       avatar_initials: newProfile.avatarInitials,
       daily_goal: newProfile.dailyGoal,
       weekly_goal: newProfile.weeklyGoal,
-    }).eq('user_id', user.id);
+      avatar_url: newProfile.avatarUrl,
+      background_url: newProfile.backgroundUrl,
+    } as any).eq('user_id', user.id);
   }, [user, profile]);
 
   return { profile, updateProfile, loading, isAuthenticated: !!user };

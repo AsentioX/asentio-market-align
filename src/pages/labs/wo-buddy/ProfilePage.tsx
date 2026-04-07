@@ -1,12 +1,20 @@
-import { useState } from 'react';
-import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon } from 'lucide-react';
 import { mockUser } from './mockData';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
+  const { user } = useAuth();
   const [editingProfile, setEditingProfile] = useState(false);
   const [draft, setDraft] = useState({ ...profile });
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingBg, setUploadingBg] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const bgInputRef = useRef<HTMLInputElement>(null);
 
   const getAge = (bd: string) => {
     const diff = Date.now() - new Date(bd).getTime();
@@ -22,21 +30,121 @@ const ProfilePage = () => {
     setEditingProfile(false);
   };
 
+  const uploadImage = async (file: File, type: 'avatar' | 'background') => {
+    if (!user) {
+      toast.error('Sign in to upload images');
+      return;
+    }
+
+    const setUploading = type === 'avatar' ? setUploadingAvatar : setUploadingBg;
+    setUploading(true);
+
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${user.id}/${type}-${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('wobuddy-profiles')
+        .upload(path, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('wobuddy-profiles')
+        .getPublicUrl(path);
+
+      if (type === 'avatar') {
+        updateProfile({ avatarUrl: publicUrl });
+      } else {
+        updateProfile({ backgroundUrl: publicUrl });
+      }
+      toast.success(`${type === 'avatar' ? 'Profile photo' : 'Background'} updated!`);
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'background') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be under 5MB');
+      return;
+    }
+    uploadImage(file, type);
+    e.target.value = '';
+  };
+
   return (
     <div className="space-y-6">
+      {/* Hidden file inputs */}
+      <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, 'avatar')} />
+      <input ref={bgInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, 'background')} />
+
       {/* Avatar + name */}
       <div className="relative rounded-2xl overflow-hidden">
-        <div className="bg-gradient-to-br from-emerald-600/30 via-emerald-500/10 to-transparent p-6 pt-8">
-          <div className="flex flex-col items-center text-center space-y-3">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center text-3xl font-bold shadow-xl shadow-emerald-500/20 border-2 border-emerald-400/30">
-              {mockUser.avatar}
+        {/* Background image / gradient */}
+        <div className="relative">
+          {profile.backgroundUrl ? (
+            <div className="absolute inset-0">
+              <img src={profile.backgroundUrl} alt="" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-[#0a0a0f]" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold">{mockUser.name}</h2>
-              <p className="text-xs text-white/40">Member since {mockUser.memberSince}</p>
-              <div className="flex items-center justify-center gap-2 mt-1.5">
-                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {mockUser.level}</span>
-                <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full font-medium border border-amber-500/20">🔥 {mockUser.weeklyStreak}w streak</span>
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/30 via-emerald-500/10 to-transparent" />
+          )}
+
+          {/* Background edit button */}
+          <button
+            onClick={() => bgInputRef.current?.click()}
+            disabled={uploadingBg}
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/60 hover:text-white hover:bg-black/60 transition-all"
+          >
+            {uploadingBg ? (
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <ImageIcon className="w-4 h-4" />
+            )}
+          </button>
+
+          <div className="relative p-6 pt-8">
+            <div className="flex flex-col items-center text-center space-y-3">
+              {/* Avatar with edit overlay */}
+              <div className="relative group">
+                {profile.avatarUrl ? (
+                  <div className="w-24 h-24 rounded-full overflow-hidden shadow-xl shadow-emerald-500/20 border-2 border-emerald-400/30">
+                    <img src={profile.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center text-3xl font-bold shadow-xl shadow-emerald-500/20 border-2 border-emerald-400/30">
+                    {mockUser.avatar}
+                  </div>
+                )}
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                >
+                  {uploadingAvatar ? (
+                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Camera className="w-6 h-6 text-white" />
+                  )}
+                </button>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">{mockUser.name}</h2>
+                <p className="text-xs text-white/40">Member since {mockUser.memberSince}</p>
+                <div className="flex items-center justify-center gap-2 mt-1.5">
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {mockUser.level}</span>
+                  <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full font-medium border border-amber-500/20">🔥 {mockUser.weeklyStreak}w streak</span>
+                </div>
               </div>
             </div>
           </div>
