@@ -7,6 +7,7 @@ import { MODE_META, PHYSIO_LABELS, UserMode } from './stateEngine';
 const MyDJDashboard = () => {
   const {
     mode, setMode, intensity, setIntensity,
+    volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, state, musicParams, nowPlaying,
     stats, skip, like, timeOfDay,
