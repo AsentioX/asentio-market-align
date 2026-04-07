@@ -520,6 +520,7 @@ const GoalsPage = () => {
           {([
             { id: 'training' as const, label: 'Training Plan', icon: <ListChecks className="w-3.5 h-3.5" /> },
             { id: 'plan' as const, label: 'Weekly Plan', icon: <CalendarDays className="w-3.5 h-3.5" /> },
+            { id: 'library' as const, label: 'Library', icon: <BookOpen className="w-3.5 h-3.5" /> },
           ]).map(tab => (
             <button key={tab.id}
               onClick={() => setView(tab.id)}
