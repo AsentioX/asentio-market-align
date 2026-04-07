@@ -6,15 +6,75 @@ import { generateInsights } from './goalMappings';
 import { shareContent, buildAchievementShareText } from './shareUtils';
 import heroBg from '@/assets/wo-buddy/hero-bg.jpg';
 
-/* ── Fun Distance Milestones ─────────────────────────────── */
-const DISTANCE_MILESTONES = [
-  { miles: 26.2, emoji: '🏅', title: 'Marathon Runner', desc: "You've run a full marathon!", color: 'from-amber-500/30 to-amber-600/10', border: 'border-amber-500/20', accent: 'text-amber-400' },
-  { miles: 100, emoji: '🗽', title: 'NYC to Philly', desc: "You've covered the distance from New York to Philadelphia!", color: 'from-blue-500/30 to-blue-600/10', border: 'border-blue-500/20', accent: 'text-blue-400' },
-  { miles: 238, emoji: '🇬🇧', title: 'London to Paris', desc: "You've run the distance from London to Paris!", color: 'from-rose-500/30 to-rose-600/10', border: 'border-rose-500/20', accent: 'text-rose-400' },
-  { miles: 500, emoji: '🏔️', title: 'Camino de Santiago', desc: "You've walked the legendary Camino pilgrimage route!", color: 'from-emerald-500/30 to-emerald-600/10', border: 'border-emerald-500/20', accent: 'text-emerald-400' },
-  { miles: 2450, emoji: '🌄', title: 'Appalachian Trail', desc: "You've conquered the full Appalachian Trail distance!", color: 'from-green-500/30 to-green-600/10', border: 'border-green-500/20', accent: 'text-green-400' },
-  { miles: 3100, emoji: '🇺🇸', title: 'Coast to Coast', desc: "You've run across the entire United States!", color: 'from-indigo-500/30 to-indigo-600/10', border: 'border-indigo-500/20', accent: 'text-indigo-400' },
-  { miles: 13171, emoji: '🐉', title: 'Great Wall of China', desc: "You've run the full length of the Great Wall of China!", color: 'from-red-500/30 to-red-600/10', border: 'border-red-500/20', accent: 'text-red-400' },
+/* ── Fun Fact Milestone System ────────────────────────────── */
+interface Milestone {
+  threshold: number;
+  emoji: string;
+  title: string;
+  desc: string;
+  color: string;
+  border: string;
+  accent: string;
+  gradientBar: string;
+}
+
+interface MilestoneCategory {
+  key: string;
+  label: string;
+  unit: string;
+  icon: string;
+  milestones: Milestone[];
+}
+
+const MILESTONE_CATEGORIES: MilestoneCategory[] = [
+  {
+    key: 'distance', label: 'Distance', unit: 'mi', icon: '🏃',
+    milestones: [
+      { threshold: 26.2, emoji: '🏅', title: 'Marathon Runner', desc: "You've run a full marathon!", color: 'from-amber-500/30 to-amber-600/10', border: 'border-amber-500/20', accent: 'text-amber-400', gradientBar: 'from-amber-500 to-amber-400' },
+      { threshold: 100, emoji: '🗽', title: 'NYC to Philly', desc: "You've covered the distance from New York to Philadelphia!", color: 'from-blue-500/30 to-blue-600/10', border: 'border-blue-500/20', accent: 'text-blue-400', gradientBar: 'from-blue-500 to-blue-400' },
+      { threshold: 238, emoji: '🇬🇧', title: 'London to Paris', desc: "You've run the distance from London to Paris!", color: 'from-rose-500/30 to-rose-600/10', border: 'border-rose-500/20', accent: 'text-rose-400', gradientBar: 'from-rose-500 to-rose-400' },
+      { threshold: 500, emoji: '🏔️', title: 'Camino de Santiago', desc: "You've walked the legendary Camino pilgrimage route!", color: 'from-emerald-500/30 to-emerald-600/10', border: 'border-emerald-500/20', accent: 'text-emerald-400', gradientBar: 'from-emerald-500 to-emerald-400' },
+      { threshold: 2450, emoji: '🌄', title: 'Appalachian Trail', desc: "You've conquered the full Appalachian Trail!", color: 'from-green-500/30 to-green-600/10', border: 'border-green-500/20', accent: 'text-green-400', gradientBar: 'from-green-500 to-green-400' },
+      { threshold: 13171, emoji: '🐉', title: 'Great Wall of China', desc: "You've run the full length of the Great Wall!", color: 'from-red-500/30 to-red-600/10', border: 'border-red-500/20', accent: 'text-red-400', gradientBar: 'from-red-500 to-red-400' },
+    ],
+  },
+  {
+    key: 'volume', label: 'Volume Lifted', unit: 'lbs', icon: '🏋️',
+    milestones: [
+      { threshold: 4000, emoji: '🚗', title: 'Weight of a Car', desc: "You've lifted the weight of an average sedan!", color: 'from-cyan-500/30 to-cyan-600/10', border: 'border-cyan-500/20', accent: 'text-cyan-400', gradientBar: 'from-cyan-500 to-cyan-400' },
+      { threshold: 14000, emoji: '🐘', title: 'African Elephant', desc: "You've lifted the weight of an African elephant!", color: 'from-violet-500/30 to-violet-600/10', border: 'border-violet-500/20', accent: 'text-violet-400', gradientBar: 'from-violet-500 to-violet-400' },
+      { threshold: 50000, emoji: '🚌', title: 'School Bus', desc: "You've lifted the weight of a fully loaded school bus!", color: 'from-yellow-500/30 to-yellow-600/10', border: 'border-yellow-500/20', accent: 'text-yellow-400', gradientBar: 'from-yellow-500 to-yellow-400' },
+      { threshold: 130000, emoji: '🐋', title: 'Blue Whale', desc: "You've lifted the weight of a blue whale!", color: 'from-sky-500/30 to-sky-600/10', border: 'border-sky-500/20', accent: 'text-sky-400', gradientBar: 'from-sky-500 to-sky-400' },
+      { threshold: 400000, emoji: '✈️', title: 'Boeing 747', desc: "You've lifted the weight of a fully loaded 747!", color: 'from-slate-500/30 to-slate-600/10', border: 'border-slate-400/20', accent: 'text-slate-300', gradientBar: 'from-slate-400 to-slate-300' },
+      { threshold: 1000000, emoji: '🚀', title: 'Space Shuttle', desc: "You've lifted the launch weight of the Space Shuttle!", color: 'from-orange-500/30 to-orange-600/10', border: 'border-orange-500/20', accent: 'text-orange-400', gradientBar: 'from-orange-500 to-orange-400' },
+    ],
+  },
+  {
+    key: 'pushups', label: 'Push-ups', unit: 'reps', icon: '💪',
+    milestones: [
+      { threshold: 100, emoji: '💪', title: 'Century Club', desc: "100 push-ups — that's a real warm-up!", color: 'from-pink-500/30 to-pink-600/10', border: 'border-pink-500/20', accent: 'text-pink-400', gradientBar: 'from-pink-500 to-pink-400' },
+      { threshold: 500, emoji: '🎖️', title: 'Navy SEAL Trainee', desc: "You've done more push-ups than a Navy SEAL trainee in a week!", color: 'from-indigo-500/30 to-indigo-600/10', border: 'border-indigo-500/20', accent: 'text-indigo-400', gradientBar: 'from-indigo-500 to-indigo-400' },
+      { threshold: 2000, emoji: '🏛️', title: 'Spartan Warrior', desc: "Ancient Spartans would be proud of this push-up count!", color: 'from-red-500/30 to-red-600/10', border: 'border-red-500/20', accent: 'text-red-400', gradientBar: 'from-red-500 to-red-400' },
+      { threshold: 5000, emoji: '🦾', title: 'Iron Arms', desc: "5,000 push-ups — your arms are basically titanium!", color: 'from-zinc-500/30 to-zinc-600/10', border: 'border-zinc-400/20', accent: 'text-zinc-300', gradientBar: 'from-zinc-400 to-zinc-300' },
+      { threshold: 10000, emoji: '🏆', title: 'Push-up Legend', desc: "10,000 push-ups! That's world-class dedication!", color: 'from-amber-500/30 to-amber-600/10', border: 'border-amber-500/20', accent: 'text-amber-400', gradientBar: 'from-amber-500 to-amber-400' },
+    ],
+  },
+  {
+    key: 'squats', label: 'Squats', unit: 'reps', icon: '🦵',
+    milestones: [
+      { threshold: 200, emoji: '🦵', title: 'Leg Day Hero', desc: "200 squats — you never skip leg day!", color: 'from-lime-500/30 to-lime-600/10', border: 'border-lime-500/20', accent: 'text-lime-400', gradientBar: 'from-lime-500 to-lime-400' },
+      { threshold: 1000, emoji: '⚡', title: 'Thunder Thighs', desc: "1,000 squats — your legs generate their own electricity!", color: 'from-yellow-500/30 to-yellow-600/10', border: 'border-yellow-500/20', accent: 'text-yellow-400', gradientBar: 'from-yellow-500 to-yellow-400' },
+      { threshold: 5000, emoji: '🗻', title: 'Mountain Legs', desc: "5,000 squats — your legs could carry you up Everest!", color: 'from-teal-500/30 to-teal-600/10', border: 'border-teal-500/20', accent: 'text-teal-400', gradientBar: 'from-teal-500 to-teal-400' },
+    ],
+  },
+  {
+    key: 'situps', label: 'Sit-ups', unit: 'reps', icon: '🔄',
+    milestones: [
+      { threshold: 500, emoji: '🎯', title: 'Core Soldier', desc: "500 sit-ups — your core is built like armor!", color: 'from-fuchsia-500/30 to-fuchsia-600/10', border: 'border-fuchsia-500/20', accent: 'text-fuchsia-400', gradientBar: 'from-fuchsia-500 to-fuchsia-400' },
+      { threshold: 2000, emoji: '🔥', title: 'Abs of Steel', desc: "2,000 sit-ups — your six-pack has its own zip code!", color: 'from-orange-500/30 to-orange-600/10', border: 'border-orange-500/20', accent: 'text-orange-400', gradientBar: 'from-orange-500 to-orange-400' },
+      { threshold: 6000, emoji: '💎', title: 'Diamond Core', desc: "6,000 sit-ups — your core is unbreakable!", color: 'from-cyan-500/30 to-cyan-600/10', border: 'border-cyan-500/20', accent: 'text-cyan-400', gradientBar: 'from-cyan-500 to-cyan-400' },
+    ],
+  },
 ];
 
 interface DashboardProps {
