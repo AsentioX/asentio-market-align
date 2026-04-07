@@ -31,13 +31,21 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const { goals } = useWOBuddyGoals();
   const insights = generateInsights(goals);
 
+  // Compute total all-time miles across all cardio exercises
+  const totalMiles = useMemo(() => 
+    mockExerciseStats
+      .filter(e => e.type === 'cardio')
+      .reduce((sum, e) => sum + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0),
+    []
+  );
+
+  // Find the latest unlocked milestone and the next one
+  const unlockedMilestones = DISTANCE_MILESTONES.filter(m => totalMiles >= m.miles);
+  const latestMilestone = unlockedMilestones[unlockedMilestones.length - 1];
+  const nextMilestone = DISTANCE_MILESTONES.find(m => totalMiles < m.miles);
+
   const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
   const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
-
-  const bodyLatest = mockBodyTrend[mockBodyTrend.length - 1];
-  const bodyPrev = mockBodyTrend[mockBodyTrend.length - 2];
-  const weightDelta = bodyLatest.weight - bodyPrev.weight;
-  const fatDelta = bodyLatest.bodyFat - bodyPrev.bodyFat;
   const muscleDelta = bodyLatest.muscleMass - bodyPrev.muscleMass;
 
   return (
