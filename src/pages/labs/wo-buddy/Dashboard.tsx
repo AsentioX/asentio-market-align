@@ -79,7 +79,7 @@ const MILESTONE_CATEGORIES: MilestoneCategory[] = [
 ];
 
 interface DashboardProps {
-  onNavigate: (tab: 'workout' | 'competitions' | 'settings' | 'goals') => void;
+  onNavigate: (tab: 'workout' | 'competitions' | 'settings') => void;
 }
 
 type Period = 'week' | 'month' | 'all';
@@ -168,7 +168,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
               <Sparkles className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Coaching</span>
             </div>
-            <button onClick={() => onNavigate('goals')} className="text-xs text-emerald-400 flex items-center gap-0.5 font-medium">
+            <button onClick={() => onNavigate('workout')} className="text-xs text-emerald-400 flex items-center gap-0.5 font-medium">
               Goals <ChevronRight className="w-3 h-3" />
             </button>
           </div>
