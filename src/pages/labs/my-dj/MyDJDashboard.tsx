@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { Heart, Activity, Brain, Wind, Zap, SkipForward, ThumbsUp, Play, Pause, ChevronDown, Music2, MapPin, Volume2 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
-import { MODE_META, PHYSIO_LABELS, UserMode } from './stateEngine';
+import { MODE_META, PHYSIO_LABELS, UserMode, BioInputs } from './stateEngine';
 
 const MyDJDashboard = () => {
   const {
     mode, setMode, intensity, setIntensity,
     volume, setVolume,
     isPlaying, startSession, stopSession,
-    bio, state, musicParams, nowPlaying,
+    bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, timeOfDay,
   } = useMyDJ();
 
   const [showModeSelector, setShowModeSelector] = useState(false);
+  const [expandedBio, setExpandedBio] = useState<string | null>(null);
   const meta = MODE_META[mode];
 
   const formatTime = (s: number) => {
