@@ -10,16 +10,18 @@ import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
 import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExercisesForDay, getAllDriversForDay, type PlanDay, type PlanExercise, type PlanSession } from './planEngine';
+import { EXERCISE_LIBRARY, findExercise } from './exerciseLibrary';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 type View = 'log' | 'history';
 type WorkoutPath = 'choose' | 'plan' | 'new';
 type ExerciseAction = 'pending' | 'completed' | 'dismissed' | 'deferred';
 
-const strengthExercises = ['Bench Press', 'Squats', 'Deadlift', 'Overhead Press', 'Barbell Row', 'Curls'];
-const cardioActivities = ['Run', 'Row', 'Bike'];
-const bodyweightExercises = ['Push-ups', 'Burpees', 'Squats', 'Pull-ups', 'Sit-ups'];
-const allExerciseNames = [...strengthExercises, ...bodyweightExercises, ...cardioActivities];
+// Derive exercise lists from the library
+const strengthExercises = EXERCISE_LIBRARY.filter(e => e.category === 'strength').map(e => e.name);
+const cardioActivities = EXERCISE_LIBRARY.filter(e => e.category === 'endurance').map(e => e.name);
+const bodyweightExercises = EXERCISE_LIBRARY.filter(e => ['bodyweight', 'power', 'agility'].includes(e.category)).map(e => e.name);
+const allExerciseNames = EXERCISE_LIBRARY.map(e => e.name);
 
 const modeConfig = {
   strength: { icon: <Dumbbell className="w-5 h-5" />, label: 'Strength', emoji: '🏋️', gradient: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/20', active: 'from-blue-500/30 to-blue-600/10', color: 'text-blue-400' },
