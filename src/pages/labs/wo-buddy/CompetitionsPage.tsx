@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Trophy, Users, Clock, ChevronUp, Timer } from 'lucide-react';
-import { mockCompetitions, mockLeaderboard, Competition } from './mockData';
+import { Trophy, Users, Clock, ChevronUp, Timer, Share2 } from 'lucide-react';
+import { mockCompetitions, mockLeaderboard, mockAchievements, Competition } from './mockData';
+import { shareContent, buildAchievementShareText } from './shareUtils';
 import compWarrior from '@/assets/wo-buddy/comp-warrior.jpg';
 import compBurn from '@/assets/wo-buddy/comp-burn.jpg';
 import compStrength from '@/assets/wo-buddy/comp-strength.jpg';
