@@ -1,5 +1,6 @@
 // Shared plan generation logic used by Goals and Workout pages
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS } from './goalMappings';
+import { EXERCISE_LIBRARY, findExercise, type ExerciseDefinition } from './exerciseLibrary';
 
 export interface PlanExercise {
   name: string;
@@ -8,6 +9,8 @@ export interface PlanExercise {
   duration?: string;
   note?: string;
   type: 'strength' | 'cardio' | 'bodyweight' | 'flexibility';
+  libraryId?: string;
+  icon?: string;
 }
 
 export interface PlanSession {
@@ -27,42 +30,65 @@ export interface PlanDay {
 
 export const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-const driverExercises: Record<string, PlanExercise[]> = {
-  Strength: [
-    { name: 'Squats', sets: 4, reps: 8, type: 'strength' },
-    { name: 'Bench Press', sets: 4, reps: 8, type: 'strength' },
-    { name: 'Deadlift', sets: 3, reps: 5, type: 'strength' },
-    { name: 'Overhead Press', sets: 3, reps: 8, type: 'strength' },
-    { name: 'Barbell Row', sets: 3, reps: 10, type: 'strength' },
-  ],
-  Endurance: [
-    { name: 'Run', duration: '30 min', type: 'cardio' },
-    { name: 'Bike', duration: '25 min', type: 'cardio' },
-    { name: 'Row', duration: '20 min', type: 'cardio' },
-  ],
-  Power: [
-    { name: 'Squats', sets: 5, reps: 3, type: 'strength' },
-    { name: 'Bench Press', sets: 5, reps: 3, type: 'strength' },
-    { name: 'Burpees', sets: 3, reps: 10, type: 'bodyweight' },
-  ],
-  Stability: [
-    { name: 'Sit-ups', sets: 3, reps: 20, type: 'bodyweight' },
-    { name: 'Push-ups', sets: 3, reps: 15, type: 'bodyweight' },
-    { name: 'Pull-ups', sets: 3, reps: 8, type: 'bodyweight' },
-  ],
-  Mobility: [
-    { name: 'Dynamic stretching', duration: '15 min', type: 'flexibility' },
-    { name: 'Yoga flow', duration: '20 min', type: 'flexibility' },
-  ],
-  Efficiency: [
-    { name: 'Run', duration: '20 min intervals', type: 'cardio' },
-    { name: 'Bike', duration: '30 min steady', type: 'cardio' },
-  ],
-  Technique: [
-    { name: 'Skill drills', duration: '20 min', type: 'flexibility' },
-    { name: 'Form practice', duration: '15 min', type: 'flexibility' },
-  ],
-};
+// Convert an ExerciseDefinition into a PlanExercise
+function toPlanExercise(def: ExerciseDefinition): PlanExercise {
+  const planType: PlanExercise['type'] =
+    def.category === 'endurance' ? 'cardio' :
+    def.category === 'strength' ? 'strength' :
+    def.category === 'bodyweight' || def.category === 'power' || def.category === 'agility' ? 'bodyweight' :
+    'flexibility';
+
+  const pe: PlanExercise = {
+    name: def.name,
+    type: planType,
+    libraryId: def.id,
+    icon: def.icon,
+  };
+
+  if (def.entryType === 'sets') {
+    const setsDef = def.defaultMetrics.find(m => m.key === 'sets');
+    const repsDef = def.defaultMetrics.find(m => m.key === 'reps' || m.key === 'reps_per_leg');
+    pe.sets = (setsDef?.defaultValue as number) || 3;
+    pe.reps = (repsDef?.defaultValue as number) || 10;
+  } else if (def.entryType === 'duration') {
+    const durDef = def.defaultMetrics.find(m => m.key === 'duration');
+    const secs = (durDef?.defaultValue as number) || 60;
+    pe.duration = secs >= 60 ? `${Math.round(secs / 60)} min` : `${secs} sec`;
+    pe.sets = (def.defaultMetrics.find(m => m.key === 'sets')?.defaultValue as number) || 1;
+  } else {
+    // simple / intervals — show as duration-based
+    pe.duration = '20 min';
+  }
+
+  return pe;
+}
+
+// Build driver → exercise mapping from EXERCISE_LIBRARY
+function buildDriverExercises(): Record<string, PlanExercise[]> {
+  const map: Record<string, PlanExercise[]> = {};
+  for (const def of EXERCISE_LIBRARY) {
+    for (const driver of def.linkedDrivers) {
+      if (!map[driver]) map[driver] = [];
+      map[driver].push(toPlanExercise(def));
+    }
+  }
+  // Add fallback flexibility entries for drivers with no library matches
+  if (!map['Mobility']) {
+    map['Mobility'] = [
+      { name: 'Dynamic Stretching', duration: '15 min', type: 'flexibility' },
+      { name: 'Yoga Flow', duration: '20 min', type: 'flexibility' },
+    ];
+  }
+  if (!map['Technique']) {
+    map['Technique'] = [
+      { name: 'Skill Drills', duration: '20 min', type: 'flexibility' },
+      { name: 'Form Practice', duration: '15 min', type: 'flexibility' },
+    ];
+  }
+  return map;
+}
+
+const driverExercises = buildDriverExercises();
 
 // Session label mapping
 const SESSION_LABELS: Record<string, string> = {
