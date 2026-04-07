@@ -541,7 +541,9 @@ const GoalsPage = () => {
 
         {/* Content */}
         <div className="p-4">
-          {planView === 'training' ? (
+          {planView === 'library' ? (
+            <ExerciseLibraryPage onBack={() => setView('training')} />
+          ) : planView === 'training' ? (
             <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
           ) : (
             <div className="space-y-5">
