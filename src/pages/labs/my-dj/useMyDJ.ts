@@ -180,7 +180,7 @@ export function useMyDJ() {
     mode, setMode, intensity, setIntensity,
     volume, setVolume,
     isPlaying, startSession, stopSession,
-    bio, state, musicParams, nowPlaying,
+    bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, timeOfDay: getTimeOfDay(),
   };
 }
