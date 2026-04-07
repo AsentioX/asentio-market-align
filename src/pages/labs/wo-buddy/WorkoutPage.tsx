@@ -102,6 +102,9 @@ const WorkoutPage = () => {
   const [manualReps, setManualReps] = useState<Record<string, number>>({});
   const [manualSets, setManualSets] = useState<Record<string, number>>({});
   const [manualWeight, setManualWeight] = useState<Record<string, number>>({});
+  const [manualDistance, setManualDistance] = useState<Record<string, number>>({});
+  const [manualTime, setManualTime] = useState<Record<string, number>>({});
+  const [manualDuration, setManualDuration] = useState<Record<string, number>>({});
 
   // Rest between exercises
   const [isResting, setIsResting] = useState(false);
