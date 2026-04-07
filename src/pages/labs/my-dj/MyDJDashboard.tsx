@@ -160,6 +160,20 @@ const MyDJDashboard = () => {
             </button>
           </div>
 
+          {/* Volume */}
+          <div className="mt-3 flex items-center gap-3 px-2">
+            <Volume2 className="w-4 h-4 text-white/40 shrink-0" />
+            <Slider
+              value={[Math.round(volume * 100)]}
+              onValueChange={([v]) => setVolume(v / 100)}
+              min={0}
+              max={100}
+              step={5}
+              className="flex-1"
+            />
+            <span className="text-[10px] text-white/30 w-7 text-right">{Math.round(volume * 100)}%</span>
+          </div>
+
           {/* Adaptive Music Params */}
           <div className="mt-4 grid grid-cols-5 gap-1.5">
             {[
