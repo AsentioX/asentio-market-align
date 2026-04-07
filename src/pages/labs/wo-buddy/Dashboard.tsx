@@ -60,11 +60,12 @@ const MILESTONE_CATEGORIES: MilestoneCategory[] = [
     ],
   },
   {
-    key: 'squats', label: 'Squats', unit: 'reps', icon: '🦵',
+    key: 'squats', label: 'Squat Volume', unit: 'lbs', icon: '🦵',
     milestones: [
-      { threshold: 200, emoji: '🦵', title: 'Leg Day Hero', desc: "200 squats — you never skip leg day!", color: 'from-lime-500/30 to-lime-600/10', border: 'border-lime-500/20', accent: 'text-lime-400', gradientBar: 'from-lime-500 to-lime-400' },
-      { threshold: 1000, emoji: '⚡', title: 'Thunder Thighs', desc: "1,000 squats — your legs generate their own electricity!", color: 'from-yellow-500/30 to-yellow-600/10', border: 'border-yellow-500/20', accent: 'text-yellow-400', gradientBar: 'from-yellow-500 to-yellow-400' },
-      { threshold: 5000, emoji: '🗻', title: 'Mountain Legs', desc: "5,000 squats — your legs could carry you up Everest!", color: 'from-teal-500/30 to-teal-600/10', border: 'border-teal-500/20', accent: 'text-teal-400', gradientBar: 'from-teal-500 to-teal-400' },
+      { threshold: 10000, emoji: '🦵', title: 'Leg Day Hero', desc: "10,000 lbs squatted — you never skip leg day!", color: 'from-lime-500/30 to-lime-600/10', border: 'border-lime-500/20', accent: 'text-lime-400', gradientBar: 'from-lime-500 to-lime-400' },
+      { threshold: 50000, emoji: '⚡', title: 'Thunder Thighs', desc: "50k lbs — your legs generate their own electricity!", color: 'from-yellow-500/30 to-yellow-600/10', border: 'border-yellow-500/20', accent: 'text-yellow-400', gradientBar: 'from-yellow-500 to-yellow-400' },
+      { threshold: 100000, emoji: '🏗️', title: 'Human Crane', desc: "You've squatted the weight of a construction crane!", color: 'from-teal-500/30 to-teal-600/10', border: 'border-teal-500/20', accent: 'text-teal-400', gradientBar: 'from-teal-500 to-teal-400' },
+      { threshold: 200000, emoji: '🗻', title: 'Mountain Legs', desc: "200k lbs — your legs could carry you up Everest twice!", color: 'from-emerald-500/30 to-emerald-600/10', border: 'border-emerald-500/20', accent: 'text-emerald-400', gradientBar: 'from-emerald-500 to-emerald-400' },
     ],
   },
   {
