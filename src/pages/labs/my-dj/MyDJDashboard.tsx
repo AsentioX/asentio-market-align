@@ -37,12 +37,20 @@ const MyDJDashboard = () => {
             </div>
             <ChevronDown className={`w-5 h-5 text-white/60 transition-transform ${showModeSelector ? 'rotate-180' : ''}`} />
           </div>
-          {/* Subtle time-of-day hint */}
-          <div className="mt-3 text-xs text-white/50">
-            {timeOfDay === 'morning' && '☀️ Good morning'}
-            {timeOfDay === 'afternoon' && '🌤️ Good afternoon'}
-            {timeOfDay === 'evening' && '🌆 Good evening'}
-            {timeOfDay === 'night' && '🌙 Good night'}
+          {/* Time-of-day + active location */}
+          <div className="mt-3 flex items-center gap-3 text-xs text-white/50">
+            <span>
+              {timeOfDay === 'morning' && '☀️ Good morning'}
+              {timeOfDay === 'afternoon' && '🌤️ Good afternoon'}
+              {timeOfDay === 'evening' && '🌆 Good evening'}
+              {timeOfDay === 'night' && '🌙 Good night'}
+            </span>
+            <span className="text-white/20">·</span>
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400/80">Kitchen</span>
+              <span className="text-white/30">· Salsa</span>
+            </span>
           </div>
         </button>
 
