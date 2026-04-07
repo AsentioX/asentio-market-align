@@ -29,7 +29,7 @@ const WOBuddyLayout = () => {
       case 'workout': return <WorkoutPage />;
       case 'competitions': return <CompetitionsPage />;
       case 'goals': return <GoalsPage />;
-      case 'library': return <ExerciseLibraryPage onBack={() => setActiveTab('dashboard')} />;
+      case 'library': return <ExerciseLibraryPage onBack={() => setActiveTab('goals')} />;
       case 'progress': return <ProgressAnalytics />;
       case 'settings': return (
         <div className="space-y-6">
