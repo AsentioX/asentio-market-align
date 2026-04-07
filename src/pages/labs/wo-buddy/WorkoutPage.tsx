@@ -88,6 +88,19 @@ const WorkoutPage = () => {
   const { workouts, saveWorkout } = useWOBuddyWorkouts();
   const { goals, updateGoal } = useWOBuddyGoals();
 
+  // Wearable device state
+  const { connectedDevices } = useWearableDevices();
+  const [selectedWearableId, setSelectedWearableId] = useState<string | null>(null);
+  const [showDevicePicker, setShowDevicePicker] = useState(false);
+  const { data: wearableData, device: activeWearable, hasDevice: hasWearable } = useWearableLiveData(workoutStarted && !workoutPaused, selectedWearableId);
+
+  // Auto-select first connected device
+  useEffect(() => {
+    if (!selectedWearableId && connectedDevices.length > 0) {
+      setSelectedWearableId(connectedDevices[0].id);
+    }
+  }, [connectedDevices, selectedWearableId]);
+
   // Today's plan
   const plan = useMemo(() => generatePlanFromGoals(goals), [goals]);
   const todayIndex = getTodayIndex();
