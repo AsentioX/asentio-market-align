@@ -423,30 +423,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Recent Activity</h3>
-        </div>
-        <div className="space-y-2">
-          {mockWorkouts.slice(0, 3).map((w) => (
-            <div key={w.id} className="flex items-center gap-3 bg-gradient-to-r from-white/[0.05] to-white/[0.02] rounded-2xl p-3.5 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
-                w.type === 'strength' ? 'bg-gradient-to-br from-blue-500/20 to-blue-600/5 border border-blue-500/10' :
-                w.type === 'cardio' ? 'bg-gradient-to-br from-orange-500/20 to-orange-600/5 border border-orange-500/10' :
-                'bg-gradient-to-br from-purple-500/20 to-purple-600/5 border border-purple-500/10'
-              }`}>
-                {w.type === 'strength' ? '🏋️' : w.type === 'cardio' ? '🏃' : '💪'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{w.exercise}</p>
-                <p className="text-[10px] text-white/40">{w.date}</p>
-              </div>
-              <span className="text-sm font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">+{w.score}</span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
