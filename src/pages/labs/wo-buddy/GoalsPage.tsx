@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight } from 'lucide-react';
+import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight, BookOpen } from 'lucide-react';
+import ExerciseLibraryPage from './ExerciseLibraryPage';
 import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals';
 import {
   GOAL_CATEGORIES, METRICS, PERFORMANCE_DRIVERS, GOAL_TEMPLATES,
@@ -9,7 +10,7 @@ import { generatePlanFromGoals, getTodayIndex, DAY_SHORT, type PlanDay } from '.
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-type GoalsView = 'goals' | 'training' | 'plan';
+type GoalsView = 'goals' | 'training' | 'plan' | 'library';
 
 const WORKOUT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; color: string; bg: string }> = {
   strength: { icon: <Dumbbell className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-500/15' },
@@ -273,7 +274,7 @@ const GoalsPage = () => {
     );
   }
 
-  const planView = view === 'training' ? 'training' : 'plan';
+  const planView = view === 'training' ? 'training' : view === 'library' ? 'library' : 'plan';
 
   return (
     <div className="space-y-5">
@@ -519,6 +520,7 @@ const GoalsPage = () => {
           {([
             { id: 'training' as const, label: 'Training Plan', icon: <ListChecks className="w-3.5 h-3.5" /> },
             { id: 'plan' as const, label: 'Weekly Plan', icon: <CalendarDays className="w-3.5 h-3.5" /> },
+            { id: 'library' as const, label: 'Library', icon: <BookOpen className="w-3.5 h-3.5" /> },
           ]).map(tab => (
             <button key={tab.id}
               onClick={() => setView(tab.id)}
@@ -539,7 +541,9 @@ const GoalsPage = () => {
 
         {/* Content */}
         <div className="p-4">
-          {planView === 'training' ? (
+          {planView === 'library' ? (
+            <ExerciseLibraryPage onBack={() => setView('training')} />
+          ) : planView === 'training' ? (
             <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
           ) : (
             <div className="space-y-5">

@@ -16,7 +16,7 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Home', icon: <Home className="w-5 h-5" /> },
   { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
   { id: 'workout', label: 'Workout', icon: <Dumbbell className="w-5 h-5" /> },
-  { id: 'library', label: 'Library', icon: <BookOpen className="w-5 h-5" /> },
+  { id: 'competitions', label: 'Compete', icon: <Trophy className="w-5 h-5" /> },
   { id: 'progress', label: 'Progress', icon: <TrendingUp className="w-5 h-5" /> },
 ];
 
@@ -29,7 +29,7 @@ const WOBuddyLayout = () => {
       case 'workout': return <WorkoutPage />;
       case 'competitions': return <CompetitionsPage />;
       case 'goals': return <GoalsPage />;
-      case 'library': return <ExerciseLibraryPage onBack={() => setActiveTab('dashboard')} />;
+      case 'library': return <ExerciseLibraryPage onBack={() => setActiveTab('goals')} />;
       case 'progress': return <ProgressAnalytics />;
       case 'settings': return (
         <div className="space-y-6">
