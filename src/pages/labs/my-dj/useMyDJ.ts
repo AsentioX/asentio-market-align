@@ -73,6 +73,11 @@ export function useMyDJ() {
     const newParams = computeMusicParams(newState, bio, mode, intensity);
     setMusicParams(newParams);
 
+    // Update audio engine with new params in real-time
+    if (isPlaying) {
+      audioEngine.current.setParams(newParams);
+    }
+
     if (isPlaying) {
       alignmentSumRef.current += newState.alignment;
       alignmentCountRef.current += 1;
