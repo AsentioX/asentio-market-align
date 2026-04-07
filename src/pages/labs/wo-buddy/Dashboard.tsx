@@ -45,7 +45,11 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const nextMilestone = DISTANCE_MILESTONES.find(m => totalMiles < m.miles);
 
   const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
-  const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
+  const bodyLatest = mockBodyTrend[mockBodyTrend.length - 1];
+  const bodyPrev = mockBodyTrend[mockBodyTrend.length - 2];
+  const weightDelta = bodyLatest.weight - bodyPrev.weight;
+  const fatDelta = bodyLatest.bodyFat - bodyPrev.bodyFat;
+  const muscleDelta = bodyLatest.muscleMass - bodyPrev.muscleMass;
   const muscleDelta = bodyLatest.muscleMass - bodyPrev.muscleMass;
 
   return (
