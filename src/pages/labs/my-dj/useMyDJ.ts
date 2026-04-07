@@ -132,10 +132,16 @@ export function useMyDJ() {
   }, [isPlaying, musicParams]);
 
   const startSession = useCallback(() => {
-    setIsPlaying(true);
     alignmentSumRef.current = 0;
     alignmentCountRef.current = 0;
-    setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 0, likes: 0, skips: 0, alignmentHistory: [] });
+    elapsedRef.current = 0;
+    setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 1, likes: 0, skips: 0, alignmentHistory: [] });
+    const track = selectTrack(musicParams);
+    setNowPlaying({
+      title: track.title, artist: track.artist, genre: track.genre,
+      duration: track.duration, elapsed: 0, params: musicParams,
+    });
+    setIsPlaying(true);
     audioEngine.current.setParams(musicParams);
     audioEngine.current.start();
   }, [musicParams]);
