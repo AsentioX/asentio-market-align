@@ -193,7 +193,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 <div className="mt-4 pt-3 border-t border-white/[0.06]">
                   <div className="flex items-center justify-between text-[10px] mb-1.5">
                     <span className="text-white/40">Next: {next.emoji} {next.title}</span>
-                    <span className="text-white/30">{formatNum(next.threshold - value)} {cat.unit} to go</span>
+                    <span className="text-white/30">{formatNum(Math.round(next.threshold - value))} {cat.unit} to go</span>
                   </div>
                   <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div
