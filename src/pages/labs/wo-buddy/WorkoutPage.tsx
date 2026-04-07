@@ -819,7 +819,6 @@ const WorkoutPage = () => {
 
                           {inputMode === 'reps' && (
                             <div className="space-y-3 pt-2">
-                            <div className="space-y-3 pt-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-purple-400 font-medium flex items-center gap-1"><Hash className="w-3 h-3" /> Manual Entry</span>
                                 <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
