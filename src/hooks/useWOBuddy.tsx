@@ -106,7 +106,9 @@ export function useWOBuddyProfile() {
       avatar_initials: newProfile.avatarInitials,
       daily_goal: newProfile.dailyGoal,
       weekly_goal: newProfile.weeklyGoal,
-    }).eq('user_id', user.id);
+      avatar_url: newProfile.avatarUrl,
+      background_url: newProfile.backgroundUrl,
+    } as any).eq('user_id', user.id);
   }, [user, profile]);
 
   return { profile, updateProfile, loading, isAuthenticated: !!user };
