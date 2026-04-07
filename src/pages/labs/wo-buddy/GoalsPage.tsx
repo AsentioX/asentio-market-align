@@ -10,7 +10,7 @@ import { generatePlanFromGoals, getTodayIndex, DAY_SHORT, type PlanDay } from '.
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-type GoalsView = 'goals' | 'training' | 'plan';
+type GoalsView = 'goals' | 'training' | 'plan' | 'library';
 
 const WORKOUT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; color: string; bg: string }> = {
   strength: { icon: <Dumbbell className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-500/15' },
