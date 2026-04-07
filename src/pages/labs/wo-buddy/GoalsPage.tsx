@@ -539,9 +539,10 @@ const GoalsPage = () => {
 
         {/* Content */}
         <div className="p-4">
-        <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
-      ) : (
-        <div className="space-y-5">
+          {planView === 'training' ? (
+            <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
+          ) : (
+            <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-white">This Week's Plan</h2>
