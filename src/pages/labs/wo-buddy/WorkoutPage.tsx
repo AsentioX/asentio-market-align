@@ -819,40 +819,123 @@ const WorkoutPage = () => {
 
                           {inputMode === 'reps' && (
                             <div className="space-y-3 pt-2">
+                            <div className="space-y-3 pt-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-purple-400 font-medium flex items-center gap-1"><Hash className="w-3 h-3" /> Manual Entry</span>
                                 <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
                               </div>
-                              <div className="grid grid-cols-3 gap-2">
-                                <div className="space-y-1">
-                                  <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
-                                  <input
-                                    type="number"
-                                    value={manualSets[key] || ex.sets || 3}
-                                    onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                    className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <label className="text-[10px] text-white/40 uppercase tracking-wider">Reps</label>
-                                  <input
-                                    type="number"
-                                    value={manualReps[key] || ex.reps || 10}
-                                    onChange={e => setManualReps(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                    className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <label className="text-[10px] text-white/40 uppercase tracking-wider">Weight</label>
-                                  <input
-                                    type="number"
-                                    value={manualWeight[key] || 0}
-                                    onChange={e => setManualWeight(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                    className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
-                                    placeholder="lbs"
-                                  />
-                                </div>
-                              </div>
+                              {(() => {
+                                const libEx = findExercise(ex.name);
+                                const entryType = libEx?.entryType || (ex.type === 'cardio' ? 'simple' : 'sets');
+                                const metrics = libEx?.defaultMetrics || [];
+
+                                if (entryType === 'sets') {
+                                  // Strength / bodyweight sets: show sets, reps, weight
+                                  const hasWeight = metrics.some(m => m.key === 'weight');
+                                  const repsLabel = metrics.find(m => m.key === 'reps_per_leg') ? 'Reps/Leg' : 'Reps';
+                                  return (
+                                    <div className={`grid ${hasWeight ? 'grid-cols-3' : 'grid-cols-2'} gap-2`}>
+                                      <div className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
+                                        <input type="number" value={manualSets[key] || ex.sets || 3}
+                                          onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">{repsLabel}</label>
+                                        <input type="number" value={manualReps[key] || ex.reps || 10}
+                                          onChange={e => setManualReps(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                      </div>
+                                      {hasWeight && (
+                                        <div className="space-y-1">
+                                          <label className="text-[10px] text-white/40 uppercase tracking-wider">Weight</label>
+                                          <input type="number" value={manualWeight[key] || 0}
+                                            onChange={e => setManualWeight(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                            className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                            placeholder="lbs" />
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                }
+
+                                if (entryType === 'intervals') {
+                                  // Endurance intervals: distance, time, rest
+                                  return (
+                                    <div className="grid grid-cols-3 gap-2">
+                                      <div className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Distance</label>
+                                        <input type="number" value={manualDistance[key] || 0}
+                                          onChange={e => setManualDistance(prev => ({ ...prev, [key]: parseFloat(e.target.value) || 0 }))}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          placeholder={metrics.find(m => m.key === 'distance' || m.key === 'interval_distance')?.unit || 'm'} />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Time</label>
+                                        <input type="number" value={manualTime[key] || 0}
+                                          onChange={e => setManualTime(prev => ({ ...prev, [key]: parseFloat(e.target.value) || 0 }))}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          placeholder="min" />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
+                                        <input type="number" value={manualSets[key] || 1}
+                                          onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                      </div>
+                                    </div>
+                                  );
+                                }
+
+                                if (entryType === 'duration') {
+                                  // Duration-based: duration + sets
+                                  return (
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Duration</label>
+                                        <input type="number" value={manualDuration[key] || 60}
+                                          onChange={e => setManualDuration(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          placeholder="sec" />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
+                                        <input type="number" value={manualSets[key] || 3}
+                                          onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                      </div>
+                                    </div>
+                                  );
+                                }
+
+                                // Simple entry (running, cycling, etc.): distance + time
+                                return (
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {metrics.filter(m => m.required).map(m => (
+                                      <div key={m.key} className="space-y-1">
+                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">{m.label}{m.unit ? ` (${m.unit})` : ''}</label>
+                                        <input type="number"
+                                          value={
+                                            m.key === 'distance' ? (manualDistance[key] || '') :
+                                            m.key === 'time' ? (manualTime[key] || '') :
+                                            m.key === 'duration' ? (manualDuration[key] || '') :
+                                            (manualReps[key] || '')
+                                          }
+                                          onChange={e => {
+                                            const val = parseFloat(e.target.value) || 0;
+                                            if (m.key === 'distance') setManualDistance(prev => ({ ...prev, [key]: val }));
+                                            else if (m.key === 'time') setManualTime(prev => ({ ...prev, [key]: val }));
+                                            else if (m.key === 'duration') setManualDuration(prev => ({ ...prev, [key]: val }));
+                                            else setManualReps(prev => ({ ...prev, [key]: val }));
+                                          }}
+                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          placeholder={m.unit || '0'} />
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
 
