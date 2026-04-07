@@ -293,6 +293,94 @@ export type Database = {
           },
         ]
       }
+      mydj_audio_scenes: {
+        Row: {
+          created_at: string
+          entry_behavior: string
+          exit_behavior: string
+          fade_in_seconds: number | null
+          fade_out_seconds: number | null
+          id: string
+          is_active: boolean
+          location_id: string
+          mode_id: string | null
+          name: string
+          playlist_id: string | null
+          preferred_artist: string | null
+          preferred_bpm_max: number | null
+          preferred_bpm_min: number | null
+          preferred_genre: string | null
+          priority: number
+          reentry_behavior: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_behavior?: string
+          exit_behavior?: string
+          fade_in_seconds?: number | null
+          fade_out_seconds?: number | null
+          id?: string
+          is_active?: boolean
+          location_id: string
+          mode_id?: string | null
+          name: string
+          playlist_id?: string | null
+          preferred_artist?: string | null
+          preferred_bpm_max?: number | null
+          preferred_bpm_min?: number | null
+          preferred_genre?: string | null
+          priority?: number
+          reentry_behavior?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_behavior?: string
+          exit_behavior?: string
+          fade_in_seconds?: number | null
+          fade_out_seconds?: number | null
+          id?: string
+          is_active?: boolean
+          location_id?: string
+          mode_id?: string | null
+          name?: string
+          playlist_id?: string | null
+          preferred_artist?: string | null
+          preferred_bpm_max?: number | null
+          preferred_bpm_min?: number | null
+          preferred_genre?: string | null
+          priority?: number
+          reentry_behavior?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_audio_scenes_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_audio_scenes_mode_id_fkey"
+            columns: ["mode_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_modes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_audio_scenes_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_playlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mydj_biometric_readings: {
         Row: {
           activity_level: string | null
@@ -433,6 +521,179 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "mydj_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_location_events: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          detected_at: string
+          event_type: Database["public"]["Enums"]["mydj_location_event_type"]
+          id: string
+          location_id: string
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_at?: string
+          event_type: Database["public"]["Enums"]["mydj_location_event_type"]
+          id?: string
+          location_id: string
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_at?: string
+          event_type?: Database["public"]["Enums"]["mydj_location_event_type"]
+          id?: string
+          location_id?: string
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_location_events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_location_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_session_summary_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "mydj_location_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_locations: {
+        Row: {
+          beacon_id: string | null
+          created_at: string
+          detection_method: string
+          id: string
+          is_active: boolean
+          latitude: number | null
+          location_type: string
+          longitude: number | null
+          name: string
+          radius_meters: number | null
+          updated_at: string
+          user_id: string
+          wifi_signature: string | null
+        }
+        Insert: {
+          beacon_id?: string | null
+          created_at?: string
+          detection_method?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          location_type?: string
+          longitude?: number | null
+          name: string
+          radius_meters?: number | null
+          updated_at?: string
+          user_id: string
+          wifi_signature?: string | null
+        }
+        Update: {
+          beacon_id?: string | null
+          created_at?: string
+          detection_method?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          location_type?: string
+          longitude?: number | null
+          name?: string
+          radius_meters?: number | null
+          updated_at?: string
+          user_id?: string
+          wifi_signature?: string | null
+        }
+        Relationships: []
+      }
+      mydj_memory_associations: {
+        Row: {
+          created_at: string
+          emotional_intent: string
+          id: string
+          is_active: boolean
+          location_id: string | null
+          memory_type: string
+          note: string | null
+          playlist_id: string | null
+          strength_score: number
+          title: string
+          track_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emotional_intent?: string
+          id?: string
+          is_active?: boolean
+          location_id?: string | null
+          memory_type?: string
+          note?: string | null
+          playlist_id?: string | null
+          strength_score?: number
+          title: string
+          track_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emotional_intent?: string
+          id?: string
+          is_active?: boolean
+          location_id?: string | null
+          memory_type?: string
+          note?: string | null
+          playlist_id?: string | null
+          strength_score?: number
+          title?: string
+          track_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_memory_associations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_memory_associations_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_playlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_memory_associations_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_music_tracks"
             referencedColumns: ["id"]
           },
         ]
@@ -635,6 +896,77 @@ export type Database = {
           },
           {
             foreignKeyName: "mydj_personalization_feedback_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_music_tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_playback_context: {
+        Row: {
+          created_at: string
+          id: string
+          last_event_at: string
+          location_id: string
+          playback_position_ms: number | null
+          playback_status: Database["public"]["Enums"]["mydj_playback_status"]
+          playlist_id: string | null
+          scene_id: string | null
+          track_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_event_at?: string
+          location_id: string
+          playback_position_ms?: number | null
+          playback_status?: Database["public"]["Enums"]["mydj_playback_status"]
+          playlist_id?: string | null
+          scene_id?: string | null
+          track_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_event_at?: string
+          location_id?: string
+          playback_position_ms?: number | null
+          playback_status?: Database["public"]["Enums"]["mydj_playback_status"]
+          playlist_id?: string | null
+          scene_id?: string | null
+          track_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_playback_context_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_playback_context_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_playlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_playback_context_scene_id_fkey"
+            columns: ["scene_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_audio_scenes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_playback_context_track_id_fkey"
             columns: ["track_id"]
             isOneToOne: false
             referencedRelation: "mydj_music_tracks"
@@ -2110,12 +2442,14 @@ export type Database = {
         | "replay"
         | "helpful"
         | "not_helpful"
+      mydj_location_event_type: "entered" | "exited" | "reentered" | "dwell"
       mydj_music_event_type:
         | "started"
         | "skipped"
         | "completed"
         | "auto_switched"
         | "user_selected"
+      mydj_playback_status: "playing" | "paused" | "stopped"
       mydj_playlist_type:
         | "generated"
         | "saved"
@@ -2271,6 +2605,7 @@ export const Constants = {
         "helpful",
         "not_helpful",
       ],
+      mydj_location_event_type: ["entered", "exited", "reentered", "dwell"],
       mydj_music_event_type: [
         "started",
         "skipped",
@@ -2278,6 +2613,7 @@ export const Constants = {
         "auto_switched",
         "user_selected",
       ],
+      mydj_playback_status: ["playing", "paused", "stopped"],
       mydj_playlist_type: [
         "generated",
         "saved",
