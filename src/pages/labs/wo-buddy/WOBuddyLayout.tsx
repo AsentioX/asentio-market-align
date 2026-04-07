@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Dumbbell, Trophy, Settings, ArrowLeft } from 'lucide-react';
+import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import WorkoutPage from './WorkoutPage';
@@ -8,10 +8,11 @@ import GoalsPage from './GoalsPage';
 import ProfilePage from './ProfilePage';
 import WearableSettings from './WearableSettings';
 
-type Tab = 'dashboard' | 'workout' | 'competitions' | 'settings';
+type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Home', icon: <Home className="w-5 h-5" /> },
+  { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
   { id: 'workout', label: 'Workout', icon: <Dumbbell className="w-5 h-5" /> },
   { id: 'competitions', label: 'Compete', icon: <Trophy className="w-5 h-5" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
@@ -22,14 +23,11 @@ const WOBuddyLayout = () => {
 
   const renderPage = () => {
     switch (activeTab) {
-      case 'dashboard': return <Dashboard onNavigate={setActiveTab as any} />;
-      case 'workout': return (
-        <div className="space-y-6">
-          <GoalsPage />
-          <WorkoutPage />
-        </div>
-      );
+      case 'dashboard': return <Dashboard onNavigate={setActiveTab} />;
+      case 'workout': return <WorkoutPage />;
       case 'competitions': return <CompetitionsPage />;
+      case 'competitions': return <CompetitionsPage />;
+      case 'goals': return <GoalsPage />;
       case 'settings': return (
         <div className="space-y-6">
           <ProfilePage />
