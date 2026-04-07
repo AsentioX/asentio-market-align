@@ -539,7 +539,7 @@ const GoalsPage = () => {
 
       {planView === 'training' ? (
         <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
-      ) :
+      ) : (
         <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
@@ -552,7 +552,6 @@ const GoalsPage = () => {
             </button>
           </div>
 
-          {/* Summary strip */}
           <div className="flex gap-2">
             <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
               <p className="text-lg font-bold text-white">{plan.filter(p => !p.isRest).length}</p>
@@ -584,18 +583,16 @@ const GoalsPage = () => {
             </div>
           )}
 
-          {/* Day cards */}
           <div className="space-y-2">
             {plan.map((day) => {
               const primarySession = day.sessions[0];
               const config = WORKOUT_TYPE_CONFIG[primarySession?.workoutType || 'rest'] || WORKOUT_TYPE_CONFIG.rest;
               const isToday = day.dayOfWeek === todayIndex;
-              const isExpanded = expandedDay === day.dayOfWeek;
-              const allDrivers = day.sessions.flatMap(s => s.focusDrivers);
+              const isDayExpanded = expandedDay === day.dayOfWeek;
 
               return (
                 <button key={day.dayOfWeek}
-                  onClick={() => setExpandedDay(isExpanded ? null : day.dayOfWeek)}
+                  onClick={() => setExpandedDay(isDayExpanded ? null : day.dayOfWeek)}
                   className={`w-full text-left rounded-xl border transition-all ${
                     isToday ? 'bg-emerald-500/[0.07] border-emerald-500/20' : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
                   }`}>
@@ -614,10 +611,10 @@ const GoalsPage = () => {
                       </p>
                     </div>
                     <div className="text-white/20">
-                      {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      {isDayExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </div>
                   </div>
-                  {isExpanded && (
+                  {isDayExpanded && (
                     <div className="px-3 pb-3 border-t border-white/[0.04] pt-2 space-y-3">
                       {day.sessions.map((session, si) => (
                         <div key={si}>
