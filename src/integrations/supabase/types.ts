@@ -675,6 +675,8 @@ export type Database = {
       wobuddy_profiles: {
         Row: {
           avatar_initials: string
+          avatar_url: string | null
+          background_url: string | null
           birthdate: string | null
           body_fat_pct: number | null
           created_at: string
@@ -693,6 +695,8 @@ export type Database = {
         }
         Insert: {
           avatar_initials?: string
+          avatar_url?: string | null
+          background_url?: string | null
           birthdate?: string | null
           body_fat_pct?: number | null
           created_at?: string
@@ -711,6 +715,8 @@ export type Database = {
         }
         Update: {
           avatar_initials?: string
+          avatar_url?: string | null
+          background_url?: string | null
           birthdate?: string | null
           body_fat_pct?: number | null
           created_at?: string
