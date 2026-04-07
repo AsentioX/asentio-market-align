@@ -272,22 +272,28 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         );
       })()}
 
-      <div className="flex items-center gap-1.5 bg-white/[0.03] rounded-xl p-1 border border-white/[0.06]">
-        {(['week', 'month', 'all'] as Period[]).map(p => (
-          <button
-            key={p}
-            onClick={() => setPeriod(p)}
-            className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${
-              period === p
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 shadow-sm'
-                : 'text-white/40 hover:text-white/60'
-            }`}
-          >
-            {p === 'week' ? 'This Week' : p === 'month' ? 'This Month' : 'All Time'}
-          </button>
-        ))}
-      </div>
+      {/* Period-scoped section */}
+      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl border border-white/[0.08] overflow-hidden">
+        {/* Period tabs */}
+        <div className="px-4 pt-4 pb-3 border-b border-white/[0.06]">
+          <div className="flex items-center gap-1.5 bg-white/[0.04] rounded-xl p-1 border border-white/[0.06]">
+            {(['week', 'month', 'all'] as Period[]).map(p => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${
+                  period === p
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 shadow-sm'
+                    : 'text-white/40 hover:text-white/60'
+                }`}
+              >
+                {p === 'week' ? 'This Week' : p === 'month' ? 'This Month' : 'All Time'}
+              </button>
+            ))}
+          </div>
+        </div>
 
+        <div className="p-4 space-y-5">
       {/* Overview Stats */}
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">{periodLabel} Overview</h3>
