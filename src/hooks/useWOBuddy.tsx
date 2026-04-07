@@ -71,6 +71,8 @@ export function useWOBuddyProfile() {
           avatarInitials: data.avatar_initials || '',
           dailyGoal: data.daily_goal,
           weeklyGoal: data.weekly_goal,
+          avatarUrl: (data as any).avatar_url || null,
+          backgroundUrl: (data as any).background_url || null,
         });
       } else {
         // Create profile for new user
