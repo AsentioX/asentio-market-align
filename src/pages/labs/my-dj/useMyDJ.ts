@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { UserMode, BioInputs, computeState, StateSnapshot, getTimeOfDay } from './stateEngine';
 import { MusicParams, NowPlaying, computeMusicParams, selectTrack } from './musicEngine';
+import { getAudioEngine } from './audioEngine';
 
 export interface SessionStats {
   startedAt: Date | null;
@@ -17,6 +18,7 @@ export interface SessionStats {
 export function useMyDJ() {
   const [mode, setMode] = useState<UserMode>('calm');
   const [intensity, setIntensity] = useState(50);
+  const [volume, setVolume] = useState(0.5);
   const [isPlaying, setIsPlaying] = useState(false);
   const [bio, setBio] = useState<BioInputs>({ heartRate: 72, hrv: 55, cadence: 0, sleepScore: 78, stress: 30 });
   const [state, setState] = useState<StateSnapshot>({ current: 'resting', target: 'calm', alignment: 0.5, strategy: 'counterbalance' });
@@ -27,6 +29,12 @@ export function useMyDJ() {
   const alignmentSumRef = useRef(0);
   const alignmentCountRef = useRef(0);
   const elapsedRef = useRef(0);
+  const audioEngine = useRef(getAudioEngine());
+
+  // Sync volume to audio engine
+  useEffect(() => {
+    audioEngine.current.setVolume(volume);
+  }, [volume]);
 
   // Simulate bio data changes
   useEffect(() => {
@@ -64,6 +72,11 @@ export function useMyDJ() {
     setState(newState);
     const newParams = computeMusicParams(newState, bio, mode, intensity);
     setMusicParams(newParams);
+
+    // Update audio engine with new params in real-time
+    if (isPlaying) {
+      audioEngine.current.setParams(newParams);
+    }
 
     if (isPlaying) {
       alignmentSumRef.current += newState.alignment;
@@ -110,12 +123,15 @@ export function useMyDJ() {
     alignmentSumRef.current = 0;
     alignmentCountRef.current = 0;
     setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 0, likes: 0, skips: 0, alignmentHistory: [] });
-  }, []);
+    audioEngine.current.setParams(musicParams);
+    audioEngine.current.start();
+  }, [musicParams]);
 
   const stopSession = useCallback(() => {
     setIsPlaying(false);
     setNowPlaying(null);
     elapsedRef.current = 0;
+    audioEngine.current.stop();
   }, []);
 
   const skip = useCallback(() => {
@@ -134,8 +150,16 @@ export function useMyDJ() {
     setStats(s => ({ ...s, likes: s.likes + 1 }));
   }, []);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      audioEngine.current.stop();
+    };
+  }, []);
+
   return {
     mode, setMode, intensity, setIntensity,
+    volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, state, musicParams, nowPlaying,
     stats, skip, like, timeOfDay: getTimeOfDay(),

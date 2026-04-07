@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Activity, Brain, Wind, Zap, SkipForward, ThumbsUp, Play, Pause, ChevronDown, Music2, MapPin } from 'lucide-react';
+import { Heart, Activity, Brain, Wind, Zap, SkipForward, ThumbsUp, Play, Pause, ChevronDown, Music2, MapPin, Volume2 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode } from './stateEngine';
@@ -7,6 +7,7 @@ import { MODE_META, PHYSIO_LABELS, UserMode } from './stateEngine';
 const MyDJDashboard = () => {
   const {
     mode, setMode, intensity, setIntensity,
+    volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, state, musicParams, nowPlaying,
     stats, skip, like, timeOfDay,
@@ -157,6 +158,20 @@ const MyDJDashboard = () => {
             <button onClick={skip} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors">
               <SkipForward className="w-4 h-4" />
             </button>
+          </div>
+
+          {/* Volume */}
+          <div className="mt-3 flex items-center gap-3 px-2">
+            <Volume2 className="w-4 h-4 text-white/40 shrink-0" />
+            <Slider
+              value={[Math.round(volume * 100)]}
+              onValueChange={([v]) => setVolume(v / 100)}
+              min={0}
+              max={100}
+              step={5}
+              className="flex-1"
+            />
+            <span className="text-[10px] text-white/30 w-7 text-right">{Math.round(volume * 100)}%</span>
           </div>
 
           {/* Adaptive Music Params */}
