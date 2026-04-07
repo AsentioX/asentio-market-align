@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -55,6 +55,13 @@ const labApps: LabApp[] = [
     icon: <HeartPulse className="w-8 h-8" />,
     status: 'coming-soon',
     tags: ['Health', 'Wellness'],
+  },
+  {
+    name: 'My DJ',
+    description: 'Weave spatial music into your life.',
+    icon: <Music className="w-8 h-8" />,
+    status: 'coming-soon',
+    tags: ['Music', 'Spatial Audio'],
   },
 ];
 
