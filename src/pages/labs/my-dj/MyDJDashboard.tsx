@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Activity, Brain, Wind, Zap, SkipForward, ThumbsUp, Play, Pause, ChevronDown, Music2 } from 'lucide-react';
+import { Heart, Activity, Brain, Wind, Zap, SkipForward, ThumbsUp, Play, Pause, ChevronDown, Music2, MapPin } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode } from './stateEngine';
@@ -37,12 +37,20 @@ const MyDJDashboard = () => {
             </div>
             <ChevronDown className={`w-5 h-5 text-white/60 transition-transform ${showModeSelector ? 'rotate-180' : ''}`} />
           </div>
-          {/* Subtle time-of-day hint */}
-          <div className="mt-3 text-xs text-white/50">
-            {timeOfDay === 'morning' && '☀️ Good morning'}
-            {timeOfDay === 'afternoon' && '🌤️ Good afternoon'}
-            {timeOfDay === 'evening' && '🌆 Good evening'}
-            {timeOfDay === 'night' && '🌙 Good night'}
+          {/* Time-of-day + active location */}
+          <div className="mt-3 flex items-center gap-3 text-xs text-white/50">
+            <span>
+              {timeOfDay === 'morning' && '☀️ Good morning'}
+              {timeOfDay === 'afternoon' && '🌤️ Good afternoon'}
+              {timeOfDay === 'evening' && '🌆 Good evening'}
+              {timeOfDay === 'night' && '🌙 Good night'}
+            </span>
+            <span className="text-white/20">·</span>
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400/80">Kitchen</span>
+              <span className="text-white/30">· Salsa</span>
+            </span>
           </div>
         </button>
 
@@ -115,6 +123,9 @@ const MyDJDashboard = () => {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{nowPlaying.title}</p>
               <p className="text-xs text-white/50 truncate">{nowPlaying.artist} • {nowPlaying.genre}</p>
+              <p className="text-[10px] text-emerald-400/60 flex items-center gap-1 mt-0.5">
+                <MapPin className="w-2.5 h-2.5" /> Resumed in Kitchen
+              </p>
             </div>
           </div>
 
