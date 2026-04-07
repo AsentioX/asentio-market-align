@@ -18,6 +18,7 @@ export interface SessionStats {
 export function useMyDJ() {
   const [mode, setMode] = useState<UserMode>('calm');
   const [intensity, setIntensity] = useState(50);
+  const [volume, setVolume] = useState(0.5);
   const [isPlaying, setIsPlaying] = useState(false);
   const [bio, setBio] = useState<BioInputs>({ heartRate: 72, hrv: 55, cadence: 0, sleepScore: 78, stress: 30 });
   const [state, setState] = useState<StateSnapshot>({ current: 'resting', target: 'calm', alignment: 0.5, strategy: 'counterbalance' });
@@ -28,6 +29,12 @@ export function useMyDJ() {
   const alignmentSumRef = useRef(0);
   const alignmentCountRef = useRef(0);
   const elapsedRef = useRef(0);
+  const audioEngine = useRef(getAudioEngine());
+
+  // Sync volume to audio engine
+  useEffect(() => {
+    audioEngine.current.setVolume(volume);
+  }, [volume]);
 
   // Simulate bio data changes
   useEffect(() => {
