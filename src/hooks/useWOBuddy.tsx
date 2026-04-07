@@ -21,6 +21,8 @@ export interface WOBuddyProfile {
   avatarInitials: string;
   dailyGoal: number;
   weeklyGoal: number;
+  avatarUrl: string | null;
+  backgroundUrl: string | null;
 }
 
 const defaultProfile: WOBuddyProfile = {
