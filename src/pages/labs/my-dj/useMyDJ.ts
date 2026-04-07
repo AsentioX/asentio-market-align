@@ -150,8 +150,16 @@ export function useMyDJ() {
     setStats(s => ({ ...s, likes: s.likes + 1 }));
   }, []);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      audioEngine.current.stop();
+    };
+  }, []);
+
   return {
     mode, setMode, intensity, setIntensity,
+    volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, state, musicParams, nowPlaying,
     stats, skip, like, timeOfDay: getTimeOfDay(),
