@@ -142,7 +142,45 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
       </div>
 
-      {/* Period Toggle */}
+      {/* 🎉 Fun Distance Milestone */}
+      {latestMilestone && (
+        <div className={`relative overflow-hidden rounded-2xl border ${latestMilestone.border} bg-gradient-to-br ${latestMilestone.color}`}>
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute -right-6 -top-6 text-[120px] leading-none select-none">{latestMilestone.emoji}</div>
+          </div>
+          <div className="relative z-10 p-5">
+            <div className="flex items-start gap-4">
+              <div className="text-5xl shrink-0 animate-[pulse_3s_ease-in-out_infinite]">{latestMilestone.emoji}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <MapPin className={`w-3.5 h-3.5 ${latestMilestone.accent}`} />
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Distance Milestone</span>
+                </div>
+                <h4 className={`text-lg font-bold ${latestMilestone.accent}`}>{latestMilestone.title}</h4>
+                <p className="text-sm text-white/70 mt-0.5 leading-snug">{latestMilestone.desc}</p>
+                <p className="text-[10px] text-white/30 mt-2">{totalMiles.toFixed(1)} miles total</p>
+              </div>
+            </div>
+            {/* Progress to next milestone */}
+            {nextMilestone && (
+              <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                <div className="flex items-center justify-between text-[10px] mb-1.5">
+                  <span className="text-white/40">Next: {nextMilestone.emoji} {nextMilestone.title}</span>
+                  <span className="text-white/30">{(nextMilestone.miles - totalMiles).toFixed(0)} mi to go</span>
+                </div>
+                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full bg-gradient-to-r ${latestMilestone.accent === 'text-amber-400' ? 'from-amber-500 to-amber-400' : latestMilestone.accent === 'text-blue-400' ? 'from-blue-500 to-blue-400' : latestMilestone.accent === 'text-rose-400' ? 'from-rose-500 to-rose-400' : 'from-emerald-500 to-emerald-400'} transition-all`}
+                    style={{ width: `${Math.min((totalMiles / nextMilestone.miles) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-1.5 bg-white/[0.03] rounded-xl p-1 border border-white/[0.06]">
         {(['week', 'month', 'all'] as Period[]).map(p => (
           <button
