@@ -123,12 +123,15 @@ export function useMyDJ() {
     alignmentSumRef.current = 0;
     alignmentCountRef.current = 0;
     setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 0, likes: 0, skips: 0, alignmentHistory: [] });
-  }, []);
+    audioEngine.current.setParams(musicParams);
+    audioEngine.current.start();
+  }, [musicParams]);
 
   const stopSession = useCallback(() => {
     setIsPlaying(false);
     setNowPlaying(null);
     elapsedRef.current = 0;
+    audioEngine.current.stop();
   }, []);
 
   const skip = useCallback(() => {
