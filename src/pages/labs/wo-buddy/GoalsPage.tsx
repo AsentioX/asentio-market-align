@@ -648,10 +648,12 @@ const GoalsPage = () => {
                 </button>
               );
             })}
+            </div>
           </div>
-        </div>
+          )}
         </div>
       </div>
+    </div>
   );
 };
 
