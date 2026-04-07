@@ -201,7 +201,7 @@ const MyDJDashboard = () => {
           className={`w-full rounded-2xl p-6 bg-gradient-to-br ${meta.color} text-white font-semibold text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-[0.98]`}
         >
           <Play className="w-6 h-6" />
-          Start Session
+          Start Jamming
         </button>
       )}
 
