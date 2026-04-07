@@ -109,14 +109,27 @@ export function useMyDJ() {
 
   // Elapsed time ticker
   useEffect(() => {
-    if (!isPlaying || !nowPlaying) return;
+    if (!isPlaying) return;
     const interval = setInterval(() => {
       elapsedRef.current += 1;
-      setNowPlaying(np => np ? { ...np, elapsed: elapsedRef.current, params: musicParams } : null);
+      setNowPlaying(np => {
+        if (!np) return null;
+        // Auto-advance to next track when current ends
+        if (elapsedRef.current >= np.duration - 2) {
+          const track = selectTrack(musicParams);
+          elapsedRef.current = 0;
+          setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+          return {
+            title: track.title, artist: track.artist, genre: track.genre,
+            duration: track.duration, elapsed: 0, params: musicParams,
+          };
+        }
+        return { ...np, elapsed: elapsedRef.current };
+      });
       setStats(s => ({ ...s, durationSec: s.durationSec + 1 }));
     }, 1000);
     return () => clearInterval(interval);
-  }, [isPlaying, nowPlaying, musicParams]);
+  }, [isPlaying, musicParams]);
 
   const startSession = useCallback(() => {
     setIsPlaying(true);
