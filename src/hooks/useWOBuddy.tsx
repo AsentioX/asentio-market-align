@@ -38,6 +38,8 @@ const defaultProfile: WOBuddyProfile = {
   avatarInitials: mockUser.avatar,
   dailyGoal: mockUser.dailyGoal,
   weeklyGoal: mockUser.weeklyGoal,
+  avatarUrl: null,
+  backgroundUrl: null,
 };
 
 export function useWOBuddyProfile() {
