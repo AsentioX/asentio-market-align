@@ -11,6 +11,7 @@ import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
 import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExercisesForDay, getAllDriversForDay, type PlanDay, type PlanExercise, type PlanSession } from './planEngine';
 import { EXERCISE_LIBRARY, findExercise } from './exerciseLibrary';
+import { useWearableDevices, useWearableLiveData, getHRZone } from './useWearableDevices';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 type View = 'log' | 'history';
