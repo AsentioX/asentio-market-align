@@ -88,21 +88,36 @@ const formatNum = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : Strin
 const Dashboard = ({ onNavigate }: DashboardProps) => {
   const readiness = 82;
   const [period, setPeriod] = useState<Period>('week');
+  const [milestoneIdx, setMilestoneIdx] = useState(0);
   const { goals } = useWOBuddyGoals();
   const insights = generateInsights(goals);
 
-  // Compute total all-time miles across all cardio exercises
-  const totalMiles = useMemo(() => 
-    mockExerciseStats
-      .filter(e => e.type === 'cardio')
-      .reduce((sum, e) => sum + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0),
-    []
-  );
+  // Compute all-time totals per category
+  const categoryValues = useMemo(() => {
+    const totalMiles = mockExerciseStats.filter(e => e.type === 'cardio').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
+    const totalVolume = mockExerciseStats.filter(e => e.type === 'strength').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
+    const pushups = mockExerciseStats.find(e => e.name === 'Push-ups')?.allTime.value || 0;
+    const squats = mockExerciseStats.find(e => e.name === 'Squats')?.allTime.value || 0;
+    const situps = mockExerciseStats.find(e => e.name === 'Sit-ups')?.allTime.value || 0;
+    return { distance: totalMiles, volume: totalVolume, pushups: typeof pushups === 'number' ? pushups : 0, squats: typeof squats === 'number' ? squats : 0, situps: typeof situps === 'number' ? situps : 0 };
+  }, []);
 
-  // Find the latest unlocked milestone and the next one
-  const unlockedMilestones = DISTANCE_MILESTONES.filter(m => totalMiles >= m.miles);
-  const latestMilestone = unlockedMilestones[unlockedMilestones.length - 1];
-  const nextMilestone = DISTANCE_MILESTONES.find(m => totalMiles < m.miles);
+  // Gather all unlocked milestones across categories
+  const allUnlocked = useMemo(() => {
+    const results: Array<{ cat: MilestoneCategory; milestone: Milestone; next: Milestone | undefined; value: number }> = [];
+    for (const cat of MILESTONE_CATEGORIES) {
+      const val = categoryValues[cat.key as keyof typeof categoryValues] || 0;
+      const unlocked = cat.milestones.filter(m => val >= m.threshold);
+      if (unlocked.length > 0) {
+        const latest = unlocked[unlocked.length - 1];
+        const next = cat.milestones.find(m => val < m.threshold);
+        results.push({ cat, milestone: latest, next, value: val });
+      }
+    }
+    return results;
+  }, [categoryValues]);
+
+  const activeMilestoneIdx = milestoneIdx % Math.max(allUnlocked.length, 1);
 
   const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
   const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
