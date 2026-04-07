@@ -90,6 +90,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const readiness = 82;
   const [period, setPeriod] = useState<Period>('week');
   const [milestoneIdx, setMilestoneIdx] = useState(0);
+  const [funFactDismissed, setFunFactDismissed] = useState(false);
   const { goals } = useWOBuddyGoals();
   const insights = generateInsights(goals);
 
