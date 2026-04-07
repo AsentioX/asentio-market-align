@@ -649,8 +649,8 @@ const GoalsPage = () => {
             })}
           </div>
         </div>
-      )}
-    </div>
+        </div>
+      </div>
   );
 };
 
