@@ -243,6 +243,953 @@ export type Database = {
           },
         ]
       }
+      mydj_adaptation_rules: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          input_conditions: Json
+          is_active: boolean
+          mode_id: string
+          name: string
+          output_actions: Json
+          priority: number
+          rule_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          input_conditions?: Json
+          is_active?: boolean
+          mode_id: string
+          name: string
+          output_actions?: Json
+          priority?: number
+          rule_type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          input_conditions?: Json
+          is_active?: boolean
+          mode_id?: string
+          name?: string
+          output_actions?: Json
+          priority?: number
+          rule_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_adaptation_rules_mode_id_fkey"
+            columns: ["mode_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_modes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_biometric_readings: {
+        Row: {
+          activity_level: string | null
+          cadence: number | null
+          created_at: string
+          gsr: number | null
+          heart_rate: number | null
+          hrv: number | null
+          id: string
+          pace: number | null
+          raw_payload: Json | null
+          recorded_at: string
+          respiratory_rate: number | null
+          session_id: string
+          skin_temperature: number | null
+          sleep_duration_minutes: number | null
+          sleep_score: number | null
+          speed: number | null
+          spo2: number | null
+          steps_per_minute: number | null
+          user_id: string
+        }
+        Insert: {
+          activity_level?: string | null
+          cadence?: number | null
+          created_at?: string
+          gsr?: number | null
+          heart_rate?: number | null
+          hrv?: number | null
+          id?: string
+          pace?: number | null
+          raw_payload?: Json | null
+          recorded_at?: string
+          respiratory_rate?: number | null
+          session_id: string
+          skin_temperature?: number | null
+          sleep_duration_minutes?: number | null
+          sleep_score?: number | null
+          speed?: number | null
+          spo2?: number | null
+          steps_per_minute?: number | null
+          user_id: string
+        }
+        Update: {
+          activity_level?: string | null
+          cadence?: number | null
+          created_at?: string
+          gsr?: number | null
+          heart_rate?: number | null
+          hrv?: number | null
+          id?: string
+          pace?: number | null
+          raw_payload?: Json | null
+          recorded_at?: string
+          respiratory_rate?: number | null
+          session_id?: string
+          skin_temperature?: number | null
+          sleep_duration_minutes?: number | null
+          sleep_score?: number | null
+          speed?: number | null
+          spo2?: number | null
+          steps_per_minute?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_biometric_readings_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_session_summary_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "mydj_biometric_readings_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_contextual_signals: {
+        Row: {
+          ambient_noise_level: number | null
+          calendar_context: string | null
+          created_at: string
+          device_motion_state: string | null
+          id: string
+          location_type: string | null
+          manual_goal_note: string | null
+          manual_mood: string | null
+          recorded_at: string
+          session_id: string
+          time_of_day_bucket: string | null
+          user_id: string
+          weather_context: string | null
+        }
+        Insert: {
+          ambient_noise_level?: number | null
+          calendar_context?: string | null
+          created_at?: string
+          device_motion_state?: string | null
+          id?: string
+          location_type?: string | null
+          manual_goal_note?: string | null
+          manual_mood?: string | null
+          recorded_at?: string
+          session_id: string
+          time_of_day_bucket?: string | null
+          user_id: string
+          weather_context?: string | null
+        }
+        Update: {
+          ambient_noise_level?: number | null
+          calendar_context?: string | null
+          created_at?: string
+          device_motion_state?: string | null
+          id?: string
+          location_type?: string | null
+          manual_goal_note?: string | null
+          manual_mood?: string | null
+          recorded_at?: string
+          session_id?: string
+          time_of_day_bucket?: string | null
+          user_id?: string
+          weather_context?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_contextual_signals_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_session_summary_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "mydj_contextual_signals_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_modes: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+          strategy_type: Database["public"]["Enums"]["mydj_strategy_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          strategy_type?: Database["public"]["Enums"]["mydj_strategy_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          strategy_type?: Database["public"]["Enums"]["mydj_strategy_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mydj_music_provider_connections: {
+        Row: {
+          access_token_ref: string | null
+          created_at: string
+          external_user_id: string | null
+          id: string
+          provider: string
+          refresh_token_ref: string | null
+          status: Database["public"]["Enums"]["mydj_connection_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token_ref?: string | null
+          created_at?: string
+          external_user_id?: string | null
+          id?: string
+          provider: string
+          refresh_token_ref?: string | null
+          status?: Database["public"]["Enums"]["mydj_connection_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token_ref?: string | null
+          created_at?: string
+          external_user_id?: string | null
+          id?: string
+          provider?: string
+          refresh_token_ref?: string | null
+          status?: Database["public"]["Enums"]["mydj_connection_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mydj_music_tracks: {
+        Row: {
+          acousticness: number | null
+          album_name: string | null
+          artist_name: string
+          bpm: number | null
+          created_at: string
+          danceability: number | null
+          duration_ms: number | null
+          energy: number | null
+          external_track_id: string
+          familiarity_score: number | null
+          id: string
+          instrumentalness: number | null
+          liveness: number | null
+          loudness: number | null
+          metadata_json: Json | null
+          mode_major_minor: string | null
+          musical_key: string | null
+          popularity: number | null
+          provider: string
+          speechiness: number | null
+          title: string
+          updated_at: string
+          valence: number | null
+        }
+        Insert: {
+          acousticness?: number | null
+          album_name?: string | null
+          artist_name: string
+          bpm?: number | null
+          created_at?: string
+          danceability?: number | null
+          duration_ms?: number | null
+          energy?: number | null
+          external_track_id: string
+          familiarity_score?: number | null
+          id?: string
+          instrumentalness?: number | null
+          liveness?: number | null
+          loudness?: number | null
+          metadata_json?: Json | null
+          mode_major_minor?: string | null
+          musical_key?: string | null
+          popularity?: number | null
+          provider?: string
+          speechiness?: number | null
+          title: string
+          updated_at?: string
+          valence?: number | null
+        }
+        Update: {
+          acousticness?: number | null
+          album_name?: string | null
+          artist_name?: string
+          bpm?: number | null
+          created_at?: string
+          danceability?: number | null
+          duration_ms?: number | null
+          energy?: number | null
+          external_track_id?: string
+          familiarity_score?: number | null
+          id?: string
+          instrumentalness?: number | null
+          liveness?: number | null
+          loudness?: number | null
+          metadata_json?: Json | null
+          mode_major_minor?: string | null
+          musical_key?: string | null
+          popularity?: number | null
+          provider?: string
+          speechiness?: number | null
+          title?: string
+          updated_at?: string
+          valence?: number | null
+        }
+        Relationships: []
+      }
+      mydj_personalization_feedback: {
+        Row: {
+          created_at: string
+          feedback_type: Database["public"]["Enums"]["mydj_feedback_type"]
+          feedback_value: number | null
+          id: string
+          note: string | null
+          session_id: string | null
+          track_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_type: Database["public"]["Enums"]["mydj_feedback_type"]
+          feedback_value?: number | null
+          id?: string
+          note?: string | null
+          session_id?: string | null
+          track_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_type?: Database["public"]["Enums"]["mydj_feedback_type"]
+          feedback_value?: number | null
+          id?: string
+          note?: string | null
+          session_id?: string | null
+          track_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_personalization_feedback_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_session_summary_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "mydj_personalization_feedback_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_personalization_feedback_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_music_tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_playlist_tracks: {
+        Row: {
+          created_at: string
+          id: string
+          playlist_id: string
+          sequence_number: number
+          target_bpm_alignment: number | null
+          track_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          playlist_id: string
+          sequence_number: number
+          target_bpm_alignment?: number | null
+          track_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          playlist_id?: string
+          sequence_number?: number
+          target_bpm_alignment?: number | null
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_playlist_tracks_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_playlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_playlist_tracks_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_music_tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_playlists: {
+        Row: {
+          created_at: string
+          description: string | null
+          external_playlist_id: string | null
+          id: string
+          is_dynamic: boolean
+          mode_id: string | null
+          name: string
+          playlist_type: Database["public"]["Enums"]["mydj_playlist_type"]
+          provider: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          external_playlist_id?: string | null
+          id?: string
+          is_dynamic?: boolean
+          mode_id?: string | null
+          name: string
+          playlist_type?: Database["public"]["Enums"]["mydj_playlist_type"]
+          provider?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          external_playlist_id?: string | null
+          id?: string
+          is_dynamic?: boolean
+          mode_id?: string | null
+          name?: string
+          playlist_type?: Database["public"]["Enums"]["mydj_playlist_type"]
+          provider?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_playlists_mode_id_fkey"
+            columns: ["mode_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_modes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_profiles: {
+        Row: {
+          allow_adaptive_changes: boolean
+          created_at: string
+          default_mode_id: string | null
+          display_name: string | null
+          hrv_baseline: number | null
+          id: string
+          onboarding_completed: boolean
+          personalization_level: string
+          preferred_energy_max: number | null
+          preferred_energy_min: number | null
+          preferred_music_service: string | null
+          resting_hr_baseline: number | null
+          sleep_baseline_hours: number | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_adaptive_changes?: boolean
+          created_at?: string
+          default_mode_id?: string | null
+          display_name?: string | null
+          hrv_baseline?: number | null
+          id?: string
+          onboarding_completed?: boolean
+          personalization_level?: string
+          preferred_energy_max?: number | null
+          preferred_energy_min?: number | null
+          preferred_music_service?: string | null
+          resting_hr_baseline?: number | null
+          sleep_baseline_hours?: number | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_adaptive_changes?: boolean
+          created_at?: string
+          default_mode_id?: string | null
+          display_name?: string | null
+          hrv_baseline?: number | null
+          id?: string
+          onboarding_completed?: boolean
+          personalization_level?: string
+          preferred_energy_max?: number | null
+          preferred_energy_min?: number | null
+          preferred_music_service?: string | null
+          resting_hr_baseline?: number | null
+          sleep_baseline_hours?: number | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_profiles_default_mode_id_fkey"
+            columns: ["default_mode_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_modes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_session_music_events: {
+        Row: {
+          bpm_at_selection: number | null
+          created_at: string
+          energy_at_selection: number | null
+          event_type: Database["public"]["Enums"]["mydj_music_event_type"]
+          id: string
+          played_at: string
+          selection_reason: string | null
+          session_id: string
+          source_rule_id: string | null
+          stopped_at: string | null
+          target_state_label: string | null
+          track_id: string
+        }
+        Insert: {
+          bpm_at_selection?: number | null
+          created_at?: string
+          energy_at_selection?: number | null
+          event_type?: Database["public"]["Enums"]["mydj_music_event_type"]
+          id?: string
+          played_at?: string
+          selection_reason?: string | null
+          session_id: string
+          source_rule_id?: string | null
+          stopped_at?: string | null
+          target_state_label?: string | null
+          track_id: string
+        }
+        Update: {
+          bpm_at_selection?: number | null
+          created_at?: string
+          energy_at_selection?: number | null
+          event_type?: Database["public"]["Enums"]["mydj_music_event_type"]
+          id?: string
+          played_at?: string
+          selection_reason?: string | null
+          session_id?: string
+          source_rule_id?: string | null
+          stopped_at?: string | null
+          target_state_label?: string | null
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_session_music_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_session_summary_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "mydj_session_music_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_session_music_events_source_rule_id_fkey"
+            columns: ["source_rule_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_adaptation_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_session_music_events_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_music_tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_session_outcomes: {
+        Row: {
+          completion_score: number | null
+          created_at: string
+          duration_minutes: number | null
+          effectiveness_score: number | null
+          hr_change: number | null
+          hr_end: number | null
+          hr_start: number | null
+          hrv_change: number | null
+          hrv_end: number | null
+          hrv_start: number | null
+          id: string
+          outcome_notes: string | null
+          session_id: string
+          target_state_reached: boolean | null
+          updated_at: string
+          user_id: string
+          user_rating: number | null
+        }
+        Insert: {
+          completion_score?: number | null
+          created_at?: string
+          duration_minutes?: number | null
+          effectiveness_score?: number | null
+          hr_change?: number | null
+          hr_end?: number | null
+          hr_start?: number | null
+          hrv_change?: number | null
+          hrv_end?: number | null
+          hrv_start?: number | null
+          id?: string
+          outcome_notes?: string | null
+          session_id: string
+          target_state_reached?: boolean | null
+          updated_at?: string
+          user_id: string
+          user_rating?: number | null
+        }
+        Update: {
+          completion_score?: number | null
+          created_at?: string
+          duration_minutes?: number | null
+          effectiveness_score?: number | null
+          hr_change?: number | null
+          hr_end?: number | null
+          hr_start?: number | null
+          hrv_change?: number | null
+          hrv_end?: number | null
+          hrv_start?: number | null
+          id?: string
+          outcome_notes?: string | null
+          session_id?: string
+          target_state_reached?: boolean | null
+          updated_at?: string
+          user_id?: string
+          user_rating?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_session_outcomes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "mydj_session_summary_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "mydj_session_outcomes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "mydj_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_sessions: {
+        Row: {
+          activity_type: Database["public"]["Enums"]["mydj_activity_type"]
+          created_at: string
+          current_state_id: string | null
+          ended_at: string | null
+          id: string
+          intensity_preference: number | null
+          mode_id: string
+          notes: string | null
+          source_context: string
+          started_at: string
+          status: Database["public"]["Enums"]["mydj_session_status"]
+          target_state_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_type?: Database["public"]["Enums"]["mydj_activity_type"]
+          created_at?: string
+          current_state_id?: string | null
+          ended_at?: string | null
+          id?: string
+          intensity_preference?: number | null
+          mode_id: string
+          notes?: string | null
+          source_context?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["mydj_session_status"]
+          target_state_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: Database["public"]["Enums"]["mydj_activity_type"]
+          created_at?: string
+          current_state_id?: string | null
+          ended_at?: string | null
+          id?: string
+          intensity_preference?: number | null
+          mode_id?: string
+          notes?: string | null
+          source_context?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["mydj_session_status"]
+          target_state_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_sessions_current_state_id_fkey"
+            columns: ["current_state_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_state_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_sessions_mode_id_fkey"
+            columns: ["mode_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_modes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mydj_sessions_target_state_id_fkey"
+            columns: ["target_state_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_state_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_state_definitions: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mydj_user_mode_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          mode_id: string
+          preferred_bpm_max: number | null
+          preferred_bpm_min: number | null
+          preferred_energy_max: number | null
+          preferred_energy_min: number | null
+          preferred_familiarity_bias: number | null
+          preferred_vocal_level: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mode_id: string
+          preferred_bpm_max?: number | null
+          preferred_bpm_min?: number | null
+          preferred_energy_max?: number | null
+          preferred_energy_min?: number | null
+          preferred_familiarity_bias?: number | null
+          preferred_vocal_level?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mode_id?: string
+          preferred_bpm_max?: number | null
+          preferred_bpm_min?: number | null
+          preferred_energy_max?: number | null
+          preferred_energy_min?: number | null
+          preferred_familiarity_bias?: number | null
+          preferred_vocal_level?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_user_mode_preferences_mode_id_fkey"
+            columns: ["mode_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_modes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_user_track_preferences: {
+        Row: {
+          affinity_score: number
+          created_at: string
+          familiarity_score: number
+          id: string
+          last_interacted_at: string | null
+          total_completions: number
+          total_likes: number
+          total_skips: number
+          track_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          affinity_score?: number
+          created_at?: string
+          familiarity_score?: number
+          id?: string
+          last_interacted_at?: string | null
+          total_completions?: number
+          total_likes?: number
+          total_skips?: number
+          track_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          affinity_score?: number
+          created_at?: string
+          familiarity_score?: number
+          id?: string
+          last_interacted_at?: string | null
+          total_completions?: number
+          total_likes?: number
+          total_skips?: number
+          track_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mydj_user_track_preferences_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "mydj_music_tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mydj_wearable_connections: {
+        Row: {
+          access_token_ref: string | null
+          created_at: string
+          external_user_id: string | null
+          id: string
+          last_synced_at: string | null
+          provider: string
+          refresh_token_ref: string | null
+          status: Database["public"]["Enums"]["mydj_connection_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token_ref?: string | null
+          created_at?: string
+          external_user_id?: string | null
+          id?: string
+          last_synced_at?: string | null
+          provider: string
+          refresh_token_ref?: string | null
+          status?: Database["public"]["Enums"]["mydj_connection_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token_ref?: string | null
+          created_at?: string
+          external_user_id?: string | null
+          id?: string
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token_ref?: string | null
+          status?: Database["public"]["Enums"]["mydj_connection_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1114,12 +2061,70 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      mydj_session_summary_view: {
+        Row: {
+          activity_type:
+            | Database["public"]["Enums"]["mydj_activity_type"]
+            | null
+          current_state_name: string | null
+          duration_minutes: number | null
+          effectiveness_score: number | null
+          ended_at: string | null
+          hr_change: number | null
+          hr_end: number | null
+          hr_start: number | null
+          hrv_change: number | null
+          intensity_preference: number | null
+          mode_name: string | null
+          session_id: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["mydj_session_status"] | null
+          strategy_type:
+            | Database["public"]["Enums"]["mydj_strategy_type"]
+            | null
+          target_state_name: string | null
+          target_state_reached: boolean | null
+          user_id: string | null
+          user_rating: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
     }
     Enums: {
+      mydj_activity_type:
+        | "work"
+        | "run"
+        | "gym"
+        | "relax"
+        | "sleep_prep"
+        | "commute"
+        | "other"
+      mydj_connection_status: "active" | "expired" | "disconnected"
+      mydj_feedback_type:
+        | "like"
+        | "dislike"
+        | "skip"
+        | "replay"
+        | "helpful"
+        | "not_helpful"
+      mydj_music_event_type:
+        | "started"
+        | "skipped"
+        | "completed"
+        | "auto_switched"
+        | "user_selected"
+      mydj_playlist_type:
+        | "generated"
+        | "saved"
+        | "recovery"
+        | "workout"
+        | "focus"
+        | "other"
+      mydj_session_status: "active" | "completed" | "cancelled"
+      mydj_strategy_type: "mirror" | "counterbalance" | "hybrid"
       schedule_role: "hacker" | "sponsor" | "press" | "mentor" | "organizer"
     }
     CompositeTypes: {
@@ -1248,6 +2253,41 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      mydj_activity_type: [
+        "work",
+        "run",
+        "gym",
+        "relax",
+        "sleep_prep",
+        "commute",
+        "other",
+      ],
+      mydj_connection_status: ["active", "expired", "disconnected"],
+      mydj_feedback_type: [
+        "like",
+        "dislike",
+        "skip",
+        "replay",
+        "helpful",
+        "not_helpful",
+      ],
+      mydj_music_event_type: [
+        "started",
+        "skipped",
+        "completed",
+        "auto_switched",
+        "user_selected",
+      ],
+      mydj_playlist_type: [
+        "generated",
+        "saved",
+        "recovery",
+        "workout",
+        "focus",
+        "other",
+      ],
+      mydj_session_status: ["active", "completed", "cancelled"],
+      mydj_strategy_type: ["mirror", "counterbalance", "hybrid"],
       schedule_role: ["hacker", "sponsor", "press", "mentor", "organizer"],
     },
   },
