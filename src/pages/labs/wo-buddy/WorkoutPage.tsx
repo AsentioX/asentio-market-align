@@ -663,6 +663,97 @@ const WorkoutPage = () => {
           </div>
         </div>
 
+        {/* Wearable live data strip */}
+        {hasWearable && activeWearable && (
+          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
+            {/* Device selector header */}
+            <div className="flex items-center justify-between px-3.5 pt-3 pb-1.5">
+              <button
+                onClick={() => setShowDevicePicker(!showDevicePicker)}
+                className="flex items-center gap-1.5 text-[10px] text-white/40 hover:text-white/60 transition-colors"
+              >
+                <span className="text-sm">
+                  {activeWearable.type === 'watch' ? '⌚' : activeWearable.type === 'ring' ? '💍' : '📱'}
+                </span>
+                <span className="font-medium">{activeWearable.name}</span>
+                {connectedDevices.length > 1 && (
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showDevicePicker ? 'rotate-180' : ''}`} />
+                )}
+              </button>
+              <span className="text-[9px] text-emerald-400/60 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live
+              </span>
+            </div>
+
+            {/* Device picker dropdown */}
+            {showDevicePicker && connectedDevices.length > 1 && (
+              <div className="px-3 pb-2 space-y-1">
+                {connectedDevices.map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => { setSelectedWearableId(d.id); setShowDevicePicker(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs transition-colors ${
+                      d.id === selectedWearableId
+                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20'
+                        : 'bg-white/[0.03] text-white/60 border border-white/[0.06] hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    <span>{d.type === 'watch' ? '⌚' : d.type === 'ring' ? '💍' : '📱'}</span>
+                    <span className="font-medium">{d.name}</span>
+                    {d.battery && <span className="ml-auto text-[9px] text-white/30">🔋 {d.battery}%</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Live metrics */}
+            <div className="grid grid-cols-4 gap-px bg-white/[0.04]">
+              {(() => {
+                const hrZone = getHRZone(wearableData.heartRate);
+                return (
+                  <div className="bg-[#0f1023] p-3 text-center">
+                    <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">❤️ HR</p>
+                    <p className={`text-lg font-bold tabular-nums ${hrZone.color}`}>{wearableData.heartRate}</p>
+                    <p className={`text-[8px] font-medium mt-0.5 ${hrZone.color}`}>{hrZone.label}</p>
+                  </div>
+                );
+              })()}
+              <div className="bg-[#0f1023] p-3 text-center">
+                <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">🔥 Cal</p>
+                <p className="text-lg font-bold tabular-nums text-orange-400">{wearableData.calories}</p>
+                <p className="text-[8px] text-white/20 mt-0.5">active</p>
+              </div>
+              {activeWearable.type === 'watch' && wearableData.cadence ? (
+                <div className="bg-[#0f1023] p-3 text-center">
+                  <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">🦶 Cadence</p>
+                  <p className="text-lg font-bold tabular-nums text-blue-400">{wearableData.cadence}</p>
+                  <p className="text-[8px] text-white/20 mt-0.5">spm</p>
+                </div>
+              ) : (
+                <div className="bg-[#0f1023] p-3 text-center">
+                  <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">🫁 SpO₂</p>
+                  <p className="text-lg font-bold tabular-nums text-cyan-400">{wearableData.bloodOxygen}%</p>
+                  <p className="text-[8px] text-white/20 mt-0.5">oxygen</p>
+                </div>
+              )}
+              <div className="bg-[#0f1023] p-3 text-center">
+                <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">😰 Stress</p>
+                <p className="text-lg font-bold tabular-nums text-purple-400">{wearableData.stress}</p>
+                <p className="text-[8px] text-white/20 mt-0.5">score</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* No wearable connected hint */}
+        {!hasWearable && connectedDevices.length === 0 && (
+          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+            <span className="text-sm">⌚</span>
+            <p className="text-[10px] text-white/30">Connect a wearable in Settings to see live biometrics here</p>
+          </div>
+        )}
+
         {/* Rest card is now rendered inline between exercises below */}
 
         {/* "Next Exercise?" confirmation overlay */}
