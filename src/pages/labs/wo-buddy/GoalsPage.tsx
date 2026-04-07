@@ -175,11 +175,6 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
         </div>
       </div>
 
-      {/* CTA to weekly plan */}
-      <button onClick={onSwitchToWeekly}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/15 text-emerald-400 text-sm font-medium hover:bg-emerald-500/15 transition-colors">
-        View This Week's Plan <ArrowRight className="w-4 h-4" />
-      </button>
     </div>
   );
 };
