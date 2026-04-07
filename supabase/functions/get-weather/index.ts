@@ -5,7 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// City coordinates for Open-Meteo API
 const cityCoordinates: Record<string, { lat: number; lon: number }> = {
   'Vancouver': { lat: 49.2827, lon: -123.1207 },
   'San Francisco': { lat: 37.7749, lon: -122.4194 },
@@ -35,6 +34,15 @@ const cityCoordinates: Record<string, { lat: number; lon: number }> = {
   'Tokyo': { lat: 35.6762, lon: 139.6503 },
 };
 
+// Split array into chunks
+function chunk<T>(arr: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    result.push(arr.slice(i, i + size));
+  }
+  return result;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -42,52 +50,40 @@ serve(async (req) => {
 
   try {
     const cities = Object.keys(cityCoordinates);
-    
-    // Build latitude and longitude strings for batch request
-    const lats = cities.map(city => cityCoordinates[city].lat).join(',');
-    const lons = cities.map(city => cityCoordinates[city].lon).join(',');
-    
-    // Fetch current weather for all cities in one request
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code,is_day,wind_speed_10m`
-    );
-    
-    if (!response.ok) {
-      throw new Error(`Open-Meteo API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('Open-Meteo response received for', cities.length, 'cities');
-    
-    // Parse response into city weather map
     const weatherData: Record<string, { temp: number; code: number; isDay: boolean; windSpeed: number }> = {};
-    
-    // Open-Meteo returns an array when multiple coordinates are requested
-    const results = Array.isArray(data) ? data : [data];
-    
-    results.forEach((result: any, index: number) => {
-      const city = cities[index];
-      if (result.current) {
-        weatherData[city] = {
-          temp: Math.round(result.current.temperature_2m),
-          code: result.current.weather_code,
-          isDay: result.current.is_day === 1,
-          windSpeed: result.current.wind_speed_10m
-        };
-      }
-    });
 
-    return new Response(JSON.stringify({ weather: weatherData }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error fetching weather:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+    // Fetch in small batches of 5 to avoid connection resets
+    const batches = chunk(cities, 5);
+
+    for (const batch of batches) {
+      const lats = batch.map(c => cityCoordinates[c].lat).join(',');
+      const lons = batch.map(c => cityCoordinates[c].lon).join(',');
+
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code,is_day,wind_speed_10m`
+      );
+
+      if (!response.ok) {
+        console.error(`Open-Meteo error for batch: ${response.status}`);
+        continue;
+      }
+
+      const data = await response.json();
+      const results = Array.isArray(data) ? data : [data];
+
+      results.forEach((result: any, index: number) => {
+        const city = batch[index];
+        if (result?.current) {
+          weatherData[city] = {
+            temp: Math.round(result.current.temperature_2m),
+            code: result.current.weather_code,
+            isDay: result.current.is_day === 1,
+            windSpeed: result.current.wind_speed_10m,
+          };
+        }
+      });
+    }
+
     return new Response(JSON.stringify({ weather: weatherData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
