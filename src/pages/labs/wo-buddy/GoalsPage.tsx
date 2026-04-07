@@ -188,7 +188,7 @@ const GoalsPage = () => {
   const { goals, loading, createGoal, updateGoal, deleteGoal, isAuthenticated } = useWOBuddyGoals();
   const drivers = usePerformanceDrivers();
   const { user } = useAuth();
-  const [view, setView] = useState<GoalsView>('goals');
+  const [view, setView] = useState<GoalsView>('training');
   const [showCreate, setShowCreate] = useState(false);
   const [showTree, setShowTree] = useState(false);
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null);
