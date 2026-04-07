@@ -79,7 +79,7 @@ const MILESTONE_CATEGORIES: MilestoneCategory[] = [
 ];
 
 interface DashboardProps {
-  onNavigate: (tab: 'workout' | 'competitions' | 'settings' | 'goals') => void;
+  onNavigate: (tab: 'workout' | 'competitions' | 'settings') => void;
 }
 
 type Period = 'week' | 'month' | 'all';
