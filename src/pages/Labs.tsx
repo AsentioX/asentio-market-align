@@ -60,8 +60,9 @@ const labApps: LabApp[] = [
     name: 'My DJ',
     description: 'Weave spatial music into your life.',
     icon: <Music className="w-8 h-8" />,
-    status: 'coming-soon',
+    status: 'beta',
     tags: ['Music', 'Spatial Audio'],
+    link: '/labs/my-dj',
   },
 ];
 
