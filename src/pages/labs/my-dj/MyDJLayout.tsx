@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { ArrowLeft, Settings, Music, BarChart3, Library } from 'lucide-react';
+import { ArrowLeft, Settings, Music, BarChart3, Library, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import MyDJDashboard from './MyDJDashboard';
 import MyDJInsights from './MyDJInsights';
 import MyDJLibrary from './MyDJLibrary';
+import MyDJScenes from './MyDJScenes';
 import MyDJSettings from './MyDJSettings';
 
-type Tab = 'player' | 'insights' | 'library' | 'settings';
+type Tab = 'player' | 'scenes' | 'insights' | 'library' | 'settings';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'player', label: 'Player', icon: <Music className="w-5 h-5" /> },
+  { id: 'scenes', label: 'Scenes', icon: <MapPin className="w-5 h-5" /> },
   { id: 'insights', label: 'Insights', icon: <BarChart3 className="w-5 h-5" /> },
   { id: 'library', label: 'Library', icon: <Library className="w-5 h-5" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
@@ -21,6 +23,7 @@ const MyDJLayout = () => {
   const renderPage = () => {
     switch (activeTab) {
       case 'player': return <MyDJDashboard />;
+      case 'scenes': return <MyDJScenes />;
       case 'insights': return <MyDJInsights />;
       case 'library': return <MyDJLibrary />;
       case 'settings': return <MyDJSettings />;
