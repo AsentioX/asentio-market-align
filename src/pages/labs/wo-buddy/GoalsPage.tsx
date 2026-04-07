@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight } from 'lucide-react';
+import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight, BookOpen } from 'lucide-react';
+import ExerciseLibraryPage from './ExerciseLibraryPage';
 import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals';
 import {
   GOAL_CATEGORIES, METRICS, PERFORMANCE_DRIVERS, GOAL_TEMPLATES,
