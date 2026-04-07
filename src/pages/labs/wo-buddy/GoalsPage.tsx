@@ -512,27 +512,33 @@ const GoalsPage = () => {
         )}
       </div>
 
-      {/* =================== TRAINING / WEEKLY PLAN TABS =================== */}
-      <div className="flex items-center gap-1.5">
-        {([
-          { id: 'training' as const, label: 'Training Plan', icon: <ListChecks className="w-3.5 h-3.5" /> },
-          { id: 'plan' as const, label: 'Weekly Plan', icon: <CalendarDays className="w-3.5 h-3.5" /> },
-        ]).map(tab => (
-          <button key={tab.id}
-            onClick={() => setView(tab.id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all border ${
-              view === tab.id
-                ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-                : 'bg-white/[0.03] border-white/5 text-white/40 hover:bg-white/[0.06]'
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* =================== TRAINING / WEEKLY PLAN =================== */}
+      <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.04] to-white/[0.01] overflow-hidden">
+        {/* Tabs */}
+        <div className="flex border-b border-white/[0.06]">
+          {([
+            { id: 'training' as const, label: 'Training Plan', icon: <ListChecks className="w-3.5 h-3.5" /> },
+            { id: 'plan' as const, label: 'Weekly Plan', icon: <CalendarDays className="w-3.5 h-3.5" /> },
+          ]).map(tab => (
+            <button key={tab.id}
+              onClick={() => setView(tab.id)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-all relative ${
+                view === tab.id
+                  ? 'text-emerald-400'
+                  : 'text-white/40 hover:text-white/60'
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+              {view === tab.id && (
+                <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-emerald-400 rounded-full" />
+              )}
+            </button>
+          ))}
+        </div>
 
-      {planView === 'training' ? (
+        {/* Content */}
+        <div className="p-4">
         <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
       ) : (
         <div className="space-y-5">
