@@ -123,6 +123,9 @@ const MyDJDashboard = () => {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{nowPlaying.title}</p>
               <p className="text-xs text-white/50 truncate">{nowPlaying.artist} • {nowPlaying.genre}</p>
+              <p className="text-[10px] text-emerald-400/60 flex items-center gap-1 mt-0.5">
+                <MapPin className="w-2.5 h-2.5" /> Resumed in Kitchen
+              </p>
             </div>
           </div>
 
