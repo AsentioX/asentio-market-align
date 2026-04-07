@@ -80,20 +80,40 @@ const MyDJDashboard = () => {
         )}
       </div>
 
-      {/* Live Biometrics */}
+      {/* Live Biometrics — tap to adjust */}
       <div className="grid grid-cols-4 gap-2">
-        {[
-          { icon: Heart, label: 'HR', value: `${bio.heartRate}`, unit: 'bpm', color: 'text-red-400' },
-          { icon: Activity, label: 'HRV', value: `${bio.hrv}`, unit: 'ms', color: 'text-blue-400' },
-          { icon: Brain, label: 'Stress', value: `${bio.stress}`, unit: '%', color: bio.stress > 60 ? 'text-orange-400' : 'text-green-400' },
-          { icon: Wind, label: 'Cadence', value: `${bio.cadence}`, unit: 'spm', color: 'text-cyan-400' },
-        ].map(({ icon: Icon, label, value, unit, color }) => (
-          <div key={label} className="bg-white/5 rounded-xl p-3 text-center">
-            <Icon className={`w-4 h-4 mx-auto mb-1 ${color}`} />
-            <p className={`text-lg font-bold ${color}`}>{value}</p>
-            <p className="text-[10px] text-white/40">{unit}</p>
-          </div>
-        ))}
+        {([
+          { icon: Heart, label: 'HR', key: 'heartRate' as const, value: bio.heartRate, unit: 'bpm', color: 'text-red-400', min: 40, max: 200 },
+          { icon: Activity, label: 'HRV', key: 'hrv' as const, value: bio.hrv, unit: 'ms', color: 'text-blue-400', min: 10, max: 120 },
+          { icon: Brain, label: 'Stress', key: 'stress' as const, value: bio.stress, unit: '%', color: bio.stress > 60 ? 'text-orange-400' : 'text-green-400', min: 0, max: 100 },
+          { icon: Wind, label: 'Cadence', key: 'cadence' as const, value: bio.cadence, unit: 'spm', color: 'text-cyan-400', min: 0, max: 200 },
+        ] as const).map(({ icon: Icon, label, key, value, unit, color, min, max }) => {
+          const isExpanded = expandedBio === label;
+          return (
+            <div key={label} className="flex flex-col">
+              <button
+                onClick={() => setExpandedBio(isExpanded ? null : label)}
+                className={`bg-white/5 rounded-xl p-3 text-center transition-all ${isExpanded ? 'ring-1 ring-white/20' : 'hover:bg-white/10'}`}
+              >
+                <Icon className={`w-4 h-4 mx-auto mb-1 ${color}`} />
+                <p className={`text-lg font-bold ${color}`}>{value}</p>
+                <p className="text-[10px] text-white/40">{unit}</p>
+              </button>
+              {isExpanded && (
+                <div className="mt-1.5 px-1">
+                  <Slider
+                    value={[value]}
+                    onValueChange={([v]) => setBio(prev => ({ ...prev, [key]: v }))}
+                    min={min}
+                    max={max}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* State Indicator */}
