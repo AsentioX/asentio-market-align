@@ -161,6 +161,64 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       </div>
 
 
+      {/* 🎉 Fun Fact Milestones Carousel */}
+      {!funFactDismissed && allUnlocked.length > 0 && (() => {
+        const { cat, milestone, next, value } = allUnlocked[activeMilestoneIdx];
+        return (
+          <div className={`relative overflow-hidden rounded-2xl border ${milestone.border} bg-gradient-to-br ${milestone.color}`}>
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute -right-6 -top-6 text-[120px] leading-none select-none">{milestone.emoji}</div>
+            </div>
+            <div className="relative z-10 p-5">
+              {/* Dismiss button */}
+              <button
+                onClick={() => setFunFactDismissed(true)}
+                className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-20"
+              >
+                <X className="w-3.5 h-3.5 text-white/50" />
+              </button>
+              <div className="flex items-start gap-4 pr-6">
+                <div className="text-5xl shrink-0 animate-[pulse_3s_ease-in-out_infinite]">{milestone.emoji}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="text-base">{cat.icon}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">{cat.label} Milestone</span>
+                  </div>
+                  <h4 className={`text-lg font-bold ${milestone.accent}`}>{milestone.title}</h4>
+                  <p className="text-sm text-white/70 mt-0.5 leading-snug">{milestone.desc}</p>
+                  <p className="text-[10px] text-white/30 mt-2">{typeof value === 'number' && value >= 1000 ? formatNum(value) : value.toFixed(1)} {cat.unit} total</p>
+                </div>
+              </div>
+              {next && (
+                <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                  <div className="flex items-center justify-between text-[10px] mb-1.5">
+                    <span className="text-white/40">Next: {next.emoji} {next.title}</span>
+                    <span className="text-white/30">{formatNum(next.threshold - value)} {cat.unit} to go</span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${milestone.gradientBar} transition-all`}
+                      style={{ width: `${Math.min((value / next.threshold) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+              {allUnlocked.length > 1 && (
+                <div className="flex items-center justify-center gap-1.5 mt-4">
+                  {allUnlocked.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setMilestoneIdx(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${i === activeMilestoneIdx ? `${milestone.accent.replace('text-', 'bg-')} scale-125` : 'bg-white/20 hover:bg-white/40'}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Coaching Insights */}
       {goals.length > 0 && (
         <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
