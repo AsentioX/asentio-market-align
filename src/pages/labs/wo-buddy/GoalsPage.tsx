@@ -202,6 +202,7 @@ const GoalsPage = () => {
   const [newMetric, setNewMetric] = useState('reps');
   const [newTarget, setNewTarget] = useState(0);
   const [newTimeframe, setNewTimeframe] = useState('');
+  const [newDeadline, setNewDeadline] = useState<Date | undefined>(undefined);
   const [newDrivers, setNewDrivers] = useState<string[]>([]);
 
   const insights = generateInsights(goals);
