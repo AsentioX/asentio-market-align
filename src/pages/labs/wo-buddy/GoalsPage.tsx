@@ -215,10 +215,12 @@ const GoalsPage = () => {
     if (!newName || newTarget <= 0) return;
     await createGoal({
       name: newName, category: newCategory, metric: newMetric,
-      target_value: newTarget, timeframe: newTimeframe || undefined, drivers: newDrivers,
+      target_value: newTarget, timeframe: newTimeframe || undefined,
+      deadline: newDeadline ? format(newDeadline, 'yyyy-MM-dd') : undefined,
+      drivers: newDrivers,
     });
     setShowCreate(false);
-    setNewName(''); setNewTarget(0); setNewDrivers([]); setNewTimeframe('');
+    setNewName(''); setNewTarget(0); setNewDrivers([]); setNewTimeframe(''); setNewDeadline(undefined);
   };
 
   const handleTemplate = (t: typeof GOAL_TEMPLATES[0]) => {
