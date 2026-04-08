@@ -400,6 +400,30 @@ const GoalsPage = () => {
               </div>
             </div>
             <div>
+              <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Target Date (optional)</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className={cn(
+                    "w-full flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-left transition-colors focus:outline-none focus:border-emerald-500/30",
+                    newDeadline ? "text-white" : "text-white/20"
+                  )}>
+                    <CalendarIcon className="w-4 h-4 text-white/30" />
+                    {newDeadline ? format(newDeadline, "PPP") : "Pick a target date"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-[#1a1a2e] border-white/10" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={newDeadline}
+                    onSelect={setNewDeadline}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
               <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Timeframe (optional)</label>
               <input value={newTimeframe} onChange={e => setNewTimeframe(e.target.value)}
                 placeholder="e.g. 12 weeks"
