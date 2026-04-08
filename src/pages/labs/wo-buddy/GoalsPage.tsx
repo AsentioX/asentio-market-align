@@ -1,5 +1,9 @@
 import { useState, useMemo } from 'react';
-import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight, BookOpen } from 'lucide-react';
+import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight, BookOpen, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import ExerciseLibraryPage from './ExerciseLibraryPage';
 import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals';
 import {
