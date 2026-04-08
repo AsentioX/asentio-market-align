@@ -493,6 +493,11 @@ const GoalsPage = () => {
                         </div>
                         <span className="text-[10px] text-white/40 font-mono w-8 text-right">{pct}%</span>
                       </div>
+                      {goal.deadline && (
+                        <p className="text-[10px] text-white/30 flex items-center gap-1 mt-1">
+                          <CalendarIcon className="w-3 h-3" /> {format(new Date(goal.deadline), 'MMM d, yyyy')}
+                        </p>
+                      )}
                     </div>
                     {isExp ? <ChevronUp className="w-4 h-4 text-white/20" /> : <ChevronDown className="w-4 h-4 text-white/20" />}
                   </button>
