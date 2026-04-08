@@ -1,5 +1,9 @@
 import { useState, useMemo } from 'react';
-import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight, BookOpen } from 'lucide-react';
+import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight, BookOpen, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import ExerciseLibraryPage from './ExerciseLibraryPage';
 import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals';
 import {
@@ -198,6 +202,7 @@ const GoalsPage = () => {
   const [newMetric, setNewMetric] = useState('reps');
   const [newTarget, setNewTarget] = useState(0);
   const [newTimeframe, setNewTimeframe] = useState('');
+  const [newDeadline, setNewDeadline] = useState<Date | undefined>(undefined);
   const [newDrivers, setNewDrivers] = useState<string[]>([]);
 
   const insights = generateInsights(goals);
@@ -210,10 +215,12 @@ const GoalsPage = () => {
     if (!newName || newTarget <= 0) return;
     await createGoal({
       name: newName, category: newCategory, metric: newMetric,
-      target_value: newTarget, timeframe: newTimeframe || undefined, drivers: newDrivers,
+      target_value: newTarget, timeframe: newTimeframe || undefined,
+      deadline: newDeadline ? format(newDeadline, 'yyyy-MM-dd') : undefined,
+      drivers: newDrivers,
     });
     setShowCreate(false);
-    setNewName(''); setNewTarget(0); setNewDrivers([]); setNewTimeframe('');
+    setNewName(''); setNewTarget(0); setNewDrivers([]); setNewTimeframe(''); setNewDeadline(undefined);
   };
 
   const handleTemplate = (t: typeof GOAL_TEMPLATES[0]) => {
@@ -393,6 +400,30 @@ const GoalsPage = () => {
               </div>
             </div>
             <div>
+              <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Target Date (optional)</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className={cn(
+                    "w-full flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-left transition-colors focus:outline-none focus:border-emerald-500/30",
+                    newDeadline ? "text-white" : "text-white/20"
+                  )}>
+                    <CalendarIcon className="w-4 h-4 text-white/30" />
+                    {newDeadline ? format(newDeadline, "PPP") : "Pick a target date"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-[#1a1a2e] border-white/10" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={newDeadline}
+                    onSelect={setNewDeadline}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
               <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Timeframe (optional)</label>
               <input value={newTimeframe} onChange={e => setNewTimeframe(e.target.value)}
                 placeholder="e.g. 12 weeks"
@@ -462,6 +493,11 @@ const GoalsPage = () => {
                         </div>
                         <span className="text-[10px] text-white/40 font-mono w-8 text-right">{pct}%</span>
                       </div>
+                      {goal.deadline && (
+                        <p className="text-[10px] text-white/30 flex items-center gap-1 mt-1">
+                          <CalendarIcon className="w-3 h-3" /> {format(new Date(goal.deadline), 'MMM d, yyyy')}
+                        </p>
+                      )}
                     </div>
                     {isExp ? <ChevronUp className="w-4 h-4 text-white/20" /> : <ChevronDown className="w-4 h-4 text-white/20" />}
                   </button>
