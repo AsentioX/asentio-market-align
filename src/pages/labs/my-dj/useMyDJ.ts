@@ -30,18 +30,49 @@ export function useMyDJ() {
   const alignmentCountRef = useRef(0);
   const elapsedRef = useRef(0);
   const audioEngine = useRef(getAudioEngine());
+  const modeRef = useRef(mode);
+
+  // Keep mode ref in sync
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   // Sync volume to audio engine
   useEffect(() => {
     audioEngine.current.setVolume(volume);
   }, [volume]);
 
+  // Set up track end callback
+  useEffect(() => {
+    audioEngine.current.setOnTrackEnd(() => {
+      // Auto-advance to next track
+      const params = computeMusicParams(
+        computeState(bio, modeRef.current),
+        bio,
+        modeRef.current,
+        intensity
+      );
+      const track = selectTrack(params, modeRef.current);
+      elapsedRef.current = 0;
+      setNowPlaying({
+        title: track.title,
+        artist: track.artist,
+        genre: track.genre,
+        duration: track.duration,
+        elapsed: 0,
+        params,
+        url: track.url,
+      });
+      setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+      audioEngine.current.loadAndPlay(track.url);
+    });
+  }, [bio, intensity]);
+
   // Simulate bio data changes
   useEffect(() => {
     if (!isPlaying) return;
     const interval = setInterval(() => {
       setBio(prev => {
-        // Gradual adaptation toward target based on mode
         let hrDelta = Math.floor(Math.random() * 5) - 2;
         let hrvDelta = Math.floor(Math.random() * 5) - 2;
         let stressDelta = Math.floor(Math.random() * 5) - 2;
@@ -73,7 +104,6 @@ export function useMyDJ() {
     const newParams = computeMusicParams(newState, bio, mode, intensity);
     setMusicParams(newParams);
 
-    // Update audio engine with new params in real-time
     if (isPlaying) {
       audioEngine.current.setParams(newParams);
     }
@@ -89,24 +119,6 @@ export function useMyDJ() {
     }
   }, [bio, mode, intensity, isPlaying]);
 
-  // Auto-select track when track ends
-  useEffect(() => {
-    if (!isPlaying) return;
-    if (nowPlaying && elapsedRef.current < (nowPlaying.duration - 5)) return;
-    const track = selectTrack(musicParams);
-    elapsedRef.current = 0;
-    setNowPlaying({
-      title: track.title,
-      artist: track.artist,
-      genre: track.genre,
-      duration: track.duration,
-      elapsed: 0,
-      params: musicParams,
-    });
-    setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying]);
-
   // Elapsed time ticker
   useEffect(() => {
     if (!isPlaying) return;
@@ -114,37 +126,38 @@ export function useMyDJ() {
       elapsedRef.current += 1;
       setNowPlaying(np => {
         if (!np) return null;
-        // Auto-advance to next track when current ends
-        if (elapsedRef.current >= np.duration - 2) {
-          const track = selectTrack(musicParams);
-          elapsedRef.current = 0;
-          setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
-          return {
-            title: track.title, artist: track.artist, genre: track.genre,
-            duration: track.duration, elapsed: 0, params: musicParams,
-          };
-        }
         return { ...np, elapsed: elapsedRef.current };
       });
       setStats(s => ({ ...s, durationSec: s.durationSec + 1 }));
     }, 1000);
     return () => clearInterval(interval);
-  }, [isPlaying, musicParams]);
+  }, [isPlaying]);
+
+  const playTrack = useCallback((params: MusicParams, currentMode: UserMode) => {
+    const track = selectTrack(params, currentMode);
+    elapsedRef.current = 0;
+    setNowPlaying({
+      title: track.title,
+      artist: track.artist,
+      genre: track.genre,
+      duration: track.duration,
+      elapsed: 0,
+      params,
+      url: track.url,
+    });
+    audioEngine.current.loadAndPlay(track.url);
+  }, []);
 
   const startSession = useCallback(() => {
     alignmentSumRef.current = 0;
     alignmentCountRef.current = 0;
     elapsedRef.current = 0;
     setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 1, likes: 0, skips: 0, alignmentHistory: [] });
-    const track = selectTrack(musicParams);
-    setNowPlaying({
-      title: track.title, artist: track.artist, genre: track.genre,
-      duration: track.duration, elapsed: 0, params: musicParams,
-    });
-    setIsPlaying(true);
     audioEngine.current.setParams(musicParams);
     audioEngine.current.start();
-  }, [musicParams]);
+    playTrack(musicParams, mode);
+    setIsPlaying(true);
+  }, [musicParams, mode, playTrack]);
 
   const stopSession = useCallback(() => {
     setIsPlaying(false);
@@ -154,16 +167,9 @@ export function useMyDJ() {
   }, []);
 
   const skip = useCallback(() => {
-    elapsedRef.current = 999; // triggers next track selection
-    setStats(s => ({ ...s, skips: s.skips + 1 }));
-    const track = selectTrack(musicParams);
-    elapsedRef.current = 0;
-    setNowPlaying({
-      title: track.title, artist: track.artist, genre: track.genre,
-      duration: track.duration, elapsed: 0, params: musicParams,
-    });
-    setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
-  }, [musicParams]);
+    setStats(s => ({ ...s, skips: s.skips + 1, tracksPlayed: s.tracksPlayed + 1 }));
+    playTrack(musicParams, mode);
+  }, [musicParams, mode, playTrack]);
 
   const like = useCallback(() => {
     setStats(s => ({ ...s, likes: s.likes + 1 }));
