@@ -61,7 +61,11 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-bold text-white">Training Plan</h2>
-        <p className="text-xs text-white/40 mt-0.5">Your overall strategy to achieve your goals</p>
+        <p className="text-xs text-white/40 mt-0.5">
+          {deadlineDate
+            ? `${totalWeeks}-week periodized plan · Target: ${format(deadlineDate, 'MMM d, yyyy')}`
+            : 'Your overall strategy to achieve your goals'}
+        </p>
       </div>
 
       {/* Summary metrics */}
@@ -71,12 +75,12 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
           <p className="text-[10px] text-white/40">Active Goals</p>
         </div>
         <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-          <p className="text-lg font-bold text-white">{sortedDrivers.length}</p>
-          <p className="text-[10px] text-white/40">Focus Areas</p>
+          <p className="text-lg font-bold text-white">{totalWeeks}</p>
+          <p className="text-[10px] text-white/40">Total Weeks</p>
         </div>
         <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-          <p className="text-lg font-bold text-white">{trainingDays.length}</p>
-          <p className="text-[10px] text-white/40">Days/Week</p>
+          <p className="text-lg font-bold text-emerald-400">{weeksRemaining}</p>
+          <p className="text-[10px] text-white/40">Weeks Left</p>
         </div>
       </div>
 
