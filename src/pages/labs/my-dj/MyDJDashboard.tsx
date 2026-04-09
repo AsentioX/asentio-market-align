@@ -69,6 +69,13 @@ const LOCATION_ICON_MAP: Record<string, string> = {
   room: '🏠', home_zone: '🏡', gym_zone: '🏋️', outdoor_route: '🌳', workplace: '🏢', venue: '🎭',
 };
 
+const LOCATION_NAME_ICON_MAP: Record<string, string> = {
+  'Kitchen': '🍳', 'Living Room': '🛋️', 'Bedroom': '🛏️', 'Office': '🏢',
+  'Gym': '🏋️', 'Home gym': '🏋️', 'Outdoors': '🌳', 'Studio': '🎵',
+  'Car': '🚗', 'Garage': '🚗', 'Garden': '🌿', 'Bathroom': '🛁',
+  'Patio': '☀️', 'Balcony': '🌅', 'Basement': '🎮', 'Library': '📚',
+};
+
 // ─── Breathing Orb ───────────────────────────────────
 const BreathingOrb = ({ color, heartRate, alignment }: { color: { from: string; to: string; glow: string }; heartRate: number; alignment: number }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -284,7 +291,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
     );
   };
 
-  const getLocIcon = (loc: DJLocation) => LOCATION_ICON_MAP[loc.location_type] || '📍';
+  const getLocIcon = (loc: DJLocation) => LOCATION_NAME_ICON_MAP[loc.name] || LOCATION_ICON_MAP[loc.location_type] || '📍';
 
   const stateColor = STATE_GRADIENTS[state.current];
   const narrative = STATE_NARRATIVES[state.current];
