@@ -19,7 +19,6 @@ const MyDJLayout = () => {
   const renderPage = () => {
     switch (activeTab) {
       case 'sense': return <MyDJDashboard />;
-      case 'scenes': return <MyDJScenes />;
       case 'insights': return <MyDJInsights />;
       case 'settings': return <MyDJSettings />;
     }
