@@ -268,7 +268,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-      <ProgressAnalytics />
+      
 
       {/* This Week + Daily Goal combined */}
       <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
