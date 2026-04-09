@@ -424,30 +424,6 @@ const MyDJDashboard = () => {
         </div>
       )}
 
-      {/* ═══ SESSION NOT ACTIVE — subtle activation with play ═══ */}
-      {!isPlaying && (
-        <div className="px-6 pb-4">
-          <button
-            onClick={startSession}
-            className="w-full rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] flex items-center justify-center gap-3 transition-all hover:bg-white/[0.04] hover:border-white/[0.1] active:scale-[0.98]"
-          >
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center border border-white/[0.1]"
-              style={{ background: `linear-gradient(135deg, ${stateColor.from}20, ${stateColor.to}10)` }}
-            >
-              <Play className="w-4 h-4 text-white/70 ml-0.5" />
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-medium text-white/70">
-                {stats.durationSec > 0 ? 'Resume Adaptive Sound' : 'Activate Adaptive Sound'}
-              </p>
-              <p className="text-[11px] text-white/30 mt-0.5">
-                {stats.durationSec > 0 ? 'Continue where you left off' : 'The system will begin sensing and adapting'}
-              </p>
-            </div>
-          </button>
-        </div>
-      )}
 
       {/* ═══ SYSTEM INFLUENCE ═══ */}
       <div className="px-6 pb-4">
