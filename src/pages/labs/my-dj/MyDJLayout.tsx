@@ -1,24 +1,16 @@
 import { useState } from 'react';
-import { ArrowLeft, Waves, BarChart3, Settings, Compass } from 'lucide-react';
+import { ArrowLeft, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import MyDJDashboard from './MyDJDashboard';
-import MyDJInsights from './MyDJInsights';
 import MyDJSettings from './MyDJSettings';
 import IntentSelection from './IntentSelection';
 import { useMyDJ } from './useMyDJ';
 import { IntentDef } from './intentData';
 
-type Tab = 'intent' | 'sense' | 'insights' | 'settings';
-
-const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: 'intent', label: 'Intent', icon: <Compass className="w-5 h-5" /> },
-  { id: 'sense', label: 'Sense', icon: <Waves className="w-5 h-5" /> },
-  { id: 'insights', label: 'Insights', icon: <BarChart3 className="w-5 h-5" /> },
-  { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
-];
+type View = 'intent' | 'sense' | 'settings';
 
 const MyDJLayout = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('intent');
+  const [view, setView] = useState<View>('intent');
   const dj = useMyDJ();
   const [activeIntent, setActiveIntent] = useState<{ primary: IntentDef; secondary?: IntentDef } | null>(null);
 
@@ -32,13 +24,13 @@ const MyDJLayout = () => {
     if (!dj.isPlaying) {
       setTimeout(() => dj.startSession(), 400);
     }
-    setActiveTab('sense');
+    setView('sense');
   };
 
-  const openIntentTab = () => setActiveTab('intent');
+  const openIntentView = () => setView('intent');
 
   const renderPage = () => {
-    switch (activeTab) {
+    switch (view) {
       case 'intent':
         return (
           <IntentSelection
@@ -49,9 +41,10 @@ const MyDJLayout = () => {
             currentIntentId={activeIntent?.primary.id}
           />
         );
-      case 'sense': return <MyDJDashboard djState={dj} activeIntent={activeIntent} onChangeIntent={openIntentTab} />;
-      case 'insights': return <MyDJInsights />;
-      case 'settings': return <MyDJSettings />;
+      case 'sense':
+        return <MyDJDashboard djState={dj} activeIntent={activeIntent} onChangeIntent={openIntentView} />;
+      case 'settings':
+        return <MyDJSettings />;
     }
   };
 
@@ -67,32 +60,20 @@ const MyDJLayout = () => {
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[10px] text-white/30 uppercase tracking-widest">Adaptive Sound</span>
           </div>
-          <div className="w-12" />
+          <button
+            onClick={() => setView(view === 'settings' ? (activeIntent ? 'sense' : 'intent') : 'settings')}
+            className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
+              view === 'settings' ? 'text-white/70 bg-white/[0.08]' : 'text-white/25 hover:text-white/50'
+            }`}
+          >
+            <Settings className="w-4 h-4" />
+          </button>
         </div>
       </header>
 
-      <main className="flex-1 max-w-lg mx-auto w-full px-4 py-5 pb-24">
+      <main className="flex-1 max-w-lg mx-auto w-full px-4 py-5">
         {renderPage()}
       </main>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a10]/95 backdrop-blur-2xl border-t border-white/[0.03]">
-        <div className="max-w-lg mx-auto flex">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-colors ${
-                activeTab === tab.id
-                  ? 'text-white/80'
-                  : 'text-white/20 hover:text-white/40'
-              }`}
-            >
-              {tab.icon}
-              <span className="text-[9px] font-medium tracking-wider">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
     </div>
   );
 };
