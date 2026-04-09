@@ -20,7 +20,8 @@ export function useMyDJ() {
   const [intensity, setIntensity] = useState(50);
   const [volume, setVolume] = useState(0.5);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [bio, setBio] = useState<BioInputs>({ heartRate: 72, hrv: 55, cadence: 0, sleepScore: 78, stress: 30 });
+  const [bio, setBioInternal] = useState<BioInputs>({ heartRate: 72, hrv: 55, cadence: 0, sleepScore: 78, stress: 30 });
+  const [manualBioOverride, setManualBioOverride] = useState(false);
   const [state, setState] = useState<StateSnapshot>({ current: 'resting', target: 'calm', alignment: 0.5, strategy: 'counterbalance' });
   const [musicParams, setMusicParams] = useState<MusicParams>({ bpm: 70, energy: 20, rhythmDensity: 15, vocalPresence: 10, harmonicTension: 10, intensity: 50 });
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
