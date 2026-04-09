@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode, PhysioState } from './stateEngine';
@@ -347,7 +347,16 @@ const MyDJDashboard = () => {
                 />
                 <span className="text-[11px] text-white/40">Adaptive session active</span>
               </div>
-              <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
+                <button
+                  onClick={stopSession}
+                  className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/70 hover:bg-white/[0.1] transition-all"
+                  title="Pause session"
+                >
+                  <Pause className="w-3 h-3" />
+                </button>
+              </div>
             </div>
 
             {/* Now playing — minimal */}
@@ -414,15 +423,27 @@ const MyDJDashboard = () => {
         </div>
       )}
 
-      {/* ═══ SESSION NOT ACTIVE — subtle activation ═══ */}
+      {/* ═══ SESSION NOT ACTIVE — subtle activation with play ═══ */}
       {!isPlaying && (
         <div className="px-6 pb-4">
           <button
             onClick={startSession}
-            className="w-full rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] text-center transition-all hover:bg-white/[0.04] hover:border-white/[0.1] active:scale-[0.98]"
+            className="w-full rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] flex items-center justify-center gap-3 transition-all hover:bg-white/[0.04] hover:border-white/[0.1] active:scale-[0.98]"
           >
-            <p className="text-sm font-medium text-white/70">Activate Adaptive Sound</p>
-            <p className="text-[11px] text-white/30 mt-1">The system will begin sensing and adapting</p>
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center border border-white/[0.1]"
+              style={{ background: `linear-gradient(135deg, ${stateColor.from}20, ${stateColor.to}10)` }}
+            >
+              <Play className="w-4 h-4 text-white/70 ml-0.5" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-medium text-white/70">
+                {stats.durationSec > 0 ? 'Resume Adaptive Sound' : 'Activate Adaptive Sound'}
+              </p>
+              <p className="text-[11px] text-white/30 mt-0.5">
+                {stats.durationSec > 0 ? 'Continue where you left off' : 'The system will begin sensing and adapting'}
+              </p>
+            </div>
           </button>
         </div>
       )}
