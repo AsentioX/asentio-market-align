@@ -292,7 +292,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 <div key={day} className="flex-1 flex flex-col items-center gap-1">
                   <div className="flex-1 w-full flex items-end justify-center">
                     <div
-                      className={`w-full max-w-[28px] rounded-md transition-all ${
+                      className={`w-full max-w-[40px] rounded-md transition-all ${
                         hasData
                           ? isToday
                             ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]'
