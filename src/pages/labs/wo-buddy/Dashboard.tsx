@@ -294,7 +294,35 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
       </div>
 
-
+      {/* Goal Progress */}
+      {goals.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Target className="w-4 h-4 text-emerald-400" />
+            <span className="text-sm font-semibold text-white">Goal Progress</span>
+          </div>
+          <div className="space-y-2">
+            {goals.filter(g => g.status !== 'achieved').map(g => {
+              const pct = g.target_value > 0 ? Math.min(100, Math.round(((g.current_value ?? 0) / g.target_value) * 100)) : 0;
+              return (
+                <div key={g.id} className="bg-white/[0.03] rounded-xl border border-white/[0.06] p-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-medium text-white/70 truncate">{g.name}</span>
+                    <span className="text-xs font-bold text-emerald-400">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                  <div className="flex justify-between mt-1">
+                    <span className="text-[9px] text-white/25">{g.current_value ?? 0} / {g.target_value} {g.metric}</span>
+                    {g.deadline && <span className="text-[9px] text-white/20">Due {new Date(g.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl border border-white/[0.08] overflow-hidden">
         {/* Period tabs */}
