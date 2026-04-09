@@ -53,11 +53,20 @@ const ADAPTATION_MESSAGES: Record<UserMode, (state: PhysioState) => string[]> = 
   },
 };
 
-const LOCATIONS = [
-  { name: 'Home · Kitchen', emoji: '🏠', scene: 'Evening wind-down' },
-  { name: 'Office · Desk', emoji: '🏢', scene: 'Deep work session' },
-  { name: 'Gym · Floor', emoji: '🏋️', scene: 'High intensity' },
+const ROOM_PRESETS = [
+  { name: 'Kitchen', type: 'room', icon: '🍳' },
+  { name: 'Living Room', type: 'room', icon: '🛋️' },
+  { name: 'Bedroom', type: 'room', icon: '🛏️' },
+  { name: 'Office', type: 'workplace', icon: '🏢' },
+  { name: 'Gym', type: 'gym_zone', icon: '🏋️' },
+  { name: 'Outdoors', type: 'outdoor_route', icon: '🌳' },
+  { name: 'Studio', type: 'venue', icon: '🎵' },
+  { name: 'Car', type: 'room', icon: '🚗' },
 ];
+
+const LOCATION_ICON_MAP: Record<string, string> = {
+  room: '🏠', home_zone: '🏡', gym_zone: '🏋️', outdoor_route: '🌳', workplace: '🏢', venue: '🎭',
+};
 
 // ─── Breathing Orb ───────────────────────────────────
 const BreathingOrb = ({ color, heartRate, alignment }: { color: { from: string; to: string; glow: string }; heartRate: number; alignment: number }) => {
