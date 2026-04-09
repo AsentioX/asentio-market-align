@@ -312,19 +312,54 @@ const MyDJDashboard = () => {
           }}
         />
 
-        {/* Active rooms indicator */}
-        <div className="relative z-10 flex items-center gap-2 mb-8">
-          <div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ backgroundColor: stateColor.from, boxShadow: `0 0 4px ${stateColor.from}60` }}
-          />
-          <span className="text-[11px] text-white/40">
-            {rooms.length === 0
-              ? 'No rooms tagged'
-              : activeRoomIds.size === rooms.length
-                ? `All rooms · ${rooms.length}`
-                : `${activeRoomIds.size} of ${rooms.length} rooms`}
-          </span>
+        {/* Room pills — inline at top */}
+        <div className="relative z-10 flex items-center gap-1.5 mb-8 overflow-x-auto scrollbar-none">
+          {roomsLoading ? (
+            <Loader2 className="w-3 h-3 text-white/20 animate-spin" />
+          ) : rooms.length === 0 ? (
+            <button
+              onClick={() => setShowAddRoom(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] border border-dashed border-white/[0.1] text-white/30 hover:bg-white/[0.05] transition-colors"
+            >
+              <Plus className="w-3 h-3" />
+              <span>Add Room</span>
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={toggleAllRooms}
+                className={`px-2.5 py-1 rounded-full text-[10px] transition-all border shrink-0 ${
+                  allRoomsActive
+                    ? 'bg-white/[0.1] border-white/[0.15] text-white/70'
+                    : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05]'
+                }`}
+              >
+                All
+              </button>
+              {rooms.map(room => {
+                const isActive = activeRoomIds.has(room.id);
+                return (
+                  <button
+                    key={room.id}
+                    onClick={() => toggleRoom(room.id)}
+                    className={`px-2.5 py-1 rounded-full text-[10px] transition-all border shrink-0 ${
+                      isActive
+                        ? 'bg-white/[0.1] border-white/[0.15] text-white/70'
+                        : 'bg-white/[0.02] border-white/[0.06] text-white/25 hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    {getLocIcon(room)} {room.name}
+                  </button>
+                );
+              })}
+              <button
+                onClick={() => setShowAddRoom(true)}
+                className="w-6 h-6 rounded-full flex items-center justify-center border border-dashed border-white/[0.1] text-white/25 hover:text-white/50 hover:bg-white/[0.05] transition-colors shrink-0"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </>
+          )}
         </div>
 
         {/* Central Breathing Orb */}
