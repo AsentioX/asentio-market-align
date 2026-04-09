@@ -580,7 +580,6 @@ const GoalsPage = () => {
           {([
             { id: 'training' as const, label: 'Training Plan', icon: <ListChecks className="w-3.5 h-3.5" /> },
             { id: 'plan' as const, label: 'Weekly Plan', icon: <CalendarDays className="w-3.5 h-3.5" /> },
-            { id: 'library' as const, label: 'Library', icon: <BookOpen className="w-3.5 h-3.5" /> },
           ]).map(tab => (
             <button key={tab.id}
               onClick={() => setView(tab.id)}
@@ -601,9 +600,7 @@ const GoalsPage = () => {
 
         {/* Content */}
         <div className="p-4">
-          {planView === 'library' ? (
-            <ExerciseLibraryPage onBack={() => setView('training')} />
-          ) : planView === 'training' ? (
+          {planView === 'training' ? (
             <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
           ) : (
             <div className="space-y-5">
