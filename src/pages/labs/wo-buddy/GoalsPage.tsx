@@ -111,26 +111,44 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
       )}
 
       {/* Training Phases */}
+      {/* Training Phases */}
       <div className="space-y-3">
         <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Training Phases</h3>
         <div className="relative">
           {/* Vertical connector */}
           <div className="absolute left-[18px] top-4 bottom-4 w-px bg-white/[0.06]" />
           <div className="space-y-2">
-            {phases.map((phase, i) => (
-              <div key={i} className={`relative flex items-start gap-3 rounded-xl ${phase.bg} border ${phase.border} p-3`}>
-                <div className={`w-9 h-9 rounded-lg bg-white/[0.06] flex items-center justify-center text-base shrink-0 z-10`}>
-                  {phase.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium ${phase.color}`}>{phase.name}</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 font-mono">{phase.weeks}</span>
+            {phases.map((phase, i) => {
+              const isCurrent = i === currentPhaseIdx;
+              const weekLabel = phase.weekStart === phase.weekEnd
+                ? `Wk ${phase.weekStart}`
+                : `Wk ${phase.weekStart}–${phase.weekEnd}`;
+              const intensityLabel = { low: '●○○○', moderate: '●●○○', high: '●●●○', peak: '●●●●', taper: '↓' }[phase.intensity];
+              
+              return (
+                <div key={i} className={`relative flex items-start gap-3 rounded-xl ${phase.bg} border ${isCurrent ? 'border-emerald-500/40 ring-1 ring-emerald-500/20' : phase.border} p-3`}>
+                  <div className={`w-9 h-9 rounded-lg ${isCurrent ? 'bg-emerald-500/20' : 'bg-white/[0.06]'} flex items-center justify-center text-base shrink-0 z-10`}>
+                    {phase.icon}
                   </div>
-                  <p className="text-[11px] text-white/40 mt-0.5">{phase.focus}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`text-sm font-medium ${phase.color}`}>{phase.name}</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 font-mono">{weekLabel}</span>
+                      {isCurrent && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">NOW</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-white/40 mt-0.5">{phase.focus}</p>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[9px] text-white/30">Intensity: <span className="text-white/50">{intensityLabel}</span></span>
+                      {phase.goalNames.length > 0 && (
+                        <span className="text-[9px] text-white/30">→ {phase.goalNames.slice(0, 2).join(', ')}</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
