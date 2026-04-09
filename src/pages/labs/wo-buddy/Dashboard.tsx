@@ -422,7 +422,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       </div>
 
     </div>
-  </div>
   );
 };
 
