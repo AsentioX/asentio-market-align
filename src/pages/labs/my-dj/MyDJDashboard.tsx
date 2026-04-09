@@ -508,67 +508,6 @@ const MyDJDashboard = () => {
         </div>
       )}
 
-      {/* ═══ ROOMS ═══ */}
-      <div className="px-6 pb-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-3 h-3 text-white/25" />
-            <span className="text-[10px] text-white/25 uppercase tracking-widest">Rooms</span>
-          </div>
-          <button
-            onClick={() => setShowAddRoom(true)}
-            className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors"
-          >
-            <Plus className="w-3 h-3" />
-            <span>Add Room</span>
-          </button>
-        </div>
-
-        {roomsLoading ? (
-          <div className="flex justify-center py-3">
-            <Loader2 className="w-4 h-4 text-white/20 animate-spin" />
-          </div>
-        ) : rooms.length === 0 ? (
-          <button
-            onClick={() => setShowAddRoom(true)}
-            className="w-full bg-white/[0.03] border border-dashed border-white/[0.08] rounded-xl p-4 text-center hover:bg-white/[0.05] transition-colors"
-          >
-            <MapPin className="w-4 h-4 text-white/15 mx-auto mb-1" />
-            <p className="text-[11px] text-white/30">Tag this music to a room</p>
-          </button>
-        ) : (
-          <div className="flex flex-wrap gap-1.5">
-            {/* All toggle */}
-            <button
-              onClick={toggleAllRooms}
-              className={`px-3 py-1.5 rounded-full text-[11px] transition-all border ${
-                allRoomsActive
-                  ? 'bg-white/[0.08] border-white/[0.12] text-white/70'
-                  : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05]'
-              }`}
-            >
-              All
-            </button>
-            {rooms.map(room => {
-              const isActive = activeRoomIds.has(room.id);
-              return (
-                <button
-                  key={room.id}
-                  onClick={() => toggleRoom(room.id)}
-                  className={`px-3 py-1.5 rounded-full text-[11px] transition-all border ${
-                    isActive
-                      ? 'bg-white/[0.08] border-white/[0.12] text-white/70'
-                      : 'bg-white/[0.02] border-white/[0.06] text-white/25 hover:bg-white/[0.05]'
-                  }`}
-                >
-                  {getLocIcon(room)} {room.name}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
       {/* ═══ ADD ROOM OVERLAY ═══ */}
       {showAddRoom && (
         <div className="px-6 pb-4">
