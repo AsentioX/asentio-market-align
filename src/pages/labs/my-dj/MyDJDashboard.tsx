@@ -429,15 +429,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
       </div>
 
 
-      {/* ═══ STATE TRANSITION ARC ═══ */}
-      <div className="px-6 pb-4">
-        <StateTransitionArc
-          from={PHYSIO_LABELS[state.current]}
-          to={PHYSIO_LABELS[state.target]}
-          alignment={state.alignment}
-          color={stateColor}
-        />
-      </div>
 
       {/* ═══ SESSION STATUS ═══ */}
       {isPlaying && (
