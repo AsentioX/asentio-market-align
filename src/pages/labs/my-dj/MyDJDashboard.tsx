@@ -304,6 +304,16 @@ const MyDJDashboard = () => {
           </div>
         </div>
 
+        {/* Pause / Play button below orb */}
+        <div className="relative z-10 flex justify-center mb-5">
+          <button
+            onClick={isPlaying ? stopSession : startSession}
+            className="w-11 h-11 rounded-full border border-white/[0.1] bg-white/[0.04] flex items-center justify-center text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-all active:scale-95"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+          </button>
+        </div>
+
         {/* Bio Pulse Strip — ambient, not clinical */}
         <div className="relative z-10 flex justify-center gap-6">
           <BioPulse label="Heart" value={bio.heartRate} unit="bpm" isElevated={bio.heartRate > 100} />
