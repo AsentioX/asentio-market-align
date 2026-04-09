@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play, Plus, X, Loader2 } from 'lucide-react';
+import { MapPin, Volume2, ChevronUp, ThumbsUp, ThumbsDown, SkipForward, Pause, Play, Plus, X, Loader2 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode, PhysioState } from './stateEngine';
@@ -231,7 +231,7 @@ const MyDJDashboard = () => {
     volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
-    stats, skip, like, timeOfDay,
+    stats, skip, like, dislike, timeOfDay,
   } = useMyDJ();
 
   const [showInfluence, setShowInfluence] = useState(false);
@@ -407,16 +407,25 @@ const MyDJDashboard = () => {
                   <p className="text-sm text-white/80 truncate">{nowPlaying.title}</p>
                   <p className="text-[11px] text-white/30 truncate">{nowPlaying.artist}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={dislike}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-red-400/80 transition-colors"
+                    title="Dislike — skip & remember"
+                  >
+                    <ThumbsDown className="w-3.5 h-3.5" />
+                  </button>
                   <button
                     onClick={like}
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-emerald-400/80 transition-colors"
+                    title="Like — remember preference"
                   >
                     <ThumbsUp className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={skip}
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
+                    title="Skip"
                   >
                     <SkipForward className="w-3.5 h-3.5" />
                   </button>

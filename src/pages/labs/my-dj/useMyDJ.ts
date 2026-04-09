@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { UserMode, BioInputs, computeState, StateSnapshot, getTimeOfDay } from './stateEngine';
 import { MusicParams, NowPlaying, computeMusicParams, selectTrack } from './musicEngine';
 import { getAudioEngine } from './audioEngine';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface SessionStats {
   startedAt: Date | null;
@@ -181,9 +182,46 @@ export function useMyDJ() {
     playTrack(musicParams, mode);
   }, [musicParams, mode, playTrack]);
 
+  const submitFeedback = useCallback(async (feedbackType: 'thumbs_up' | 'thumbs_down') => {
+    if (!nowPlaying) return;
+    try {
+      await supabase.from('mydj_track_feedback').insert({
+        track_title: nowPlaying.title,
+        track_artist: nowPlaying.artist,
+        track_genre: nowPlaying.genre,
+        track_url: nowPlaying.url,
+        music_bpm: musicParams.bpm,
+        music_energy: musicParams.energy,
+        music_rhythm_density: musicParams.rhythmDensity,
+        music_vocal_presence: musicParams.vocalPresence,
+        music_harmonic_tension: musicParams.harmonicTension,
+        music_intensity: musicParams.intensity,
+        bio_heart_rate: bio.heartRate,
+        bio_hrv: bio.hrv,
+        bio_stress: bio.stress,
+        bio_cadence: bio.cadence,
+        bio_sleep_score: bio.sleepScore,
+        bio_physio_state: state.current,
+        mode,
+        alignment_score: state.alignment,
+        strategy: state.strategy,
+        feedback: feedbackType,
+      } as any);
+    } catch (err) {
+      console.warn('Failed to submit feedback:', err);
+    }
+  }, [nowPlaying, musicParams, bio, state, mode]);
+
   const like = useCallback(() => {
     setStats(s => ({ ...s, likes: s.likes + 1 }));
-  }, []);
+    submitFeedback('thumbs_up');
+  }, [submitFeedback]);
+
+  const dislike = useCallback(() => {
+    setStats(s => ({ ...s, skips: s.skips + 1, tracksPlayed: s.tracksPlayed + 1 }));
+    submitFeedback('thumbs_down');
+    playTrack(musicParams, mode); // skip to next track on dislike
+  }, [submitFeedback, musicParams, mode, playTrack]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -197,6 +235,6 @@ export function useMyDJ() {
     volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
-    stats, skip, like, timeOfDay: getTimeOfDay(),
+    stats, skip, like, dislike, timeOfDay: getTimeOfDay(),
   };
 }
