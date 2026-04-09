@@ -455,15 +455,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
                   <p className="text-sm text-white/80 truncate">{nowPlaying.title}</p>
                   <p className="text-[11px] text-white/30 truncate">{nowPlaying.artist}</p>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={skip}
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
-                    title="Skip"
-                  >
-                    <SkipForward className="w-3.5 h-3.5" />
-                  </button>
-                </div>
               </div>
             )}
 
