@@ -474,20 +474,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
                 </div>
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={dislike}
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-red-400/80 transition-colors"
-                    title="Dislike — skip & remember"
-                  >
-                    <ThumbsDown className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={like}
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-emerald-400/80 transition-colors"
-                    title="Like — remember preference"
-                  >
-                    <ThumbsUp className="w-3.5 h-3.5" />
-                  </button>
-                  <button
                     onClick={skip}
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
                     title="Skip"
