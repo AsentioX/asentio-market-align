@@ -428,17 +428,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
         </div>
       </div>
 
-      {/* ═══ LIVE ADAPTATION LOOP ═══ */}
-      <div className="px-6 py-5">
-        <div className="flex items-center gap-2 mb-3">
-          <div
-            className="w-1 h-1 rounded-full animate-pulse"
-            style={{ backgroundColor: stateColor.from }}
-          />
-          <span className="text-[10px] text-white/30 uppercase tracking-widest">Live Adaptation</span>
-        </div>
-        <AdaptationLoop messages={adaptMessages} color={stateColor} />
-      </div>
 
       {/* ═══ STATE TRANSITION ARC ═══ */}
       <div className="px-6 pb-4">
