@@ -20,21 +20,22 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 const MyDJLayout = () => {
   const [activeTab, setActiveTab] = useState<Tab>('intent');
   const dj = useMyDJ();
+  const [activeIntent, setActiveIntent] = useState<{ primary: IntentDef; secondary?: IntentDef } | null>(null);
 
   const handleSelectIntent = (primary: IntentDef, secondary?: IntentDef) => {
-    // Map intent to engine mode + intensity
     dj.setMode(primary.engineMode);
     dj.setIntensity(secondary
       ? Math.round((primary.intensityHint + secondary.intensityHint) / 2)
       : primary.intensityHint
     );
-    // Start session if not already playing
+    setActiveIntent({ primary, secondary });
     if (!dj.isPlaying) {
       setTimeout(() => dj.startSession(), 400);
     }
-    // Switch to Sense tab to show adaptation
     setActiveTab('sense');
   };
+
+  const openIntentTab = () => setActiveTab('intent');
 
   const renderPage = () => {
     switch (activeTab) {
@@ -45,10 +46,10 @@ const MyDJLayout = () => {
             physioState={dj.state.current}
             sessionDuration={dj.stats.durationSec}
             onSelectIntent={handleSelectIntent}
-            currentIntentId={undefined}
+            currentIntentId={activeIntent?.primary.id}
           />
         );
-      case 'sense': return <MyDJDashboard djState={dj} />;
+      case 'sense': return <MyDJDashboard djState={dj} activeIntent={activeIntent} onChangeIntent={openIntentTab} />;
       case 'insights': return <MyDJInsights />;
       case 'settings': return <MyDJSettings />;
     }
