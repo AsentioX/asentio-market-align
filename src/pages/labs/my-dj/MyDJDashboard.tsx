@@ -225,14 +225,16 @@ const BioPulse = ({ label, value, unit, isElevated }: { label: string; value: nu
 );
 
 // ─── Main Dashboard ──────────────────────────────────
-const MyDJDashboard = () => {
+export type DJStateProps = ReturnType<typeof useMyDJ>;
+
+const MyDJDashboard = ({ djState }: { djState: DJStateProps }) => {
   const {
     mode, setMode, intensity, setIntensity,
     volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, dislike, timeOfDay,
-  } = useMyDJ();
+  } = djState;
 
   const [showInfluence, setShowInfluence] = useState(false);
   const [showBioSliders, setShowBioSliders] = useState(false);
