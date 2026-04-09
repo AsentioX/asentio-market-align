@@ -62,24 +62,6 @@ const ProgressAnalytics = () => {
   return (
     <div className="space-y-5">
 
-      {/* Personal Bests */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <Award className="w-4 h-4 text-amber-400" />
-          <span className="text-sm font-semibold text-white">Personal Bests</span>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {personalBests.map(pb => (
-            <div key={pb.label} className="bg-white/[0.03] rounded-xl border border-white/[0.06] p-3 text-center">
-              <span className="text-lg">{pb.icon}</span>
-              <p className="text-sm font-bold text-white mt-1">{pb.value}</p>
-              <p className="text-[10px] text-white/30 mt-0.5">{pb.label}</p>
-              <span className={`text-[10px] font-medium ${pb.improving ? 'text-emerald-400' : 'text-red-400'}`}>{pb.trend}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Consistency streak */}
       <div className="bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10">
         <div className="flex items-center justify-between">
