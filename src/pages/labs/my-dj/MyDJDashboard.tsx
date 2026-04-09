@@ -279,6 +279,7 @@ const MyDJDashboard = () => {
 
   const stateColor = STATE_GRADIENTS[state.current];
   const narrative = STATE_NARRATIVES[state.current];
+  const adaptMessages = ADAPTATION_MESSAGES[mode](state.current);
 
   // Auto-start session on mount (ambient behavior)
   useEffect(() => {
