@@ -714,6 +714,19 @@ const GoalsPage = () => {
           )}
         </div>
       </div>
+
+      {/* Exercise Library Dialog */}
+      <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-[#0a0a0a] border-white/[0.08]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <BookOpen className="w-5 h-5 text-emerald-400" />
+              Exercise Library
+            </DialogTitle>
+          </DialogHeader>
+          <ExerciseLibraryPage onBack={() => setShowLibrary(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
