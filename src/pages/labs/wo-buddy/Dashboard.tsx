@@ -276,33 +276,36 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           <Calendar className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">This Week</span>
         </div>
-        <div className="flex gap-2 mb-4">
+        <div className="flex items-end gap-2 mb-4" style={{ height: 80 }}>
           {(() => {
-            const dailyPcts = [92, 78, 65, 0, 0, 0, 0]; // Mon–Sun completion %
+            const dailyMins = [52, 38, 0, 45, 72, 55, 0]; // Mon–Sun minutes
             const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             const todayIdx = mockUser.weeklyProgress;
+            const maxMin = Math.max(...dailyMins, 1);
             return dayLabels.map((day, i) => {
-              const pct = dailyPcts[i];
+              const mins = dailyMins[i];
               const isToday = i === todayIdx;
               const isPast = i < todayIdx;
-              const hasData = pct > 0;
+              const hasData = mins > 0;
+              const barH = hasData ? Math.max(12, (mins / maxMin) * 64) : 0;
               return (
-                <div key={day} className="flex-1 flex flex-col items-center gap-1.5">
-                  <div className={`w-full rounded-xl relative overflow-hidden flex flex-col items-center justify-end transition-all ${
-                    isToday ? 'border border-emerald-500/30 ring-1 ring-emerald-400/20' : 'border border-white/5'
-                  }`} style={{ height: 56 }}>
-                    {/* Background fill */}
-                    <div className={`absolute bottom-0 left-0 right-0 rounded-b-lg transition-all ${
-                      hasData ? 'bg-gradient-to-t from-emerald-500/30 to-emerald-600/10' : ''
-                    }`} style={{ height: `${pct}%` }} />
-                    {/* Percentage label */}
-                    <span className={`relative z-10 text-[10px] font-semibold mb-1 ${
-                      hasData ? (pct >= 80 ? 'text-emerald-400' : 'text-emerald-400/70') : 'text-white/15'
-                    }`}>
-                      {isPast || isToday ? `${pct}%` : ''}
-                    </span>
+                <div key={day} className="flex-1 flex flex-col items-center gap-1">
+                  <div className="flex-1 w-full flex items-end justify-center">
+                    <div
+                      className={`w-full max-w-[28px] rounded-md transition-all ${
+                        hasData
+                          ? isToday
+                            ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]'
+                            : 'bg-emerald-500/40'
+                          : 'bg-white/[0.06]'
+                      }`}
+                      style={{ height: hasData ? barH : 8 }}
+                    />
                   </div>
-                  <span className={`text-[9px] ${hasData ? 'text-emerald-400/60' : isToday ? 'text-white/50' : 'text-white/30'}`}>{day}</span>
+                  <span className={`text-[9px] ${isToday ? 'text-white/70 font-medium' : 'text-white/30'}`}>{day}</span>
+                  <span className={`text-[9px] ${hasData ? 'text-emerald-400/70' : 'text-white/15'}`}>
+                    {hasData ? `${mins}m` : ''}
+                  </span>
                 </div>
               );
             });
