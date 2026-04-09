@@ -1383,6 +1383,87 @@ export type Database = {
         }
         Relationships: []
       }
+      mydj_track_feedback: {
+        Row: {
+          alignment_score: number
+          bio_cadence: number
+          bio_heart_rate: number
+          bio_hrv: number
+          bio_physio_state: string
+          bio_sleep_score: number
+          bio_stress: number
+          created_at: string
+          feedback: string
+          id: string
+          mode: string
+          music_bpm: number
+          music_energy: number
+          music_harmonic_tension: number
+          music_intensity: number
+          music_rhythm_density: number
+          music_vocal_presence: number
+          session_id: string | null
+          strategy: string
+          track_artist: string
+          track_genre: string
+          track_title: string
+          track_url: string
+          user_id: string | null
+        }
+        Insert: {
+          alignment_score?: number
+          bio_cadence: number
+          bio_heart_rate: number
+          bio_hrv: number
+          bio_physio_state: string
+          bio_sleep_score: number
+          bio_stress: number
+          created_at?: string
+          feedback: string
+          id?: string
+          mode: string
+          music_bpm: number
+          music_energy: number
+          music_harmonic_tension: number
+          music_intensity: number
+          music_rhythm_density: number
+          music_vocal_presence: number
+          session_id?: string | null
+          strategy?: string
+          track_artist: string
+          track_genre: string
+          track_title: string
+          track_url: string
+          user_id?: string | null
+        }
+        Update: {
+          alignment_score?: number
+          bio_cadence?: number
+          bio_heart_rate?: number
+          bio_hrv?: number
+          bio_physio_state?: string
+          bio_sleep_score?: number
+          bio_stress?: number
+          created_at?: string
+          feedback?: string
+          id?: string
+          mode?: string
+          music_bpm?: number
+          music_energy?: number
+          music_harmonic_tension?: number
+          music_intensity?: number
+          music_rhythm_density?: number
+          music_vocal_presence?: number
+          session_id?: string | null
+          strategy?: string
+          track_artist?: string
+          track_genre?: string
+          track_title?: string
+          track_url?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       mydj_user_mode_preferences: {
         Row: {
           created_at: string
