@@ -1,24 +1,54 @@
 import { useState } from 'react';
-import { ArrowLeft, Waves, BarChart3, Settings } from 'lucide-react';
+import { ArrowLeft, Waves, BarChart3, Settings, Compass } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import MyDJDashboard from './MyDJDashboard';
 import MyDJInsights from './MyDJInsights';
 import MyDJSettings from './MyDJSettings';
+import IntentSelection from './IntentSelection';
+import { useMyDJ } from './useMyDJ';
+import { IntentDef } from './intentData';
 
-type Tab = 'sense' | 'insights' | 'settings';
+type Tab = 'intent' | 'sense' | 'insights' | 'settings';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: 'intent', label: 'Intent', icon: <Compass className="w-5 h-5" /> },
   { id: 'sense', label: 'Sense', icon: <Waves className="w-5 h-5" /> },
   { id: 'insights', label: 'Insights', icon: <BarChart3 className="w-5 h-5" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
 
 const MyDJLayout = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('sense');
+  const [activeTab, setActiveTab] = useState<Tab>('intent');
+  const dj = useMyDJ();
+
+  const handleSelectIntent = (primary: IntentDef, secondary?: IntentDef) => {
+    // Map intent to engine mode + intensity
+    dj.setMode(primary.engineMode);
+    dj.setIntensity(secondary
+      ? Math.round((primary.intensityHint + secondary.intensityHint) / 2)
+      : primary.intensityHint
+    );
+    // Start session if not already playing
+    if (!dj.isPlaying) {
+      setTimeout(() => dj.startSession(), 400);
+    }
+    // Switch to Sense tab to show adaptation
+    setActiveTab('sense');
+  };
 
   const renderPage = () => {
     switch (activeTab) {
-      case 'sense': return <MyDJDashboard />;
+      case 'intent':
+        return (
+          <IntentSelection
+            timeOfDay={dj.timeOfDay}
+            physioState={dj.state.current}
+            sessionDuration={dj.stats.durationSec}
+            onSelectIntent={handleSelectIntent}
+            currentIntentId={undefined}
+          />
+        );
+      case 'sense': return <MyDJDashboard djState={dj} />;
       case 'insights': return <MyDJInsights />;
       case 'settings': return <MyDJSettings />;
     }
