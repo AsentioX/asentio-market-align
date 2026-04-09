@@ -253,6 +253,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
   const [showInfluence, setShowInfluence] = useState(false);
   const [showBioSliders, setShowBioSliders] = useState(false);
   const [showAddRoom, setShowAddRoom] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   // Room state: which rooms are "active" (toggled on)
   const { user } = useAuth();
