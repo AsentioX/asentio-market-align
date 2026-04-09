@@ -395,15 +395,8 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
           </div>
         </div>
 
-        {/* Play button with thumbs */}
+        {/* Play controls */}
         <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
-          <button
-            onClick={dislike}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-white/20 hover:text-red-400/80 transition-colors"
-            title="Dislike — skip & remember"
-          >
-            <ThumbsDown className="w-3.5 h-3.5" />
-          </button>
           <button
             onClick={isPlaying ? stopSession : startSession}
             className="w-11 h-11 rounded-full border border-white/[0.1] bg-white/[0.04] flex items-center justify-center text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-all active:scale-95"
@@ -411,8 +404,17 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
           </button>
           <button
-            onClick={like}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-white/20 hover:text-emerald-400/80 transition-colors"
+            onClick={() => { dislike(); setIsLiked(false); }}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
+            title="Next track"
+          >
+            <SkipForward className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => { if (isLiked) { setIsLiked(false); } else { like(); setIsLiked(true); } }}
+            className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+              isLiked ? 'text-emerald-400' : 'text-white/20 hover:text-emerald-400/80'
+            }`}
             title="Like — remember preference"
           >
             <ThumbsUp className="w-3.5 h-3.5" />
