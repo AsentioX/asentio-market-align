@@ -238,12 +238,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-      {/* Progress Analytics Section */}
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <BarChart3 className="w-4 h-4 text-emerald-400" />
-          <h3 className="text-sm font-semibold text-white">Progress Analytics</h3>
-        </div>
+        <ProgressAnalytics />
+      </div>
         <ProgressAnalytics />
       </div>
 
