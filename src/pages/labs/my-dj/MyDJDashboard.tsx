@@ -236,20 +236,49 @@ const MyDJDashboard = () => {
 
   const [showInfluence, setShowInfluence] = useState(false);
   const [showBioSliders, setShowBioSliders] = useState(false);
-  const [locationIndex] = useState(0);
-  const [locationPulse, setLocationPulse] = useState(false);
+  const [showAddRoom, setShowAddRoom] = useState(false);
+
+  // Room state: which rooms are "active" (toggled on)
+  const { user } = useAuth();
+  const userId = user?.id;
+  const { data: rooms = [], isLoading: roomsLoading } = useLocations(userId);
+  const createLocation = useCreateLocation();
+  const [activeRoomIds, setActiveRoomIds] = useState<Set<string>>(new Set());
+
+  // Auto-activate all rooms when they load
+  useEffect(() => {
+    if (rooms.length > 0 && activeRoomIds.size === 0) {
+      setActiveRoomIds(new Set(rooms.map(r => r.id)));
+    }
+  }, [rooms]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggleRoom = (id: string) => {
+    setActiveRoomIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const allRoomsActive = rooms.length > 0 && activeRoomIds.size === rooms.length;
+  const toggleAllRooms = () => {
+    if (allRoomsActive) setActiveRoomIds(new Set());
+    else setActiveRoomIds(new Set(rooms.map(r => r.id)));
+  };
+
+  const handleAddPresetRoom = (preset: typeof ROOM_PRESETS[0]) => {
+    if (!userId) return;
+    createLocation.mutate(
+      { user_id: userId, name: preset.name, location_type: preset.type, detection_method: 'manual' },
+      { onSuccess: () => setShowAddRoom(false) }
+    );
+  };
+
+  const getLocIcon = (loc: DJLocation) => LOCATION_ICON_MAP[loc.location_type] || '📍';
 
   const stateColor = STATE_GRADIENTS[state.current];
   const narrative = STATE_NARRATIVES[state.current];
-  const adaptMessages = ADAPTATION_MESSAGES[mode](state.current);
-  const location = LOCATIONS[locationIndex];
-
-  // Location change animation
-  useEffect(() => {
-    setLocationPulse(true);
-    const t = setTimeout(() => setLocationPulse(false), 1500);
-    return () => clearTimeout(t);
-  }, [locationIndex]);
 
   // Auto-start session on mount (ambient behavior)
   useEffect(() => {
