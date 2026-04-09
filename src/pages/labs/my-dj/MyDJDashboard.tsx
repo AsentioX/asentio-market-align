@@ -249,6 +249,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, dislike, timeOfDay,
+    musicSource, setMusicSource,
   } = djState;
 
   const [showInfluence, setShowInfluence] = useState(false);
