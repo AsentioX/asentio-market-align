@@ -304,6 +304,16 @@ const MyDJDashboard = () => {
           </div>
         </div>
 
+        {/* Pause / Play button below orb */}
+        <div className="relative z-10 flex justify-center mb-5">
+          <button
+            onClick={isPlaying ? stopSession : startSession}
+            className="w-11 h-11 rounded-full border border-white/[0.1] bg-white/[0.04] flex items-center justify-center text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-all active:scale-95"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+          </button>
+        </div>
+
         {/* Bio Pulse Strip — ambient, not clinical */}
         <div className="relative z-10 flex justify-center gap-6">
           <BioPulse label="Heart" value={bio.heartRate} unit="bpm" isElevated={bio.heartRate > 100} />
@@ -347,16 +357,7 @@ const MyDJDashboard = () => {
                 />
                 <span className="text-[11px] text-white/40">Adaptive session active</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
-                <button
-                  onClick={stopSession}
-                  className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/70 hover:bg-white/[0.1] transition-all"
-                  title="Pause session"
-                >
-                  <Pause className="w-3 h-3" />
-                </button>
-              </div>
+              <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
             </div>
 
             {/* Now playing — minimal */}
@@ -423,30 +424,6 @@ const MyDJDashboard = () => {
         </div>
       )}
 
-      {/* ═══ SESSION NOT ACTIVE — subtle activation with play ═══ */}
-      {!isPlaying && (
-        <div className="px-6 pb-4">
-          <button
-            onClick={startSession}
-            className="w-full rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] flex items-center justify-center gap-3 transition-all hover:bg-white/[0.04] hover:border-white/[0.1] active:scale-[0.98]"
-          >
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center border border-white/[0.1]"
-              style={{ background: `linear-gradient(135deg, ${stateColor.from}20, ${stateColor.to}10)` }}
-            >
-              <Play className="w-4 h-4 text-white/70 ml-0.5" />
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-medium text-white/70">
-                {stats.durationSec > 0 ? 'Resume Adaptive Sound' : 'Activate Adaptive Sound'}
-              </p>
-              <p className="text-[11px] text-white/30 mt-0.5">
-                {stats.durationSec > 0 ? 'Continue where you left off' : 'The system will begin sensing and adapting'}
-              </p>
-            </div>
-          </button>
-        </div>
-      )}
 
       {/* ═══ SYSTEM INFLUENCE ═══ */}
       <div className="px-6 pb-4">
