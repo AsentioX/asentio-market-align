@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play } from 'lucide-react';
+import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play, Plus, X, Loader2 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode, PhysioState } from './stateEngine';
+import { useAuth } from '@/hooks/useAuth';
+import { useLocations, useCreateLocation, DJLocation } from '@/hooks/useMyDJScenes';
 
 // ─── State-driven copy & color ───────────────────────
 const STATE_NARRATIVES: Record<PhysioState, { verb: string; description: string }> = {
@@ -51,11 +53,20 @@ const ADAPTATION_MESSAGES: Record<UserMode, (state: PhysioState) => string[]> = 
   },
 };
 
-const LOCATIONS = [
-  { name: 'Home · Kitchen', emoji: '🏠', scene: 'Evening wind-down' },
-  { name: 'Office · Desk', emoji: '🏢', scene: 'Deep work session' },
-  { name: 'Gym · Floor', emoji: '🏋️', scene: 'High intensity' },
+const ROOM_PRESETS = [
+  { name: 'Kitchen', type: 'room', icon: '🍳' },
+  { name: 'Living Room', type: 'room', icon: '🛋️' },
+  { name: 'Bedroom', type: 'room', icon: '🛏️' },
+  { name: 'Office', type: 'workplace', icon: '🏢' },
+  { name: 'Gym', type: 'gym_zone', icon: '🏋️' },
+  { name: 'Outdoors', type: 'outdoor_route', icon: '🌳' },
+  { name: 'Studio', type: 'venue', icon: '🎵' },
+  { name: 'Car', type: 'room', icon: '🚗' },
 ];
+
+const LOCATION_ICON_MAP: Record<string, string> = {
+  room: '🏠', home_zone: '🏡', gym_zone: '🏋️', outdoor_route: '🌳', workplace: '🏢', venue: '🎭',
+};
 
 // ─── Breathing Orb ───────────────────────────────────
 const BreathingOrb = ({ color, heartRate, alignment }: { color: { from: string; to: string; glow: string }; heartRate: number; alignment: number }) => {
@@ -225,20 +236,50 @@ const MyDJDashboard = () => {
 
   const [showInfluence, setShowInfluence] = useState(false);
   const [showBioSliders, setShowBioSliders] = useState(false);
-  const [locationIndex] = useState(0);
-  const [locationPulse, setLocationPulse] = useState(false);
+  const [showAddRoom, setShowAddRoom] = useState(false);
+
+  // Room state: which rooms are "active" (toggled on)
+  const { user } = useAuth();
+  const userId = user?.id;
+  const { data: rooms = [], isLoading: roomsLoading } = useLocations(userId);
+  const createLocation = useCreateLocation();
+  const [activeRoomIds, setActiveRoomIds] = useState<Set<string>>(new Set());
+
+  // Auto-activate all rooms when they load
+  useEffect(() => {
+    if (rooms.length > 0 && activeRoomIds.size === 0) {
+      setActiveRoomIds(new Set(rooms.map(r => r.id)));
+    }
+  }, [rooms]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggleRoom = (id: string) => {
+    setActiveRoomIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const allRoomsActive = rooms.length > 0 && activeRoomIds.size === rooms.length;
+  const toggleAllRooms = () => {
+    if (allRoomsActive) setActiveRoomIds(new Set());
+    else setActiveRoomIds(new Set(rooms.map(r => r.id)));
+  };
+
+  const handleAddPresetRoom = (preset: typeof ROOM_PRESETS[0]) => {
+    if (!userId) return;
+    createLocation.mutate(
+      { user_id: userId, name: preset.name, location_type: preset.type, detection_method: 'manual' },
+      { onSuccess: () => setShowAddRoom(false) }
+    );
+  };
+
+  const getLocIcon = (loc: DJLocation) => LOCATION_ICON_MAP[loc.location_type] || '📍';
 
   const stateColor = STATE_GRADIENTS[state.current];
   const narrative = STATE_NARRATIVES[state.current];
   const adaptMessages = ADAPTATION_MESSAGES[mode](state.current);
-  const location = LOCATIONS[locationIndex];
-
-  // Location change animation
-  useEffect(() => {
-    setLocationPulse(true);
-    const t = setTimeout(() => setLocationPulse(false), 1500);
-    return () => clearTimeout(t);
-  }, [locationIndex]);
 
   // Auto-start session on mount (ambient behavior)
   useEffect(() => {
@@ -271,20 +312,19 @@ const MyDJDashboard = () => {
           }}
         />
 
-        {/* Location Moment */}
-        <div className={`relative z-10 flex items-center gap-2 mb-8 transition-all duration-500 ${locationPulse ? 'scale-105' : 'scale-100'}`}>
+        {/* Active rooms indicator */}
+        <div className="relative z-10 flex items-center gap-2 mb-8">
           <div
-            className="w-1.5 h-1.5 rounded-full transition-all duration-500"
-            style={{
-              backgroundColor: stateColor.from,
-              boxShadow: locationPulse ? `0 0 12px ${stateColor.from}` : `0 0 4px ${stateColor.from}60`,
-            }}
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: stateColor.from, boxShadow: `0 0 4px ${stateColor.from}60` }}
           />
           <span className="text-[11px] text-white/40">
-            {location.emoji} {location.name}
+            {rooms.length === 0
+              ? 'No rooms tagged'
+              : activeRoomIds.size === rooms.length
+                ? `All rooms · ${rooms.length}`
+                : `${activeRoomIds.size} of ${rooms.length} rooms`}
           </span>
-          <span className="text-white/10">·</span>
-          <span className="text-[11px] text-white/25">{location.scene}</span>
         </div>
 
         {/* Central Breathing Orb */}
@@ -424,6 +464,100 @@ const MyDJDashboard = () => {
         </div>
       )}
 
+      {/* ═══ ROOMS ═══ */}
+      <div className="px-6 pb-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-3 h-3 text-white/25" />
+            <span className="text-[10px] text-white/25 uppercase tracking-widest">Rooms</span>
+          </div>
+          <button
+            onClick={() => setShowAddRoom(true)}
+            className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors"
+          >
+            <Plus className="w-3 h-3" />
+            <span>Add Room</span>
+          </button>
+        </div>
+
+        {roomsLoading ? (
+          <div className="flex justify-center py-3">
+            <Loader2 className="w-4 h-4 text-white/20 animate-spin" />
+          </div>
+        ) : rooms.length === 0 ? (
+          <button
+            onClick={() => setShowAddRoom(true)}
+            className="w-full bg-white/[0.03] border border-dashed border-white/[0.08] rounded-xl p-4 text-center hover:bg-white/[0.05] transition-colors"
+          >
+            <MapPin className="w-4 h-4 text-white/15 mx-auto mb-1" />
+            <p className="text-[11px] text-white/30">Tag this music to a room</p>
+          </button>
+        ) : (
+          <div className="flex flex-wrap gap-1.5">
+            {/* All toggle */}
+            <button
+              onClick={toggleAllRooms}
+              className={`px-3 py-1.5 rounded-full text-[11px] transition-all border ${
+                allRoomsActive
+                  ? 'bg-white/[0.08] border-white/[0.12] text-white/70'
+                  : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05]'
+              }`}
+            >
+              All
+            </button>
+            {rooms.map(room => {
+              const isActive = activeRoomIds.has(room.id);
+              return (
+                <button
+                  key={room.id}
+                  onClick={() => toggleRoom(room.id)}
+                  className={`px-3 py-1.5 rounded-full text-[11px] transition-all border ${
+                    isActive
+                      ? 'bg-white/[0.08] border-white/[0.12] text-white/70'
+                      : 'bg-white/[0.02] border-white/[0.06] text-white/25 hover:bg-white/[0.05]'
+                  }`}
+                >
+                  {getLocIcon(room)} {room.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ═══ ADD ROOM OVERLAY ═══ */}
+      {showAddRoom && (
+        <div className="px-6 pb-4">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-white/60 font-medium">Choose a room</span>
+              <button onClick={() => setShowAddRoom(false)} className="text-white/30 hover:text-white/60">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="grid grid-cols-4 gap-1.5">
+              {ROOM_PRESETS
+                .filter(p => !rooms.some(r => r.name === p.name))
+                .map(preset => (
+                  <button
+                    key={preset.name}
+                    onClick={() => handleAddPresetRoom(preset)}
+                    disabled={createLocation.isPending}
+                    className="flex flex-col items-center gap-1 p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.05] hover:border-white/[0.1] transition-all disabled:opacity-50"
+                  >
+                    <span className="text-lg">{preset.icon}</span>
+                    <span className="text-[9px] text-white/40">{preset.name}</span>
+                  </button>
+                ))}
+            </div>
+            {createLocation.isPending && (
+              <div className="flex items-center justify-center gap-2 mt-3 text-[11px] text-white/30">
+                <Loader2 className="w-3 h-3 animate-spin" /> Adding...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ═══ SYSTEM INFLUENCE ═══ */}
       <div className="px-6 pb-4">

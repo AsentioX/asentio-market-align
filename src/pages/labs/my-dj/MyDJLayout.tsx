@@ -1,16 +1,14 @@
 import { useState } from 'react';
-import { ArrowLeft, Waves, BarChart3, MapPin, Settings } from 'lucide-react';
+import { ArrowLeft, Waves, BarChart3, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import MyDJDashboard from './MyDJDashboard';
 import MyDJInsights from './MyDJInsights';
-import MyDJScenes from './MyDJScenes';
 import MyDJSettings from './MyDJSettings';
 
-type Tab = 'sense' | 'scenes' | 'insights' | 'settings';
+type Tab = 'sense' | 'insights' | 'settings';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'sense', label: 'Sense', icon: <Waves className="w-5 h-5" /> },
-  { id: 'scenes', label: 'Spaces', icon: <MapPin className="w-5 h-5" /> },
   { id: 'insights', label: 'Insights', icon: <BarChart3 className="w-5 h-5" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
@@ -21,7 +19,6 @@ const MyDJLayout = () => {
   const renderPage = () => {
     switch (activeTab) {
       case 'sense': return <MyDJDashboard />;
-      case 'scenes': return <MyDJScenes />;
       case 'insights': return <MyDJInsights />;
       case 'settings': return <MyDJSettings />;
     }
