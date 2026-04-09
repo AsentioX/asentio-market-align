@@ -9,6 +9,7 @@ import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals'
 import {
   GOAL_CATEGORIES, METRICS, PERFORMANCE_DRIVERS, GOAL_TEMPLATES,
   getGoalStatusColor, getCategoryConfig, generateInsights,
+  generateTrainingPhases, getCurrentPhaseIndex,
 } from './goalMappings';
 import { generatePlanFromGoals, getTodayIndex, DAY_SHORT, type PlanDay } from './planEngine';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,26 +47,25 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
     sessionsByType[s.workoutType] = (sessionsByType[s.workoutType] || 0) + 1;
   }));
 
-  // Phases based on goal count and types
-  const hasStrengthGoals = activeGoals.some(g => g.drivers.includes('Strength') || g.drivers.includes('Power'));
-  const hasEnduranceGoals = activeGoals.some(g => g.drivers.includes('Endurance') || g.drivers.includes('Efficiency'));
-  const hasMobilityGoals = activeGoals.some(g => g.drivers.includes('Mobility'));
-
-  const phases = [];
-  if (hasStrengthGoals) phases.push({ name: 'Strength Foundation', weeks: '1–4', focus: 'Build base strength with progressive overload', icon: '💪', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/15' });
-  if (hasEnduranceGoals) phases.push({ name: 'Aerobic Base', weeks: hasStrengthGoals ? '2–6' : '1–4', focus: 'Develop cardiovascular endurance and efficiency', icon: '🫁', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/15' });
-  if (hasStrengthGoals) phases.push({ name: 'Power Development', weeks: '5–8', focus: 'Convert strength into explosive power', icon: '⚡', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/15' });
-  if (hasMobilityGoals) phases.push({ name: 'Mobility Integration', weeks: 'Ongoing', focus: 'Maintain range of motion and injury prevention', icon: '🧘', color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/15' });
-  if (phases.length === 0) phases.push(
-    { name: 'General Fitness', weeks: '1–4', focus: 'Build a balanced fitness foundation', icon: '🏋️', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
-    { name: 'Progressive Overload', weeks: '5–8', focus: 'Increase intensity and volume gradually', icon: '📈', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/15' },
+  // Deadline-aware periodization
+  const { phases, totalWeeks, weeksRemaining, deadlineDate } = useMemo(
+    () => generateTrainingPhases(goals),
+    [goals]
+  );
+  const currentPhaseIdx = useMemo(
+    () => getCurrentPhaseIndex(phases, totalWeeks, deadlineDate),
+    [phases, totalWeeks, deadlineDate]
   );
 
   return (
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-bold text-white">Training Plan</h2>
-        <p className="text-xs text-white/40 mt-0.5">Your overall strategy to achieve your goals</p>
+        <p className="text-xs text-white/40 mt-0.5">
+          {deadlineDate
+            ? `${totalWeeks}-week periodized plan · Target: ${format(deadlineDate, 'MMM d, yyyy')}`
+            : 'Your overall strategy to achieve your goals'}
+        </p>
       </div>
 
       {/* Summary metrics */}
@@ -75,12 +75,12 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
           <p className="text-[10px] text-white/40">Active Goals</p>
         </div>
         <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-          <p className="text-lg font-bold text-white">{sortedDrivers.length}</p>
-          <p className="text-[10px] text-white/40">Focus Areas</p>
+          <p className="text-lg font-bold text-white">{totalWeeks}</p>
+          <p className="text-[10px] text-white/40">Total Weeks</p>
         </div>
         <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-          <p className="text-lg font-bold text-white">{trainingDays.length}</p>
-          <p className="text-[10px] text-white/40">Days/Week</p>
+          <p className="text-lg font-bold text-emerald-400">{weeksRemaining}</p>
+          <p className="text-[10px] text-white/40">Weeks Left</p>
         </div>
       </div>
 
@@ -111,26 +111,44 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
       )}
 
       {/* Training Phases */}
+      {/* Training Phases */}
       <div className="space-y-3">
         <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50">Training Phases</h3>
         <div className="relative">
           {/* Vertical connector */}
           <div className="absolute left-[18px] top-4 bottom-4 w-px bg-white/[0.06]" />
           <div className="space-y-2">
-            {phases.map((phase, i) => (
-              <div key={i} className={`relative flex items-start gap-3 rounded-xl ${phase.bg} border ${phase.border} p-3`}>
-                <div className={`w-9 h-9 rounded-lg bg-white/[0.06] flex items-center justify-center text-base shrink-0 z-10`}>
-                  {phase.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium ${phase.color}`}>{phase.name}</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 font-mono">{phase.weeks}</span>
+            {phases.map((phase, i) => {
+              const isCurrent = i === currentPhaseIdx;
+              const weekLabel = phase.weekStart === phase.weekEnd
+                ? `Wk ${phase.weekStart}`
+                : `Wk ${phase.weekStart}–${phase.weekEnd}`;
+              const intensityLabel = { low: '●○○○', moderate: '●●○○', high: '●●●○', peak: '●●●●', taper: '↓' }[phase.intensity];
+              
+              return (
+                <div key={i} className={`relative flex items-start gap-3 rounded-xl ${phase.bg} border ${isCurrent ? 'border-emerald-500/40 ring-1 ring-emerald-500/20' : phase.border} p-3`}>
+                  <div className={`w-9 h-9 rounded-lg ${isCurrent ? 'bg-emerald-500/20' : 'bg-white/[0.06]'} flex items-center justify-center text-base shrink-0 z-10`}>
+                    {phase.icon}
                   </div>
-                  <p className="text-[11px] text-white/40 mt-0.5">{phase.focus}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`text-sm font-medium ${phase.color}`}>{phase.name}</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 font-mono">{weekLabel}</span>
+                      {isCurrent && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">NOW</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-white/40 mt-0.5">{phase.focus}</p>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[9px] text-white/30">Intensity: <span className="text-white/50">{intensityLabel}</span></span>
+                      {phase.goalNames.length > 0 && (
+                        <span className="text-[9px] text-white/30">→ {phase.goalNames.slice(0, 2).join(', ')}</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
