@@ -47,19 +47,14 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
     sessionsByType[s.workoutType] = (sessionsByType[s.workoutType] || 0) + 1;
   }));
 
-  // Phases based on goal count and types
-  const hasStrengthGoals = activeGoals.some(g => g.drivers.includes('Strength') || g.drivers.includes('Power'));
-  const hasEnduranceGoals = activeGoals.some(g => g.drivers.includes('Endurance') || g.drivers.includes('Efficiency'));
-  const hasMobilityGoals = activeGoals.some(g => g.drivers.includes('Mobility'));
-
-  const phases = [];
-  if (hasStrengthGoals) phases.push({ name: 'Strength Foundation', weeks: '1–4', focus: 'Build base strength with progressive overload', icon: '💪', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/15' });
-  if (hasEnduranceGoals) phases.push({ name: 'Aerobic Base', weeks: hasStrengthGoals ? '2–6' : '1–4', focus: 'Develop cardiovascular endurance and efficiency', icon: '🫁', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/15' });
-  if (hasStrengthGoals) phases.push({ name: 'Power Development', weeks: '5–8', focus: 'Convert strength into explosive power', icon: '⚡', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/15' });
-  if (hasMobilityGoals) phases.push({ name: 'Mobility Integration', weeks: 'Ongoing', focus: 'Maintain range of motion and injury prevention', icon: '🧘', color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/15' });
-  if (phases.length === 0) phases.push(
-    { name: 'General Fitness', weeks: '1–4', focus: 'Build a balanced fitness foundation', icon: '🏋️', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
-    { name: 'Progressive Overload', weeks: '5–8', focus: 'Increase intensity and volume gradually', icon: '📈', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/15' },
+  // Deadline-aware periodization
+  const { phases, totalWeeks, weeksRemaining, deadlineDate } = useMemo(
+    () => generateTrainingPhases(goals),
+    [goals]
+  );
+  const currentPhaseIdx = useMemo(
+    () => getCurrentPhaseIndex(phases, totalWeeks, deadlineDate),
+    [phases, totalWeeks, deadlineDate]
   );
 
   return (
