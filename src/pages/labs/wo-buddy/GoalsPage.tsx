@@ -301,7 +301,7 @@ const GoalsPage = () => {
     );
   }
 
-  const planView = view === 'training' ? 'training' : view === 'library' ? 'library' : 'plan';
+  const planView = view === 'training' ? 'training' : 'plan';
 
   return (
     <div className="space-y-5">
