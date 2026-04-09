@@ -228,7 +228,13 @@ const BioPulse = ({ label, value, unit, isElevated }: { label: string; value: nu
 // ─── Main Dashboard ──────────────────────────────────
 export type DJStateProps = ReturnType<typeof useMyDJ>;
 
-const MyDJDashboard = ({ djState }: { djState: DJStateProps }) => {
+interface DashboardProps {
+  djState: DJStateProps;
+  activeIntent?: { primary: IntentDef; secondary?: IntentDef } | null;
+  onChangeIntent?: () => void;
+}
+
+const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps) => {
   const {
     mode, setMode, intensity, setIntensity,
     volume, setVolume,
