@@ -173,31 +173,6 @@ const ProgressAnalytics = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Weekly frequency */}
-      <div className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Calendar className="w-4 h-4 text-emerald-400" />
-          <span className="text-sm font-semibold text-white">This Week's Activity</span>
-        </div>
-        <div className="flex gap-1.5">
-          {weeklyFrequency.map((d, i) => {
-            const maxMin = Math.max(...weeklyFrequency.map(f => f.minutes));
-            const height = d.minutes > 0 ? Math.max(20, (d.minutes / maxMin) * 100) : 8;
-            return (
-              <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full h-24 flex items-end justify-center">
-                  <div
-                    className={`w-full rounded-t-lg transition-all ${d.minutes > 0 ? 'bg-gradient-to-t from-emerald-500/40 to-emerald-400/10' : 'bg-white/5'}`}
-                    style={{ height: `${height}%` }}
-                  />
-                </div>
-                <span className="text-[10px] text-white/30">{d.day}</span>
-                {d.minutes > 0 && <span className="text-[9px] text-emerald-400/60">{d.minutes}m</span>}
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 };
