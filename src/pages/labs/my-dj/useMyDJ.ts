@@ -69,11 +69,17 @@ export function useMyDJ() {
     });
   }, [bio, intensity]);
 
-  // Simulate bio data changes
+  // Manual setBio that flags override to stop auto-simulation
+  const setBio = useCallback((updater: BioInputs | ((prev: BioInputs) => BioInputs)) => {
+    setManualBioOverride(true);
+    setBioInternal(updater as any);
+  }, []);
+
+  // Simulate bio data changes (disabled when user manually adjusts)
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || manualBioOverride) return;
     const interval = setInterval(() => {
-      setBio(prev => {
+      setBioInternal(prev => {
         let hrDelta = Math.floor(Math.random() * 5) - 2;
         let hrvDelta = Math.floor(Math.random() * 5) - 2;
         let stressDelta = Math.floor(Math.random() * 5) - 2;
@@ -96,7 +102,7 @@ export function useMyDJ() {
       });
     }, 2000);
     return () => clearInterval(interval);
-  }, [isPlaying, mode]);
+  }, [isPlaying, mode, manualBioOverride]);
 
   // Recompute state + music params whenever bio/mode/intensity changes
   useEffect(() => {
