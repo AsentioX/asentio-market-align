@@ -26,7 +26,7 @@ export function useMyDJ() {
   const [musicParams, setMusicParams] = useState<MusicParams>({ bpm: 70, energy: 20, rhythmDensity: 15, vocalPresence: 10, harmonicTension: 10, intensity: 50 });
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [stats, setStats] = useState<SessionStats>({ startedAt: null, durationSec: 0, avgAlignment: 0, tracksPlayed: 0, likes: 0, skips: 0, alignmentHistory: [] });
-
+  const prevPhysioState = useRef<string>('resting');
   const alignmentSumRef = useRef(0);
   const alignmentCountRef = useRef(0);
   const elapsedRef = useRef(0);
@@ -104,42 +104,6 @@ export function useMyDJ() {
     return () => clearInterval(interval);
   }, [isPlaying, mode, manualBioOverride]);
 
-  // Recompute state + music params whenever bio/mode/intensity changes
-  useEffect(() => {
-    const newState = computeState(bio, mode);
-    setState(newState);
-    const newParams = computeMusicParams(newState, bio, mode, intensity);
-    setMusicParams(newParams);
-
-    if (isPlaying) {
-      audioEngine.current.setParams(newParams);
-    }
-
-    if (isPlaying) {
-      alignmentSumRef.current += newState.alignment;
-      alignmentCountRef.current += 1;
-      setStats(s => ({
-        ...s,
-        avgAlignment: alignmentSumRef.current / alignmentCountRef.current,
-        alignmentHistory: [...s.alignmentHistory.slice(-59), { t: Date.now(), v: newState.alignment }],
-      }));
-    }
-  }, [bio, mode, intensity, isPlaying]);
-
-  // Elapsed time ticker
-  useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      elapsedRef.current += 1;
-      setNowPlaying(np => {
-        if (!np) return null;
-        return { ...np, elapsed: elapsedRef.current };
-      });
-      setStats(s => ({ ...s, durationSec: s.durationSec + 1 }));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying]);
-
   const playTrack = useCallback((params: MusicParams, currentMode: UserMode) => {
     const track = selectTrack(params, currentMode);
     elapsedRef.current = 0;
@@ -154,6 +118,45 @@ export function useMyDJ() {
     });
     audioEngine.current.loadAndPlay(track.url);
   }, []);
+
+  // Recompute state + music params whenever bio/mode/intensity changes
+  // When physiological state changes, crossfade to a matching track
+  useEffect(() => {
+    const newState = computeState(bio, mode);
+    setState(newState);
+    const newParams = computeMusicParams(newState, bio, mode, intensity);
+    setMusicParams(newParams);
+
+    if (isPlaying) {
+      if (newState.current !== prevPhysioState.current) {
+        prevPhysioState.current = newState.current;
+        playTrack(newParams, mode);
+        setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+      }
+
+      alignmentSumRef.current += newState.alignment;
+      alignmentCountRef.current += 1;
+      setStats(s => ({
+        ...s,
+        avgAlignment: alignmentSumRef.current / alignmentCountRef.current,
+        alignmentHistory: [...s.alignmentHistory.slice(-59), { t: Date.now(), v: newState.alignment }],
+      }));
+    }
+  }, [bio, mode, intensity, isPlaying, playTrack]);
+
+  // Elapsed time ticker
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      elapsedRef.current += 1;
+      setNowPlaying(np => {
+        if (!np) return null;
+        return { ...np, elapsed: elapsedRef.current };
+      });
+      setStats(s => ({ ...s, durationSec: s.durationSec + 1 }));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
 
   const startSession = useCallback(() => {
     alignmentSumRef.current = 0;
