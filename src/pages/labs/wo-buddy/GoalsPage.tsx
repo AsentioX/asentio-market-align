@@ -310,6 +310,10 @@ const GoalsPage = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">Goals</h2>
           <div className="flex items-center gap-2">
+            <button onClick={() => setShowLibrary(true)}
+              className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60">
+              <BookOpen className="w-4 h-4" />
+            </button>
             <button onClick={() => setShowTree(!showTree)}
               className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${showTree ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-white/40'}`}>
               <TreePine className="w-4 h-4" />
