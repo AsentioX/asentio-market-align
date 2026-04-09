@@ -61,7 +61,7 @@ const ProgressAnalytics = () => {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-bold text-white">Progress Analytics</h2>
+      
 
       {/* Consistency streak */}
       <div className="bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10">
