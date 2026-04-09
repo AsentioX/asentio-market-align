@@ -581,46 +581,47 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
         )}
       </div>
 
-      {/* ═══ ACTIVE INTENT ═══ */}
-      <div className="px-6 pb-4">
-        {activeIntent ? (
-          <button
-            onClick={onChangeIntent}
-            className="w-full flex items-center gap-3 p-3.5 rounded-2xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-all group"
-          >
-            {/* Gradient dot */}
-            <div
-              className="w-8 h-8 rounded-xl shrink-0"
-              style={{
-                background: `linear-gradient(135deg, ${activeIntent.primary.gradient.from}, ${activeIntent.secondary?.gradient.to || activeIntent.primary.gradient.to})`,
-              }}
-            />
-            <div className="flex-1 text-left min-w-0">
-              <p className="text-sm text-white/80 font-medium truncate">
-                {activeIntent.secondary
-                  ? getBlendLabel(activeIntent.primary.id, activeIntent.secondary.id)
-                  : activeIntent.primary.label}
-              </p>
-              <p className="text-[10px] text-white/30 truncate">
-                {activeIntent.secondary
-                  ? `${activeIntent.primary.label} + ${activeIntent.secondary.label}`
-                  : activeIntent.primary.descriptor}
-              </p>
-            </div>
-            <div className="flex items-center gap-1 text-white/20 group-hover:text-white/40 transition-colors shrink-0">
-              <span className="text-[10px] uppercase tracking-wider">Change</span>
-              <Compass className="w-3.5 h-3.5" />
-            </div>
-          </button>
-        ) : (
-          <button
-            onClick={onChangeIntent}
-            className="w-full flex items-center justify-center gap-2 p-3.5 rounded-2xl border border-dashed border-white/[0.08] text-white/30 hover:text-white/50 hover:bg-white/[0.03] transition-all"
-          >
-            <Compass className="w-4 h-4" />
-            <span className="text-[11px]">Set your intent</span>
-          </button>
-        )}
+      {/* ═══ ACTIVE INTENT — FIXED BOTTOM BAR ═══ */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a10]/95 backdrop-blur-2xl border-t border-white/[0.03]">
+        <div className="max-w-lg mx-auto px-4 py-3">
+          {activeIntent ? (
+            <button
+              onClick={onChangeIntent}
+              className="w-full flex items-center gap-3 p-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06] transition-all group active:scale-[0.98]"
+            >
+              <div
+                className="w-9 h-9 rounded-xl shrink-0"
+                style={{
+                  background: `linear-gradient(135deg, ${activeIntent.primary.gradient.from}, ${activeIntent.secondary?.gradient.to || activeIntent.primary.gradient.to})`,
+                }}
+              />
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sm text-white/80 font-medium truncate">
+                  {activeIntent.secondary
+                    ? getBlendLabel(activeIntent.primary.id, activeIntent.secondary.id)
+                    : activeIntent.primary.label}
+                </p>
+                <p className="text-[10px] text-white/30 truncate">
+                  {activeIntent.secondary
+                    ? `${activeIntent.primary.label} + ${activeIntent.secondary.label}`
+                    : activeIntent.primary.descriptor}
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-white/20 group-hover:text-white/40 transition-colors shrink-0">
+                <span className="text-[10px] uppercase tracking-wider">Change</span>
+                <Compass className="w-3.5 h-3.5" />
+              </div>
+            </button>
+          ) : (
+            <button
+              onClick={onChangeIntent}
+              className="w-full flex items-center justify-center gap-2 p-3.5 rounded-2xl border border-dashed border-white/[0.08] text-white/30 hover:text-white/50 hover:bg-white/[0.03] transition-all active:scale-[0.98]"
+            >
+              <Compass className="w-4 h-4" />
+              <span className="text-[11px]">Set your intent</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ═══ BIO SIMULATOR (dev/demo) ═══ */}
