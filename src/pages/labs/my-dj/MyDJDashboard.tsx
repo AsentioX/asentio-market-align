@@ -225,17 +225,16 @@ const BioPulse = ({ label, value, unit, isElevated }: { label: string; value: nu
 );
 
 // ─── Main Dashboard ──────────────────────────────────
-type DJState = ReturnType<typeof useMyDJ>;
+export type DJStateProps = ReturnType<typeof useMyDJ>;
 
-const MyDJDashboard = ({ djState }: { djState?: DJState }) => {
-  const internalDJ = djState ? null : useMyDJ(); // eslint-disable-line react-hooks/rules-of-hooks
+const MyDJDashboard = ({ djState }: { djState: DJStateProps }) => {
   const {
     mode, setMode, intensity, setIntensity,
     volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, dislike, timeOfDay,
-  } = djState || internalDJ!;
+  } = djState;
 
   const [showInfluence, setShowInfluence] = useState(false);
   const [showBioSliders, setShowBioSliders] = useState(false);
