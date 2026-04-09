@@ -9,6 +9,7 @@ import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals'
 import {
   GOAL_CATEGORIES, METRICS, PERFORMANCE_DRIVERS, GOAL_TEMPLATES,
   getGoalStatusColor, getCategoryConfig, generateInsights,
+  generateTrainingPhases, getCurrentPhaseIndex,
 } from './goalMappings';
 import { generatePlanFromGoals, getTodayIndex, DAY_SHORT, type PlanDay } from './planEngine';
 import { supabase } from '@/integrations/supabase/client';
