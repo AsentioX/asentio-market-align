@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play, Plus, X, Loader2, Compass } from 'lucide-react';
+import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play, Plus, X, Loader2, Compass, Radio, Disc } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode, PhysioState } from './stateEngine';
