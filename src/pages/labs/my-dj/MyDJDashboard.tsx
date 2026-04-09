@@ -231,7 +231,7 @@ const MyDJDashboard = () => {
     volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
-    stats, skip, like, timeOfDay,
+    stats, skip, like, dislike, timeOfDay,
   } = useMyDJ();
 
   const [showInfluence, setShowInfluence] = useState(false);
