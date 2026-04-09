@@ -26,7 +26,7 @@ export function useMyDJ() {
   const [musicParams, setMusicParams] = useState<MusicParams>({ bpm: 70, energy: 20, rhythmDensity: 15, vocalPresence: 10, harmonicTension: 10, intensity: 50 });
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [stats, setStats] = useState<SessionStats>({ startedAt: null, durationSec: 0, avgAlignment: 0, tracksPlayed: 0, likes: 0, skips: 0, alignmentHistory: [] });
-
+  const prevPhysioState = useRef<string>('resting');
   const alignmentSumRef = useRef(0);
   const alignmentCountRef = useRef(0);
   const elapsedRef = useRef(0);
