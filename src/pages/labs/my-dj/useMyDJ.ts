@@ -104,6 +104,21 @@ export function useMyDJ() {
     return () => clearInterval(interval);
   }, [isPlaying, mode, manualBioOverride]);
 
+  const playTrack = useCallback((params: MusicParams, currentMode: UserMode) => {
+    const track = selectTrack(params, currentMode);
+    elapsedRef.current = 0;
+    setNowPlaying({
+      title: track.title,
+      artist: track.artist,
+      genre: track.genre,
+      duration: track.duration,
+      elapsed: 0,
+      params,
+      url: track.url,
+    });
+    audioEngine.current.loadAndPlay(track.url);
+  }, []);
+
   // Recompute state + music params whenever bio/mode/intensity changes
   // When physiological state changes, crossfade to a matching track
   useEffect(() => {
@@ -113,7 +128,6 @@ export function useMyDJ() {
     setMusicParams(newParams);
 
     if (isPlaying) {
-      // If the physiological state changed, pick a new track and crossfade
       if (newState.current !== prevPhysioState.current) {
         prevPhysioState.current = newState.current;
         playTrack(newParams, mode);
@@ -143,21 +157,6 @@ export function useMyDJ() {
     }, 1000);
     return () => clearInterval(interval);
   }, [isPlaying]);
-
-  const playTrack = useCallback((params: MusicParams, currentMode: UserMode) => {
-    const track = selectTrack(params, currentMode);
-    elapsedRef.current = 0;
-    setNowPlaying({
-      title: track.title,
-      artist: track.artist,
-      genre: track.genre,
-      duration: track.duration,
-      elapsed: 0,
-      params,
-      url: track.url,
-    });
-    audioEngine.current.loadAndPlay(track.url);
-  }, []);
 
   const startSession = useCallback(() => {
     alignmentSumRef.current = 0;
