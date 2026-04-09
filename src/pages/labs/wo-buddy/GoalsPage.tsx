@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Plus, Target, ChevronDown, ChevronUp, Trash2, TrendingUp, Sparkles, TreePine, CalendarDays, Dumbbell, Wind, Flame, RotateCcw, ListChecks, ArrowRight, BookOpen, CalendarIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -15,7 +16,7 @@ import { generatePlanFromGoals, getTodayIndex, DAY_SHORT, type PlanDay } from '.
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-type GoalsView = 'goals' | 'training' | 'plan' | 'library';
+type GoalsView = 'goals' | 'training' | 'plan';
 
 const WORKOUT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; color: string; bg: string }> = {
   strength: { icon: <Dumbbell className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-500/15' },
@@ -209,6 +210,7 @@ const GoalsPage = () => {
   const [view, setView] = useState<GoalsView>('training');
   const [showCreate, setShowCreate] = useState(false);
   const [showTree, setShowTree] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
@@ -299,7 +301,7 @@ const GoalsPage = () => {
     );
   }
 
-  const planView = view === 'training' ? 'training' : view === 'library' ? 'library' : 'plan';
+  const planView = view === 'training' ? 'training' : 'plan';
 
   return (
     <div className="space-y-5">
@@ -308,6 +310,10 @@ const GoalsPage = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">Goals</h2>
           <div className="flex items-center gap-2">
+            <button onClick={() => setShowLibrary(true)}
+              className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60">
+              <BookOpen className="w-4 h-4" />
+            </button>
             <button onClick={() => setShowTree(!showTree)}
               className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${showTree ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-white/40'}`}>
               <TreePine className="w-4 h-4" />
@@ -574,7 +580,6 @@ const GoalsPage = () => {
           {([
             { id: 'training' as const, label: 'Training Plan', icon: <ListChecks className="w-3.5 h-3.5" /> },
             { id: 'plan' as const, label: 'Weekly Plan', icon: <CalendarDays className="w-3.5 h-3.5" /> },
-            { id: 'library' as const, label: 'Library', icon: <BookOpen className="w-3.5 h-3.5" /> },
           ]).map(tab => (
             <button key={tab.id}
               onClick={() => setView(tab.id)}
@@ -595,9 +600,7 @@ const GoalsPage = () => {
 
         {/* Content */}
         <div className="p-4">
-          {planView === 'library' ? (
-            <ExerciseLibraryPage onBack={() => setView('training')} />
-          ) : planView === 'training' ? (
+          {planView === 'training' ? (
             <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
           ) : (
             <div className="space-y-5">
@@ -711,6 +714,19 @@ const GoalsPage = () => {
           )}
         </div>
       </div>
+
+      {/* Exercise Library Dialog */}
+      <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-[#0a0a0a] border-white/[0.08]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <BookOpen className="w-5 h-5 text-emerald-400" />
+              Exercise Library
+            </DialogTitle>
+          </DialogHeader>
+          <ExerciseLibraryPage onBack={() => setShowLibrary(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
