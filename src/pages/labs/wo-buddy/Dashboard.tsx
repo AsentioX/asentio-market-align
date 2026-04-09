@@ -268,9 +268,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-
-      <ProgressAnalytics />
-
       {/* This Week + Daily Goal combined */}
       <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
         <div className="flex items-center gap-2 mb-3">
@@ -279,7 +276,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
         <div className="flex items-end gap-2 mb-4" style={{ height: 80 }}>
           {(() => {
-            const dailyMins = [52, 38, 0, 45, 72, 55, 0]; // Mon–Sun minutes
+            const dailyMins = [52, 38, 0, 45, 72, 55, 0];
             const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             const todayIdx = mockUser.weeklyProgress;
             const maxMin = Math.max(...dailyMins, 1);
@@ -327,6 +324,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
         <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
       </div>
+
+      <ProgressAnalytics />
 
       <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl border border-white/[0.08] overflow-hidden">
         {/* Period tabs */}
