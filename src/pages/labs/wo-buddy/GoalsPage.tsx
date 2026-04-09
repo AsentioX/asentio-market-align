@@ -210,6 +210,7 @@ const GoalsPage = () => {
   const [view, setView] = useState<GoalsView>('training');
   const [showCreate, setShowCreate] = useState(false);
   const [showTree, setShowTree] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
