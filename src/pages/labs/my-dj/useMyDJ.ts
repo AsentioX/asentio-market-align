@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { UserMode, BioInputs, computeState, StateSnapshot, getTimeOfDay } from './stateEngine';
 import { MusicParams, NowPlaying, computeMusicParams, selectTrack } from './musicEngine';
 import { getAudioEngine } from './audioEngine';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface SessionStats {
   startedAt: Date | null;
