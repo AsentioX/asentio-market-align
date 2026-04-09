@@ -450,12 +450,37 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
               <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
             </div>
 
-            {/* Now playing — minimal */}
+            {/* Now playing + source toggle */}
             {nowPlaying && (
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-white/80 truncate">{nowPlaying.title}</p>
                   <p className="text-[11px] text-white/30 truncate">{nowPlaying.artist}</p>
+                </div>
+                {/* Inline source toggle */}
+                <div className="flex items-center gap-0.5 shrink-0 bg-white/[0.04] rounded-lg p-0.5">
+                  <button
+                    onClick={() => setMusicSource('recorded')}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
+                      musicSource === 'recorded'
+                        ? 'bg-white/[0.1] text-white/70'
+                        : 'text-white/25 hover:text-white/40'
+                    }`}
+                    title="Recorded tracks"
+                  >
+                    <Disc className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => setMusicSource('generative')}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
+                      musicSource === 'generative'
+                        ? 'bg-white/[0.1] text-white/70'
+                        : 'text-white/25 hover:text-white/40'
+                    }`}
+                    title="Generative soundscape"
+                  >
+                    <Radio className="w-3 h-3" />
+                  </button>
                 </div>
               </div>
             )}
