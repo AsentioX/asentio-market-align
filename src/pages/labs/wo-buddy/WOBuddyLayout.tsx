@@ -17,7 +17,7 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
   { id: 'workout', label: 'Workout', icon: <Dumbbell className="w-5 h-5" /> },
   { id: 'competitions', label: 'Compete', icon: <Trophy className="w-5 h-5" /> },
-  { id: 'progress', label: 'Progress', icon: <TrendingUp className="w-5 h-5" /> },
+  { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
 
 const WOBuddyLayout = () => {
