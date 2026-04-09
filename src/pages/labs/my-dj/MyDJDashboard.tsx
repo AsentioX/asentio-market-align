@@ -307,7 +307,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
   const influenceLabel = intensity < 33 ? 'Assistive' : intensity < 66 ? 'Balanced' : 'Transformative';
 
   return (
-    <div className="space-y-0 -mx-4 -mt-5">
+    <div className="space-y-0 -mx-4 -mt-5 pb-24">
       {/* ═══ IMMERSIVE STATE HERO ═══ */}
       <div
         className="relative px-6 pt-8 pb-6 overflow-hidden transition-colors duration-[2000ms]"
