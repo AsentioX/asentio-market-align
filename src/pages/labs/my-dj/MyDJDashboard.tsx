@@ -291,7 +291,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
     );
   };
 
-  const getLocIcon = (loc: DJLocation) => LOCATION_ICON_MAP[loc.location_type] || '📍';
+  const getLocIcon = (loc: DJLocation) => LOCATION_NAME_ICON_MAP[loc.name] || LOCATION_ICON_MAP[loc.location_type] || '📍';
 
   const stateColor = STATE_GRADIENTS[state.current];
   const narrative = STATE_NARRATIVES[state.current];
