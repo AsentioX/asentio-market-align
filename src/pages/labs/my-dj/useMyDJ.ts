@@ -4,7 +4,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { UserMode, BioInputs, computeState, StateSnapshot, getTimeOfDay } from './stateEngine';
 import { MusicParams, NowPlaying, computeMusicParams, selectTrack } from './musicEngine';
 import { getAudioEngine } from './audioEngine';
+import { getGenerativeEngine } from './generativeEngine';
 import { supabase } from '@/integrations/supabase/client';
+
+export type MusicSource = 'recorded' | 'generative';
 
 export interface SessionStats {
   startedAt: Date | null;
@@ -21,6 +24,7 @@ export function useMyDJ() {
   const [intensity, setIntensity] = useState(50);
   const [volume, setVolume] = useState(0.5);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [musicSource, setMusicSourceState] = useState<MusicSource>('recorded');
   const [bio, setBioInternal] = useState<BioInputs>({ heartRate: 72, hrv: 55, cadence: 0, sleepScore: 78, stress: 30 });
   const [manualBioOverride, setManualBioOverride] = useState(false);
   const [state, setState] = useState<StateSnapshot>({ current: 'resting', target: 'calm', alignment: 0.5, strategy: 'counterbalance' });
@@ -32,22 +36,74 @@ export function useMyDJ() {
   const alignmentCountRef = useRef(0);
   const elapsedRef = useRef(0);
   const audioEngine = useRef(getAudioEngine());
+  const generativeEngine = useRef(getGenerativeEngine());
   const modeRef = useRef(mode);
+  const musicSourceRef = useRef(musicSource);
 
-  // Keep mode ref in sync
-  useEffect(() => {
-    modeRef.current = mode;
-  }, [mode]);
+  // Keep refs in sync
+  useEffect(() => { modeRef.current = mode; }, [mode]);
+  useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
 
-  // Sync volume to audio engine
+  // Sync volume to both engines
   useEffect(() => {
     audioEngine.current.setVolume(volume);
+    generativeEngine.current.setVolume(volume);
   }, [volume]);
 
-  // Set up track end callback
+  // Switch music source (stop current, start new if playing)
+  const setMusicSource = useCallback((source: MusicSource) => {
+    const wasPlaying = isPlaying;
+    if (wasPlaying) {
+      if (musicSourceRef.current === 'recorded') {
+        audioEngine.current.stop();
+      } else {
+        generativeEngine.current.stop();
+      }
+    }
+    setMusicSourceState(source);
+    musicSourceRef.current = source;
+
+    if (wasPlaying) {
+      if (source === 'generative') {
+        generativeEngine.current.setParams(musicParams);
+        generativeEngine.current.start();
+        setNowPlaying({
+          title: 'Generative Soundscape',
+          artist: 'My DJ Engine',
+          genre: 'Adaptive',
+          duration: 0,
+          elapsed: 0,
+          params: musicParams,
+          url: '',
+        });
+      } else {
+        const params = computeMusicParams(
+          computeState(bio, modeRef.current),
+          bio,
+          modeRef.current,
+          intensity
+        );
+        const track = selectTrack(params, modeRef.current);
+        elapsedRef.current = 0;
+        setNowPlaying({
+          title: track.title,
+          artist: track.artist,
+          genre: track.genre,
+          duration: track.duration,
+          elapsed: 0,
+          params,
+          url: track.url,
+        });
+        audioEngine.current.start();
+        audioEngine.current.loadAndPlay(track.url);
+      }
+    }
+  }, [isPlaying, musicParams, bio, intensity]);
+
+  // Set up track end callback (recorded only)
   useEffect(() => {
     audioEngine.current.setOnTrackEnd(() => {
-      // Auto-advance to next track
+      if (musicSourceRef.current !== 'recorded') return;
       const params = computeMusicParams(
         computeState(bio, modeRef.current),
         bio,
@@ -106,22 +162,34 @@ export function useMyDJ() {
   }, [isPlaying, mode, manualBioOverride]);
 
   const playTrack = useCallback((params: MusicParams, currentMode: UserMode) => {
-    const track = selectTrack(params, currentMode);
-    elapsedRef.current = 0;
-    setNowPlaying({
-      title: track.title,
-      artist: track.artist,
-      genre: track.genre,
-      duration: track.duration,
-      elapsed: 0,
-      params,
-      url: track.url,
-    });
-    audioEngine.current.loadAndPlay(track.url);
+    if (musicSourceRef.current === 'generative') {
+      generativeEngine.current.setParams(params);
+      setNowPlaying({
+        title: 'Generative Soundscape',
+        artist: 'My DJ Engine',
+        genre: 'Adaptive',
+        duration: 0,
+        elapsed: elapsedRef.current,
+        params,
+        url: '',
+      });
+    } else {
+      const track = selectTrack(params, currentMode);
+      elapsedRef.current = 0;
+      setNowPlaying({
+        title: track.title,
+        artist: track.artist,
+        genre: track.genre,
+        duration: track.duration,
+        elapsed: 0,
+        params,
+        url: track.url,
+      });
+      audioEngine.current.loadAndPlay(track.url);
+    }
   }, []);
 
   // Recompute state + music params whenever bio/mode/intensity changes
-  // When physiological state changes, crossfade to a matching track
   useEffect(() => {
     const newState = computeState(bio, mode);
     setState(newState);
@@ -129,10 +197,18 @@ export function useMyDJ() {
     setMusicParams(newParams);
 
     if (isPlaying) {
+      if (musicSource === 'generative') {
+        // Always update generative engine params smoothly
+        generativeEngine.current.setParams(newParams);
+        setNowPlaying(np => np ? { ...np, params: newParams } : null);
+      }
+
       if (newState.current !== prevPhysioState.current) {
         prevPhysioState.current = newState.current;
-        playTrack(newParams, mode);
-        setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+        if (musicSource === 'recorded') {
+          playTrack(newParams, mode);
+          setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+        }
       }
 
       alignmentSumRef.current += newState.alignment;
@@ -143,7 +219,7 @@ export function useMyDJ() {
         alignmentHistory: [...s.alignmentHistory.slice(-59), { t: Date.now(), v: newState.alignment }],
       }));
     }
-  }, [bio, mode, intensity, isPlaying, playTrack]);
+  }, [bio, mode, intensity, isPlaying, musicSource, playTrack]);
 
   // Elapsed time ticker
   useEffect(() => {
@@ -164,22 +240,42 @@ export function useMyDJ() {
     alignmentCountRef.current = 0;
     elapsedRef.current = 0;
     setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 1, likes: 0, skips: 0, alignmentHistory: [] });
-    audioEngine.current.setParams(musicParams);
-    audioEngine.current.start();
-    playTrack(musicParams, mode);
+
+    if (musicSourceRef.current === 'generative') {
+      generativeEngine.current.setParams(musicParams);
+      generativeEngine.current.setVolume(volume);
+      generativeEngine.current.start();
+      setNowPlaying({
+        title: 'Generative Soundscape',
+        artist: 'My DJ Engine',
+        genre: 'Adaptive',
+        duration: 0,
+        elapsed: 0,
+        params: musicParams,
+        url: '',
+      });
+    } else {
+      audioEngine.current.setParams(musicParams);
+      audioEngine.current.start();
+      playTrack(musicParams, mode);
+    }
     setIsPlaying(true);
-  }, [musicParams, mode, playTrack]);
+  }, [musicParams, mode, volume, playTrack]);
 
   const stopSession = useCallback(() => {
     setIsPlaying(false);
     setNowPlaying(null);
     elapsedRef.current = 0;
     audioEngine.current.stop();
+    generativeEngine.current.stop();
   }, []);
 
   const skip = useCallback(() => {
     setStats(s => ({ ...s, skips: s.skips + 1, tracksPlayed: s.tracksPlayed + 1 }));
-    playTrack(musicParams, mode);
+    if (musicSourceRef.current === 'recorded') {
+      playTrack(musicParams, mode);
+    }
+    // For generative, skip doesn't apply — params update continuously
   }, [musicParams, mode, playTrack]);
 
   const submitFeedback = useCallback(async (feedbackType: 'thumbs_up' | 'thumbs_down') => {
@@ -189,7 +285,7 @@ export function useMyDJ() {
         track_title: nowPlaying.title,
         track_artist: nowPlaying.artist,
         track_genre: nowPlaying.genre,
-        track_url: nowPlaying.url,
+        track_url: nowPlaying.url || 'generative',
         music_bpm: musicParams.bpm,
         music_energy: musicParams.energy,
         music_rhythm_density: musicParams.rhythmDensity,
@@ -220,13 +316,16 @@ export function useMyDJ() {
   const dislike = useCallback(() => {
     setStats(s => ({ ...s, skips: s.skips + 1, tracksPlayed: s.tracksPlayed + 1 }));
     submitFeedback('thumbs_down');
-    playTrack(musicParams, mode); // skip to next track on dislike
+    if (musicSourceRef.current === 'recorded') {
+      playTrack(musicParams, mode);
+    }
   }, [submitFeedback, musicParams, mode, playTrack]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       audioEngine.current.stop();
+      generativeEngine.current.dispose();
     };
   }, []);
 
@@ -236,5 +335,6 @@ export function useMyDJ() {
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, dislike, timeOfDay: getTimeOfDay(),
+    musicSource, setMusicSource,
   };
 }

@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play, Plus, X, Loader2, Compass } from 'lucide-react';
+import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play, Plus, X, Loader2, Compass, Radio, Disc } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode, PhysioState } from './stateEngine';
+import { MusicSource } from './useMyDJ';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocations, useCreateLocation, DJLocation } from '@/hooks/useMyDJScenes';
 import { IntentDef, getBlendLabel } from './intentData';
@@ -248,6 +249,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, dislike, timeOfDay,
+    musicSource, setMusicSource,
   } = djState;
 
   const [showInfluence, setShowInfluence] = useState(false);
@@ -531,6 +533,40 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
           </div>
         </div>
       )}
+
+      {/* ═══ MUSIC SOURCE TOGGLE ═══ */}
+      <div className="px-6 pb-4">
+        <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Music Source</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setMusicSource('recorded')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border transition-all text-xs ${
+              musicSource === 'recorded'
+                ? 'bg-white/[0.08] border-white/[0.15] text-white/80'
+                : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05]'
+            }`}
+          >
+            <Disc className="w-3.5 h-3.5" />
+            Recorded
+          </button>
+          <button
+            onClick={() => setMusicSource('generative')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border transition-all text-xs ${
+              musicSource === 'generative'
+                ? 'bg-white/[0.08] border-white/[0.15] text-white/80'
+                : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05]'
+            }`}
+          >
+            <Radio className="w-3.5 h-3.5" />
+            Generative
+          </button>
+        </div>
+        {musicSource === 'generative' && (
+          <p className="text-[9px] text-white/20 mt-1.5 text-center">
+            Real-time adaptive soundscape · Web Audio API
+          </p>
+        )}
+      </div>
 
       {/* ═══ SYSTEM INFLUENCE ═══ */}
       <div className="px-6 pb-4">
