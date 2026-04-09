@@ -312,20 +312,19 @@ const MyDJDashboard = () => {
           }}
         />
 
-        {/* Location Moment */}
-        <div className={`relative z-10 flex items-center gap-2 mb-8 transition-all duration-500 ${locationPulse ? 'scale-105' : 'scale-100'}`}>
+        {/* Active rooms indicator */}
+        <div className="relative z-10 flex items-center gap-2 mb-8">
           <div
-            className="w-1.5 h-1.5 rounded-full transition-all duration-500"
-            style={{
-              backgroundColor: stateColor.from,
-              boxShadow: locationPulse ? `0 0 12px ${stateColor.from}` : `0 0 4px ${stateColor.from}60`,
-            }}
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: stateColor.from, boxShadow: `0 0 4px ${stateColor.from}60` }}
           />
           <span className="text-[11px] text-white/40">
-            {location.emoji} {location.name}
+            {rooms.length === 0
+              ? 'No rooms tagged'
+              : activeRoomIds.size === rooms.length
+                ? `All rooms · ${rooms.length}`
+                : `${activeRoomIds.size} of ${rooms.length} rooms`}
           </span>
-          <span className="text-white/10">·</span>
-          <span className="text-[11px] text-white/25">{location.scene}</span>
         </div>
 
         {/* Central Breathing Orb */}
