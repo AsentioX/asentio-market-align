@@ -1,9 +1,219 @@
-import { useState } from 'react';
-import { Heart, Activity, Brain, Wind, Zap, SkipForward, ThumbsUp, Play, Pause, ChevronDown, Music2, MapPin, Volume2 } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
-import { MODE_META, PHYSIO_LABELS, UserMode, BioInputs } from './stateEngine';
+import { MODE_META, PHYSIO_LABELS, UserMode, PhysioState } from './stateEngine';
 
+// ─── State-driven copy & color ───────────────────────
+const STATE_NARRATIVES: Record<PhysioState, { verb: string; description: string }> = {
+  calm: { verb: 'Sustaining calm', description: 'Your body is at ease. Maintaining this state.' },
+  stressed: { verb: 'Lowering your stress', description: 'Elevated tension detected. Applying counterbalance.' },
+  focused: { verb: 'Stabilizing your focus', description: 'Deep concentration active. Reinforcing clarity.' },
+  fatigued: { verb: 'Gently restoring', description: 'Low energy detected. Building restorative soundscape.' },
+  energized: { verb: 'Channeling your energy', description: 'High vitality detected. Amplifying your drive.' },
+  exercising: { verb: 'Matching your rhythm', description: 'Active movement detected. Syncing to your cadence.' },
+  resting: { verb: 'Deepening your rest', description: 'Recovery state detected. Creating space to recover.' },
+};
+
+const STATE_GRADIENTS: Record<PhysioState, { from: string; to: string; glow: string }> = {
+  calm: { from: '#0ea5e9', to: '#06b6d4', glow: 'rgba(14,165,233,0.15)' },
+  stressed: { from: '#f97316', to: '#ef4444', glow: 'rgba(249,115,22,0.15)' },
+  focused: { from: '#8b5cf6', to: '#6366f1', glow: 'rgba(139,92,246,0.15)' },
+  fatigued: { from: '#64748b', to: '#475569', glow: 'rgba(100,116,139,0.15)' },
+  energized: { from: '#f59e0b', to: '#ef4444', glow: 'rgba(245,158,11,0.15)' },
+  exercising: { from: '#10b981', to: '#14b8a6', glow: 'rgba(16,185,129,0.15)' },
+  resting: { from: '#818cf8', to: '#6366f1', glow: 'rgba(129,140,248,0.15)' },
+};
+
+const ADAPTATION_MESSAGES: Record<UserMode, (state: PhysioState) => string[]> = {
+  calm: (s) => {
+    if (s === 'stressed') return ['Stress elevated', 'Slowing tempo · softening tones', 'Guiding toward calm'];
+    if (s === 'energized') return ['Energy high', 'Reducing rhythmic density', 'Easing into stillness'];
+    return ['State aligned', 'Maintaining ambient balance', 'Calm sustained'];
+  },
+  focus: (s) => {
+    if (s === 'stressed') return ['Tension detected', 'Applying structured rhythm', 'Redirecting to focus'];
+    if (s === 'fatigued') return ['Fatigue detected', 'Increasing clarity tones', 'Rebuilding concentration'];
+    return ['Focus active', 'Reinforcing neural patterns', 'Sustained deep work'];
+  },
+  energize: (s) => {
+    if (s === 'calm') return ['Low activation', 'Building energy gradually', 'Warming up rhythm'];
+    if (s === 'fatigued') return ['Fatigue detected', 'Injecting rhythmic drive', 'Elevating state'];
+    return ['Energy flowing', 'Amplifying drive', 'Peak activation'];
+  },
+  endurance: (s) => {
+    if (s === 'exercising') return ['Movement detected', 'Syncing BPM to cadence', 'Sustaining rhythm'];
+    return ['Preparing pace', 'Matching target tempo', 'Building endurance soundscape'];
+  },
+  recovery: (s) => {
+    if (s === 'stressed') return ['Post-activity stress', 'Applying deep tones', 'Initiating cooldown'];
+    return ['Recovery active', 'Deepening relaxation', 'Restoring baseline'];
+  },
+};
+
+const LOCATIONS = [
+  { name: 'Home · Kitchen', emoji: '🏠', scene: 'Evening wind-down' },
+  { name: 'Office · Desk', emoji: '🏢', scene: 'Deep work session' },
+  { name: 'Gym · Floor', emoji: '🏋️', scene: 'High intensity' },
+];
+
+// ─── Breathing Orb ───────────────────────────────────
+const BreathingOrb = ({ color, heartRate, alignment }: { color: { from: string; to: string; glow: string }; heartRate: number; alignment: number }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>(0);
+  const phaseRef = useRef(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const size = 280;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.scale(dpr, dpr);
+
+    const breathRate = Math.max(0.3, Math.min(2.5, heartRate / 60));
+    let lastTime = 0;
+
+    const draw = (time: number) => {
+      const dt = lastTime ? (time - lastTime) / 1000 : 0.016;
+      lastTime = time;
+      phaseRef.current += dt * breathRate * Math.PI;
+
+      ctx.clearRect(0, 0, size, size);
+      const cx = size / 2;
+      const cy = size / 2;
+
+      const breathScale = 0.85 + Math.sin(phaseRef.current) * 0.15;
+      const baseRadius = 70 * breathScale;
+
+      // Outer glow rings
+      for (let i = 4; i >= 0; i--) {
+        const r = baseRadius + i * 18 + Math.sin(phaseRef.current + i * 0.5) * 4;
+        const alpha = (0.03 + alignment * 0.03) * (1 - i * 0.18);
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        const grad = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r);
+        grad.addColorStop(0, `${color.from}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`);
+        grad.addColorStop(1, `${color.to}00`);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      // Core orb
+      const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseRadius);
+      coreGrad.addColorStop(0, color.from + '90');
+      coreGrad.addColorStop(0.6, color.to + '50');
+      coreGrad.addColorStop(1, color.to + '00');
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseRadius, 0, Math.PI * 2);
+      ctx.fillStyle = coreGrad;
+      ctx.fill();
+
+      // Inner bright core
+      const innerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseRadius * 0.4);
+      innerGrad.addColorStop(0, '#ffffff30');
+      innerGrad.addColorStop(1, '#ffffff00');
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseRadius * 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = innerGrad;
+      ctx.fill();
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    animRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [color, heartRate, alignment]);
+
+  return <canvas ref={canvasRef} className="w-[280px] h-[280px]" style={{ width: 280, height: 280 }} />;
+};
+
+// ─── Adaptation Loop Visualization ───────────────────
+const AdaptationLoop = ({ messages, color }: { messages: string[]; color: { from: string; to: string } }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % messages.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [messages]);
+
+  return (
+    <div className="space-y-2">
+      {messages.map((msg, i) => {
+        const isActive = i === activeIndex;
+        const isPast = i < activeIndex;
+        return (
+          <div
+            key={i}
+            className="flex items-center gap-3 transition-all duration-700"
+            style={{ opacity: isActive ? 1 : isPast ? 0.35 : 0.2 }}
+          >
+            <div
+              className="w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-700"
+              style={{
+                backgroundColor: isActive ? color.from : 'rgba(255,255,255,0.2)',
+                boxShadow: isActive ? `0 0 8px ${color.from}60` : 'none',
+                transform: isActive ? 'scale(1.5)' : 'scale(1)',
+              }}
+            />
+            <span className={`text-xs transition-all duration-700 ${isActive ? 'text-white/90' : 'text-white/30'}`}>
+              {msg}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ─── State Transition Arc ────────────────────────────
+const StateTransitionArc = ({ from, to, alignment, color }: { from: string; to: string; alignment: number; color: { from: string; to: string } }) => {
+  return (
+    <div className="relative">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[11px] text-white/50">{from}</span>
+        <div className="flex-1 mx-4 relative h-[3px] rounded-full bg-white/[0.06] overflow-hidden">
+          <div
+            className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out"
+            style={{
+              width: `${alignment * 100}%`,
+              background: `linear-gradient(90deg, ${color.from}, ${color.to})`,
+              boxShadow: `0 0 12px ${color.from}40`,
+            }}
+          />
+          {/* Pulse dot at the leading edge */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full transition-all duration-1000"
+            style={{
+              left: `calc(${alignment * 100}% - 4px)`,
+              backgroundColor: color.to,
+              boxShadow: `0 0 8px ${color.to}80`,
+            }}
+          />
+        </div>
+        <span className="text-[11px] text-white/50">{to}</span>
+      </div>
+    </div>
+  );
+};
+
+// ─── Bio Pulse Indicators ────────────────────────────
+const BioPulse = ({ label, value, unit, isElevated }: { label: string; value: number; unit: string; isElevated?: boolean }) => (
+  <div className="flex flex-col items-center gap-0.5">
+    <span className="text-[10px] text-white/30 uppercase tracking-wider">{label}</span>
+    <span className={`text-sm font-medium tabular-nums transition-colors duration-500 ${isElevated ? 'text-amber-400' : 'text-white/70'}`}>
+      {value}<span className="text-[9px] text-white/30 ml-0.5">{unit}</span>
+    </span>
+  </div>
+);
+
+// ─── Main Dashboard ──────────────────────────────────
 const MyDJDashboard = () => {
   const {
     mode, setMode, intensity, setIntensity,
@@ -13,9 +223,30 @@ const MyDJDashboard = () => {
     stats, skip, like, timeOfDay,
   } = useMyDJ();
 
-  const [showModeSelector, setShowModeSelector] = useState(false);
-  const [expandedBio, setExpandedBio] = useState<string | null>(null);
-  const meta = MODE_META[mode];
+  const [showInfluence, setShowInfluence] = useState(false);
+  const [showBioSliders, setShowBioSliders] = useState(false);
+  const [locationIndex] = useState(0);
+  const [locationPulse, setLocationPulse] = useState(false);
+
+  const stateColor = STATE_GRADIENTS[state.current];
+  const narrative = STATE_NARRATIVES[state.current];
+  const adaptMessages = ADAPTATION_MESSAGES[mode](state.current);
+  const location = LOCATIONS[locationIndex];
+
+  // Location change animation
+  useEffect(() => {
+    setLocationPulse(true);
+    const t = setTimeout(() => setLocationPulse(false), 1500);
+    return () => clearTimeout(t);
+  }, [locationIndex]);
+
+  // Auto-start session on mount (ambient behavior)
+  useEffect(() => {
+    if (!isPlaying) {
+      const t = setTimeout(() => startSession(), 800);
+      return () => clearTimeout(t);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
@@ -23,267 +254,288 @@ const MyDJDashboard = () => {
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
-  return (
-    <div className="space-y-5">
-      {/* Mode Selector */}
-      <div className="relative">
-        <button
-          onClick={() => setShowModeSelector(!showModeSelector)}
-          className={`w-full rounded-2xl p-5 bg-gradient-to-br ${meta.color} text-white relative overflow-hidden transition-all`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="text-left">
-              <p className="text-xs font-medium text-white/70 uppercase tracking-wider">Current Mode</p>
-              <h2 className="text-2xl font-bold mt-1">{meta.emoji} {meta.label}</h2>
-              <p className="text-sm text-white/80 mt-1">{meta.description}</p>
-            </div>
-            <ChevronDown className={`w-5 h-5 text-white/60 transition-transform ${showModeSelector ? 'rotate-180' : ''}`} />
-          </div>
-          {/* Time-of-day + active location */}
-          <div className="mt-3 flex items-center gap-3 text-xs text-white/50">
-            <span>
-              {timeOfDay === 'morning' && '☀️ Good morning'}
-              {timeOfDay === 'afternoon' && '🌤️ Good afternoon'}
-              {timeOfDay === 'evening' && '🌆 Good evening'}
-              {timeOfDay === 'night' && '🌙 Good night'}
-            </span>
-            <span className="text-white/20">·</span>
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-emerald-400" />
-              <span className="text-emerald-400/80">Kitchen</span>
-              <span className="text-white/30">· Salsa</span>
-            </span>
-          </div>
-        </button>
+  const influenceLabel = intensity < 33 ? 'Assistive' : intensity < 66 ? 'Balanced' : 'Transformative';
 
-        {showModeSelector && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a2e] border border-white/10 rounded-2xl p-3 z-40 space-y-1.5 shadow-2xl">
-            {(Object.keys(MODE_META) as UserMode[]).map((m) => {
-              const mm = MODE_META[m];
-              return (
-                <button
-                  key={m}
-                  onClick={() => { setMode(m); setShowModeSelector(false); }}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
-                    mode === m ? 'bg-white/10 ring-1 ring-white/20' : 'hover:bg-white/5'
-                  }`}
-                >
-                  <span className="text-xl">{mm.emoji}</span>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-white">{mm.label}</p>
-                    <p className="text-xs text-white/50">{mm.description}</p>
+  return (
+    <div className="space-y-0 -mx-4 -mt-5">
+      {/* ═══ IMMERSIVE STATE HERO ═══ */}
+      <div
+        className="relative px-6 pt-8 pb-6 overflow-hidden transition-colors duration-[2000ms]"
+        style={{ background: `linear-gradient(180deg, ${stateColor.glow} 0%, transparent 100%)` }}
+      >
+        {/* Ambient background layer */}
+        <div
+          className="absolute inset-0 opacity-20 transition-all duration-[3000ms]"
+          style={{
+            background: `radial-gradient(ellipse at 50% 30%, ${stateColor.from}30 0%, transparent 70%)`,
+          }}
+        />
+
+        {/* Location Moment */}
+        <div className={`relative z-10 flex items-center gap-2 mb-8 transition-all duration-500 ${locationPulse ? 'scale-105' : 'scale-100'}`}>
+          <div
+            className="w-1.5 h-1.5 rounded-full transition-all duration-500"
+            style={{
+              backgroundColor: stateColor.from,
+              boxShadow: locationPulse ? `0 0 12px ${stateColor.from}` : `0 0 4px ${stateColor.from}60`,
+            }}
+          />
+          <span className="text-[11px] text-white/40">
+            {location.emoji} {location.name}
+          </span>
+          <span className="text-white/10">·</span>
+          <span className="text-[11px] text-white/25">{location.scene}</span>
+        </div>
+
+        {/* Central Breathing Orb */}
+        <div className="relative z-10 flex justify-center mb-4">
+          <BreathingOrb color={stateColor} heartRate={bio.heartRate} alignment={state.alignment} />
+          {/* State text overlay on orb */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <p
+              className="text-lg font-semibold text-white/90 transition-all duration-1000"
+              style={{ textShadow: `0 0 20px ${stateColor.from}40` }}
+            >
+              {narrative.verb}
+            </p>
+            <p className="text-[11px] text-white/40 mt-1 max-w-[200px] text-center leading-snug">
+              {narrative.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Bio Pulse Strip — ambient, not clinical */}
+        <div className="relative z-10 flex justify-center gap-6">
+          <BioPulse label="Heart" value={bio.heartRate} unit="bpm" isElevated={bio.heartRate > 100} />
+          <BioPulse label="HRV" value={bio.hrv} unit="ms" />
+          <BioPulse label="Stress" value={bio.stress} unit="%" isElevated={bio.stress > 60} />
+          {mode === 'endurance' && <BioPulse label="Cadence" value={bio.cadence} unit="spm" />}
+        </div>
+      </div>
+
+      {/* ═══ LIVE ADAPTATION LOOP ═══ */}
+      <div className="px-6 py-5">
+        <div className="flex items-center gap-2 mb-3">
+          <div
+            className="w-1 h-1 rounded-full animate-pulse"
+            style={{ backgroundColor: stateColor.from }}
+          />
+          <span className="text-[10px] text-white/30 uppercase tracking-widest">Live Adaptation</span>
+        </div>
+        <AdaptationLoop messages={adaptMessages} color={stateColor} />
+      </div>
+
+      {/* ═══ STATE TRANSITION ARC ═══ */}
+      <div className="px-6 pb-4">
+        <StateTransitionArc
+          from={PHYSIO_LABELS[state.current]}
+          to={PHYSIO_LABELS[state.target]}
+          alignment={state.alignment}
+          color={stateColor}
+        />
+      </div>
+
+      {/* ═══ SESSION STATUS ═══ */}
+      {isPlaying && (
+        <div className="px-6 pb-4">
+          <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.04]">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{ backgroundColor: stateColor.from }}
+                />
+                <span className="text-[11px] text-white/40">Adaptive session active</span>
+              </div>
+              <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
+            </div>
+
+            {/* Now playing — minimal */}
+            {nowPlaying && (
+              <div className="flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white/80 truncate">{nowPlaying.title}</p>
+                  <p className="text-[11px] text-white/30 truncate">{nowPlaying.artist}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={like}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
+                  >
+                    <ThumbsUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={skip}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
+                  >
+                    <SkipForward className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Adaptive params — ambient bars */}
+            <div className="mt-4 flex items-end gap-1 h-8">
+              {[
+                { label: 'BPM', value: musicParams.bpm / 200 },
+                { label: 'Energy', value: musicParams.energy / 100 },
+                { label: 'Rhythm', value: musicParams.rhythmDensity / 100 },
+                { label: 'Vocal', value: musicParams.vocalPresence / 100 },
+                { label: 'Tension', value: musicParams.harmonicTension / 100 },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex-1 flex flex-col items-center">
+                  <div className="w-full h-8 rounded-sm bg-white/[0.03] overflow-hidden flex items-end">
+                    <div
+                      className="w-full rounded-sm transition-all duration-1000"
+                      style={{
+                        height: `${Math.max(8, value * 100)}%`,
+                        background: `linear-gradient(to top, ${stateColor.from}60, ${stateColor.to}30)`,
+                      }}
+                    />
                   </div>
-                </button>
-              );
-            })}
+                  <span className="text-[8px] text-white/20 mt-1">{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Volume — ultra minimal */}
+            <div className="mt-3 flex items-center gap-3">
+              <Volume2 className="w-3 h-3 text-white/20 shrink-0" />
+              <Slider
+                value={[Math.round(volume * 100)]}
+                onValueChange={([v]) => setVolume(v / 100)}
+                min={0}
+                max={100}
+                step={5}
+                className="flex-1"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ SESSION NOT ACTIVE — subtle activation ═══ */}
+      {!isPlaying && (
+        <div className="px-6 pb-4">
+          <button
+            onClick={startSession}
+            className="w-full rounded-2xl p-5 border border-white/[0.06] bg-white/[0.02] text-center transition-all hover:bg-white/[0.04] hover:border-white/[0.1] active:scale-[0.98]"
+          >
+            <p className="text-sm font-medium text-white/70">Activate Adaptive Sound</p>
+            <p className="text-[11px] text-white/30 mt-1">The system will begin sensing and adapting</p>
+          </button>
+        </div>
+      )}
+
+      {/* ═══ SYSTEM INFLUENCE ═══ */}
+      <div className="px-6 pb-4">
+        <button
+          onClick={() => setShowInfluence(!showInfluence)}
+          className="w-full flex items-center justify-between py-2"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-white/25 uppercase tracking-widest">System Influence</span>
+            <span className="text-[11px] text-white/40">{influenceLabel}</span>
+          </div>
+          <ChevronUp className={`w-3 h-3 text-white/20 transition-transform ${showInfluence ? '' : 'rotate-180'}`} />
+        </button>
+        {showInfluence && (
+          <div className="pt-2 pb-1">
+            <Slider
+              value={[intensity]}
+              onValueChange={([v]) => setIntensity(v)}
+              min={0}
+              max={100}
+              step={5}
+              className="w-full"
+            />
+            <div className="flex justify-between mt-1.5">
+              <span className="text-[9px] text-white/20">Assistive</span>
+              <span className="text-[9px] text-white/20">Transformative</span>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Live Biometrics — tap to adjust */}
-      <div className="grid grid-cols-4 gap-2">
-        {([
-          { icon: Heart, label: 'HR', key: 'heartRate' as const, value: bio.heartRate, unit: 'bpm', color: 'text-red-400', min: 40, max: 200 },
-          { icon: Activity, label: 'HRV', key: 'hrv' as const, value: bio.hrv, unit: 'ms', color: 'text-blue-400', min: 10, max: 120 },
-          { icon: Brain, label: 'Stress', key: 'stress' as const, value: bio.stress, unit: '%', color: bio.stress > 60 ? 'text-orange-400' : 'text-green-400', min: 0, max: 100 },
-          { icon: Wind, label: 'Cadence', key: 'cadence' as const, value: bio.cadence, unit: 'spm', color: 'text-cyan-400', min: 0, max: 200 },
-        ] as const).map(({ icon: Icon, label, key, value, unit, color, min, max }) => {
-          const isExpanded = expandedBio === label;
-          return (
-            <div key={label} className="flex flex-col">
+      {/* ═══ MODE SELECTOR — collapsed, ambient ═══ */}
+      <div className="px-6 pb-4">
+        <p className="text-[10px] text-white/20 uppercase tracking-widest mb-2">Intent</p>
+        <div className="flex gap-1.5">
+          {(Object.keys(MODE_META) as UserMode[]).map((m) => {
+            const mm = MODE_META[m];
+            const isActive = mode === m;
+            return (
               <button
-                onClick={() => setExpandedBio(isExpanded ? null : label)}
-                className={`bg-white/5 rounded-xl p-3 text-center transition-all ${isExpanded ? 'ring-1 ring-white/20' : 'hover:bg-white/10'}`}
+                key={m}
+                onClick={() => setMode(m)}
+                className={`flex-1 py-2 rounded-xl text-center transition-all duration-300 ${
+                  isActive
+                    ? 'bg-white/[0.08] border border-white/[0.1]'
+                    : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.04]'
+                }`}
               >
-                <Icon className={`w-4 h-4 mx-auto mb-1 ${color}`} />
-                <p className={`text-lg font-bold ${color}`}>{value}</p>
-                <p className="text-[10px] text-white/40">{unit}</p>
+                <span className="text-sm">{mm.emoji}</span>
+                <p className={`text-[9px] mt-0.5 ${isActive ? 'text-white/60' : 'text-white/25'}`}>
+                  {mm.label}
+                </p>
               </button>
-              {isExpanded && (
-                <div className="mt-1.5 px-1">
-                  <Slider
-                    value={[value]}
-                    onValueChange={([v]) => setBio(prev => ({ ...prev, [key]: v }))}
-                    min={min}
-                    max={max}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* State Indicator */}
-      <div className="bg-white/5 rounded-xl p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-white/50 uppercase tracking-wider">State Alignment</span>
-          <span className="text-xs text-white/40">{PHYSIO_LABELS[state.current]} → {PHYSIO_LABELS[state.target]}</span>
-        </div>
-        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full bg-gradient-to-r ${meta.color} transition-all duration-1000`}
-            style={{ width: `${state.alignment * 100}%` }}
-          />
-        </div>
-        <div className="flex justify-between mt-1.5">
-          <span className="text-[10px] text-white/30">Current</span>
-          <span className="text-[10px] text-white/30 capitalize">{state.strategy}</span>
-          <span className="text-[10px] text-white/30">Target</span>
+            );
+          })}
         </div>
       </div>
 
-      {/* Now Playing */}
-      {nowPlaying && isPlaying ? (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${meta.color} flex items-center justify-center`}>
-              <Music2 className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{nowPlaying.title}</p>
-              <p className="text-xs text-white/50 truncate">{nowPlaying.artist} • {nowPlaying.genre}</p>
-              <p className="text-[10px] text-emerald-400/60 flex items-center gap-1 mt-0.5">
-                <MapPin className="w-2.5 h-2.5" /> Resumed in Kitchen
-              </p>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div className="mb-3">
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full bg-gradient-to-r ${meta.color} transition-all`}
-                style={{ width: `${(nowPlaying.elapsed / nowPlaying.duration) * 100}%` }}
-              />
-            </div>
-            <div className="flex justify-between mt-1">
-              <span className="text-[10px] text-white/30">{formatTime(nowPlaying.elapsed)}</span>
-              <span className="text-[10px] text-white/30">{formatTime(nowPlaying.duration)}</span>
-            </div>
-          </div>
-
-          {/* Controls */}
-          <div className="flex items-center justify-center gap-6">
-            <button onClick={like} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
-              <ThumbsUp className="w-4 h-4" />
-            </button>
-            <button
-              onClick={stopSession}
-              className={`w-14 h-14 rounded-full bg-gradient-to-br ${meta.color} flex items-center justify-center shadow-lg`}
-            >
-              <Pause className="w-6 h-6 text-white" />
-            </button>
-            <button onClick={skip} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors">
-              <SkipForward className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Volume */}
-          <div className="mt-3 flex items-center gap-3 px-2">
-            <Volume2 className="w-4 h-4 text-white/40 shrink-0" />
-            <Slider
-              value={[Math.round(volume * 100)]}
-              onValueChange={([v]) => setVolume(v / 100)}
-              min={0}
-              max={100}
-              step={5}
-              className="flex-1"
-            />
-            <span className="text-[10px] text-white/30 w-7 text-right">{Math.round(volume * 100)}%</span>
-          </div>
-
-          {/* Adaptive Music Params */}
-          <div className="mt-4 grid grid-cols-5 gap-1.5">
-            {[
-              { label: 'BPM', value: musicParams.bpm },
-              { label: 'Energy', value: musicParams.energy },
-              { label: 'Rhythm', value: musicParams.rhythmDensity },
-              { label: 'Vocal', value: musicParams.vocalPresence },
-              { label: 'Tension', value: musicParams.harmonicTension },
-            ].map(({ label, value }) => (
-              <div key={label} className="text-center">
-                <div className="h-8 bg-white/5 rounded-md flex items-end justify-center overflow-hidden p-0.5">
-                  <div
-                    className={`w-full rounded-sm bg-gradient-to-t ${meta.color} transition-all duration-700`}
-                    style={{ height: `${Math.max(4, label === 'BPM' ? (value / 200) * 100 : value)}%` }}
-                  />
+      {/* ═══ BIO SIMULATOR (dev/demo) ═══ */}
+      <div className="px-6 pb-8">
+        <button
+          onClick={() => setShowBioSliders(!showBioSliders)}
+          className="w-full flex items-center justify-between py-2"
+        >
+          <span className="text-[10px] text-white/15 uppercase tracking-widest">Simulate Biometrics</span>
+          <ChevronUp className={`w-3 h-3 text-white/15 transition-transform ${showBioSliders ? '' : 'rotate-180'}`} />
+        </button>
+        {showBioSliders && (
+          <div className="space-y-3 pt-2">
+            {([
+              { label: 'Heart Rate', key: 'heartRate' as const, value: bio.heartRate, min: 40, max: 200, unit: 'bpm' },
+              { label: 'HRV', key: 'hrv' as const, value: bio.hrv, min: 10, max: 120, unit: 'ms' },
+              { label: 'Stress', key: 'stress' as const, value: bio.stress, min: 0, max: 100, unit: '%' },
+              { label: 'Cadence', key: 'cadence' as const, value: bio.cadence, min: 0, max: 200, unit: 'spm' },
+            ] as const).map(({ label, key, value, min, max, unit }) => (
+              <div key={label}>
+                <div className="flex justify-between mb-1">
+                  <span className="text-[10px] text-white/25">{label}</span>
+                  <span className="text-[10px] text-white/30 tabular-nums">{value} {unit}</span>
                 </div>
-                <p className="text-[9px] text-white/40 mt-1">{label}</p>
+                <Slider
+                  value={[value]}
+                  onValueChange={([v]) => setBio(prev => ({ ...prev, [key]: v }))}
+                  min={min}
+                  max={max}
+                  step={1}
+                  className="w-full"
+                />
               </div>
             ))}
           </div>
-        </div>
-      ) : (
-        <button
-          onClick={startSession}
-          className={`w-full rounded-2xl p-6 bg-gradient-to-br ${meta.color} text-white font-semibold text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-[0.98]`}
-        >
-          <Play className="w-6 h-6" />
-          Start Jamming
-        </button>
-      )}
-
-      {/* Intensity Slider */}
-      <div className="bg-white/5 rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs text-white/50 uppercase tracking-wider">Intensity</span>
-          <div className="flex items-center gap-1.5">
-            <Zap className="w-3 h-3 text-amber-400" />
-            <span className="text-sm font-semibold text-white">{intensity}%</span>
-          </div>
-        </div>
-        <Slider
-          value={[intensity]}
-          onValueChange={([v]) => setIntensity(v)}
-          min={0}
-          max={100}
-          step={5}
-          className="w-full"
-        />
-        <div className="flex justify-between mt-1.5">
-          <span className="text-[10px] text-white/30">Light</span>
-          <span className="text-[10px] text-white/30">Aggressive</span>
-        </div>
+        )}
       </div>
 
-      {/* Session Stats (when playing) */}
-      {isPlaying && stats.durationSec > 0 && (
-        <div className="bg-white/5 rounded-xl p-4">
-          <p className="text-xs text-white/50 uppercase tracking-wider mb-3">Session</p>
-          <div className="grid grid-cols-4 gap-3 text-center">
-            <div>
-              <p className="text-lg font-bold text-white">{formatTime(stats.durationSec)}</p>
-              <p className="text-[10px] text-white/40">Duration</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold text-white">{stats.tracksPlayed}</p>
-              <p className="text-[10px] text-white/40">Tracks</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold text-emerald-400">{stats.likes}</p>
-              <p className="text-[10px] text-white/40">Likes</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold text-white">{Math.round(stats.avgAlignment * 100)}%</p>
-              <p className="text-[10px] text-white/40">Aligned</p>
-            </div>
+      {/* ═══ ALIGNMENT HISTORY (when active) ═══ */}
+      {isPlaying && stats.alignmentHistory.length > 10 && (
+        <div className="px-6 pb-8">
+          <p className="text-[10px] text-white/15 uppercase tracking-widest mb-2">Alignment Over Time</p>
+          <div className="h-10 flex items-end gap-px">
+            {stats.alignmentHistory.slice(-60).map((pt, i) => (
+              <div
+                key={i}
+                className="flex-1 rounded-t-[1px] transition-all duration-300"
+                style={{
+                  height: `${pt.v * 100}%`,
+                  background: `linear-gradient(to top, ${stateColor.from}40, ${stateColor.to}15)`,
+                }}
+              />
+            ))}
           </div>
-
-          {/* Mini alignment chart */}
-          {stats.alignmentHistory.length > 5 && (
-            <div className="mt-3 h-12 flex items-end gap-px">
-              {stats.alignmentHistory.slice(-40).map((pt, i) => (
-                <div
-                  key={i}
-                  className={`flex-1 rounded-t-sm bg-gradient-to-t ${meta.color} opacity-70 transition-all`}
-                  style={{ height: `${pt.v * 100}%` }}
-                />
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
