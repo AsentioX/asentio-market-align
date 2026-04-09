@@ -450,12 +450,37 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
               <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
             </div>
 
-            {/* Now playing — minimal */}
+            {/* Now playing + source toggle */}
             {nowPlaying && (
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-white/80 truncate">{nowPlaying.title}</p>
                   <p className="text-[11px] text-white/30 truncate">{nowPlaying.artist}</p>
+                </div>
+                {/* Inline source toggle */}
+                <div className="flex items-center gap-0.5 shrink-0 bg-white/[0.04] rounded-lg p-0.5">
+                  <button
+                    onClick={() => setMusicSource('recorded')}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
+                      musicSource === 'recorded'
+                        ? 'bg-white/[0.1] text-white/70'
+                        : 'text-white/25 hover:text-white/40'
+                    }`}
+                    title="Recorded tracks"
+                  >
+                    <Disc className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => setMusicSource('generative')}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
+                      musicSource === 'generative'
+                        ? 'bg-white/[0.1] text-white/70'
+                        : 'text-white/25 hover:text-white/40'
+                    }`}
+                    title="Generative soundscape"
+                  >
+                    <Radio className="w-3 h-3" />
+                  </button>
                 </div>
               </div>
             )}
@@ -533,40 +558,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
           </div>
         </div>
       )}
-
-      {/* ═══ MUSIC SOURCE TOGGLE ═══ */}
-      <div className="px-6 pb-4">
-        <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Music Source</p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setMusicSource('recorded')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border transition-all text-xs ${
-              musicSource === 'recorded'
-                ? 'bg-white/[0.08] border-white/[0.15] text-white/80'
-                : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05]'
-            }`}
-          >
-            <Disc className="w-3.5 h-3.5" />
-            Recorded
-          </button>
-          <button
-            onClick={() => setMusicSource('generative')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border transition-all text-xs ${
-              musicSource === 'generative'
-                ? 'bg-white/[0.08] border-white/[0.15] text-white/80'
-                : 'bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05]'
-            }`}
-          >
-            <Radio className="w-3.5 h-3.5" />
-            Generative
-          </button>
-        </div>
-        {musicSource === 'generative' && (
-          <p className="text-[9px] text-white/20 mt-1.5 text-center">
-            Real-time adaptive soundscape · Web Audio API
-          </p>
-        )}
-      </div>
 
       {/* ═══ SYSTEM INFLUENCE ═══ */}
       <div className="px-6 pb-4">
