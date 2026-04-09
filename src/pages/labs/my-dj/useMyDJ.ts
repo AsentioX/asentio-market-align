@@ -105,6 +105,7 @@ export function useMyDJ() {
   }, [isPlaying, mode, manualBioOverride]);
 
   // Recompute state + music params whenever bio/mode/intensity changes
+  // When physiological state changes, crossfade to a matching track
   useEffect(() => {
     const newState = computeState(bio, mode);
     setState(newState);
@@ -112,10 +113,13 @@ export function useMyDJ() {
     setMusicParams(newParams);
 
     if (isPlaying) {
-      audioEngine.current.setParams(newParams);
-    }
+      // If the physiological state changed, pick a new track and crossfade
+      if (newState.current !== prevPhysioState.current) {
+        prevPhysioState.current = newState.current;
+        playTrack(newParams, mode);
+        setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+      }
 
-    if (isPlaying) {
       alignmentSumRef.current += newState.alignment;
       alignmentCountRef.current += 1;
       setStats(s => ({
@@ -124,7 +128,7 @@ export function useMyDJ() {
         alignmentHistory: [...s.alignmentHistory.slice(-59), { t: Date.now(), v: newState.alignment }],
       }));
     }
-  }, [bio, mode, intensity, isPlaying]);
+  }, [bio, mode, intensity, isPlaying, playTrack]);
 
   // Elapsed time ticker
   useEffect(() => {
