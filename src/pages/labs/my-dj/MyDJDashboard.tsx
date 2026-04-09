@@ -3,6 +3,7 @@ import { MapPin, Volume2, ChevronUp, ThumbsUp, SkipForward, Pause, Play, Plus, X
 import { Slider } from '@/components/ui/slider';
 import { useMyDJ } from './useMyDJ';
 import { MODE_META, PHYSIO_LABELS, UserMode, PhysioState } from './stateEngine';
+import { MusicSource } from './useMyDJ';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocations, useCreateLocation, DJLocation } from '@/hooks/useMyDJScenes';
 import { IntentDef, getBlendLabel } from './intentData';
