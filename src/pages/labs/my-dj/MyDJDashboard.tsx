@@ -347,7 +347,16 @@ const MyDJDashboard = () => {
                 />
                 <span className="text-[11px] text-white/40">Adaptive session active</span>
               </div>
-              <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
+                <button
+                  onClick={stopSession}
+                  className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/70 hover:bg-white/[0.1] transition-all"
+                  title="Pause session"
+                >
+                  <Pause className="w-3 h-3" />
+                </button>
+              </div>
             </div>
 
             {/* Now playing — minimal */}
