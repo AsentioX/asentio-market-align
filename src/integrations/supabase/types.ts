@@ -243,6 +243,187 @@ export type Database = {
           },
         ]
       }
+      gov_drafts: {
+        Row: {
+          context_snippet: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          summary: string
+          title: string
+        }
+        Insert: {
+          context_snippet?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          summary: string
+          title: string
+        }
+        Update: {
+          context_snippet?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          summary?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      gov_members: {
+        Row: {
+          avatar: string
+          created_at: string
+          id: string
+          name: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          name: string
+          role?: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          name?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      gov_policies: {
+        Row: {
+          context_snippet: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          status: Database["public"]["Enums"]["gov_policy_status"]
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          context_snippet?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["gov_policy_status"]
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          context_snippet?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["gov_policy_status"]
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gov_proposals: {
+        Row: {
+          author: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          policy_id: string
+          title: string
+        }
+        Insert: {
+          author?: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          policy_id: string
+          title: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          policy_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_proposals_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gov_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      gov_votes: {
+        Row: {
+          created_at: string
+          id: string
+          proposal_id: string
+          updated_at: string
+          user_id: string
+          vote: Database["public"]["Enums"]["gov_vote_type"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          proposal_id: string
+          updated_at?: string
+          user_id: string
+          vote: Database["public"]["Enums"]["gov_vote_type"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          proposal_id?: string
+          updated_at?: string
+          user_id?: string
+          vote?: Database["public"]["Enums"]["gov_vote_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_votes_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "gov_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mydj_adaptation_rules: {
         Row: {
           created_at: string
@@ -2507,6 +2688,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      gov_phase: "visioning" | "drafting" | "community-review" | "finalized"
+      gov_policy_status: "draft" | "active" | "under-revision" | "archived"
+      gov_vote_type: "agree" | "abstain" | "disagree" | "block"
       mydj_activity_type:
         | "work"
         | "run"
@@ -2668,6 +2852,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      gov_phase: ["visioning", "drafting", "community-review", "finalized"],
+      gov_policy_status: ["draft", "active", "under-revision", "archived"],
+      gov_vote_type: ["agree", "abstain", "disagree", "block"],
       mydj_activity_type: [
         "work",
         "run",
