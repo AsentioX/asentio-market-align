@@ -237,7 +237,7 @@ const PolicyDiscussion = () => {
                     {member && <span className="ml-1 text-gray-300">· {member.role}</span>}
                   </p>
                 </div>
-                {(user && proposal.created_by === user.id || isAdmin) && (
+                {((user && proposal.created_by === user.id) || isAdmin) && (
                   <button
                     onClick={() => deleteProposal.mutate({ proposalId: proposal.id, policyId: policy.id })}
                     disabled={deleteProposal.isPending}
