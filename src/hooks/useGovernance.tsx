@@ -129,6 +129,46 @@ export function usePolicyMutations() {
   });
 
   return { addPolicy, updateStatus, updatePolicy };
+}
+
+// Policy Votes
+export function usePolicyVotes() {
+  const qc = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['gov-policy-votes'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('gov_policy_votes').select('policy_id, user_id, vote');
+      if (error) throw error;
+      return data as { policy_id: string; user_id: string; vote: VoteType }[];
+    },
+  });
+
+  const castVote = useMutation({
+    mutationFn: async ({ policyId, vote }: { policyId: string; vote: VoteType }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Must be logged in to vote');
+      const { error } = await supabase.from('gov_policy_votes').upsert(
+        { policy_id: policyId, user_id: user.id, vote },
+        { onConflict: 'policy_id,user_id' }
+      );
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-policy-votes'] }),
+  });
+
+  const removeVote = useMutation({
+    mutationFn: async (policyId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Must be logged in');
+      const { error } = await supabase.from('gov_policy_votes').delete().eq('policy_id', policyId).eq('user_id', user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-policy-votes'] }),
+  });
+
+  return { votes: query.data ?? [], castVote, removeVote };
+}
 
 // Proposals
 export function useProposals(policyId: string | undefined) {
