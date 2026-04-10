@@ -42,6 +42,7 @@ export interface Member {
   role: string;
   avatar: string;
   user_id: string | null;
+  email: string | null;
 }
 
 export interface Draft {
@@ -326,15 +327,20 @@ export function useMemberMutations() {
   const qc = useQueryClient();
 
   const addMember = useMutation({
-    mutationFn: async (m: { name: string; role: string; avatar: string }) => {
-      const { error } = await supabase.from('gov_members').insert(m);
+    mutationFn: async (m: { name: string; role: string; avatar: string; email?: string }) => {
+      const { error } = await supabase.from('gov_members').insert({
+        name: m.name,
+        role: m.role,
+        avatar: m.avatar,
+        email: m.email || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-members'] }),
   });
 
   const updateMember = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; name?: string; role?: string; avatar?: string }) => {
+    mutationFn: async ({ id, ...updates }: { id: string; name?: string; role?: string; avatar?: string; email?: string }) => {
       const { error } = await supabase.from('gov_members').update(updates).eq('id', id);
       if (error) throw error;
     },
