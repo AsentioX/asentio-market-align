@@ -4,9 +4,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { Loader2, Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
 const AVATAR_OPTIONS = ['👤', '🧑‍💼', '🧑‍🔬', '🧑‍🎨', '🧑‍💻', '🧑‍🏫', '🌟', '🔷', '🟢', '🟠'];
+
+const ROLE_OPTIONS = [
+  { value: 'admin', label: 'Admin' },
+  { value: 'team-lead', label: 'Team Lead' },
+  { value: 'member', label: 'Member' },
+];
 
 const TaskForceMembers = () => {
   const { data: members = [], isLoading } = useMembers();
@@ -17,12 +24,12 @@ const TaskForceMembers = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('member');
   const [avatar, setAvatar] = useState('👤');
 
   const resetForm = () => {
     setName('');
-    setRole('');
+    setRole('member');
     setAvatar('👤');
     setShowForm(false);
     setEditingId(null);
@@ -47,9 +54,9 @@ const TaskForceMembers = () => {
     }
 
     if (editingId) {
-      updateMember.mutate({ id: editingId, name: name.trim(), role: role.trim() || 'Member', avatar });
+      updateMember.mutate({ id: editingId, name: name.trim(), role, avatar });
     } else {
-      addMember.mutate({ name: name.trim(), role: role.trim() || 'Member', avatar });
+      addMember.mutate({ name: name.trim(), role, avatar });
     }
     resetForm();
   };
@@ -85,7 +92,16 @@ const TaskForceMembers = () => {
       </div>
       <div className="flex gap-3">
         <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="flex-1" />
-        <Input placeholder="Role" value={role} onChange={(e) => setRole(e.target.value)} className="flex-1" />
+        <Select value={role} onValueChange={setRole}>
+          <SelectTrigger className="flex-1">
+            <SelectValue placeholder="Select role" />
+          </SelectTrigger>
+          <SelectContent>
+            {ROLE_OPTIONS.map((r) => (
+              <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex gap-2 justify-end">
         <Button variant="ghost" size="sm" onClick={resetForm}><X className="w-4 h-4 mr-1" /> Cancel</Button>
@@ -123,7 +139,7 @@ const TaskForceMembers = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-800 truncate">{m.name}</p>
-                <p className="text-sm text-gray-500 truncate">{m.role}</p>
+                <p className="text-sm text-gray-500 truncate capitalize">{ROLE_OPTIONS.find(r => r.value === m.role)?.label ?? m.role}</p>
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button onClick={() => startEdit(m)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600">
