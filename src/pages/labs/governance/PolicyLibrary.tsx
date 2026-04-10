@@ -33,7 +33,7 @@ const STATUS_OPTIONS: { value: PolicyStatus; label: string }[] = [
   { value: 'archived', label: 'Archived' },
 ];
 
-const PolicyStatusDropdown = ({ current, onChange, onDelete, className = '' }: { current: PolicyStatus; onChange: (s: PolicyStatus) => void; onDelete: () => void; className?: string }) => {
+const PolicyStatusDropdown = ({ current, onChange, onDelete, onEdit, className = '' }: { current: PolicyStatus; onChange: (s: PolicyStatus) => void; onDelete: () => void; onEdit: () => void; className?: string }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -49,13 +49,16 @@ const PolicyStatusDropdown = ({ current, onChange, onDelete, className = '' }: {
         {current.replace('-', ' ')} <ChevronDown className="w-3 h-3" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[120px]">
+        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[130px]">
           {STATUS_OPTIONS.map(opt => (
             <button key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }} className={`w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50 ${current === opt.value ? 'font-semibold text-teal-700' : 'text-gray-600'}`}>
               {opt.label}
             </button>
           ))}
           <Separator className="my-1" />
+          <button onClick={() => { onEdit(); setOpen(false); }} className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50 text-gray-600 flex items-center gap-1.5">
+            <Pencil className="w-3 h-3" /> Edit Policy
+          </button>
           <button onClick={() => { onDelete(); setOpen(false); }} className="w-full text-left text-xs px-3 py-1.5 hover:bg-red-50 text-red-600 flex items-center gap-1.5">
             <Trash2 className="w-3 h-3" /> Delete
           </button>
