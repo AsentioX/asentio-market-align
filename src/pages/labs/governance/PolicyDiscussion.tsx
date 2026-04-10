@@ -195,7 +195,7 @@ const PolicyDiscussion = () => {
               </div>
             </div>
             {proposal.description && <p className="text-sm text-gray-600 mb-4">{proposal.description}</p>}
-            <ProposalVotes proposalId={proposal.id} canParticipate={canParticipate} />
+            <ProposalVotes proposalId={proposal.id} canParticipate={canParticipate} isVotingMode={!!policy.voting_start && !policy.passed_at} />
           </div>
         ))}
       </div>
