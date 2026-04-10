@@ -423,6 +423,7 @@ const PolicyLibrary = () => {
       <div className="space-y-8">
         {sections.map(renderSection)}
       </div>
+      {renderEditModal()}
     </div>
   );
 };
