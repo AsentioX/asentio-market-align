@@ -299,36 +299,59 @@ export type Database = {
       }
       gov_policies: {
         Row: {
+          category: string | null
           context_snippet: string | null
           created_at: string
           created_by: string | null
           id: string
+          parent_id: string | null
+          passed_at: string | null
           status: Database["public"]["Enums"]["gov_policy_status"]
           summary: string
           title: string
           updated_at: string
+          voting_deadline: string | null
+          voting_start: string | null
         }
         Insert: {
+          category?: string | null
           context_snippet?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
+          parent_id?: string | null
+          passed_at?: string | null
           status?: Database["public"]["Enums"]["gov_policy_status"]
           summary: string
           title: string
           updated_at?: string
+          voting_deadline?: string | null
+          voting_start?: string | null
         }
         Update: {
+          category?: string | null
           context_snippet?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
+          parent_id?: string | null
+          passed_at?: string | null
           status?: Database["public"]["Enums"]["gov_policy_status"]
           summary?: string
           title?: string
           updated_at?: string
+          voting_deadline?: string | null
+          voting_start?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gov_policies_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gov_policy_likes: {
         Row: {
@@ -352,6 +375,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "gov_policy_likes_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gov_policy_votes: {
+        Row: {
+          created_at: string
+          id: string
+          policy_id: string
+          updated_at: string
+          user_id: string
+          vote: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          policy_id: string
+          updated_at?: string
+          user_id: string
+          vote: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          policy_id?: string
+          updated_at?: string
+          user_id?: string
+          vote?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_policy_votes_policy_id_fkey"
             columns: ["policy_id"]
             isOneToOne: false
             referencedRelation: "gov_policies"
