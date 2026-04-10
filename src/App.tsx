@@ -33,7 +33,7 @@ import TranscriptUpload from "./pages/labs/governance/TranscriptUpload";
 import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
 import PolicyDiscussion from "./pages/labs/governance/PolicyDiscussion";
 import TaskForceMembers from "./pages/labs/governance/TaskForceMembers";
-import GovernanceArchive from "./pages/labs/governance/GovernanceArchive";
+
 import MeetingMinutes from "./pages/labs/governance/MeetingMinutes";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
@@ -77,7 +77,7 @@ const AppContent = () => {
             <Route path="library/:id" element={<PolicyDiscussion />} />
             <Route path="members" element={<TaskForceMembers />} />
             <Route path="minutes" element={<MeetingMinutes />} />
-            <Route path="archive" element={<GovernanceArchive />} />
+            
           </Route>
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/admin" element={<AdminLogin />} />
