@@ -18,7 +18,7 @@ const ROLE_OPTIONS = [
 const TaskForceMembers = () => {
   const { data: members = [], isLoading } = useMembers();
   const { addMember, updateMember, deleteMember } = useMemberMutations();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { toast } = useToast();
 
   const [showForm, setShowForm] = useState(false);
@@ -92,16 +92,18 @@ const TaskForceMembers = () => {
       </div>
       <div className="flex gap-3">
         <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="flex-1" />
-        <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="flex-1">
-            <SelectValue placeholder="Select role" />
-          </SelectTrigger>
-          <SelectContent>
-            {ROLE_OPTIONS.map((r) => (
-              <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {isAdmin && (
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Select role" />
+            </SelectTrigger>
+            <SelectContent>
+              {ROLE_OPTIONS.map((r) => (
+                <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
       <div className="flex gap-2 justify-end">
         <Button variant="ghost" size="sm" onClick={resetForm}><X className="w-4 h-4 mr-1" /> Cancel</Button>
@@ -139,7 +141,9 @@ const TaskForceMembers = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-800 truncate">{m.name}</p>
-                <p className="text-sm text-gray-500 truncate capitalize">{ROLE_OPTIONS.find(r => r.value === m.role)?.label ?? m.role}</p>
+                {isAdmin && (
+                  <p className="text-sm text-gray-500 truncate capitalize">{ROLE_OPTIONS.find(r => r.value === m.role)?.label ?? m.role}</p>
+                )}
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button onClick={() => startEdit(m)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600">
