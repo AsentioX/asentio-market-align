@@ -40,6 +40,7 @@ export interface Member {
   name: string;
   role: string;
   avatar: string;
+  user_id: string | null;
 }
 
 export interface Draft {
