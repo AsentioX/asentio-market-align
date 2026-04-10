@@ -1,10 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
-import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText, Trash2 } from 'lucide-react';
+import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText, Trash2, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { format } from 'date-fns';
 
 const statusStyle: Record<string, string> = {
@@ -32,7 +33,7 @@ const STATUS_OPTIONS: { value: PolicyStatus; label: string }[] = [
   { value: 'archived', label: 'Archived' },
 ];
 
-const PolicyStatusDropdown = ({ current, onChange, onDelete, className = '' }: { current: PolicyStatus; onChange: (s: PolicyStatus) => void; onDelete: () => void; className?: string }) => {
+const PolicyStatusDropdown = ({ current, onChange, onDelete, onEdit, className = '' }: { current: PolicyStatus; onChange: (s: PolicyStatus) => void; onDelete: () => void; onEdit: () => void; className?: string }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -48,13 +49,16 @@ const PolicyStatusDropdown = ({ current, onChange, onDelete, className = '' }: {
         {current.replace('-', ' ')} <ChevronDown className="w-3 h-3" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[120px]">
+        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[130px]">
           {STATUS_OPTIONS.map(opt => (
             <button key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }} className={`w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50 ${current === opt.value ? 'font-semibold text-teal-700' : 'text-gray-600'}`}>
               {opt.label}
             </button>
           ))}
           <Separator className="my-1" />
+          <button onClick={() => { onEdit(); setOpen(false); }} className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50 text-gray-600 flex items-center gap-1.5">
+            <Pencil className="w-3 h-3" /> Edit Policy
+          </button>
           <button onClick={() => { onDelete(); setOpen(false); }} className="w-full text-left text-xs px-3 py-1.5 hover:bg-red-50 text-red-600 flex items-center gap-1.5">
             <Trash2 className="w-3 h-3" /> Delete
           </button>
@@ -230,69 +234,57 @@ const PolicyLibrary = () => {
     );
   };
 
-  const renderAdminTimeline = (p: Policy) => {
-    if (!isAdmin) return null;
-    if (editingTimeline !== p.id) {
-      return (
-        <button onClick={() => setEditingTimeline(p.id)} className="text-[10px] text-teal-600 hover:text-teal-700 font-medium mt-1 flex items-center gap-1">
-          ✏️ Edit Policy
-        </button>
-      );
-    }
+  const renderEditModal = () => {
+    const p = policies.find(pol => pol.id === editingTimeline);
+    if (!p) return null;
     return (
-      <div className="mt-2 space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-        <div>
-          <label className="text-[10px] text-gray-500 block mb-0.5">Title</label>
-          <input type="text" defaultValue={p.title} onBlur={e => { if (e.target.value && e.target.value !== p.title) updatePolicy.mutate({ id: p.id, title: e.target.value }); }} className="text-xs border border-gray-200 rounded px-2 py-1 w-full font-medium" />
-        </div>
-        <div>
-          <label className="text-[10px] text-gray-500 block mb-0.5">Summary</label>
-          <textarea defaultValue={p.summary} rows={2} onBlur={e => { if (e.target.value && e.target.value !== p.summary) updatePolicy.mutate({ id: p.id, summary: e.target.value }); }} className="text-xs border border-gray-200 rounded px-2 py-1 w-full resize-none" />
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-[10px] text-gray-500 block mb-0.5">Commenting Deadline (Voting Start)</label>
-            <input type="date" defaultValue={p.voting_start ? format(new Date(p.voting_start), 'yyyy-MM-dd') : ''} onChange={e => updatePolicy.mutate({ id: p.id, voting_start: e.target.value ? new Date(e.target.value).toISOString() : null })} className="text-xs border border-gray-200 rounded px-2 py-1 w-full" />
+      <Dialog open={!!editingTimeline} onOpenChange={(open) => { if (!open) setEditingTimeline(null); }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Policy</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Title</label>
+              <input type="text" defaultValue={p.title} onBlur={e => { if (e.target.value && e.target.value !== p.title) updatePolicy.mutate({ id: p.id, title: e.target.value }); }} className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full font-medium" />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Summary</label>
+              <textarea defaultValue={p.summary} rows={3} onBlur={e => { if (e.target.value && e.target.value !== p.summary) updatePolicy.mutate({ id: p.id, summary: e.target.value }); }} className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full resize-none" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">Commenting Deadline</label>
+                <input type="date" defaultValue={p.voting_start ? format(new Date(p.voting_start), 'yyyy-MM-dd') : ''} onChange={e => updatePolicy.mutate({ id: p.id, voting_start: e.target.value ? new Date(e.target.value).toISOString() : null })} className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full" />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">Voting Deadline</label>
+                <input type="date" defaultValue={p.voting_deadline ? format(new Date(p.voting_deadline), 'yyyy-MM-dd') : ''} onChange={e => updatePolicy.mutate({ id: p.id, voting_deadline: e.target.value ? new Date(e.target.value).toISOString() : null })} className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">Category</label>
+                <input type="text" defaultValue={p.category ?? ''} placeholder="e.g. Ethics, Operations" onBlur={e => updatePolicy.mutate({ id: p.id, category: e.target.value || null })} className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full" />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">Status</label>
+                <select value={p.status} onChange={e => updatePolicy.mutate({ id: p.id, status: e.target.value as PolicyStatus })} className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full">
+                  {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button onClick={() => { updatePolicy.mutate({ id: p.id, passed_at: new Date().toISOString(), status: 'passed' }); setEditingTimeline(null); }} className="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700">
+                Mark Passed
+              </button>
+              <button onClick={() => setEditingTimeline(null)} className="text-xs text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-100 ml-auto">
+                Close
+              </button>
+            </div>
           </div>
-          <div>
-            <label className="text-[10px] text-gray-500 block mb-0.5">Voting Deadline</label>
-            <input type="date" defaultValue={p.voting_deadline ? format(new Date(p.voting_deadline), 'yyyy-MM-dd') : ''} onChange={e => updatePolicy.mutate({ id: p.id, voting_deadline: e.target.value ? new Date(e.target.value).toISOString() : null })} className="text-xs border border-gray-200 rounded px-2 py-1 w-full" />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-[10px] text-gray-500 block mb-0.5">Category</label>
-            <input type="text" defaultValue={p.category ?? ''} placeholder="e.g. Ethics, Operations" onBlur={e => updatePolicy.mutate({ id: p.id, category: e.target.value || null })} className="text-xs border border-gray-200 rounded px-2 py-1 w-full" />
-          </div>
-          <div>
-            <label className="text-[10px] text-gray-500 block mb-0.5">Status</label>
-            <select value={p.status} onChange={e => {
-              const val = e.target.value;
-              if (val === '__delete__') {
-                if (confirm('Delete this policy permanently?')) deletePolicy.mutate(p.id);
-              } else {
-                updatePolicy.mutate({ id: p.id, status: val as PolicyStatus });
-              }
-            }} className="text-xs border border-gray-200 rounded px-2 py-1 w-full">
-              <option value="draft">Draft</option>
-              <option value="commenting">Commenting</option>
-              <option value="voting">Voting</option>
-              <option value="passed">Passed</option>
-              <option value="archived">Archived</option>
-              <option disabled>──────────</option>
-              <option value="__delete__" className="text-red-600">🗑 Delete</option>
-            </select>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => { updatePolicy.mutate({ id: p.id, passed_at: new Date().toISOString(), status: 'passed' }); setEditingTimeline(null); }} className="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700">
-            Mark Passed
-          </button>
-          <button onClick={() => setEditingTimeline(null)} className="text-[10px] text-gray-500 px-2 py-1 rounded hover:bg-gray-100">
-            Close
-          </button>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     );
   };
 
@@ -315,13 +307,13 @@ const PolicyLibrary = () => {
               current={policy.status}
               onChange={(s) => updatePolicy.mutate({ id: policy.id, status: s })}
               onDelete={() => { if (confirm('Delete this policy permanently?')) deletePolicy.mutate(policy.id); }}
+              onEdit={() => setEditingTimeline(policy.id)}
             />
           )}
         </div>
         <h3 className="font-semibold text-gray-800 mb-1">{policy.title}</h3>
         <p className="text-sm text-gray-500 line-clamp-2">{policy.summary}</p>
         {renderTimeline(policy)}
-        {renderAdminTimeline(policy)}
         <div className="mt-3">
           {renderVoteBar(policy.id, section)}
         </div>
@@ -431,6 +423,7 @@ const PolicyLibrary = () => {
       <div className="space-y-8">
         {sections.map(renderSection)}
       </div>
+      {renderEditModal()}
     </div>
   );
 };
