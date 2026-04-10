@@ -2823,7 +2823,14 @@ export type Database = {
     }
     Enums: {
       gov_phase: "visioning" | "drafting" | "community-review" | "finalized"
-      gov_policy_status: "draft" | "active" | "under-revision" | "archived"
+      gov_policy_status:
+        | "draft"
+        | "active"
+        | "under-revision"
+        | "archived"
+        | "commenting"
+        | "voting"
+        | "passed"
       gov_vote_type: "agree" | "abstain" | "disagree" | "block"
       mydj_activity_type:
         | "work"
@@ -2987,7 +2994,15 @@ export const Constants = {
   public: {
     Enums: {
       gov_phase: ["visioning", "drafting", "community-review", "finalized"],
-      gov_policy_status: ["draft", "active", "under-revision", "archived"],
+      gov_policy_status: [
+        "draft",
+        "active",
+        "under-revision",
+        "archived",
+        "commenting",
+        "voting",
+        "passed",
+      ],
       gov_vote_type: ["agree", "abstain", "disagree", "block"],
       mydj_activity_type: [
         "work",

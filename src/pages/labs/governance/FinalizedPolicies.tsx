@@ -14,7 +14,7 @@ const FinalizedPolicies = () => {
 
   const finalized = useMemo(() => {
     return policies
-      .filter(p => p.status === 'active' && p.passed_at)
+      .filter(p => p.status === 'passed')
       .sort((a, b) => (b.passed_at ?? '').localeCompare(a.passed_at ?? ''));
   }, [policies]);
 

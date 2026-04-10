@@ -54,10 +54,12 @@ const GovernanceDashboard = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700">{p.title}</span>
                     <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                      p.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
+                      p.status === 'passed' ? 'bg-emerald-100 text-emerald-700' :
+                      p.status === 'voting' ? 'bg-indigo-100 text-indigo-700' :
+                      p.status === 'commenting' ? 'bg-blue-100 text-blue-700' :
                       p.status === 'draft' ? 'bg-gray-100 text-gray-500' :
-                      'bg-amber-100 text-amber-700'
-                    }`}>{p.status.replace('-', ' ')}</span>
+                      'bg-red-100 text-red-500'
+                    }`}>{p.status}</span>
                   </div>
                   <p className="text-xs text-gray-400 mt-1 line-clamp-1">{p.summary}</p>
                 </Link>

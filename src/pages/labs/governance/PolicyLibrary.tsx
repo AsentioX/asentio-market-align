@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
-import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle } from 'lucide-react';
+import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -8,8 +8,9 @@ import { format } from 'date-fns';
 
 const statusStyle: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-500',
-  active: 'bg-emerald-100 text-emerald-700',
-  'under-revision': 'bg-amber-100 text-amber-700',
+  commenting: 'bg-blue-100 text-blue-700',
+  voting: 'bg-indigo-100 text-indigo-700',
+  passed: 'bg-emerald-100 text-emerald-700',
   archived: 'bg-red-100 text-red-500',
 };
 
@@ -21,7 +22,7 @@ const VOTE_OPTIONS: { value: VoteType; label: string; color: string }[] = [
 
 type SortField = 'created_at' | 'title' | 'voting_deadline' | 'status';
 type FilterStatus = 'all' | PolicyStatus;
-type SectionKey = 'voting' | 'discussion' | 'passed' | 'archived';
+type SectionKey = 'draft' | 'commenting' | 'voting' | 'passed' | 'archived';
 
 const PolicyLibrary = () => {
   const { data: policies = [] } = usePolicies();
@@ -71,9 +72,10 @@ const PolicyLibrary = () => {
   // Classify policies into sections
   const classifyPolicy = (p: Policy): SectionKey => {
     if (p.status === 'archived') return 'archived';
-    if (p.status === 'active' && p.passed_at) return 'passed';
-    if (p.voting_start && !p.passed_at) return 'voting';
-    return 'discussion';
+    if (p.status === 'passed') return 'passed';
+    if (p.status === 'voting') return 'voting';
+    if (p.status === 'commenting') return 'commenting';
+    return 'draft';
   };
 
   // Filter & sort
@@ -94,12 +96,13 @@ const PolicyLibrary = () => {
 
   // Group by section, then by category within section
   const sections: { key: SectionKey; label: string; icon: React.ReactNode; policies: Policy[] }[] = useMemo(() => {
-    const groups: Record<SectionKey, Policy[]> = { voting: [], discussion: [], passed: [], archived: [] };
+    const groups: Record<SectionKey, Policy[]> = { draft: [], commenting: [], voting: [], passed: [], archived: [] };
     filtered.forEach(p => groups[classifyPolicy(p)].push(p));
     return [
-      { key: 'voting' as SectionKey, label: 'Under Voting', icon: <Vote className="w-5 h-5 text-indigo-600" />, policies: groups.voting },
-      { key: 'discussion' as SectionKey, label: 'Under Discussion', icon: <MessageCircle className="w-5 h-5 text-teal-600" />, policies: groups.discussion },
-      { key: 'passed' as SectionKey, label: 'Passed Policies', icon: <CheckCircle2 className="w-5 h-5 text-emerald-600" />, policies: groups.passed },
+      { key: 'draft' as SectionKey, label: 'Draft', icon: <FileText className="w-5 h-5 text-gray-500" />, policies: groups.draft },
+      { key: 'commenting' as SectionKey, label: 'Commenting', icon: <MessageCircle className="w-5 h-5 text-blue-600" />, policies: groups.commenting },
+      { key: 'voting' as SectionKey, label: 'Voting', icon: <Vote className="w-5 h-5 text-indigo-600" />, policies: groups.voting },
+      { key: 'passed' as SectionKey, label: 'Passed', icon: <CheckCircle2 className="w-5 h-5 text-emerald-600" />, policies: groups.passed },
       { key: 'archived' as SectionKey, label: 'Archived', icon: <Archive className="w-5 h-5 text-gray-400" />, policies: groups.archived },
     ];
   }, [filtered]);
@@ -225,14 +228,15 @@ const PolicyLibrary = () => {
             <label className="text-[10px] text-gray-500 block mb-0.5">Status</label>
             <select value={p.status} onChange={e => updatePolicy.mutate({ id: p.id, status: e.target.value as PolicyStatus })} className="text-xs border border-gray-200 rounded px-2 py-1 w-full">
               <option value="draft">Draft</option>
-              <option value="active">Active</option>
-              <option value="under-revision">Under Revision</option>
+              <option value="commenting">Commenting</option>
+              <option value="voting">Voting</option>
+              <option value="passed">Passed</option>
               <option value="archived">Archived</option>
             </select>
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => { updatePolicy.mutate({ id: p.id, passed_at: new Date().toISOString(), status: 'active' }); setEditingTimeline(null); }} className="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700">
+          <button onClick={() => { updatePolicy.mutate({ id: p.id, passed_at: new Date().toISOString(), status: 'passed' }); setEditingTimeline(null); }} className="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700">
             Mark Passed
           </button>
           <button onClick={() => setEditingTimeline(null)} className="text-[10px] text-gray-500 px-2 py-1 rounded hover:bg-gray-100">
@@ -243,7 +247,7 @@ const PolicyLibrary = () => {
     );
   };
 
-  const renderPolicyCard = (policy: Policy, indent = false, section: SectionKey = 'discussion') => (
+  const renderPolicyCard = (policy: Policy, indent = false, section: SectionKey = 'draft') => (
     <div key={policy.id} className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col ${indent ? 'ml-6 border-l-4 border-l-teal-200' : ''}`}>
       <div className="p-5 flex-1">
         <div className="flex items-start justify-between mb-2">
@@ -260,8 +264,9 @@ const PolicyLibrary = () => {
           {isAdmin && (
             <select value={policy.status} onChange={e => updatePolicy.mutate({ id: policy.id, status: e.target.value as PolicyStatus })} className="text-[10px] text-gray-400 bg-transparent border-none cursor-pointer focus:outline-none">
               <option value="draft">Draft</option>
-              <option value="active">Active</option>
-              <option value="under-revision">Under Revision</option>
+              <option value="commenting">Commenting</option>
+              <option value="voting">Voting</option>
+              <option value="passed">Passed</option>
               <option value="archived">Archived</option>
             </select>
           )}
@@ -352,8 +357,9 @@ const PolicyLibrary = () => {
         <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as FilterStatus)} className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white">
           <option value="all">All Statuses</option>
           <option value="draft">Draft</option>
-          <option value="active">Active</option>
-          <option value="under-revision">Under Revision</option>
+          <option value="commenting">Commenting</option>
+          <option value="voting">Voting</option>
+          <option value="passed">Passed</option>
           <option value="archived">Archived</option>
         </select>
         {categories.length > 0 && (
