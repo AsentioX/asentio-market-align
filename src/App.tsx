@@ -34,6 +34,7 @@ import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
 import PolicyDiscussion from "./pages/labs/governance/PolicyDiscussion";
 import TaskForceMembers from "./pages/labs/governance/TaskForceMembers";
 import GovernanceArchive from "./pages/labs/governance/GovernanceArchive";
+import MeetingMinutes from "./pages/labs/governance/MeetingMinutes";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -75,6 +76,7 @@ const AppContent = () => {
             <Route path="library" element={<PolicyLibrary />} />
             <Route path="library/:id" element={<PolicyDiscussion />} />
             <Route path="members" element={<TaskForceMembers />} />
+            <Route path="minutes" element={<MeetingMinutes />} />
             <Route path="archive" element={<GovernanceArchive />} />
           </Route>
           <Route path="/schedule" element={<Schedule />} />
