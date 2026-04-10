@@ -7,7 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { lovable } from '@/integrations/lovable/index';
 import { Loader2, ArrowLeft } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
