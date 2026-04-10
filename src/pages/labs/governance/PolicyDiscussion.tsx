@@ -12,7 +12,7 @@ const VOTE_CONFIG: { type: VoteType; label: string; color: string; bg: string }[
   { type: 'disagree', label: 'Disagree', color: '#ef4444', bg: 'bg-red-500 hover:bg-red-600' },
 ];
 
-const ProposalVotes = ({ proposalId, canParticipate }: { proposalId: string; canParticipate: boolean }) => {
+const ProposalVotes = ({ proposalId, canParticipate, isVotingMode }: { proposalId: string; canParticipate: boolean; isVotingMode: boolean }) => {
   const { data: tally } = useVoteTally(proposalId);
   const castVote = useCastVote();
 
@@ -23,19 +23,21 @@ const ProposalVotes = ({ proposalId, canParticipate }: { proposalId: string; can
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start">
-      <div className="flex gap-2 flex-1">
-        {VOTE_CONFIG.map((v) => (
-          <button
-            key={v.type}
-            onClick={() => canParticipate && castVote.mutate({ proposalId, vote: v.type })}
-            disabled={castVote.isPending || !canParticipate}
-            className={`${v.bg} text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-colors flex items-center gap-2 disabled:opacity-50`}
-          >
-            <span>{v.label}</span>
-            <span className="text-white/80">{tally[v.type]}</span>
-          </button>
-        ))}
-      </div>
+      {isVotingMode && (
+        <div className="flex gap-2 flex-1">
+          {VOTE_CONFIG.map((v) => (
+            <button
+              key={v.type}
+              onClick={() => canParticipate && castVote.mutate({ proposalId, vote: v.type })}
+              disabled={castVote.isPending || !canParticipate}
+              className={`${v.bg} text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-colors flex items-center gap-2 disabled:opacity-50`}
+            >
+              <span>{v.label}</span>
+              <span className="text-white/80">{tally[v.type]}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {totalVotes > 0 && (
         <div className="w-28 h-28 flex-shrink-0">
