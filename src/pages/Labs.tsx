@@ -65,7 +65,7 @@ const labApps: LabApp[] = [
     link: '/labs/my-dj',
   },
   {
-    name: 'Field Of View',
+    name: 'Field Of Views',
     description: 'AI-powered transcript processing, policy library, and consensus voting for collaborative task forces.',
     icon: <Scale className="w-8 h-8" />,
     status: 'beta',
