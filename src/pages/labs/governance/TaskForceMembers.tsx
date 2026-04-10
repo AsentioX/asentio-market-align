@@ -1,7 +1,12 @@
-import { useGovernanceStore } from './governanceStore';
+import { useMembers } from '@/hooks/useGovernance';
+import { Loader2 } from 'lucide-react';
 
 const TaskForceMembers = () => {
-  const { members } = useGovernanceStore();
+  const { data: members = [], isLoading } = useMembers();
+
+  if (isLoading) {
+    return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-teal-600" /></div>;
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">

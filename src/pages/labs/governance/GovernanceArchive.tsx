@@ -1,9 +1,14 @@
-import { useGovernanceStore } from './governanceStore';
-import { ArchiveRestore } from 'lucide-react';
+import { usePolicies, usePolicyMutations } from '@/hooks/useGovernance';
+import { ArchiveRestore, Loader2 } from 'lucide-react';
 
 const GovernanceArchive = () => {
-  const { policies, updatePolicyStatus } = useGovernanceStore();
+  const { data: policies = [], isLoading } = usePolicies();
+  const { updateStatus } = usePolicyMutations();
   const archived = policies.filter((p) => p.status === 'archived');
+
+  if (isLoading) {
+    return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-teal-600" /></div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -25,7 +30,7 @@ const GovernanceArchive = () => {
                 <p className="text-sm text-gray-400 mt-1 line-clamp-2">{p.summary}</p>
               </div>
               <button
-                onClick={() => updatePolicyStatus(p.id, 'draft')}
+                onClick={() => updateStatus.mutate({ id: p.id, status: 'draft' })}
                 className="flex items-center gap-1.5 text-xs text-teal-600 hover:text-teal-700 font-medium flex-shrink-0 mt-1"
               >
                 <ArchiveRestore className="w-4 h-4" /> Restore
