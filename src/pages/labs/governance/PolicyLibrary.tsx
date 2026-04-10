@@ -235,7 +235,7 @@ const PolicyLibrary = () => {
     );
   };
 
-  const renderPolicyCard = (policy: Policy, indent = false) => (
+  const renderPolicyCard = (policy: Policy, indent = false, section: SectionKey = 'discussion') => (
     <div key={policy.id} className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col ${indent ? 'ml-6 border-l-4 border-l-teal-200' : ''}`}>
       <div className="p-5 flex-1">
         <div className="flex items-start justify-between mb-2">
@@ -263,7 +263,7 @@ const PolicyLibrary = () => {
         {renderTimeline(policy)}
         {renderAdminTimeline(policy)}
         <div className="mt-3">
-          {renderVoteBar(policy.id)}
+          {renderVoteBar(policy.id, section)}
         </div>
       </div>
       <div className="border-t border-gray-100 px-5 py-3 flex items-center justify-between">
