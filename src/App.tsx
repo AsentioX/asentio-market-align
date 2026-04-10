@@ -27,6 +27,13 @@ import UseCaseForm from "./pages/UseCaseForm";
 import Labs from "./pages/Labs";
 import WOBuddyLayout from "./pages/labs/wo-buddy/WOBuddyLayout";
 import MyDJLayout from "./pages/labs/my-dj/MyDJLayout";
+import GovernanceLayout from "./pages/labs/governance/GovernanceLayout";
+import GovernanceDashboard from "./pages/labs/governance/GovernanceDashboard";
+import TranscriptUpload from "./pages/labs/governance/TranscriptUpload";
+import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
+import PolicyDiscussion from "./pages/labs/governance/PolicyDiscussion";
+import TaskForceMembers from "./pages/labs/governance/TaskForceMembers";
+import GovernanceArchive from "./pages/labs/governance/GovernanceArchive";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -37,7 +44,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/my-dj';
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/governance');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -62,6 +69,14 @@ const AppContent = () => {
           <Route path="/labs" element={<Labs />} />
           <Route path="/labs/wo-buddy" element={<WOBuddyLayout />} />
           <Route path="/labs/my-dj" element={<MyDJLayout />} />
+          <Route path="/labs/governance" element={<GovernanceLayout />}>
+            <Route index element={<GovernanceDashboard />} />
+            <Route path="upload" element={<TranscriptUpload />} />
+            <Route path="library" element={<PolicyLibrary />} />
+            <Route path="library/:id" element={<PolicyDiscussion />} />
+            <Route path="members" element={<TaskForceMembers />} />
+            <Route path="archive" element={<GovernanceArchive />} />
+          </Route>
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
