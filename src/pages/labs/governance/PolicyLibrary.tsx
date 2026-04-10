@@ -305,8 +305,8 @@ const PolicyLibrary = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {buildHierarchy(catMap[cat]).map(p => (
                     <div key={p.id}>
-                      {renderPolicyCard(p)}
-                      {p.children.map(c => renderPolicyCard(c, true))}
+                      {renderPolicyCard(p, false, section.key as SectionKey)}
+                      {p.children.map(c => renderPolicyCard(c, true, section.key as SectionKey))}
                     </div>
                   ))}
                 </div>
@@ -316,8 +316,8 @@ const PolicyLibrary = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {buildHierarchy(uncategorized).map(p => (
                   <div key={p.id}>
-                    {renderPolicyCard(p)}
-                    {p.children.map(c => renderPolicyCard(c, true))}
+                    {renderPolicyCard(p, false, section.key as SectionKey)}
+                    {p.children.map(c => renderPolicyCard(c, true, section.key as SectionKey))}
                   </div>
                 ))}
               </div>
