@@ -89,8 +89,8 @@ const TaskForceMembers = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (!user) {
-      toast({ title: 'Sign in required', variant: 'destructive' });
+    if (!isAdmin) {
+      toast({ title: 'Admin only', variant: 'destructive' });
       return;
     }
     deleteMember.mutate(id);
@@ -198,14 +198,16 @@ const TaskForceMembers = () => {
                   <p className="text-sm text-gray-500 truncate capitalize">{ROLE_OPTIONS.find(r => r.value === m.role)?.label ?? m.role}</p>
                 )}
               </div>
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => startEdit(m)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600">
-                  <Pencil className="w-3.5 h-3.5" />
-                </button>
-                <button onClick={() => handleDelete(m.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500">
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              {isAdmin && (
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => startEdit(m)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600">
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button onClick={() => handleDelete(m.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}

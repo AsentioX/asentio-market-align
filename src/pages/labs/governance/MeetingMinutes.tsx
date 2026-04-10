@@ -157,7 +157,7 @@ const MeetingMinutes = () => {
           <h2 className="text-2xl font-bold text-gray-800">Meeting Minutes</h2>
           <p className="text-gray-500 text-sm mt-1">Record and review meeting notes, decisions, and attendees.</p>
         </div>
-        {user && (
+        {isAdmin && (
           <button
             onClick={() => { resetForm(); setShowForm(true); }}
             className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors flex items-center gap-2"
