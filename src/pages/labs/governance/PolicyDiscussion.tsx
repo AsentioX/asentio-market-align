@@ -89,6 +89,7 @@ const PolicyDiscussion = () => {
   const { data: policy, isLoading: policyLoading } = usePolicy(id);
   const { data: proposals = [], isLoading: proposalsLoading } = useProposals(id);
   const { addProposal } = useProposalMutations();
+  const deleteProposal = useDeleteProposal();
   const canParticipate = useCanParticipate();
   const { user } = useAuth();
   const { data: members = [] } = useMembers();
