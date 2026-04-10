@@ -230,13 +230,23 @@ const PolicyDiscussion = () => {
                     {proposal.author.charAt(0).toUpperCase()}
                   </span>
                 )}
-                <div>
+                <div className="flex-1">
                   <h4 className="font-semibold text-gray-800">{proposal.title}</h4>
                   <p className="text-xs text-gray-400 mt-0.5">
                     by <span className="font-medium text-gray-600">{proposal.author}</span>
                     {member && <span className="ml-1 text-gray-300">· {member.role}</span>}
                   </p>
                 </div>
+                {(user && proposal.created_by === user.id || isAdmin) && (
+                  <button
+                    onClick={() => deleteProposal.mutate({ proposalId: proposal.id, policyId: policy.id })}
+                    disabled={deleteProposal.isPending}
+                    className="text-gray-300 hover:text-red-500 transition-colors p-1 flex-shrink-0"
+                    title="Delete comment"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
               {proposal.description && <p className="text-sm text-gray-600 mb-4 ml-11">{proposal.description}</p>}
               <div className="ml-11">
