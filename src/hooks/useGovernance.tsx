@@ -12,6 +12,11 @@ export interface Policy {
   context_snippet: string | null;
   status: PolicyStatus;
   created_at: string;
+  voting_start: string | null;
+  voting_deadline: string | null;
+  passed_at: string | null;
+  category: string | null;
+  parent_id: string | null;
 }
 
 export interface Proposal {
