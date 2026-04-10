@@ -1,6 +1,8 @@
-import { usePolicies, usePolicyMutations, PolicyStatus } from '@/hooks/useGovernance';
-import { MessageCircle } from 'lucide-react';
+import { usePolicies, usePolicyMutations, usePolicyLikes, PolicyStatus } from '@/hooks/useGovernance';
+import { MessageCircle, ThumbsUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const statusStyle: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-500',
@@ -11,7 +13,21 @@ const statusStyle: Record<string, string> = {
 const PolicyLibrary = () => {
   const { data: policies = [] } = usePolicies();
   const { updateStatus } = usePolicyMutations();
+  const { likes, toggleLike } = usePolicyLikes();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const visible = policies.filter((p) => p.status !== 'archived');
+
+  const getLikeCount = (policyId: string) => likes.filter((l) => l.policy_id === policyId).length;
+  const hasLiked = (policyId: string) => !!user && likes.some((l) => l.policy_id === policyId && l.user_id === user.id);
+
+  const handleLike = (policyId: string) => {
+    if (!user) {
+      toast({ title: 'Sign in required', description: 'You must be logged in to like a policy.', variant: 'destructive' });
+      return;
+    }
+    toggleLike.mutate(policyId);
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -49,7 +65,7 @@ const PolicyLibrary = () => {
                 <h3 className="font-semibold text-gray-800 mb-2">{policy.title}</h3>
                 <p className="text-sm text-gray-500 line-clamp-3">{policy.summary}</p>
               </div>
-              <div className="border-t border-gray-100 px-5 py-3">
+              <div className="border-t border-gray-100 px-5 py-3 flex items-center justify-between">
                 <Link
                   to={`/labs/governance/library/${policy.id}`}
                   className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"
@@ -57,6 +73,15 @@ const PolicyLibrary = () => {
                   <MessageCircle className="w-4 h-4" />
                   Discussion
                 </Link>
+                <button
+                  onClick={() => handleLike(policy.id)}
+                  className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
+                    hasLiked(policy.id) ? 'text-teal-600' : 'text-gray-400 hover:text-teal-500'
+                  }`}
+                >
+                  <ThumbsUp className={`w-4 h-4 ${hasLiked(policy.id) ? 'fill-teal-600' : ''}`} />
+                  {getLikeCount(policy.id) > 0 && <span>{getLikeCount(policy.id)}</span>}
+                </button>
               </div>
             </div>
           ))}
