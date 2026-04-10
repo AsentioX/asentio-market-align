@@ -151,7 +151,9 @@ const PolicyLibrary = () => {
     );
   };
 
-  const renderVoteBar = (policyId: string) => {
+  const renderVoteBar = (policyId: string, section: SectionKey) => {
+    if (section !== 'voting') return null;
+
     const tally = getVoteTally(policyId);
     const userVote = getUserVote(policyId);
     if (tally.total === 0 && !user) return null;
