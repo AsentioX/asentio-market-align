@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, useCanParticipate, VoteType } from '@/hooks/useGovernance';
+import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, useCanParticipate, useMembers, VoteType } from '@/hooks/useGovernance';
+import { useAuth } from '@/hooks/useAuth';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
@@ -57,7 +58,6 @@ const ProposalVotes = ({ proposalId, canParticipate, isVotingMode }: { proposalI
   );
 };
 
-// Hook to fetch all vote tallies for a set of proposal IDs
 function useAllProposalTallies(proposalIds: string[]) {
   return useQuery({
     queryKey: ['gov-votes-all', proposalIds],
@@ -79,12 +79,27 @@ function useAllProposalTallies(proposalIds: string[]) {
   });
 }
 
+const parseBgColor = (avatar: string) => {
+  const parts = avatar.split('|');
+  return { emoji: parts[0] || '🐻', bgColor: parts[1] || 'bg-teal-100 text-teal-700' };
+};
+
 const PolicyDiscussion = () => {
   const { id } = useParams<{ id: string }>();
   const { data: policy, isLoading: policyLoading } = usePolicy(id);
   const { data: proposals = [], isLoading: proposalsLoading } = useProposals(id);
   const { addProposal } = useProposalMutations();
   const canParticipate = useCanParticipate();
+  const { user } = useAuth();
+  const { data: members = [] } = useMembers();
+
+  // Resolve current user's member name
+  const currentMember = useMemo(() => {
+    if (!user) return null;
+    return members.find(m => m.user_id === user.id) ?? null;
+  }, [user, members]);
+
+  const getMemberByName = (name: string) => members.find(m => m.name === name);
 
   const proposalIds = useMemo(() => proposals.map(p => p.id), [proposals]);
   const { data: tallies } = useAllProposalTallies(proposalIds);
@@ -119,7 +134,8 @@ const PolicyDiscussion = () => {
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    addProposal.mutate({ policy_id: policy.id, title, description: desc, author: 'You' });
+    const authorName = currentMember?.name ?? user?.email ?? 'Anonymous';
+    addProposal.mutate({ policy_id: policy.id, title, description: desc, author: authorName });
     setTitle('');
     setDesc('');
     setShowForm(false);
@@ -162,6 +178,17 @@ const PolicyDiscussion = () => {
 
         {showForm && (
           <div className="bg-white rounded-xl border border-teal-200 p-5 shadow-sm space-y-3">
+            {currentMember && (
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                {(() => {
+                  const { emoji, bgColor } = parseBgColor(currentMember.avatar);
+                  return (
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${bgColor}`}>{emoji}</span>
+                  );
+                })()}
+                Posting as <span className="font-medium text-gray-700">{currentMember.name}</span>
+              </div>
+            )}
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -186,18 +213,37 @@ const PolicyDiscussion = () => {
           <p className="text-sm text-gray-400 py-6 text-center">No comments yet. Start the conversation!</p>
         )}
 
-        {sortedProposals.map((proposal) => (
-          <div key={proposal.id} className="bg-white rounded-xl border-2 border-gray-200 p-5 shadow-sm">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <h4 className="font-semibold text-gray-800">{proposal.title}</h4>
-                <p className="text-xs text-gray-400 mt-0.5">by {proposal.author}</p>
+        {sortedProposals.map((proposal) => {
+          const member = getMemberByName(proposal.author);
+          const avatarInfo = member ? parseBgColor(member.avatar) : null;
+
+          return (
+            <div key={proposal.id} className="bg-white rounded-xl border-2 border-gray-200 p-5 shadow-sm">
+              <div className="flex items-start gap-3 mb-2">
+                {avatarInfo ? (
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center text-lg flex-shrink-0 ${avatarInfo.bgColor}`}>
+                    {avatarInfo.emoji}
+                  </span>
+                ) : (
+                  <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-500 flex-shrink-0">
+                    {proposal.author.charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <div>
+                  <h4 className="font-semibold text-gray-800">{proposal.title}</h4>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    by <span className="font-medium text-gray-600">{proposal.author}</span>
+                    {member && <span className="ml-1 text-gray-300">· {member.role}</span>}
+                  </p>
+                </div>
+              </div>
+              {proposal.description && <p className="text-sm text-gray-600 mb-4 ml-11">{proposal.description}</p>}
+              <div className="ml-11">
+                <ProposalVotes proposalId={proposal.id} canParticipate={canParticipate} isVotingMode={!!policy.voting_start && !policy.passed_at} />
               </div>
             </div>
-            {proposal.description && <p className="text-sm text-gray-600 mb-4">{proposal.description}</p>}
-            <ProposalVotes proposalId={proposal.id} canParticipate={canParticipate} isVotingMode={!!policy.voting_start && !policy.passed_at} />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
