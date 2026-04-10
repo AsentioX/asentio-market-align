@@ -311,13 +311,11 @@ const PolicyLibrary = () => {
             )}
           </div>
           {isAdmin && (
-            <select value={policy.status} onChange={e => updatePolicy.mutate({ id: policy.id, status: e.target.value as PolicyStatus })} className="text-[10px] text-gray-400 bg-transparent border-none cursor-pointer focus:outline-none">
-              <option value="draft">Draft</option>
-              <option value="commenting">Commenting</option>
-              <option value="voting">Voting</option>
-              <option value="passed">Passed</option>
-              <option value="archived">Archived</option>
-            </select>
+            <PolicyStatusDropdown
+              current={policy.status}
+              onChange={(s) => updatePolicy.mutate({ id: policy.id, status: s })}
+              onDelete={() => { if (confirm('Delete this policy permanently?')) deletePolicy.mutate(policy.id); }}
+            />
           )}
         </div>
         <h3 className="font-semibold text-gray-800 mb-1">{policy.title}</h3>
