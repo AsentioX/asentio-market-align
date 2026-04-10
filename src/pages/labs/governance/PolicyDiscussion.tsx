@@ -94,10 +94,12 @@ const PolicyDiscussion = () => {
   const { user, isAdmin } = useAuth();
   const { data: members = [] } = useMembers();
 
-  // Resolve current user's member name
+  // Resolve current user's member name (by user_id or email)
   const currentMember = useMemo(() => {
     if (!user) return null;
-    return members.find(m => m.user_id === user.id) ?? null;
+    return members.find(m => m.user_id === user.id) 
+      ?? members.find(m => m.email?.toLowerCase() === user.email?.toLowerCase()) 
+      ?? null;
   }, [user, members]);
 
   const getMemberByName = (name: string) => members.find(m => m.name === name);
