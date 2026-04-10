@@ -120,8 +120,15 @@ export function usePolicyMutations() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-policies'] }),
   });
 
-  return { addPolicy, updateStatus };
-}
+  const updatePolicy = useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; status?: PolicyStatus; voting_start?: string | null; voting_deadline?: string | null; passed_at?: string | null; category?: string | null; parent_id?: string | null }) => {
+      const { error } = await supabase.from('gov_policies').update(updates).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-policies'] }),
+  });
+
+  return { addPolicy, updateStatus, updatePolicy };
 
 // Proposals
 export function useProposals(policyId: string | undefined) {
