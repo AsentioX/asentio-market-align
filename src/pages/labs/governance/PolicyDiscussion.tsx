@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, VoteType } from '@/hooks/useGovernance';
+import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, useCanParticipate, VoteType } from '@/hooks/useGovernance';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
@@ -12,7 +12,7 @@ const VOTE_CONFIG: { type: VoteType; label: string; color: string; bg: string }[
   { type: 'disagree', label: 'Disagree', color: '#ef4444', bg: 'bg-red-500 hover:bg-red-600' },
 ];
 
-const ProposalVotes = ({ proposalId }: { proposalId: string }) => {
+const ProposalVotes = ({ proposalId, canParticipate }: { proposalId: string; canParticipate: boolean }) => {
   const { data: tally } = useVoteTally(proposalId);
   const castVote = useCastVote();
 
@@ -27,8 +27,8 @@ const ProposalVotes = ({ proposalId }: { proposalId: string }) => {
         {VOTE_CONFIG.map((v) => (
           <button
             key={v.type}
-            onClick={() => castVote.mutate({ proposalId, vote: v.type })}
-            disabled={castVote.isPending}
+            onClick={() => canParticipate && castVote.mutate({ proposalId, vote: v.type })}
+            disabled={castVote.isPending || !canParticipate}
             className={`${v.bg} text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-colors flex items-center gap-2 disabled:opacity-50`}
           >
             <span>{v.label}</span>
@@ -82,6 +82,7 @@ const PolicyDiscussion = () => {
   const { data: policy, isLoading: policyLoading } = usePolicy(id);
   const { data: proposals = [], isLoading: proposalsLoading } = useProposals(id);
   const { addProposal } = useProposalMutations();
+  const canParticipate = useCanParticipate();
 
   const proposalIds = useMemo(() => proposals.map(p => p.id), [proposals]);
   const { data: tallies } = useAllProposalTallies(proposalIds);
@@ -141,13 +142,21 @@ const PolicyDiscussion = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-gray-800">Comments</h3>
-          <button
-            onClick={() => setShowForm(true)}
-            className="px-4 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition-colors flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" /> New Comment
-          </button>
+          {canParticipate && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="px-4 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition-colors flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" /> New Comment
+            </button>
+          )}
         </div>
+
+        {!canParticipate && (
+          <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+            Community Members have view-only access. Contact an admin to upgrade your role.
+          </p>
+        )}
 
         {showForm && (
           <div className="bg-white rounded-xl border border-teal-200 p-5 shadow-sm space-y-3">
@@ -184,7 +193,7 @@ const PolicyDiscussion = () => {
               </div>
             </div>
             {proposal.description && <p className="text-sm text-gray-600 mb-4">{proposal.description}</p>}
-            <ProposalVotes proposalId={proposal.id} />
+            <ProposalVotes proposalId={proposal.id} canParticipate={canParticipate} />
           </div>
         ))}
       </div>
