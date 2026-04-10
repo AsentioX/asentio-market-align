@@ -36,7 +36,7 @@ const GovernanceLayout = () => {
             <ChevronLeft className="w-4 h-4" />
             Labs
           </Link>
-          <h1 className="text-base font-semibold text-gray-800">Field Of View</h1>
+          <h1 className="text-base font-semibold text-gray-800">Field Of Views</h1>
         </div>
         <div className="flex items-center gap-1 overflow-x-auto pb-1">
           {PHASES.map((p, i) => (
