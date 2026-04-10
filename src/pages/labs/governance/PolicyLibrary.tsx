@@ -17,7 +17,6 @@ const VOTE_OPTIONS: { value: VoteType; label: string; color: string }[] = [
   { value: 'agree', label: 'Agree', color: 'bg-emerald-500' },
   { value: 'abstain', label: 'Abstain', color: 'bg-gray-400' },
   { value: 'disagree', label: 'Disagree', color: 'bg-amber-500' },
-  { value: 'block', label: 'Block', color: 'bg-red-500' },
 ];
 
 type SortField = 'created_at' | 'title' | 'voting_deadline' | 'status';

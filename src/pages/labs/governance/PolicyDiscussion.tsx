@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, VoteType } from '@/hooks/useGovernance';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const VOTE_CONFIG: { type: VoteType; label: string; color: string; bg: string }[] = [
   { type: 'agree', label: 'Agree', color: '#10b981', bg: 'bg-emerald-500 hover:bg-emerald-600' },
   { type: 'abstain', label: 'Abstain', color: '#eab308', bg: 'bg-yellow-500 hover:bg-yellow-600' },
   { type: 'disagree', label: 'Disagree', color: '#ef4444', bg: 'bg-red-500 hover:bg-red-600' },
-  { type: 'block', label: 'Block', color: '#f97316', bg: 'bg-orange-500 hover:bg-orange-600' },
 ];
 
 const ProposalVotes = ({ proposalId }: { proposalId: string }) => {
@@ -17,21 +18,21 @@ const ProposalVotes = ({ proposalId }: { proposalId: string }) => {
 
   if (!tally) return null;
 
-  const totalVotes = Object.values(tally).reduce((a, b) => a + b, 0);
+  const totalVotes = tally.agree + tally.abstain + tally.disagree;
   const chartData = VOTE_CONFIG.map((v) => ({ name: v.label, value: tally[v.type], color: v.color })).filter(d => d.value > 0);
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1">
+      <div className="flex gap-2 flex-1">
         {VOTE_CONFIG.map((v) => (
           <button
             key={v.type}
             onClick={() => castVote.mutate({ proposalId, vote: v.type })}
             disabled={castVote.isPending}
-            className={`${v.bg} text-white rounded-xl px-3 py-3 text-xs font-bold transition-colors flex flex-col items-center gap-1 disabled:opacity-50`}
+            className={`${v.bg} text-white rounded-lg px-3 py-1.5 text-xs font-bold transition-colors flex items-center gap-2 disabled:opacity-50`}
           >
             <span>{v.label}</span>
-            <span className="text-white/80 text-lg">{tally[v.type]}</span>
+            <span className="text-white/80">{tally[v.type]}</span>
           </button>
         ))}
       </div>
@@ -54,11 +55,47 @@ const ProposalVotes = ({ proposalId }: { proposalId: string }) => {
   );
 };
 
+// Hook to fetch all vote tallies for a set of proposal IDs
+function useAllProposalTallies(proposalIds: string[]) {
+  return useQuery({
+    queryKey: ['gov-votes-all', proposalIds],
+    enabled: proposalIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('gov_votes').select('proposal_id, vote').in('proposal_id', proposalIds);
+      if (error) throw error;
+      const tallies: Record<string, { agree: number; abstain: number; disagree: number; block: number }> = {};
+      for (const id of proposalIds) {
+        tallies[id] = { agree: 0, abstain: 0, disagree: 0, block: 0 };
+      }
+      data?.forEach((v) => {
+        if (tallies[v.proposal_id]) {
+          tallies[v.proposal_id][v.vote as VoteType]++;
+        }
+      });
+      return tallies;
+    },
+  });
+}
+
 const PolicyDiscussion = () => {
   const { id } = useParams<{ id: string }>();
   const { data: policy, isLoading: policyLoading } = usePolicy(id);
   const { data: proposals = [], isLoading: proposalsLoading } = useProposals(id);
   const { addProposal } = useProposalMutations();
+
+  const proposalIds = useMemo(() => proposals.map(p => p.id), [proposals]);
+  const { data: tallies } = useAllProposalTallies(proposalIds);
+
+  const sortedProposals = useMemo(() => {
+    if (!tallies) return proposals;
+    return [...proposals].sort((a, b) => {
+      const ta = tallies[a.id] || { agree: 0, disagree: 0, abstain: 0 };
+      const tb = tallies[b.id] || { agree: 0, disagree: 0, abstain: 0 };
+      if (tb.agree !== ta.agree) return tb.agree - ta.agree;
+      if (tb.disagree !== ta.disagree) return tb.disagree - ta.disagree;
+      return tb.abstain - ta.abstain;
+    });
+  }, [proposals, tallies]);
 
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
@@ -103,12 +140,12 @@ const PolicyDiscussion = () => {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">Proposals</h3>
+          <h3 className="font-semibold text-gray-800">Comments</h3>
           <button
             onClick={() => setShowForm(true)}
             className="px-4 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition-colors flex items-center gap-1.5"
           >
-            <Plus className="w-3.5 h-3.5" /> New Proposal
+            <Plus className="w-3.5 h-3.5" /> New Comment
           </button>
         </div>
 
@@ -117,13 +154,13 @@ const PolicyDiscussion = () => {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Proposal title…"
+              placeholder="Comment title…"
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
             <textarea
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
-              placeholder="Describe the proposal…"
+              placeholder="Describe your comment…"
               rows={3}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
@@ -134,11 +171,11 @@ const PolicyDiscussion = () => {
           </div>
         )}
 
-        {proposals.length === 0 && !showForm && (
-          <p className="text-sm text-gray-400 py-6 text-center">No proposals yet. Start the conversation!</p>
+        {sortedProposals.length === 0 && !showForm && (
+          <p className="text-sm text-gray-400 py-6 text-center">No comments yet. Start the conversation!</p>
         )}
 
-        {proposals.map((proposal) => (
+        {sortedProposals.map((proposal) => (
           <div key={proposal.id} className="bg-white rounded-xl border-2 border-gray-200 p-5 shadow-sm">
             <div className="flex items-start justify-between mb-2">
               <div>
