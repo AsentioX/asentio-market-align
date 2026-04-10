@@ -90,7 +90,7 @@ const PolicyDiscussion = () => {
         )}
 
         {policy.proposals.map((proposal) => {
-          const totalVotes = Object.values(proposal.votes).reduce((a, b) => a + b, 0);
+          const totalVotes = (Object.values(proposal.votes) as number[]).reduce((a, b) => a + b, 0);
           const chartData = VOTE_CONFIG.map((v) => ({ name: v.label, value: proposal.votes[v.type], color: v.color })).filter(d => d.value > 0);
 
           return (
