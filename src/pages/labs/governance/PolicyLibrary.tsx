@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
-import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText } from 'lucide-react';
+import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 
 const statusStyle: Record<string, string> = {
@@ -23,10 +24,49 @@ const VOTE_OPTIONS: { value: VoteType; label: string; color: string }[] = [
 type SortField = 'created_at' | 'title' | 'voting_deadline' | 'status';
 type FilterStatus = 'all' | PolicyStatus;
 type SectionKey = 'draft' | 'commenting' | 'voting' | 'passed' | 'archived';
+const STATUS_OPTIONS: { value: PolicyStatus; label: string }[] = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'commenting', label: 'Commenting' },
+  { value: 'voting', label: 'Voting' },
+  { value: 'passed', label: 'Passed' },
+  { value: 'archived', label: 'Archived' },
+];
+
+const PolicyStatusDropdown = ({ current, onChange, onDelete, className = '' }: { current: PolicyStatus; onChange: (s: PolicyStatus) => void; onDelete: () => void; className?: string }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className={`relative inline-block ${className}`}>
+      <button onClick={() => setOpen(!open)} className="text-[10px] text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none flex items-center gap-1">
+        {current.replace('-', ' ')} <ChevronDown className="w-3 h-3" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[120px]">
+          {STATUS_OPTIONS.map(opt => (
+            <button key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }} className={`w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50 ${current === opt.value ? 'font-semibold text-teal-700' : 'text-gray-600'}`}>
+              {opt.label}
+            </button>
+          ))}
+          <Separator className="my-1" />
+          <button onClick={() => { onDelete(); setOpen(false); }} className="w-full text-left text-xs px-3 py-1.5 hover:bg-red-50 text-red-600 flex items-center gap-1.5">
+            <Trash2 className="w-3 h-3" /> Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const PolicyLibrary = () => {
   const { data: policies = [] } = usePolicies();
-  const { updateStatus, updatePolicy } = usePolicyMutations();
+  const { updateStatus, updatePolicy, deletePolicy } = usePolicyMutations();
   const { likes, toggleLike } = usePolicyLikes();
   const { votes, castVote, removeVote } = usePolicyVotes();
   const { user, isAdmin } = useAuth();
@@ -226,12 +266,21 @@ const PolicyLibrary = () => {
           </div>
           <div>
             <label className="text-[10px] text-gray-500 block mb-0.5">Status</label>
-            <select value={p.status} onChange={e => updatePolicy.mutate({ id: p.id, status: e.target.value as PolicyStatus })} className="text-xs border border-gray-200 rounded px-2 py-1 w-full">
+            <select value={p.status} onChange={e => {
+              const val = e.target.value;
+              if (val === '__delete__') {
+                if (confirm('Delete this policy permanently?')) deletePolicy.mutate(p.id);
+              } else {
+                updatePolicy.mutate({ id: p.id, status: val as PolicyStatus });
+              }
+            }} className="text-xs border border-gray-200 rounded px-2 py-1 w-full">
               <option value="draft">Draft</option>
               <option value="commenting">Commenting</option>
               <option value="voting">Voting</option>
               <option value="passed">Passed</option>
               <option value="archived">Archived</option>
+              <option disabled>──────────</option>
+              <option value="__delete__" className="text-red-600">🗑 Delete</option>
             </select>
           </div>
         </div>
@@ -262,13 +311,11 @@ const PolicyLibrary = () => {
             )}
           </div>
           {isAdmin && (
-            <select value={policy.status} onChange={e => updatePolicy.mutate({ id: policy.id, status: e.target.value as PolicyStatus })} className="text-[10px] text-gray-400 bg-transparent border-none cursor-pointer focus:outline-none">
-              <option value="draft">Draft</option>
-              <option value="commenting">Commenting</option>
-              <option value="voting">Voting</option>
-              <option value="passed">Passed</option>
-              <option value="archived">Archived</option>
-            </select>
+            <PolicyStatusDropdown
+              current={policy.status}
+              onChange={(s) => updatePolicy.mutate({ id: policy.id, status: s })}
+              onDelete={() => { if (confirm('Delete this policy permanently?')) deletePolicy.mutate(policy.id); }}
+            />
           )}
         </div>
         <h3 className="font-semibold text-gray-800 mb-1">{policy.title}</h3>

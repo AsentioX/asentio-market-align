@@ -131,7 +131,15 @@ export function usePolicyMutations() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-policies'] }),
   });
 
-  return { addPolicy, updateStatus, updatePolicy };
+  const deletePolicy = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('gov_policies').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-policies'] }),
+  });
+
+  return { addPolicy, updateStatus, updatePolicy, deletePolicy };
 }
 
 // Policy Votes
