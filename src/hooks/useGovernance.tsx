@@ -184,6 +184,40 @@ export function useCastVote() {
   });
 }
 
+// Policy Likes
+export function usePolicyLikes() {
+  const qc = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['gov-policy-likes'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('gov_policy_likes').select('policy_id, user_id');
+      if (error) throw error;
+      return data as { policy_id: string; user_id: string }[];
+    },
+  });
+
+  const toggleLike = useMutation({
+    mutationFn: async (policyId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Must be logged in');
+      const existing = (query.data ?? []).find(
+        (l) => l.policy_id === policyId && l.user_id === user.id
+      );
+      if (existing) {
+        const { error } = await supabase.from('gov_policy_likes').delete().eq('policy_id', policyId).eq('user_id', user.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('gov_policy_likes').insert({ policy_id: policyId, user_id: user.id });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-policy-likes'] }),
+  });
+
+  return { likes: query.data ?? [], toggleLike };
+}
+
 // Members
 export function useMembers() {
   return useQuery({
@@ -194,6 +228,36 @@ export function useMembers() {
       return data as Member[];
     },
   });
+}
+
+export function useMemberMutations() {
+  const qc = useQueryClient();
+
+  const addMember = useMutation({
+    mutationFn: async (m: { name: string; role: string; avatar: string }) => {
+      const { error } = await supabase.from('gov_members').insert(m);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-members'] }),
+  });
+
+  const updateMember = useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; name?: string; role?: string; avatar?: string }) => {
+      const { error } = await supabase.from('gov_members').update(updates).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-members'] }),
+  });
+
+  const deleteMember = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('gov_members').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-members'] }),
+  });
+
+  return { addMember, updateMember, deleteMember };
 }
 
 // Drafts

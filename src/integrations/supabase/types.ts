@@ -330,6 +330,35 @@ export type Database = {
         }
         Relationships: []
       }
+      gov_policy_likes: {
+        Row: {
+          created_at: string
+          id: string
+          policy_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          policy_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          policy_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_policy_likes_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gov_proposals: {
         Row: {
           author: string
