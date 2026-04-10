@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -63,6 +63,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Music', 'Spatial Audio'],
     link: '/labs/my-dj',
+  },
+  {
+    name: 'Governance Engine',
+    description: 'AI-powered transcript processing, policy library, and consensus voting for collaborative task forces.',
+    icon: <Scale className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Governance', 'Collaboration', 'AI'],
+    link: '/labs/governance',
   },
 ];
 
