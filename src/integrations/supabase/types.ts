@@ -270,6 +270,50 @@ export type Database = {
         }
         Relationships: []
       }
+      gov_meeting_minutes: {
+        Row: {
+          attendees: string[]
+          created_at: string
+          created_by: string | null
+          id: string
+          meeting_date: string
+          notes: string
+          title: string
+          transcript_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          attendees?: string[]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          meeting_date?: string
+          notes?: string
+          title: string
+          transcript_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attendees?: string[]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          meeting_date?: string
+          notes?: string
+          title?: string
+          transcript_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_meeting_minutes_transcript_id_fkey"
+            columns: ["transcript_id"]
+            isOneToOne: false
+            referencedRelation: "gov_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gov_members: {
         Row: {
           avatar: string
