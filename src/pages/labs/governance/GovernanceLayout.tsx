@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Upload, Library, Users, Archive, Menu, X, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, Upload, Library, Users, Archive, Menu, X, ChevronLeft, FileText } from 'lucide-react';
 import { usePhase, Phase } from '@/hooks/useGovernance';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/labs/governance', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/labs/governance/upload', icon: Upload, label: 'Transcript Upload', end: false },
   { to: '/labs/governance/library', icon: Library, label: 'Policy Library', end: false },
+  { to: '/labs/governance/minutes', icon: FileText, label: 'Meeting Minutes', end: false },
   { to: '/labs/governance/members', icon: Users, label: 'Task Force', end: false },
   { to: '/labs/governance/archive', icon: Archive, label: 'Archive', end: false },
 ];
