@@ -91,7 +91,7 @@ const PolicyDiscussion = () => {
   const { addProposal } = useProposalMutations();
   const deleteProposal = useDeleteProposal();
   const canParticipate = useCanParticipate();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { data: members = [] } = useMembers();
 
   // Resolve current user's member name

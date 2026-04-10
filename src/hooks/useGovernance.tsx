@@ -25,6 +25,7 @@ export interface Proposal {
   title: string;
   description: string;
   author: string;
+  created_by: string | null;
   created_at: string;
 }
 
