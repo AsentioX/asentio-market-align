@@ -124,7 +124,7 @@ export function usePolicyMutations() {
   });
 
   const updatePolicy = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; status?: PolicyStatus; voting_start?: string | null; voting_deadline?: string | null; passed_at?: string | null; category?: string | null; parent_id?: string | null }) => {
+    mutationFn: async ({ id, ...updates }: { id: string; title?: string; summary?: string; status?: PolicyStatus; voting_start?: string | null; voting_deadline?: string | null; passed_at?: string | null; category?: string | null; parent_id?: string | null }) => {
       const { error } = await supabase.from('gov_policies').update(updates).eq('id', id);
       if (error) throw error;
     },

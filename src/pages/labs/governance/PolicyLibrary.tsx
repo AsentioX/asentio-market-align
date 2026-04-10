@@ -191,16 +191,24 @@ const PolicyLibrary = () => {
     if (!isAdmin) return null;
     if (editingTimeline !== p.id) {
       return (
-        <button onClick={() => setEditingTimeline(p.id)} className="text-[10px] text-teal-600 hover:text-teal-700 font-medium mt-1">
-          Set Timeline
+        <button onClick={() => setEditingTimeline(p.id)} className="text-[10px] text-teal-600 hover:text-teal-700 font-medium mt-1 flex items-center gap-1">
+          ✏️ Edit Policy
         </button>
       );
     }
     return (
       <div className="mt-2 space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <div>
+          <label className="text-[10px] text-gray-500 block mb-0.5">Title</label>
+          <input type="text" defaultValue={p.title} onBlur={e => { if (e.target.value && e.target.value !== p.title) updatePolicy.mutate({ id: p.id, title: e.target.value }); }} className="text-xs border border-gray-200 rounded px-2 py-1 w-full font-medium" />
+        </div>
+        <div>
+          <label className="text-[10px] text-gray-500 block mb-0.5">Summary</label>
+          <textarea defaultValue={p.summary} rows={2} onBlur={e => { if (e.target.value && e.target.value !== p.summary) updatePolicy.mutate({ id: p.id, summary: e.target.value }); }} className="text-xs border border-gray-200 rounded px-2 py-1 w-full resize-none" />
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-[10px] text-gray-500 block mb-0.5">Voting Start</label>
+            <label className="text-[10px] text-gray-500 block mb-0.5">Commenting Deadline (Voting Start)</label>
             <input type="date" defaultValue={p.voting_start ? format(new Date(p.voting_start), 'yyyy-MM-dd') : ''} onChange={e => updatePolicy.mutate({ id: p.id, voting_start: e.target.value ? new Date(e.target.value).toISOString() : null })} className="text-xs border border-gray-200 rounded px-2 py-1 w-full" />
           </div>
           <div>
