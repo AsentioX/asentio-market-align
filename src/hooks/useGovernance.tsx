@@ -42,6 +42,7 @@ export interface Member {
   role: string;
   avatar: string;
   user_id: string | null;
+  email: string | null;
 }
 
 export interface Draft {
@@ -287,16 +288,26 @@ export function usePolicyLikes() {
   return { likes: query.data ?? [], toggleLike };
 }
 
-// Governance role for current user
+// Governance role for current user (auto-links by email if not yet linked)
 export function useGovRole() {
   const membersQuery = useMembers();
+  const qc = useQueryClient();
   return useQuery({
     queryKey: ['gov-role'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       const members = membersQuery.data ?? [];
-      const match = members.find(m => m.user_id === user.id);
+      // First try matching by user_id
+      let match = members.find(m => m.user_id === user.id);
+      if (!match && user.email) {
+        // Try matching by email and auto-link
+        match = members.find(m => m.email?.toLowerCase() === user.email?.toLowerCase() && !m.user_id);
+        if (match) {
+          await supabase.from('gov_members').update({ user_id: user.id }).eq('id', match.id);
+          qc.invalidateQueries({ queryKey: ['gov-members'] });
+        }
+      }
       return match?.role ?? null;
     },
     enabled: !membersQuery.isLoading,
@@ -326,15 +337,20 @@ export function useMemberMutations() {
   const qc = useQueryClient();
 
   const addMember = useMutation({
-    mutationFn: async (m: { name: string; role: string; avatar: string }) => {
-      const { error } = await supabase.from('gov_members').insert(m);
+    mutationFn: async (m: { name: string; role: string; avatar: string; email?: string }) => {
+      const { error } = await supabase.from('gov_members').insert({
+        name: m.name,
+        role: m.role,
+        avatar: m.avatar,
+        email: m.email || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-members'] }),
   });
 
   const updateMember = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; name?: string; role?: string; avatar?: string }) => {
+    mutationFn: async ({ id, ...updates }: { id: string; name?: string; role?: string; avatar?: string; email?: string }) => {
       const { error } = await supabase.from('gov_members').update(updates).eq('id', id);
       if (error) throw error;
     },
