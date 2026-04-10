@@ -40,7 +40,7 @@ const TranscriptUpload = () => {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     const f = e.dataTransfer.files[0];
-    if (f && (f.name.endsWith('.txt') || f.name.endsWith('.pdf'))) setFile(f);
+    if (f && (f.name.endsWith('.txt') || f.name.endsWith('.pdf') || f.name.endsWith('.rtf'))) setFile(f);
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,9 +101,9 @@ const TranscriptUpload = () => {
           <label className="cursor-pointer flex flex-col items-center gap-3">
             <Upload className="w-10 h-10 text-gray-300" />
             <p className="text-sm text-gray-500">
-              Drag & drop a <span className="font-medium">.txt</span> or <span className="font-medium">.pdf</span> file, or click to browse
+              Drag & drop a <span className="font-medium">.txt</span>, <span className="font-medium">.pdf</span>, or <span className="font-medium">.rtf</span> file, or click to browse
             </p>
-            <input type="file" accept=".txt,.pdf" onChange={handleFileSelect} className="hidden" />
+            <input type="file" accept=".txt,.pdf,.rtf" onChange={handleFileSelect} className="hidden" />
           </label>
         )}
       </div>
