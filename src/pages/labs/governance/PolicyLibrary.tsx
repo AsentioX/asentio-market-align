@@ -247,7 +247,7 @@ const PolicyLibrary = () => {
     );
   };
 
-  const renderPolicyCard = (policy: Policy, indent = false, section: SectionKey = 'discussion') => (
+  const renderPolicyCard = (policy: Policy, indent = false, section: SectionKey = 'draft') => (
     <div key={policy.id} className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col ${indent ? 'ml-6 border-l-4 border-l-teal-200' : ''}`}>
       <div className="p-5 flex-1">
         <div className="flex items-start justify-between mb-2">
