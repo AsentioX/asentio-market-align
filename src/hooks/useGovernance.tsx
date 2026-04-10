@@ -288,16 +288,26 @@ export function usePolicyLikes() {
   return { likes: query.data ?? [], toggleLike };
 }
 
-// Governance role for current user
+// Governance role for current user (auto-links by email if not yet linked)
 export function useGovRole() {
   const membersQuery = useMembers();
+  const qc = useQueryClient();
   return useQuery({
     queryKey: ['gov-role'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       const members = membersQuery.data ?? [];
-      const match = members.find(m => m.user_id === user.id);
+      // First try matching by user_id
+      let match = members.find(m => m.user_id === user.id);
+      if (!match && user.email) {
+        // Try matching by email and auto-link
+        match = members.find(m => m.email?.toLowerCase() === user.email?.toLowerCase() && !m.user_id);
+        if (match) {
+          await supabase.from('gov_members').update({ user_id: user.id }).eq('id', match.id);
+          qc.invalidateQueries({ queryKey: ['gov-members'] });
+        }
+      }
       return match?.role ?? null;
     },
     enabled: !membersQuery.isLoading,
