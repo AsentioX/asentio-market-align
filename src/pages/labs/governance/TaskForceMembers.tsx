@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMembers, useMemberMutations, Member } from '@/hooks/useGovernance';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, Plus, Pencil, Trash2, X, Check } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, X, Check, Mail, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -45,12 +45,14 @@ const TaskForceMembers = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [role, setRole] = useState('member');
   const [emoji, setEmoji] = useState('🐻');
   const [bgColor, setBgColor] = useState(BG_COLORS[0].value);
 
   const resetForm = () => {
     setName('');
+    setEmail('');
     setRole('member');
     setEmoji('🐻');
     setBgColor(BG_COLORS[0].value);
@@ -62,6 +64,7 @@ const TaskForceMembers = () => {
     const parsed = parseBgColor(m.avatar);
     setEditingId(m.id);
     setName(m.name);
+    setEmail(m.email || '');
     setRole(m.role);
     setEmoji(parsed.emoji);
     setBgColor(parsed.bgColor);
@@ -81,9 +84,9 @@ const TaskForceMembers = () => {
     const avatarValue = `${emoji}|${bgColor}`;
 
     if (editingId) {
-      updateMember.mutate({ id: editingId, name: name.trim(), role, avatar: avatarValue });
+      updateMember.mutate({ id: editingId, name: name.trim(), role, avatar: avatarValue, email: email.trim() || undefined });
     } else {
-      addMember.mutate({ name: name.trim(), role, avatar: avatarValue });
+      addMember.mutate({ name: name.trim(), role, avatar: avatarValue, email: email.trim() || undefined });
     }
     resetForm();
   };
@@ -142,11 +145,12 @@ const TaskForceMembers = () => {
         </div>
         <span className="text-sm text-gray-400">Preview</span>
       </div>
-      <div className="flex gap-3">
-        <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="flex-1" />
+      <div className="flex gap-3 flex-wrap">
+        <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="flex-1 min-w-[140px]" />
+        <Input placeholder="Email (for SSO linking)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 min-w-[180px]" />
         {isAdmin && (
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger className="flex-1">
+            <SelectTrigger className="flex-1 min-w-[140px]">
               <SelectValue placeholder="Select role" />
             </SelectTrigger>
             <SelectContent>
@@ -194,9 +198,21 @@ const TaskForceMembers = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-800 truncate">{m.name}</p>
-                {isAdmin && (
-                  <p className="text-sm text-gray-500 truncate capitalize">{ROLE_OPTIONS.find(r => r.value === m.role)?.label ?? m.role}</p>
+                {m.email && (
+                  <p className="text-xs text-gray-400 truncate flex items-center gap-1">
+                    <Mail className="w-3 h-3" /> {m.email}
+                  </p>
                 )}
+                <div className="flex items-center gap-2 mt-0.5">
+                  {isAdmin && (
+                    <p className="text-sm text-gray-500 capitalize">{ROLE_OPTIONS.find(r => r.value === m.role)?.label ?? m.role}</p>
+                  )}
+                  {m.user_id && (
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600 bg-emerald-50 rounded-full px-1.5 py-0.5">
+                      <Link2 className="w-2.5 h-2.5" /> SSO linked
+                    </span>
+                  )}
+                </div>
               </div>
               {isAdmin && (
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
