@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export type PolicyStatus = 'draft' | 'active' | 'under-revision' | 'archived';
+export type PolicyStatus = 'draft' | 'commenting' | 'voting' | 'passed' | 'archived';
 export type VoteType = 'agree' | 'abstain' | 'disagree' | 'block';
 export type Phase = 'visioning' | 'drafting' | 'community-review' | 'finalized';
 
