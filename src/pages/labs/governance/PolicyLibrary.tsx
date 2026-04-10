@@ -24,8 +24,46 @@ const VOTE_OPTIONS: { value: VoteType; label: string; color: string }[] = [
 type SortField = 'created_at' | 'title' | 'voting_deadline' | 'status';
 type FilterStatus = 'all' | PolicyStatus;
 type SectionKey = 'draft' | 'commenting' | 'voting' | 'passed' | 'archived';
+const STATUS_OPTIONS: { value: PolicyStatus; label: string }[] = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'commenting', label: 'Commenting' },
+  { value: 'voting', label: 'Voting' },
+  { value: 'passed', label: 'Passed' },
+  { value: 'archived', label: 'Archived' },
+];
 
-const PolicyLibrary = () => {
+const PolicyStatusDropdown = ({ current, onChange, onDelete, className = '' }: { current: PolicyStatus; onChange: (s: PolicyStatus) => void; onDelete: () => void; className?: string }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className={`relative inline-block ${className}`}>
+      <button onClick={() => setOpen(!open)} className="text-[10px] text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none flex items-center gap-1">
+        {current.replace('-', ' ')} <ChevronDown className="w-3 h-3" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[120px]">
+          {STATUS_OPTIONS.map(opt => (
+            <button key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }} className={`w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50 ${current === opt.value ? 'font-semibold text-teal-700' : 'text-gray-600'}`}>
+              {opt.label}
+            </button>
+          ))}
+          <Separator className="my-1" />
+          <button onClick={() => { onDelete(); setOpen(false); }} className="w-full text-left text-xs px-3 py-1.5 hover:bg-red-50 text-red-600 flex items-center gap-1.5">
+            <Trash2 className="w-3 h-3" /> Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
   const { data: policies = [] } = usePolicies();
   const { updateStatus, updatePolicy, deletePolicy } = usePolicyMutations();
   const { likes, toggleLike } = usePolicyLikes();
