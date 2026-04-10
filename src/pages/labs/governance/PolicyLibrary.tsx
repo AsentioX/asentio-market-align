@@ -27,7 +27,7 @@ type SectionKey = 'draft' | 'commenting' | 'voting' | 'passed' | 'archived';
 
 const PolicyLibrary = () => {
   const { data: policies = [] } = usePolicies();
-  const { updateStatus, updatePolicy } = usePolicyMutations();
+  const { updateStatus, updatePolicy, deletePolicy } = usePolicyMutations();
   const { likes, toggleLike } = usePolicyLikes();
   const { votes, castVote, removeVote } = usePolicyVotes();
   const { user, isAdmin } = useAuth();
