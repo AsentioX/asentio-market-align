@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, useCanParticipate, useMembers, VoteType } from '@/hooks/useGovernance';
+import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, useCanParticipate, useMembers, VoteType, useDeleteProposal } from '@/hooks/useGovernance';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, Loader2, Trash2 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -89,8 +89,9 @@ const PolicyDiscussion = () => {
   const { data: policy, isLoading: policyLoading } = usePolicy(id);
   const { data: proposals = [], isLoading: proposalsLoading } = useProposals(id);
   const { addProposal } = useProposalMutations();
+  const deleteProposal = useDeleteProposal();
   const canParticipate = useCanParticipate();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { data: members = [] } = useMembers();
 
   // Resolve current user's member name
@@ -229,13 +230,23 @@ const PolicyDiscussion = () => {
                     {proposal.author.charAt(0).toUpperCase()}
                   </span>
                 )}
-                <div>
+                <div className="flex-1">
                   <h4 className="font-semibold text-gray-800">{proposal.title}</h4>
                   <p className="text-xs text-gray-400 mt-0.5">
                     by <span className="font-medium text-gray-600">{proposal.author}</span>
                     {member && <span className="ml-1 text-gray-300">· {member.role}</span>}
                   </p>
                 </div>
+                {((user && proposal.created_by === user.id) || isAdmin) && (
+                  <button
+                    onClick={() => deleteProposal.mutate({ proposalId: proposal.id, policyId: policy.id })}
+                    disabled={deleteProposal.isPending}
+                    className="text-gray-300 hover:text-red-500 transition-colors p-1 flex-shrink-0"
+                    title="Delete comment"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
               {proposal.description && <p className="text-sm text-gray-600 mb-4 ml-11">{proposal.description}</p>}
               <div className="ml-11">

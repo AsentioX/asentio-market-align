@@ -25,6 +25,7 @@ export interface Proposal {
   title: string;
   description: string;
   author: string;
+  created_by: string | null;
   created_at: string;
 }
 
@@ -203,6 +204,21 @@ export function useProposalMutations() {
   });
 
   return { addProposal };
+}
+
+export function useDeleteProposal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ proposalId, policyId }: { proposalId: string; policyId: string }) => {
+      const { error } = await supabase.from('gov_proposals').delete().eq('id', proposalId);
+      if (error) throw error;
+      return policyId;
+    },
+    onSuccess: (policyId) => {
+      qc.invalidateQueries({ queryKey: ['gov-proposals', policyId] });
+      qc.invalidateQueries({ queryKey: ['gov-votes-all'] });
+    },
+  });
 }
 
 // Votes
