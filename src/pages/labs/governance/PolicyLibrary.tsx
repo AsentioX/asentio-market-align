@@ -64,6 +64,7 @@ const PolicyStatusDropdown = ({ current, onChange, onDelete, className = '' }: {
   );
 };
 
+const PolicyLibrary = () => {
   const { data: policies = [] } = usePolicies();
   const { updateStatus, updatePolicy, deletePolicy } = usePolicyMutations();
   const { likes, toggleLike } = usePolicyLikes();
