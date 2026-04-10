@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
+import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
 import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -59,8 +59,11 @@ const PolicyLibrary = () => {
     toggleLike.mutate(policyId);
   };
 
+  const canParticipate = useCanParticipate();
+
   const handleVote = (policyId: string, vote: VoteType) => {
     if (!user) { toast({ title: 'Sign in required', variant: 'destructive' }); return; }
+    if (!canParticipate) { toast({ title: 'View-only access', description: 'Community Members cannot vote.', variant: 'destructive' }); return; }
     const current = getUserVote(policyId);
     if (current === vote) { removeVote.mutate(policyId); } else { castVote.mutate({ policyId, vote }); }
   };

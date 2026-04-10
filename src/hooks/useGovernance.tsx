@@ -40,6 +40,7 @@ export interface Member {
   name: string;
   role: string;
   avatar: string;
+  user_id: string | null;
 }
 
 export interface Draft {
@@ -268,6 +269,29 @@ export function usePolicyLikes() {
   });
 
   return { likes: query.data ?? [], toggleLike };
+}
+
+// Governance role for current user
+export function useGovRole() {
+  const membersQuery = useMembers();
+  return useQuery({
+    queryKey: ['gov-role'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const members = membersQuery.data ?? [];
+      const match = members.find(m => m.user_id === user.id);
+      return match?.role ?? null;
+    },
+    enabled: !membersQuery.isLoading,
+  });
+}
+
+// Check if governance role can participate (vote/comment)
+export function useCanParticipate() {
+  const { data: govRole } = useGovRole();
+  // community-member can only view
+  return govRole !== 'community-member';
 }
 
 // Members
