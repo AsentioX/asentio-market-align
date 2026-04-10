@@ -24,6 +24,7 @@ const ROLE_OPTIONS = [
   { value: 'admin', label: 'Admin' },
   { value: 'team-lead', label: 'Team Lead' },
   { value: 'member', label: 'Member' },
+  { value: 'community-member', label: 'Community Member' },
 ];
 
 const parseBgColor = (avatar: string) => {
