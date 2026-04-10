@@ -307,13 +307,13 @@ const PolicyLibrary = () => {
               current={policy.status}
               onChange={(s) => updatePolicy.mutate({ id: policy.id, status: s })}
               onDelete={() => { if (confirm('Delete this policy permanently?')) deletePolicy.mutate(policy.id); }}
+              onEdit={() => setEditingTimeline(policy.id)}
             />
           )}
         </div>
         <h3 className="font-semibold text-gray-800 mb-1">{policy.title}</h3>
         <p className="text-sm text-gray-500 line-clamp-2">{policy.summary}</p>
         {renderTimeline(policy)}
-        {renderAdminTimeline(policy)}
         <div className="mt-3">
           {renderVoteBar(policy.id, section)}
         </div>
