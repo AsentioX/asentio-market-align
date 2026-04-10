@@ -1,4 +1,4 @@
-import { useGovernanceStore } from './governanceStore';
+import { usePolicies, usePolicyMutations, PolicyStatus } from '@/hooks/useGovernance';
 import { MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -9,7 +9,8 @@ const statusStyle: Record<string, string> = {
 };
 
 const PolicyLibrary = () => {
-  const { policies, updatePolicyStatus } = useGovernanceStore();
+  const { data: policies = [] } = usePolicies();
+  const { updateStatus } = usePolicyMutations();
   const visible = policies.filter((p) => p.status !== 'archived');
 
   return (
@@ -37,7 +38,7 @@ const PolicyLibrary = () => {
                   </span>
                   <select
                     value={policy.status}
-                    onChange={(e) => updatePolicyStatus(policy.id, e.target.value as any)}
+                    onChange={(e) => updateStatus.mutate({ id: policy.id, status: e.target.value as PolicyStatus })}
                     className="text-[10px] text-gray-400 bg-transparent border-none cursor-pointer focus:outline-none"
                   >
                     <option value="draft">Draft</option>
@@ -55,11 +56,6 @@ const PolicyLibrary = () => {
                 >
                   <MessageCircle className="w-4 h-4" />
                   Discussion
-                  {policy.proposals.length > 0 && (
-                    <span className="ml-auto text-xs bg-teal-50 text-teal-600 px-2 py-0.5 rounded-full">
-                      {policy.proposals.length}
-                    </span>
-                  )}
                 </Link>
               </div>
             </div>

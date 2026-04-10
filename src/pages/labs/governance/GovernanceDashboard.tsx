@@ -1,16 +1,19 @@
-import { useGovernanceStore } from './governanceStore';
+import { usePolicies, useMembers, useDrafts, usePhase } from '@/hooks/useGovernance';
 import { FileText, Users, Vote, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const GovernanceDashboard = () => {
-  const { policies, members, phase, drafts } = useGovernanceStore();
+  const { data: policies = [] } = usePolicies();
+  const { data: members = [] } = useMembers();
+  const { drafts } = useDrafts();
+  const { phase } = usePhase();
+
   const activePolicies = policies.filter((p) => p.status !== 'archived');
-  const totalProposals = policies.reduce((acc, p) => acc + p.proposals.length, 0);
 
   const stats = [
     { label: 'Active Policies', value: activePolicies.length, icon: FileText, color: 'bg-teal-50 text-teal-600' },
     { label: 'Task Force Members', value: members.length, icon: Users, color: 'bg-indigo-50 text-indigo-600' },
-    { label: 'Open Proposals', value: totalProposals, icon: Vote, color: 'bg-amber-50 text-amber-600' },
+    { label: 'Total Policies', value: policies.length, icon: Vote, color: 'bg-amber-50 text-amber-600' },
     { label: 'Pending Drafts', value: drafts.length, icon: TrendingUp, color: 'bg-rose-50 text-rose-600' },
   ];
 
