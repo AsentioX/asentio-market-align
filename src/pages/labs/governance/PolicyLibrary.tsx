@@ -266,12 +266,21 @@ const PolicyLibrary = () => {
           </div>
           <div>
             <label className="text-[10px] text-gray-500 block mb-0.5">Status</label>
-            <select value={p.status} onChange={e => updatePolicy.mutate({ id: p.id, status: e.target.value as PolicyStatus })} className="text-xs border border-gray-200 rounded px-2 py-1 w-full">
+            <select value={p.status} onChange={e => {
+              const val = e.target.value;
+              if (val === '__delete__') {
+                if (confirm('Delete this policy permanently?')) deletePolicy.mutate(p.id);
+              } else {
+                updatePolicy.mutate({ id: p.id, status: val as PolicyStatus });
+              }
+            }} className="text-xs border border-gray-200 rounded px-2 py-1 w-full">
               <option value="draft">Draft</option>
               <option value="commenting">Commenting</option>
               <option value="voting">Voting</option>
               <option value="passed">Passed</option>
               <option value="archived">Archived</option>
+              <option disabled>──────────</option>
+              <option value="__delete__" className="text-red-600">🗑 Delete</option>
             </select>
           </div>
         </div>
