@@ -1,0 +1,1 @@
+ALTER TABLE public.gov_vision_comments ADD COLUMN section TEXT NOT NULL DEFAULT 'general';
