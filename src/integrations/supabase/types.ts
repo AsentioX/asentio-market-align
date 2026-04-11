@@ -552,6 +552,59 @@ export type Database = {
         }
         Relationships: []
       }
+      gov_vision_comment_votes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_vision_comment_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "gov_vision_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gov_vision_comments: {
+        Row: {
+          author_name: string
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+        }
+        Insert: {
+          author_name?: string
+          body: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+        }
+        Update: {
+          author_name?: string
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       gov_votes: {
         Row: {
           created_at: string
