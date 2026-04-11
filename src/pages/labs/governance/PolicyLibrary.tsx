@@ -1,11 +1,12 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
+import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, useDocket, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
 import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText, Trash2, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 
 const statusStyle: Record<string, string> = {
@@ -75,6 +76,7 @@ const PolicyLibrary = () => {
   const { votes, castVote, removeVote } = usePolicyVotes();
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
+  const { isOnDocket, toggleDocket } = useDocket();
 
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortAsc, setSortAsc] = useState(false);
@@ -293,6 +295,14 @@ const PolicyLibrary = () => {
       <div className="p-5 flex-1">
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Checkbox
+                checked={isOnDocket(policy.id)}
+                onCheckedChange={() => toggleDocket(policy.id)}
+                className="mr-1"
+                title="Add to docket"
+              />
+            )}
             <span className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${statusStyle[policy.status] ?? 'bg-gray-100 text-gray-500'}`}>
               {policy.status.replace('-', ' ')}
             </span>

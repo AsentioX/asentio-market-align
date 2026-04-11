@@ -376,6 +376,49 @@ export function useMemberMutations() {
   return { addMember, updateMember, deleteMember };
 }
 
+// Docket
+export function useDocket() {
+  const qc = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['gov-docket'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('gov_docket_items').select('*').order('created_at');
+      if (error) throw error;
+      return data as { id: string; policy_id: string; added_by: string | null; created_at: string }[];
+    },
+  });
+
+  const addToDocket = useMutation({
+    mutationFn: async (policyId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase.from('gov_docket_items').insert({ policy_id: policyId, added_by: user?.id ?? null });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-docket'] }),
+  });
+
+  const removeFromDocket = useMutation({
+    mutationFn: async (policyId: string) => {
+      const { error } = await supabase.from('gov_docket_items').delete().eq('policy_id', policyId);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gov-docket'] }),
+  });
+
+  const isOnDocket = (policyId: string) => (query.data ?? []).some(d => d.policy_id === policyId);
+
+  const toggleDocket = (policyId: string) => {
+    if (isOnDocket(policyId)) {
+      removeFromDocket.mutate(policyId);
+    } else {
+      addToDocket.mutate(policyId);
+    }
+  };
+
+  return { docketItems: query.data ?? [], isLoading: query.isLoading, isOnDocket, toggleDocket };
+}
+
 // Drafts
 export function useDrafts() {
   const qc = useQueryClient();
