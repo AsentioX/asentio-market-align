@@ -20,13 +20,14 @@ function useVisionContent() {
       const { data } = await supabase
         .from('gov_settings')
         .select('key, value')
-        .in('key', ['vision_text', 'mission_text', 'principles_text']);
+        .in('key', ['vision_text', 'mission_text', 'principles_text', 'why_now_text']);
       const map: Record<string, string> = {};
       data?.forEach((r) => (map[r.key] = r.value));
       return {
         vision: map['vision_text'] ?? 'A future where spatial computing policy is shaped transparently, inclusively, and proactively — ensuring XR technologies serve the public good while fostering innovation.',
         mission: map['mission_text'] ?? 'To convene diverse stakeholders in drafting, debating, and finalising governance policies for extended reality — bridging the gap between technological possibility and societal readiness.',
         principles: map['principles_text'] ?? 'Transparency — All deliberations and decisions are documented and publicly accessible.\nInclusivity — Perspectives from industry, academia, civil society, and affected communities are actively sought.\nEvidence-based — Policies are grounded in research, real-world data, and expert testimony.\nAdaptive — Governance frameworks evolve alongside the technology they regulate.\nHuman-centred — Individual rights, safety, and well-being remain the primary lens for every policy.',
+        whyNow: map['why_now_text'] ?? 'Spatial computing is transitioning from niche innovation to mainstream adoption. Without proactive governance frameworks, we risk repeating the regulatory gaps that plagued earlier technology waves — from social media to AI. Now is the moment to shape the rules before the technology outpaces our ability to govern it responsibly.',
       };
     },
   });
