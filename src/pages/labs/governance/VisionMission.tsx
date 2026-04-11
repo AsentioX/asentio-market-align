@@ -20,13 +20,14 @@ function useVisionContent() {
       const { data } = await supabase
         .from('gov_settings')
         .select('key, value')
-        .in('key', ['vision_text', 'mission_text', 'principles_text']);
+        .in('key', ['vision_text', 'mission_text', 'principles_text', 'why_now_text']);
       const map: Record<string, string> = {};
       data?.forEach((r) => (map[r.key] = r.value));
       return {
         vision: map['vision_text'] ?? 'A future where spatial computing policy is shaped transparently, inclusively, and proactively — ensuring XR technologies serve the public good while fostering innovation.',
         mission: map['mission_text'] ?? 'To convene diverse stakeholders in drafting, debating, and finalising governance policies for extended reality — bridging the gap between technological possibility and societal readiness.',
         principles: map['principles_text'] ?? 'Transparency — All deliberations and decisions are documented and publicly accessible.\nInclusivity — Perspectives from industry, academia, civil society, and affected communities are actively sought.\nEvidence-based — Policies are grounded in research, real-world data, and expert testimony.\nAdaptive — Governance frameworks evolve alongside the technology they regulate.\nHuman-centred — Individual rights, safety, and well-being remain the primary lens for every policy.',
+        whyNow: map['why_now_text'] ?? 'Spatial computing is transitioning from niche innovation to mainstream adoption. Without proactive governance frameworks, we risk repeating the regulatory gaps that plagued earlier technology waves — from social media to AI. Now is the moment to shape the rules before the technology outpaces our ability to govern it responsibly.',
       };
     },
   });
@@ -227,16 +228,19 @@ const VisionMission = () => {
   const [editVision, setEditVision] = useState('');
   const [editMission, setEditMission] = useState('');
   const [editPrinciples, setEditPrinciples] = useState('');
+  const [editWhyNow, setEditWhyNow] = useState('');
 
   const openEdit = () => {
     setEditVision(content?.vision ?? '');
     setEditMission(content?.mission ?? '');
     setEditPrinciples(content?.principles ?? '');
+    setEditWhyNow(content?.whyNow ?? '');
     setEditOpen(true);
   };
 
   const handleSave = async () => {
     await Promise.all([
+      save.mutateAsync({ key: 'why_now_text', value: editWhyNow }),
       save.mutateAsync({ key: 'vision_text', value: editVision }),
       save.mutateAsync({ key: 'mission_text', value: editMission }),
       save.mutateAsync({ key: 'principles_text', value: editPrinciples }),
@@ -262,6 +266,20 @@ const VisionMission = () => {
             <Pencil className="w-3.5 h-3.5" /> Edit
           </Button>
         )}
+      </div>
+
+      {/* Why & Why Now */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
+            <Lightbulb className="w-5 h-5 text-violet-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-800">Why & Why Now</h3>
+        </div>
+        <p className="text-gray-600 leading-relaxed">
+          {content?.whyNow}
+        </p>
+        <SectionDiscussion section="why-now" authorName={authorName} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -316,6 +334,10 @@ const VisionMission = () => {
             <DialogTitle>Edit Vision & Mission</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Why & Why Now</label>
+              <Textarea value={editWhyNow} onChange={(e) => setEditWhyNow(e.target.value)} rows={3} />
+            </div>
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">Vision</label>
               <Textarea value={editVision} onChange={(e) => setEditVision(e.target.value)} rows={3} />
