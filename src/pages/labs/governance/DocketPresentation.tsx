@@ -38,8 +38,10 @@ const DocketPresentation = ({ onClose }: { onClose: () => void }) => {
     setTimeRemaining(timerDuration);
   }, [timerDuration]);
 
+  const totalSlides = docketPolicies.length + 1; // +1 for end slide
+
   const goNext = () => {
-    if (currentIndex < docketPolicies.length - 1) {
+    if (currentIndex < totalSlides - 1) {
       setCurrentIndex(i => i + 1);
       resetTimer();
     }
@@ -51,6 +53,8 @@ const DocketPresentation = ({ onClose }: { onClose: () => void }) => {
       resetTimer();
     }
   };
+
+  const isEndSlide = currentIndex >= docketPolicies.length;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -93,22 +97,22 @@ const DocketPresentation = ({ onClose }: { onClose: () => void }) => {
       </div>
 
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3 text-white/60 text-sm">
-          <span>{currentIndex + 1} / {docketPolicies.length}</span>
+      <div className="flex items-center justify-between px-8 py-6">
+        <div className="flex items-center gap-3 text-white/50 text-2xl font-mono tracking-wide">
+          <span>{currentIndex + 1} / {docketPolicies.length + 1}</span>
         </div>
 
         {/* Timer controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-5">
           {editingTimer ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <input
                 type="number"
                 min={1}
                 max={60}
                 defaultValue={timerDuration / 60}
                 autoFocus
-                className="w-16 bg-white/10 text-white text-center rounded px-2 py-1 text-sm"
+                className="w-20 bg-white/10 text-white text-center rounded-lg px-3 py-2 text-2xl font-mono"
                 onKeyDown={e => {
                   if (e.key === 'Enter') {
                     const val = parseInt((e.target as HTMLInputElement).value) || 2;
@@ -124,24 +128,24 @@ const DocketPresentation = ({ onClose }: { onClose: () => void }) => {
                   setEditingTimer(false);
                 }}
               />
-              <span className="text-white/40 text-xs">min</span>
+              <span className="text-white/40 text-lg">min</span>
             </div>
           ) : (
-            <button onClick={() => setEditingTimer(true)} className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm">
-              <Timer className="w-4 h-4" />
-              {formatTime(timeRemaining)}
+            <button onClick={() => setEditingTimer(true)} className="flex items-center gap-3 text-white/70 hover:text-white font-mono">
+              <Timer className="w-8 h-8" />
+              <span className="text-5xl font-bold tabular-nums">{formatTime(timeRemaining)}</span>
             </button>
           )}
-          <button onClick={() => setTimerRunning(r => !r)} className={`w-8 h-8 rounded-full flex items-center justify-center ${timerRunning ? 'bg-amber-500' : 'bg-teal-500'} text-white`}>
-            {timerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+          <button onClick={() => setTimerRunning(r => !r)} className={`w-14 h-14 rounded-full flex items-center justify-center ${timerRunning ? 'bg-amber-500' : 'bg-teal-500'} text-white`}>
+            {timerRunning ? <Pause className="w-7 h-7" /> : <Play className="w-7 h-7 ml-0.5" />}
           </button>
           <button onClick={resetTimer} className="text-white/40 hover:text-white">
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-6 h-6" />
           </button>
         </div>
 
         <button onClick={onClose} className="text-white/60 hover:text-white">
-          <X className="w-5 h-5" />
+          <X className="w-6 h-6" />
         </button>
       </div>
 
@@ -152,7 +156,16 @@ const DocketPresentation = ({ onClose }: { onClose: () => void }) => {
         </button>
 
         <div className="flex-1 max-w-4xl mx-8">
-          {current && (
+          {isEndSlide ? (
+            <div className="text-white text-center space-y-6">
+              <div className="text-6xl mb-4">✅</div>
+              <h1 className="text-5xl md:text-6xl font-bold">No More Policies</h1>
+              <p className="text-xl text-white/50">All docket items have been reviewed.</p>
+              <button onClick={onClose} className="mt-8 px-8 py-3 bg-teal-500 hover:bg-teal-400 text-white rounded-lg text-lg font-medium transition-colors">
+                Exit Presentation
+              </button>
+            </div>
+          ) : current && (
             <div className="text-white space-y-8">
               <div className="flex items-center gap-3">
                 <span className={`text-xs uppercase font-bold px-3 py-1 rounded-full text-white ${statusColor[current.status] ?? 'bg-gray-500'}`}>
@@ -173,14 +186,14 @@ const DocketPresentation = ({ onClose }: { onClose: () => void }) => {
           )}
         </div>
 
-        <button onClick={goNext} disabled={currentIndex === docketPolicies.length - 1} className="text-white/30 hover:text-white disabled:opacity-10 p-4">
+        <button onClick={goNext} disabled={currentIndex === totalSlides - 1} className="text-white/30 hover:text-white disabled:opacity-10 p-4">
           <ChevronRight className="w-8 h-8" />
         </button>
       </div>
 
       {/* Bottom dots */}
       <div className="flex items-center justify-center gap-2 py-6">
-        {docketPolicies.map((_, i) => (
+        {Array.from({ length: totalSlides }).map((_, i) => (
           <button
             key={i}
             onClick={() => { setCurrentIndex(i); resetTimer(); }}
