@@ -29,6 +29,7 @@ import WOBuddyLayout from "./pages/labs/wo-buddy/WOBuddyLayout";
 import MyDJLayout from "./pages/labs/my-dj/MyDJLayout";
 import GovernanceLayout from "./pages/labs/governance/GovernanceLayout";
 import GovernanceDashboard from "./pages/labs/governance/GovernanceDashboard";
+import PerkPathLayout from "./pages/labs/perkpath/PerkPathLayout";
 import VisionMission from "./pages/labs/governance/VisionMission";
 import TranscriptUpload from "./pages/labs/governance/TranscriptUpload";
 import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
@@ -47,7 +48,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/governance');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/governance') || location.pathname.startsWith('/labs/perkpath');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -72,6 +73,7 @@ const AppContent = () => {
           <Route path="/labs" element={<Labs />} />
           <Route path="/labs/wo-buddy" element={<WOBuddyLayout />} />
           <Route path="/labs/my-dj" element={<MyDJLayout />} />
+          <Route path="/labs/perkpath" element={<PerkPathLayout />} />
           <Route path="/labs/governance" element={<GovernanceLayout />}>
             <Route index element={<GovernanceDashboard />} />
             <Route path="vision" element={<VisionMission />} />
