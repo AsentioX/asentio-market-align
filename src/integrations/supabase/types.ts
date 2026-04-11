@@ -243,6 +243,35 @@ export type Database = {
           },
         ]
       }
+      gov_docket_items: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          id: string
+          policy_id: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          policy_id: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          policy_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_docket_items_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: true
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gov_drafts: {
         Row: {
           context_snippet: string | null
