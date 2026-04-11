@@ -76,6 +76,7 @@ const PolicyLibrary = () => {
   const { votes, castVote, removeVote } = usePolicyVotes();
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
+  const { isOnDocket, toggleDocket } = useDocket();
 
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortAsc, setSortAsc] = useState(false);
@@ -294,6 +295,14 @@ const PolicyLibrary = () => {
       <div className="p-5 flex-1">
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Checkbox
+                checked={isOnDocket(policy.id)}
+                onCheckedChange={() => toggleDocket(policy.id)}
+                className="mr-1"
+                title="Add to docket"
+              />
+            )}
             <span className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${statusStyle[policy.status] ?? 'bg-gray-100 text-gray-500'}`}>
               {policy.status.replace('-', ' ')}
             </span>
