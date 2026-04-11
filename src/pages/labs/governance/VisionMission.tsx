@@ -228,16 +228,19 @@ const VisionMission = () => {
   const [editVision, setEditVision] = useState('');
   const [editMission, setEditMission] = useState('');
   const [editPrinciples, setEditPrinciples] = useState('');
+  const [editWhyNow, setEditWhyNow] = useState('');
 
   const openEdit = () => {
     setEditVision(content?.vision ?? '');
     setEditMission(content?.mission ?? '');
     setEditPrinciples(content?.principles ?? '');
+    setEditWhyNow(content?.whyNow ?? '');
     setEditOpen(true);
   };
 
   const handleSave = async () => {
     await Promise.all([
+      save.mutateAsync({ key: 'why_now_text', value: editWhyNow }),
       save.mutateAsync({ key: 'vision_text', value: editVision }),
       save.mutateAsync({ key: 'mission_text', value: editMission }),
       save.mutateAsync({ key: 'principles_text', value: editPrinciples }),
@@ -331,6 +334,10 @@ const VisionMission = () => {
             <DialogTitle>Edit Vision & Mission</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Why & Why Now</label>
+              <Textarea value={editWhyNow} onChange={(e) => setEditWhyNow(e.target.value)} rows={3} />
+            </div>
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">Vision</label>
               <Textarea value={editVision} onChange={(e) => setEditVision(e.target.value)} rows={3} />
