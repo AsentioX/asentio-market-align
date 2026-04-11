@@ -29,6 +29,7 @@ import WOBuddyLayout from "./pages/labs/wo-buddy/WOBuddyLayout";
 import MyDJLayout from "./pages/labs/my-dj/MyDJLayout";
 import GovernanceLayout from "./pages/labs/governance/GovernanceLayout";
 import GovernanceDashboard from "./pages/labs/governance/GovernanceDashboard";
+import VisionMission from "./pages/labs/governance/VisionMission";
 import TranscriptUpload from "./pages/labs/governance/TranscriptUpload";
 import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
 import PolicyDiscussion from "./pages/labs/governance/PolicyDiscussion";
@@ -73,6 +74,7 @@ const AppContent = () => {
           <Route path="/labs/my-dj" element={<MyDJLayout />} />
           <Route path="/labs/governance" element={<GovernanceLayout />}>
             <Route index element={<GovernanceDashboard />} />
+            <Route path="vision" element={<VisionMission />} />
             <Route path="upload" element={<TranscriptUpload />} />
             <Route path="library" element={<PolicyLibrary />} />
             <Route path="library/:id" element={<PolicyDiscussion />} />
