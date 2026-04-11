@@ -1,14 +1,24 @@
-import { usePolicies, useMembers, useDrafts, usePhase } from '@/hooks/useGovernance';
-import { FileText, Users, Vote, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import { usePolicies, useMembers, useDrafts, usePhase, useDocket } from '@/hooks/useGovernance';
+import { FileText, Users, Vote, TrendingUp, Presentation, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { Checkbox } from '@/components/ui/checkbox';
+import DocketPresentation from './DocketPresentation';
 
 const GovernanceDashboard = () => {
   const { data: policies = [] } = usePolicies();
   const { data: members = [] } = useMembers();
   const { drafts } = useDrafts();
   const { phase } = usePhase();
+  const { isAdmin } = useAuth();
+  const { docketItems, isOnDocket, toggleDocket } = useDocket();
+  const [showPresentation, setShowPresentation] = useState(false);
 
   const activePolicies = policies.filter((p) => p.status !== 'archived');
+  const docketPolicies = docketItems
+    .map(d => policies.find(p => p.id === d.policy_id))
+    .filter(Boolean);
 
   const stats = [
     { label: 'Active Policies', value: activePolicies.length, icon: FileText, color: 'bg-teal-50 text-teal-600' },
@@ -36,6 +46,53 @@ const GovernanceDashboard = () => {
             <p className="text-sm text-gray-500">{s.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Docket Section */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold text-gray-800">Meeting Docket</h3>
+            <p className="text-xs text-gray-400 mt-0.5">{docketPolicies.length} {docketPolicies.length === 1 ? 'policy' : 'policies'} on the agenda</p>
+          </div>
+          {docketPolicies.length > 0 && (
+            <button
+              onClick={() => setShowPresentation(true)}
+              className="flex items-center gap-2 text-sm bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors"
+            >
+              <Presentation className="w-4 h-4" />
+              Present
+            </button>
+          )}
+        </div>
+
+        {docketPolicies.length === 0 ? (
+          <p className="text-sm text-gray-400">No policies on the docket. Use the checkboxes in the Policy Library to add items.</p>
+        ) : (
+          <div className="space-y-2">
+            {docketPolicies.map((p) => p && (
+              <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 group">
+                {isAdmin && (
+                  <button onClick={() => toggleDocket(p.id)} className="text-gray-300 hover:text-red-400">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+                <div className="flex-1 min-w-0">
+                  <Link to={`/labs/governance/library/${p.id}`} className="text-sm font-medium text-gray-700 hover:text-teal-600 truncate block">
+                    {p.title}
+                  </Link>
+                </div>
+                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
+                  p.status === 'passed' ? 'bg-emerald-100 text-emerald-700' :
+                  p.status === 'voting' ? 'bg-indigo-100 text-indigo-700' :
+                  p.status === 'commenting' ? 'bg-blue-100 text-blue-700' :
+                  p.status === 'draft' ? 'bg-gray-100 text-gray-500' :
+                  'bg-red-100 text-red-500'
+                }`}>{p.status}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -82,6 +139,8 @@ const GovernanceDashboard = () => {
           </div>
         </div>
       </div>
+
+      {showPresentation && <DocketPresentation onClose={() => setShowPresentation(false)} />}
     </div>
   );
 };
