@@ -236,6 +236,42 @@ const PolicyLibrary = () => {
     );
   };
 
+  const CategoryAutocomplete = ({ defaultValue, onCommit }: { defaultValue: string; onCommit: (val: string | null) => void }) => {
+    const [value, setValue] = useState(defaultValue);
+    const [focused, setFocused] = useState(false);
+    const suggestions = useMemo(() => {
+      if (!value.trim()) return categories;
+      return categories.filter(c => c.toLowerCase().includes(value.toLowerCase()));
+    }, [value, categories]);
+
+    return (
+      <div className="relative">
+        <input
+          type="text"
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => { setTimeout(() => setFocused(false), 150); onCommit(value.trim() || null); }}
+          placeholder="e.g. Ethics, Operations"
+          className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full"
+        />
+        {focused && suggestions.length > 0 && (
+          <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 max-h-32 overflow-y-auto">
+            {suggestions.map(cat => (
+              <button
+                key={cat}
+                onMouseDown={e => { e.preventDefault(); setValue(cat); onCommit(cat); setFocused(false); }}
+                className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50 text-gray-600"
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderEditModal = () => {
     const p = policies.find(pol => pol.id === editingTimeline);
     if (!p) return null;
@@ -267,7 +303,11 @@ const PolicyLibrary = () => {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-gray-500 block mb-1">Category</label>
-                <input type="text" defaultValue={p.category ?? ''} placeholder="e.g. Ethics, Operations" onBlur={e => updatePolicy.mutate({ id: p.id, category: e.target.value || null })} className="text-sm border border-gray-200 rounded-lg px-3 py-2 w-full" />
+                <CategoryAutocomplete
+                  key={p.id}
+                  defaultValue={p.category ?? ''}
+                  onCommit={val => updatePolicy.mutate({ id: p.id, category: val })}
+                />
               </div>
               <div>
                 <label className="text-xs text-gray-500 block mb-1">Status</label>
