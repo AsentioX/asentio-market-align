@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon } from 'lucide-react';
 import { mockUser } from './mockData';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
@@ -6,6 +6,7 @@ import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import AvatarCropModal from './AvatarCropModal';
 
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
@@ -18,6 +19,7 @@ const ProfilePage = () => {
   const [uploadingBg, setUploadingBg] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
   const getAge = (bd: string) => {
     const diff = Date.now() - new Date(bd).getTime();
@@ -101,9 +103,21 @@ const ProfilePage = () => {
       toast.error('Image must be under 5MB');
       return;
     }
-    uploadImage(file, type);
+    if (type === 'avatar') {
+      const reader = new FileReader();
+      reader.onload = () => setCropImageSrc(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      uploadImage(file, type);
+    }
     e.target.value = '';
   };
+
+  const handleCropDone = useCallback(async (blob: Blob) => {
+    setCropImageSrc(null);
+    const file = new File([blob], `avatar-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    await uploadImage(file, 'avatar');
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -288,6 +302,13 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+      {cropImageSrc && (
+        <AvatarCropModal
+          imageSrc={cropImageSrc}
+          onCropDone={handleCropDone}
+          onCancel={() => setCropImageSrc(null)}
+        />
+      )}
     </div>
   );
 };
