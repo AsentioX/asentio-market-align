@@ -26,6 +26,7 @@ import CompanyForm from "./pages/CompanyForm";
 import UseCaseForm from "./pages/UseCaseForm";
 import Labs from "./pages/Labs";
 import WOBuddyLayout from "./pages/labs/wo-buddy/WOBuddyLayout";
+import WOBuddyAdminDashboard from "./pages/labs/wo-buddy/WOBuddyAdminDashboard";
 import MyDJLayout from "./pages/labs/my-dj/MyDJLayout";
 import GovernanceLayout from "./pages/labs/governance/GovernanceLayout";
 import GovernanceDashboard from "./pages/labs/governance/GovernanceDashboard";
