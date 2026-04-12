@@ -163,7 +163,25 @@ const ProfilePage = () => {
                 </button>
               </div>
               <div>
-                <h2 className="text-xl font-bold">{mockUser.name}</h2>
+                {editingName ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={nameDraft}
+                      onChange={(e) => setNameDraft(e.target.value)}
+                      className="bg-transparent text-xl font-bold text-center outline-none border-b border-emerald-400/50 w-40"
+                      autoFocus
+                      onKeyDown={(e) => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') setEditingName(false); }}
+                    />
+                    <button onClick={saveName} className="text-emerald-400 hover:text-emerald-300"><Check className="w-4 h-4" /></button>
+                    <button onClick={() => setEditingName(false)} className="text-white/40 hover:text-red-400"><X className="w-4 h-4" /></button>
+                  </div>
+                ) : (
+                  <h2 className="text-xl font-bold group/name cursor-pointer" onClick={startEditingName}>
+                    {displayName}
+                    <Pencil className="w-3 h-3 inline ml-1.5 opacity-0 group-hover/name:opacity-60 transition-opacity" />
+                  </h2>
+                )}
                 <p className="text-xs text-white/40">Member since {mockUser.memberSince}</p>
                 <div className="flex items-center justify-center gap-2 mt-1.5">
                   <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {mockUser.level}</span>
