@@ -103,9 +103,21 @@ const ProfilePage = () => {
       toast.error('Image must be under 5MB');
       return;
     }
-    uploadImage(file, type);
+    if (type === 'avatar') {
+      const reader = new FileReader();
+      reader.onload = () => setCropImageSrc(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      uploadImage(file, type);
+    }
     e.target.value = '';
   };
+
+  const handleCropDone = useCallback(async (blob: Blob) => {
+    setCropImageSrc(null);
+    const file = new File([blob], `avatar-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    await uploadImage(file, 'avatar');
+  }, [user]);
 
   return (
     <div className="space-y-6">
