@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Users, Activity, Settings, Shield, Search, ChevronDown, MoreVertical, BarChart3, TrendingUp, UserCheck, UserX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { WOBuddyAuthProvider, useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -336,4 +340,10 @@ const WOBuddyAdminDashboard = () => {
   );
 };
 
-export default WOBuddyAdminDashboard;
+const WOBuddyAdminDashboardWrapper = () => (
+  <WOBuddyAuthProvider>
+    <WOBuddyAdminDashboard />
+  </WOBuddyAuthProvider>
+);
+
+export default WOBuddyAdminDashboardWrapper;
