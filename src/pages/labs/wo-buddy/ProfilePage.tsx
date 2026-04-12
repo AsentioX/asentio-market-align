@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon } from 'lucide-react';
 import { mockUser } from './mockData';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
+import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
