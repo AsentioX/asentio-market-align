@@ -33,6 +33,27 @@ const ProfilePage = () => {
     setEditingProfile(false);
   };
 
+  const displayName = wobuddyUser?.display_name || mockUser.name;
+
+  const startEditingName = () => {
+    setNameDraft(displayName);
+    setEditingName(true);
+  };
+
+  const saveName = async () => {
+    if (!wobuddyUser || !nameDraft.trim()) return;
+    const { error } = await supabase
+      .from('wobuddy_users')
+      .update({ display_name: nameDraft.trim() })
+      .eq('user_id', wobuddyUser.user_id);
+    if (error) {
+      toast.error('Failed to update name');
+    } else {
+      toast.success('Name updated!');
+    }
+    setEditingName(false);
+  };
+
   const uploadImage = async (file: File, type: 'avatar' | 'background') => {
     if (!user) {
       toast.error('Sign in to upload images');
