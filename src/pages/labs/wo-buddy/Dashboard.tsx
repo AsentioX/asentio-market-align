@@ -122,6 +122,16 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   const activeMilestoneIdx = milestoneIdx % Math.max(allUnlocked.length, 1);
 
+  // Swipe support for Fun Facts
+  const touchStartX = useRef(0);
+  const swipeToNext = useCallback(() => {
+    if (allUnlocked.length <= 1) return;
+    setMilestoneIdx(prev => (prev + 1) % allUnlocked.length);
+  }, [allUnlocked.length]);
+  const swipeToPrev = useCallback(() => {
+    if (allUnlocked.length <= 1) return;
+    setMilestoneIdx(prev => (prev - 1 + allUnlocked.length) % allUnlocked.length);
+  }, [allUnlocked.length]);
   const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
   const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
   const bodyLatest = mockBodyTrend[mockBodyTrend.length - 1];
