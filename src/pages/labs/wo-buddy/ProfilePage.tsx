@@ -9,8 +9,10 @@ import { toast } from 'sonner';
 
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
-  const { user } = useAuth();
+  const { user, wobuddyUser } = useWOBuddyAuth();
   const [editingProfile, setEditingProfile] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
   const [draft, setDraft] = useState({ ...profile });
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingBg, setUploadingBg] = useState(false);
