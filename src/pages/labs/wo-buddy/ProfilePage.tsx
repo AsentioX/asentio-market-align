@@ -302,6 +302,13 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+      {cropImageSrc && (
+        <AvatarCropModal
+          imageSrc={cropImageSrc}
+          onCropDone={handleCropDone}
+          onCancel={() => setCropImageSrc(null)}
+        />
+      )}
     </div>
   );
 };
