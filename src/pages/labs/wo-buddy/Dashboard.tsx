@@ -1,11 +1,12 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, X, BarChart3 } from 'lucide-react';
+import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, X, BarChart3, MapPin, Cloud } from 'lucide-react';
 import ProgressAnalytics from './ProgressAnalytics';
 import { mockUser, mockAchievements, mockExerciseStats, mockBodyTrend, mockMonthlyOverview, mockAllTimeOverview, mockWeeklyOverview, mockWorkouts } from './mockData';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { generateInsights } from './goalMappings';
 import { shareContent, buildAchievementShareText } from './shareUtils';
-import heroBg from '@/assets/wo-buddy/hero-bg.jpg';
+import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
+import { useLocalWeather, getWeatherEmoji, getWeatherDescription, getWeatherGradient } from './useLocalWeather';
 
 /* ── Fun Fact Milestone System ────────────────────────────── */
 interface Milestone {
@@ -94,6 +95,16 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const [funFactDismissed, setFunFactDismissed] = useState(false);
   const { goals } = useWOBuddyGoals();
   const insights = generateInsights(goals);
+  const { wobuddyUser } = useWOBuddyAuth();
+  const { weather } = useLocalWeather();
+
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 17) return 'Good afternoon';
+    return 'Good evening';
+  })();
+  const displayName = wobuddyUser?.display_name || mockUser.name;
 
   // Compute all-time totals per category
   const categoryValues = useMemo(() => {
@@ -142,15 +153,33 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Hero Card */}
-      <div className="relative rounded-3xl overflow-hidden h-44">
-        <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+      {/* Hero Card — Weather Background */}
+      <div className={`relative rounded-3xl overflow-hidden h-48 bg-gradient-to-br ${weather ? getWeatherGradient(weather.code, weather.isDay) : 'from-slate-700 via-slate-800 to-gray-900'}`}>
+        {/* Animated weather particles */}
+        <div className="absolute inset-0 opacity-20 overflow-hidden">
+          {weather && weather.code >= 61 && weather.code <= 82 && (
+            <>
+              {Array.from({ length: 20 }).map((_, i) => (
+                <div key={i} className="absolute w-px bg-white/40 animate-[fall_1s_linear_infinite]" style={{ left: `${(i / 20) * 100}%`, top: '-10%', height: '15%', animationDelay: `${i * 0.05}s`, animationDuration: `${0.6 + Math.random() * 0.4}s` }} />
+              ))}
+            </>
+          )}
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         <div className="relative z-10 h-full flex items-center justify-between px-5">
           <div>
-            <p className="text-white/50 text-[10px] uppercase tracking-[0.2em]">Good morning</p>
-            <h2 className="text-2xl font-bold mt-1">{mockUser.name}</h2>
+            <p className="text-white/60 text-[10px] uppercase tracking-[0.2em]">{greeting}</p>
+            <h2 className="text-2xl font-bold mt-1">{displayName}</h2>
             <p className="text-emerald-400 text-xs mt-1 font-medium">Level {mockUser.level} · {mockUser.weeklyStreak}w streak 🔥</p>
+            {weather && (
+              <div className="flex items-center gap-2 mt-2">
+                <MapPin className="w-3 h-3 text-white/50" />
+                <span className="text-[10px] text-white/50">{weather.city}</span>
+                <span className="text-sm">{getWeatherEmoji(weather.code, weather.isDay)}</span>
+                <span className="text-xs text-white/70 font-medium">{weather.temp}°F</span>
+                <span className="text-[10px] text-white/40">{getWeatherDescription(weather.code)}</span>
+              </div>
+            )}
           </div>
           <div className="relative w-20 h-20">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">

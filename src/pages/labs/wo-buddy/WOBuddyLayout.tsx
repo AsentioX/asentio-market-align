@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft, BookOpen, TrendingUp, Shield } from 'lucide-react';
+import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft, BookOpen, TrendingUp, Shield, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLocalWeather, getWeatherEmoji } from './useLocalWeather';
 import Dashboard from './Dashboard';
 import WorkoutPage from './WorkoutPage';
 import CompetitionsPage from './CompetitionsPage';
@@ -25,6 +26,7 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 const WOBuddyApp = () => {
   const { user, wobuddyUser, loading, isAdmin, signOut } = useWOBuddyAuth();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const { weather } = useLocalWeather();
 
   if (loading) {
     return (
@@ -91,9 +93,19 @@ const WOBuddyApp = () => {
             <ArrowLeft className="w-4 h-4" />
             <span className="text-xs">Labs</span>
           </Link>
-          <h1 className="text-base font-bold tracking-tight">
-            W.O.<span className="text-emerald-400">Buddy</span>
-          </h1>
+          <div className="flex flex-col items-center">
+            <h1 className="text-base font-bold tracking-tight">
+              W.O.<span className="text-emerald-400">Buddy</span>
+            </h1>
+            {weather && (
+              <div className="flex items-center gap-1.5 -mt-0.5">
+                <MapPin className="w-2.5 h-2.5 text-white/30" />
+                <span className="text-[9px] text-white/40">{weather.city}</span>
+                <span className="text-[10px]">{getWeatherEmoji(weather.code, weather.isDay)}</span>
+                <span className="text-[9px] text-white/50 font-medium">{weather.temp}°F</span>
+              </div>
+            )}
+          </div>
           <button onClick={() => setActiveTab('settings')} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white/60">
             <Settings className="w-4 h-4" />
           </button>
