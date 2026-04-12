@@ -19,6 +19,7 @@ const ProfilePage = () => {
   const [uploadingBg, setUploadingBg] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
   const getAge = (bd: string) => {
     const diff = Date.now() - new Date(bd).getTime();
