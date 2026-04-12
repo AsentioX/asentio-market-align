@@ -176,7 +176,14 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       {!funFactDismissed && allUnlocked.length > 0 && (() => {
         const { cat, milestone, next, value } = allUnlocked[activeMilestoneIdx];
         return (
-          <div className={`relative overflow-hidden rounded-2xl border ${milestone.border} bg-gradient-to-br ${milestone.color}`}>
+          <div
+            className={`relative overflow-hidden rounded-2xl border ${milestone.border} bg-gradient-to-br ${milestone.color}`}
+            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              const diff = touchStartX.current - e.changedTouches[0].clientX;
+              if (Math.abs(diff) > 50) { diff > 0 ? swipeToNext() : swipeToPrev(); }
+            }}
+          >
             <div className="absolute inset-0 opacity-10">
               <div className="absolute -right-6 -top-6 text-[120px] leading-none select-none">{milestone.emoji}</div>
             </div>
