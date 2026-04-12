@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft, BookOpen, TrendingUp } from 'lucide-react';
+import { Home, Dumbbell, Trophy, Target, Settings, ArrowLeft, BookOpen, TrendingUp, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import WorkoutPage from './WorkoutPage';
@@ -9,6 +9,8 @@ import ProfilePage from './ProfilePage';
 import WearableSettings from './WearableSettings';
 import ExerciseLibraryPage from './ExerciseLibraryPage';
 import ProgressAnalytics from './ProgressAnalytics';
+import WOBuddyLogin from './WOBuddyLogin';
+import { WOBuddyAuthProvider, useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 
 type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings' | 'library' | 'progress';
 
@@ -20,8 +22,24 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
 
-const WOBuddyLayout = () => {
+const WOBuddyApp = () => {
+  const { user, wobuddyUser, loading, isAdmin, signOut } = useWOBuddyAuth();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+          <p className="text-xs text-white/40">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <WOBuddyLogin />;
+  }
 
   const renderPage = () => {
     switch (activeTab) {
@@ -35,6 +53,31 @@ const WOBuddyLayout = () => {
         <div className="space-y-6">
           <ProfilePage />
           <WearableSettings />
+          {/* Account section */}
+          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+            <h3 className="text-sm font-medium mb-3">Account</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-white/40">Signed in as</span>
+                <span className="text-white/60">{user.email}</span>
+              </div>
+              {isAdmin && (
+                <Link
+                  to="/labs/wo-buddy/admin"
+                  className="flex items-center gap-2 text-xs text-violet-400 hover:text-violet-300 transition-colors py-2"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  Admin Dashboard
+                </Link>
+              )}
+              <button
+                onClick={signOut}
+                className="w-full mt-2 py-2.5 rounded-xl bg-red-500/10 border border-red-500/15 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
         </div>
       );
     }
@@ -80,6 +123,14 @@ const WOBuddyLayout = () => {
         </div>
       </nav>
     </div>
+  );
+};
+
+const WOBuddyLayout = () => {
+  return (
+    <WOBuddyAuthProvider>
+      <WOBuddyApp />
+    </WOBuddyAuthProvider>
   );
 };
 
