@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon } from 'lucide-react';
+import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon, Trash2 } from 'lucide-react';
 import { mockUser } from './mockData';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
@@ -7,10 +7,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import AvatarCropModal from './AvatarCropModal';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
 
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
-  const { user, wobuddyUser } = useWOBuddyAuth();
+  const { user, wobuddyUser, signOut } = useWOBuddyAuth();
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
@@ -302,6 +307,52 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+      {/* Delete Account */}
+      <div className="bg-red-500/5 rounded-2xl p-4 border border-red-500/10">
+        <h3 className="text-sm font-semibold text-red-400 mb-1">Danger Zone</h3>
+        <p className="text-[11px] text-white/40 mb-3">Permanently delete your account and all associated data. This action cannot be undone.</p>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="flex items-center gap-1.5 text-xs py-2 px-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" /> Delete Account
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-[#111118] border-white/10">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-white">Delete your account?</AlertDialogTitle>
+              <AlertDialogDescription className="text-white/50">
+                This will permanently delete your W.O.Buddy profile, all workouts, goals, and progress data. This cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white">Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={deletingAccount}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  setDeletingAccount(true);
+                  try {
+                    if (wobuddyUser) {
+                      await supabase.from('wobuddy_exercises').delete().eq('user_id', wobuddyUser.user_id);
+                      await supabase.from('wobuddy_achievements').delete().eq('user_id', wobuddyUser.user_id);
+                      await supabase.from('wobuddy_users').delete().eq('user_id', wobuddyUser.user_id);
+                    }
+                    await signOut();
+                    toast.success('Account deleted');
+                  } catch {
+                    toast.error('Failed to delete account');
+                    setDeletingAccount(false);
+                  }
+                }}
+                className="bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30"
+              >
+                {deletingAccount ? 'Deleting…' : 'Delete Forever'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+
       {cropImageSrc && (
         <AvatarCropModal
           imageSrc={cropImageSrc}
