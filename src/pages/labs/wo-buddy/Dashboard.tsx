@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, X, BarChart3 } from 'lucide-react';
 import ProgressAnalytics from './ProgressAnalytics';
 import { mockUser, mockAchievements, mockExerciseStats, mockBodyTrend, mockMonthlyOverview, mockAllTimeOverview, mockWeeklyOverview, mockWorkouts } from './mockData';
@@ -122,6 +122,16 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   const activeMilestoneIdx = milestoneIdx % Math.max(allUnlocked.length, 1);
 
+  // Swipe support for Fun Facts
+  const touchStartX = useRef(0);
+  const swipeToNext = useCallback(() => {
+    if (allUnlocked.length <= 1) return;
+    setMilestoneIdx(prev => (prev + 1) % allUnlocked.length);
+  }, [allUnlocked.length]);
+  const swipeToPrev = useCallback(() => {
+    if (allUnlocked.length <= 1) return;
+    setMilestoneIdx(prev => (prev - 1 + allUnlocked.length) % allUnlocked.length);
+  }, [allUnlocked.length]);
   const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
   const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
   const bodyLatest = mockBodyTrend[mockBodyTrend.length - 1];
@@ -166,7 +176,14 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       {!funFactDismissed && allUnlocked.length > 0 && (() => {
         const { cat, milestone, next, value } = allUnlocked[activeMilestoneIdx];
         return (
-          <div className={`relative overflow-hidden rounded-2xl border ${milestone.border} bg-gradient-to-br ${milestone.color}`}>
+          <div
+            className={`relative overflow-hidden rounded-2xl border ${milestone.border} bg-gradient-to-br ${milestone.color}`}
+            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              const diff = touchStartX.current - e.changedTouches[0].clientX;
+              if (Math.abs(diff) > 50) { diff > 0 ? swipeToNext() : swipeToPrev(); }
+            }}
+          >
             <div className="absolute inset-0 opacity-10">
               <div className="absolute -right-6 -top-6 text-[120px] leading-none select-none">{milestone.emoji}</div>
             </div>
