@@ -2495,6 +2495,75 @@ export type Database = {
         }
         Relationships: []
       }
+      wobuddy_users: {
+        Row: {
+          avatar_url: string | null
+          background_url: string | null
+          birthdate: string | null
+          body_fat: number | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          ethnicity: string | null
+          fitness_level: string | null
+          gender: string | null
+          goal_weight: number | null
+          height: number | null
+          id: string
+          is_active: boolean
+          is_admin: boolean
+          last_active_at: string | null
+          resting_hr: number | null
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          background_url?: string | null
+          birthdate?: string | null
+          body_fat?: number | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          ethnicity?: string | null
+          fitness_level?: string | null
+          gender?: string | null
+          goal_weight?: number | null
+          height?: number | null
+          id?: string
+          is_active?: boolean
+          is_admin?: boolean
+          last_active_at?: string | null
+          resting_hr?: number | null
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          background_url?: string | null
+          birthdate?: string | null
+          body_fat?: number | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          ethnicity?: string | null
+          fitness_level?: string | null
+          gender?: string | null
+          goal_weight?: number | null
+          height?: number | null
+          id?: string
+          is_active?: boolean
+          is_admin?: boolean
+          last_active_at?: string | null
+          resting_hr?: number | null
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
       wobuddy_workout_plans: {
         Row: {
           created_at: string
