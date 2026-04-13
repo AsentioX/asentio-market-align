@@ -1897,13 +1897,13 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
 
 function NumberInput({ label, value, onChange, step = 1 }: { label: string; value: number; onChange: (v: number) => void; step?: number }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
-      <div className="flex items-center gap-1">
-        <button onClick={() => onChange(Math.max(0, value - step))} className="w-8 h-8 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-lg transition-colors">−</button>
+      <div className="flex items-center gap-0.5">
+        <button onClick={() => onChange(Math.max(0, value - step))} className="w-7 h-8 shrink-0 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-sm transition-colors">−</button>
         <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 bg-white/5 border border-white/5 rounded-lg px-2 py-1.5 text-center text-sm font-medium text-white focus:outline-none focus:border-emerald-500/30" />
-        <button onClick={() => onChange(value + step)} className="w-8 h-8 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-lg transition-colors">+</button>
+          className="min-w-0 flex-1 bg-white/5 border border-white/5 rounded-lg px-1 py-1.5 text-center text-sm font-medium text-white focus:outline-none focus:border-emerald-500/30" />
+        <button onClick={() => onChange(value + step)} className="w-7 h-8 shrink-0 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-sm transition-colors">+</button>
       </div>
     </div>
   );
