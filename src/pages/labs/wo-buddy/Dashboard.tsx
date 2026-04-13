@@ -204,7 +204,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           <div>
             <p className="text-white/60 text-[10px] uppercase tracking-[0.2em]">{greeting}</p>
             <h2 className="text-2xl font-bold mt-1">{displayName}</h2>
-            <p className="text-emerald-400 text-xs mt-1 font-medium">Level {mockUser.level} · {mockUser.weeklyStreak}w streak 🔥</p>
+            <p className="text-emerald-400 text-xs mt-1 font-medium">{mockUser.weeklyStreak}w streak 🔥</p>
             {weather && (
               <div className="flex items-center gap-2 mt-2">
                 <MapPin className="w-3 h-3 text-white/50" />
