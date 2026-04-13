@@ -1363,7 +1363,7 @@ interface PlanSessionCardsProps {
 }
 
 const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount }: PlanSessionCardsProps) => {
-  const [expandedSession, setExpandedSession] = useState<number | null>(0); // Start first session expanded
+  const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
 
   return (
