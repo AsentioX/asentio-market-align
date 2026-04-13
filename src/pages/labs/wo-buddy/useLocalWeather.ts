@@ -5,11 +5,14 @@ interface WeatherData {
   code: number;
   isDay: boolean;
   windSpeed: number;
+  humidity: number;
   city: string;
   lat: number;
   lon: number;
   sunrise: string;
   sunset: string;
+  highTemp: number;
+  lowTemp: number;
 }
 
 const weatherDescriptions: Record<number, string> = {
@@ -103,7 +106,7 @@ export const useLocalWeather = () => {
         try {
           const [weatherRes, city] = await Promise.all([
             fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m&daily=sunrise,sunset&temperature_unit=fahrenheit&timezone=auto`
+              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto`
             ).then((r) => r.json()),
             reverseGeocode(lat, lon),
           ]);
@@ -114,11 +117,14 @@ export const useLocalWeather = () => {
               code: weatherRes.current.weather_code,
               isDay: weatherRes.current.is_day === 1,
               windSpeed: weatherRes.current.wind_speed_10m,
+              humidity: weatherRes.current.relative_humidity_2m ?? 0,
               city,
               lat,
               lon,
               sunrise: weatherRes.daily?.sunrise?.[0] || '',
               sunset: weatherRes.daily?.sunset?.[0] || '',
+              highTemp: Math.round(weatherRes.daily?.temperature_2m_max?.[0] ?? weatherRes.current.temperature_2m),
+              lowTemp: Math.round(weatherRes.daily?.temperature_2m_min?.[0] ?? weatherRes.current.temperature_2m),
             });
           }
         } catch (e: any) {
