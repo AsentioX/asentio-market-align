@@ -1320,7 +1320,7 @@ const WorkoutPage = () => {
                 >
                   <span className="flex items-center gap-2">
                     {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
-                    Camera Tracking (Demo)
+                    Camera Tracking
                   </span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
                     {cameraTracking ? 'ON' : 'OFF'}
@@ -1393,13 +1393,6 @@ const WorkoutPage = () => {
 
               <WhyThisMatters activityName={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise} />
 
-              <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] text-white/40 uppercase tracking-wider">Estimated Score</span>
-                  <p className="text-xs text-white/50 mt-0.5">Based on your current inputs</p>
-                </div>
-                <span className="text-2xl font-bold text-emerald-400">+{currentScore}</span>
-              </div>
 
               <button
                 onClick={handleSubmit}
@@ -1916,13 +1909,33 @@ function NumberInput({ label, value, onChange, step = 1 }: { label: string; valu
   );
 }
 
-function InputSelect({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+function InputSelect({ label, value, options, onChange, grouped }: { label: string; value: string; options: string[]; onChange: (v: string) => void; grouped?: boolean }) {
+  const groupedOptions = useMemo(() => {
+    if (!grouped) return null;
+    const groups: Record<string, string[]> = {};
+    options.forEach(name => {
+      const ex = EXERCISE_LIBRARY.find(e => e.name === name);
+      const cat = ex ? CATEGORY_CONFIG[ex.category]?.label || ex.category : 'Other';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(name);
+    });
+    return groups;
+  }, [options, grouped]);
+
   return (
     <div>
       <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)}
         className="w-full bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
-        {options.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)}
+        {groupedOptions ? (
+          Object.entries(groupedOptions).map(([cat, names]) => (
+            <optgroup key={cat} label={cat} className="bg-[#1a1a2e] text-white/60">
+              {names.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)}
+            </optgroup>
+          ))
+        ) : (
+          options.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)
+        )}
       </select>
     </div>
   );
