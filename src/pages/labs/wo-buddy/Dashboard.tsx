@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, X, BarChart3, MapPin, Cloud, Sunrise, Sunset } from 'lucide-react';
+import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, X, BarChart3, MapPin, Cloud, Sunrise, Sunset, Wind, Droplets } from 'lucide-react';
 import ProgressAnalytics from './ProgressAnalytics';
 import { mockUser, mockAchievements, mockExerciseStats, mockBodyTrend, mockMonthlyOverview, mockAllTimeOverview, mockWeeklyOverview, mockWorkouts } from './mockData';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
