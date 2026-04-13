@@ -631,13 +631,6 @@ const WorkoutPage = () => {
   const totalPlanCount = allPlanExercises.length;
   const completedPlanCount = Object.entries(exerciseActions).filter(([, a]) => a === 'completed').length;
 
-  // Calculate total plan duration
-  const totalPlanDuration = todayPlan?.sessions.reduce((total, session) => {
-    return total + session.exercises.reduce((sum, ex) => {
-      const durMatch = ex.duration?.match(/(\d+)/);
-      return sum + (durMatch ? parseInt(durMatch[1]) : 10);
-    }, 0);
-  }, 0) || 0;
 
   // ---- WORKOUT IN PROGRESS MODE ----
   if (workoutStarted) {
