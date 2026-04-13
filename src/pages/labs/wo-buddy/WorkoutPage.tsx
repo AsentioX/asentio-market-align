@@ -1359,7 +1359,7 @@ const WorkoutPage = () => {
                 <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
                   {mode === 'strength' && (
                     <>
-                      <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
+                      <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} grouped />
                       <div className="grid grid-cols-3 gap-3">
                         <NumberInput label="Sets" value={sets} onChange={setSets} />
                         <NumberInput label="Reps" value={reps} onChange={setReps} />
@@ -1372,7 +1372,7 @@ const WorkoutPage = () => {
                   )}
                   {mode === 'cardio' && (
                     <>
-                      <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
+                      <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} grouped />
                       <div className="grid grid-cols-2 gap-3">
                         <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
                         <NumberInput label="Time (min)" value={time} onChange={setTime} />
@@ -1384,7 +1384,7 @@ const WorkoutPage = () => {
                   )}
                   {mode === 'bodyweight' && (
                     <>
-                      <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
+                      <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} grouped />
                       <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
                     </>
                   )}
