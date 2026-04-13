@@ -5,11 +5,14 @@ interface WeatherData {
   code: number;
   isDay: boolean;
   windSpeed: number;
+  humidity: number;
   city: string;
   lat: number;
   lon: number;
   sunrise: string;
   sunset: string;
+  highTemp: number;
+  lowTemp: number;
 }
 
 const weatherDescriptions: Record<number, string> = {
