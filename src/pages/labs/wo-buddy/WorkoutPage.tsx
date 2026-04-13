@@ -104,7 +104,22 @@ const WorkoutPage = () => {
   // Today's plan
   const plan = useMemo(() => generatePlanFromGoals(goals), [goals]);
   const todayIndex = getTodayIndex();
-  const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
+  const rawTodayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
+  const defaultDuration = rawTodayPlan ? estimatePlanDuration(rawTodayPlan) : 30;
+  const [workoutDuration, setWorkoutDuration] = useState<number>(0); // 0 = not initialized yet
+  
+  // Initialize duration from plan estimate
+  useEffect(() => {
+    if (workoutDuration === 0 && defaultDuration > 0) {
+      setWorkoutDuration(defaultDuration);
+    }
+  }, [defaultDuration, workoutDuration]);
+  
+  const todayPlan = useMemo(() => {
+    if (!rawTodayPlan || workoutDuration === 0) return rawTodayPlan;
+    return adjustPlanForDuration(rawTodayPlan, workoutDuration);
+  }, [rawTodayPlan, workoutDuration]);
+  
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
 
   // Active exercise tracking for workout-in-progress
