@@ -1109,7 +1109,7 @@ const WorkoutPage = () => {
             <div className="space-y-4">
               {/* Today's Plan Card */}
               {hasSessions && (
-                <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
+                <div className="rounded-2xl border border-emerald-500/20 overflow-hidden bg-emerald-950/40">
                   {/* Plan header */}
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-600/5">
                     <div className="flex items-center gap-2">
