@@ -98,6 +98,40 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const { wobuddyUser } = useWOBuddyAuth();
   const { weather } = useLocalWeather();
 
+  // Sun countdown timer
+  const [sunCountdown, setSunCountdown] = useState('');
+  const [sunLabel, setSunLabel] = useState<'sunset' | 'sunrise'>('sunset');
+
+  useEffect(() => {
+    if (!weather?.sunrise || !weather?.sunset) return;
+    const tick = () => {
+      const now = new Date();
+      const sunrise = new Date(weather.sunrise);
+      const sunset = new Date(weather.sunset);
+      let target: Date;
+      let label: 'sunset' | 'sunrise';
+      if (now < sunset) {
+        target = sunset;
+        label = 'sunset';
+      } else {
+        // After sunset, count to next sunrise (tomorrow)
+        const nextSunrise = new Date(sunrise);
+        nextSunrise.setDate(nextSunrise.getDate() + 1);
+        target = nextSunrise;
+        label = 'sunrise';
+      }
+      const diff = Math.max(0, target.getTime() - now.getTime());
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setSunCountdown(`${h}h ${m}m ${s}s`);
+      setSunLabel(label);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [weather?.sunrise, weather?.sunset]);
+
   const greeting = (() => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
