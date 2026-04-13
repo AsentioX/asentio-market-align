@@ -1130,46 +1130,55 @@ const WorkoutPage = () => {
               autoFocus
             />
             <div className="max-h-48 overflow-y-auto space-y-1">
-              {EXERCISE_LIBRARY
-                .filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase()) || e.category.toLowerCase().includes(addExerciseSearch.toLowerCase()))
-                .slice(0, 15)
-                .map(ex => {
-                  const icon = EXERCISE_TYPE_ICONS[ex.category === 'endurance' ? 'cardio' : ex.category === 'strength' ? 'strength' : 'bodyweight'];
-                  return (
-                    <button
-                      key={ex.id}
-                      onClick={() => {
-                        const planType: PlanExercise['type'] =
-                          ex.category === 'endurance' ? 'cardio' :
-                          ex.category === 'strength' ? 'strength' :
-                          'bodyweight';
-                        const newEx: PlanExercise = {
-                          name: ex.name,
-                          type: planType,
-                          libraryId: ex.id,
-                          icon: ex.icon,
-                          sets: ex.entryType === 'sets' ? 3 : undefined,
-                          reps: ex.entryType === 'sets' ? 10 : undefined,
-                          duration: ex.entryType !== 'sets' ? '20 min' : undefined,
-                        };
-                        setAddedExercises(prev => [...prev, newEx]);
-                        setShowAddExercise(false);
-                        setAddExerciseSearch('');
-                      }}
-                      className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06] transition-all text-left"
-                    >
-                      <span className="text-lg w-7 text-center">{icon?.emoji || '⚡'}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-white/80 truncate">{ex.name}</p>
-                        <p className="text-[10px] text-white/30 capitalize">{ex.category}</p>
-                      </div>
-                      <Plus className="w-3.5 h-3.5 text-emerald-400/60 shrink-0" />
-                    </button>
-                  );
-                })}
-              {EXERCISE_LIBRARY.filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase())).length === 0 && (
-                <p className="text-xs text-white/30 text-center py-3">No exercises found</p>
-              )}
+              {(() => {
+                const filtered = EXERCISE_LIBRARY.filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase()) || e.category.toLowerCase().includes(addExerciseSearch.toLowerCase()));
+                const grouped: Record<string, typeof filtered> = {};
+                filtered.forEach(ex => {
+                  const cat = CATEGORY_CONFIG[ex.category]?.label || ex.category;
+                  if (!grouped[cat]) grouped[cat] = [];
+                  grouped[cat].push(ex);
+                });
+                if (filtered.length === 0) return <p className="text-xs text-white/30 text-center py-3">No exercises found</p>;
+                return Object.entries(grouped).map(([cat, exercises]) => (
+                  <div key={cat}>
+                    <p className="text-[10px] text-white/30 uppercase tracking-wider font-semibold px-1 pt-2 pb-1">{cat}</p>
+                    {exercises.slice(0, 8).map(ex => {
+                      const icon = EXERCISE_TYPE_ICONS[ex.category === 'endurance' ? 'cardio' : ex.category === 'strength' ? 'strength' : 'bodyweight'];
+                      return (
+                        <button
+                          key={ex.id}
+                          onClick={() => {
+                            const planType: PlanExercise['type'] =
+                              ex.category === 'endurance' ? 'cardio' :
+                              ex.category === 'strength' ? 'strength' :
+                              'bodyweight';
+                            const newEx: PlanExercise = {
+                              name: ex.name,
+                              type: planType,
+                              libraryId: ex.id,
+                              icon: ex.icon,
+                              sets: ex.entryType === 'sets' ? 3 : undefined,
+                              reps: ex.entryType === 'sets' ? 10 : undefined,
+                              duration: ex.entryType !== 'sets' ? '20 min' : undefined,
+                            };
+                            setAddedExercises(prev => [...prev, newEx]);
+                            setShowAddExercise(false);
+                            setAddExerciseSearch('');
+                          }}
+                          className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06] transition-all text-left"
+                        >
+                          <span className="text-lg w-7 text-center">{icon?.emoji || '⚡'}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-white/80 truncate">{ex.name}</p>
+                            <p className="text-[10px] text-white/30 capitalize">{ex.category}</p>
+                          </div>
+                          <Plus className="w-3.5 h-3.5 text-emerald-400/60 shrink-0" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                ));
+              })()}
             </div>
           </div>
         )}
