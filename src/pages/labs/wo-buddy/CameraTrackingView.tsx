@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { Camera, X, Eye, Zap, Activity } from 'lucide-react';
+import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
+import { Camera, Eye, Zap, Activity } from 'lucide-react';
+import { usePoseDetection, PoseDetectionResult } from './usePoseDetection';
+import { createRepCounter } from './repCounter';
 
 interface CameraTrackingViewProps {
   exercise: string;
@@ -9,229 +11,56 @@ interface CameraTrackingViewProps {
   intensity: { label: string; color: string; msg: string };
 }
 
-// Simulated skeleton keypoints for different exercise phases
-const poseKeypoints = {
-  pushup: {
-    up: [
-      { x: 50, y: 30, label: 'head' },
-      { x: 50, y: 40, label: 'shoulder_l' },
-      { x: 50, y: 40, label: 'shoulder_r' },
-      { x: 35, y: 55, label: 'elbow_l' },
-      { x: 65, y: 55, label: 'elbow_r' },
-      { x: 25, y: 65, label: 'wrist_l' },
-      { x: 75, y: 65, label: 'wrist_r' },
-      { x: 45, y: 60, label: 'hip_l' },
-      { x: 55, y: 60, label: 'hip_r' },
-      { x: 40, y: 78, label: 'knee_l' },
-      { x: 60, y: 78, label: 'knee_r' },
-      { x: 38, y: 92, label: 'ankle_l' },
-      { x: 62, y: 92, label: 'ankle_r' },
-    ],
-    down: [
-      { x: 50, y: 45, label: 'head' },
-      { x: 50, y: 52, label: 'shoulder_l' },
-      { x: 50, y: 52, label: 'shoulder_r' },
-      { x: 35, y: 58, label: 'elbow_l' },
-      { x: 65, y: 58, label: 'elbow_r' },
-      { x: 25, y: 68, label: 'wrist_l' },
-      { x: 75, y: 68, label: 'wrist_r' },
-      { x: 45, y: 65, label: 'hip_l' },
-      { x: 55, y: 65, label: 'hip_r' },
-      { x: 40, y: 80, label: 'knee_l' },
-      { x: 60, y: 80, label: 'knee_r' },
-      { x: 38, y: 92, label: 'ankle_l' },
-      { x: 62, y: 92, label: 'ankle_r' },
-    ],
-  },
-  squat: {
-    up: [
-      { x: 50, y: 15, label: 'head' },
-      { x: 42, y: 28, label: 'shoulder_l' },
-      { x: 58, y: 28, label: 'shoulder_r' },
-      { x: 38, y: 40, label: 'elbow_l' },
-      { x: 62, y: 40, label: 'elbow_r' },
-      { x: 40, y: 48, label: 'wrist_l' },
-      { x: 60, y: 48, label: 'wrist_r' },
-      { x: 44, y: 52, label: 'hip_l' },
-      { x: 56, y: 52, label: 'hip_r' },
-      { x: 43, y: 72, label: 'knee_l' },
-      { x: 57, y: 72, label: 'knee_r' },
-      { x: 42, y: 92, label: 'ankle_l' },
-      { x: 58, y: 92, label: 'ankle_r' },
-    ],
-    down: [
-      { x: 50, y: 30, label: 'head' },
-      { x: 42, y: 42, label: 'shoulder_l' },
-      { x: 58, y: 42, label: 'shoulder_r' },
-      { x: 32, y: 48, label: 'elbow_l' },
-      { x: 68, y: 48, label: 'elbow_r' },
-      { x: 34, y: 58, label: 'wrist_l' },
-      { x: 66, y: 58, label: 'wrist_r' },
-      { x: 44, y: 62, label: 'hip_l' },
-      { x: 56, y: 62, label: 'hip_r' },
-      { x: 38, y: 76, label: 'knee_l' },
-      { x: 62, y: 76, label: 'knee_r' },
-      { x: 42, y: 92, label: 'ankle_l' },
-      { x: 58, y: 92, label: 'ankle_r' },
-    ],
-  },
-};
-
-const boneConnections = [
-  ['head', 'shoulder_l'],
-  ['head', 'shoulder_r'],
-  ['shoulder_l', 'elbow_l'],
-  ['shoulder_r', 'elbow_r'],
-  ['elbow_l', 'wrist_l'],
-  ['elbow_r', 'wrist_r'],
-  ['shoulder_l', 'hip_l'],
-  ['shoulder_r', 'hip_r'],
-  ['hip_l', 'hip_r'],
-  ['hip_l', 'knee_l'],
-  ['hip_r', 'knee_r'],
-  ['knee_l', 'ankle_l'],
-  ['knee_r', 'ankle_r'],
-];
-
-const detectionLabels: Record<string, string> = {
-  'Push-ups': 'PUSH-UP',
-  'Burpees': 'BURPEE',
-  'Squats': 'SQUAT',
-  'Pull-ups': 'PULL-UP',
-  'Sit-ups': 'SIT-UP',
-  'Bench Press': 'BENCH PRESS',
-  'Deadlift': 'DEADLIFT',
-  'Overhead Press': 'OH PRESS',
-  'Barbell Row': 'BARBELL ROW',
-  'Curls': 'BICEP CURL',
-};
-
 const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, intensity }: CameraTrackingViewProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [cameraActive, setCameraActive] = useState(false);
-  const [cameraError, setCameraError] = useState(false);
-  const [posePhase, setPosePhase] = useState<'up' | 'down'>('up');
-  const [confidence, setConfidence] = useState(94);
-  const [formScore, setFormScore] = useState('Good');
   const [repFlash, setRepFlash] = useState(false);
-  const phaseTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [phase, setPhase] = useState<'up' | 'down' | 'unknown'>('unknown');
+  const [formScore, setFormScore] = useState('Detecting...');
+  const [confidence, setConfidence] = useState(0);
+  const prevRepCountRef = useRef(0);
 
-  // Try to access camera
+  // Create rep counter, reset when exercise changes
+  const repCounter = useMemo(() => createRepCounter(exercise), [exercise]);
+
+  const handlePoseResult = useCallback((result: PoseDetectionResult) => {
+    const state = repCounter.update(result.landmarks);
+    setPhase(state.phase);
+    setFormScore(state.formScore);
+
+    // Calculate confidence from landmark visibility
+    const avgVisibility = result.landmarks.reduce((sum, lm) => sum + (lm.visibility ?? 0), 0) / result.landmarks.length;
+    setConfidence(Math.round(avgVisibility * 100));
+
+    // Detect new rep
+    if (state.repCount > prevRepCountRef.current) {
+      prevRepCountRef.current = state.repCount;
+      onRepDetected();
+      setRepFlash(true);
+      setTimeout(() => setRepFlash(false), 400);
+    }
+  }, [repCounter, onRepDetected]);
+
+  // Reset counter when exercise changes
   useEffect(() => {
-    let stream: MediaStream | null = null;
-    const startCamera = async () => {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user', width: 640, height: 480 }
-        });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          setCameraActive(true);
-        }
-      } catch {
-        setCameraError(true);
-        setCameraActive(false);
-      }
-    };
-    startCamera();
-    return () => {
-      if (stream) stream.getTracks().forEach(t => t.stop());
-    };
-  }, []);
+    prevRepCountRef.current = 0;
+    repCounter.reset();
+  }, [exercise, repCounter]);
 
-  // Simulate pose phase changes and rep detection
-  useEffect(() => {
-    const repInterval = 1800 + Math.random() * 1200; // 1.8-3s per rep
-    phaseTimerRef.current = setInterval(() => {
-      setPosePhase(prev => {
-        if (prev === 'down') {
-          // Completed a rep
-          onRepDetected();
-          setRepFlash(true);
-          setTimeout(() => setRepFlash(false), 400);
-          return 'up';
-        }
-        return 'down';
-      });
-      // Vary confidence
-      setConfidence(Math.round(88 + Math.random() * 10));
-      // Vary form
-      const forms = ['Excellent', 'Good', 'Good', 'Great', 'Adjust depth'];
-      setFormScore(forms[Math.floor(Math.random() * forms.length)]);
-    }, repInterval);
+  const { loading, error, cameraActive } = usePoseDetection({
+    videoRef,
+    canvasRef,
+    enabled: true,
+    onResult: handlePoseResult,
+  });
 
-    return () => {
-      if (phaseTimerRef.current) clearInterval(phaseTimerRef.current);
-    };
-  }, [onRepDetected]);
-
-  // Draw skeleton overlay on canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const exerciseLower = exercise.toLowerCase();
-    const poseType = exerciseLower.includes('squat') || exerciseLower.includes('deadlift') ? 'squat' : 'pushup';
-    const points = poseKeypoints[poseType][posePhase];
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw bones
-      ctx.strokeStyle = '#34d399';
-      ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#34d399';
-      ctx.shadowBlur = 6;
-      boneConnections.forEach(([from, to]) => {
-        const p1 = points.find(p => p.label === from);
-        const p2 = points.find(p => p.label === to);
-        if (p1 && p2) {
-          const jitter = () => (Math.random() - 0.5) * 1.5;
-          ctx.beginPath();
-          ctx.moveTo((p1.x + jitter()) * canvas.width / 100, (p1.y + jitter()) * canvas.height / 100);
-          ctx.lineTo((p2.x + jitter()) * canvas.width / 100, (p2.y + jitter()) * canvas.height / 100);
-          ctx.stroke();
-        }
-      });
-
-      // Draw joints
-      ctx.shadowBlur = 8;
-      points.forEach(p => {
-        const jitter = () => (Math.random() - 0.5) * 1;
-        const x = (p.x + jitter()) * canvas.width / 100;
-        const y = (p.y + jitter()) * canvas.height / 100;
-
-        // Outer glow
-        ctx.fillStyle = 'rgba(52, 211, 153, 0.3)';
-        ctx.beginPath();
-        ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Inner dot
-        ctx.fillStyle = '#34d399';
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      ctx.shadowBlur = 0;
-    };
-
-    draw();
-    const animFrame = setInterval(draw, 150);
-    return () => clearInterval(animFrame);
-  }, [posePhase, exercise]);
-
-  const detectedLabel = detectionLabels[exercise] || exercise.toUpperCase();
+  const detectedLabel = repCounter.getLabel();
 
   return (
     <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black">
       {/* Camera view */}
       <div className="relative aspect-[4/3] bg-black overflow-hidden">
-        {/* Video or placeholder */}
+        {/* Video feed */}
         {cameraActive ? (
           <video
             ref={videoRef}
@@ -245,18 +74,19 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
             <div className="text-center space-y-2">
               <Camera className="w-10 h-10 text-white/20 mx-auto" />
               <p className="text-xs text-white/30">
-                {cameraError ? 'Camera unavailable — showing demo mode' : 'Initializing camera...'}
+                {loading ? 'Loading pose model...' : error ?? 'Initializing camera...'}
               </p>
             </div>
           </div>
         )}
 
-        {/* Skeleton overlay canvas */}
+        {/* Hidden video for non-camera case */}
+        {!cameraActive && <video ref={videoRef} className="hidden" autoPlay playsInline muted />}
+
+        {/* Skeleton overlay canvas (mirrored to match video) */}
         <canvas
           ref={canvasRef}
-          width={640}
-          height={480}
-          className="absolute inset-0 w-full h-full pointer-events-none"
+          className="absolute inset-0 w-full h-full pointer-events-none scale-x-[-1]"
         />
 
         {/* Rep flash overlay */}
@@ -273,7 +103,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
               <span className="text-[10px] text-emerald-400 uppercase tracking-wider font-medium">Detected</span>
             </div>
             <p className="text-sm font-bold text-white mt-0.5">{detectedLabel}</p>
-            <p className="text-[10px] text-white/40">{confidence}% confidence</p>
+            <p className="text-[10px] text-white/40">{confidence}% visibility</p>
           </div>
 
           {/* Heart rate */}
@@ -287,7 +117,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
           </div>
         </div>
 
-        {/* Center rep counter — large */}
+        {/* Center rep counter */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
           <div className={`bg-black/70 backdrop-blur-xl rounded-2xl px-6 py-3 border transition-all ${
             repFlash ? 'border-emerald-400/60 shadow-lg shadow-emerald-500/30 scale-110' : 'border-white/10'
@@ -302,11 +132,13 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
         {/* Phase indicator */}
         <div className="absolute bottom-4 right-3">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all ${
-            posePhase === 'down'
+            phase === 'down'
               ? 'bg-amber-500/20 border border-amber-500/30'
-              : 'bg-emerald-500/20 border border-emerald-500/30'
+              : phase === 'up'
+              ? 'bg-emerald-500/20 border border-emerald-500/30'
+              : 'bg-white/10 border border-white/10'
           }`}>
-            {posePhase === 'down' ? '⬇️' : '⬆️'}
+            {phase === 'down' ? '⬇️' : phase === 'up' ? '⬆️' : '👁️'}
           </div>
         </div>
 
@@ -327,12 +159,14 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
         <div className="absolute top-3 left-1/2 -translate-x-1/2">
           <div className="flex items-center gap-1.5 bg-red-500/20 backdrop-blur-md rounded-full px-3 py-1 border border-red-500/30">
             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-[10px] text-red-400 font-medium uppercase tracking-wider">Tracking</span>
+            <span className="text-[10px] text-red-400 font-medium uppercase tracking-wider">
+              {loading ? 'Loading' : 'Tracking'}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Bottom bar with intensity message */}
+      {/* Bottom bar */}
       <div className="px-4 py-3 bg-white/[0.03] border-t border-white/[0.06]">
         <p className="text-xs text-white/50 text-center">{intensity.msg}</p>
       </div>
