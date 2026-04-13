@@ -115,6 +115,11 @@ const WorkoutPage = () => {
     }
   }, [defaultDuration, workoutDuration]);
   
+  const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
+  const [addedExercises, setAddedExercises] = useState<PlanExercise[]>([]);
+  const [showAddExercise, setShowAddExercise] = useState(false);
+  const [addExerciseSearch, setAddExerciseSearch] = useState('');
+
   const baseTodayPlan = useMemo(() => {
     if (!rawTodayPlan || workoutDuration === 0) return rawTodayPlan;
     return adjustPlanForDuration(rawTodayPlan, workoutDuration);
@@ -133,11 +138,6 @@ const WorkoutPage = () => {
     };
     return { ...baseTodayPlan, sessions: [...baseTodayPlan.sessions, extraSession] };
   }, [baseTodayPlan, addedExercises]);
-  
-  const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
-  const [addedExercises, setAddedExercises] = useState<PlanExercise[]>([]);
-  const [showAddExercise, setShowAddExercise] = useState(false);
-  const [addExerciseSearch, setAddExerciseSearch] = useState('');
 
   // Active exercise tracking for workout-in-progress
   const [activeExerciseKey, setActiveExerciseKey] = useState<string | null>(null);
