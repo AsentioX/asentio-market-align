@@ -1,5 +1,5 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
-import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, X, BarChart3, MapPin, Cloud } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Activity, Flame, Target, Zap, ChevronRight, Dumbbell, Sparkles, Calendar, Star, Share2, TrendingUp, TrendingDown, Minus, X, BarChart3, MapPin, Cloud, Sunrise, Sunset } from 'lucide-react';
 import ProgressAnalytics from './ProgressAnalytics';
 import { mockUser, mockAchievements, mockExerciseStats, mockBodyTrend, mockMonthlyOverview, mockAllTimeOverview, mockWeeklyOverview, mockWorkouts } from './mockData';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
@@ -98,6 +98,40 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const { wobuddyUser } = useWOBuddyAuth();
   const { weather } = useLocalWeather();
 
+  // Sun countdown timer
+  const [sunCountdown, setSunCountdown] = useState('');
+  const [sunLabel, setSunLabel] = useState<'sunset' | 'sunrise'>('sunset');
+
+  useEffect(() => {
+    if (!weather?.sunrise || !weather?.sunset) return;
+    const tick = () => {
+      const now = new Date();
+      const sunrise = new Date(weather.sunrise);
+      const sunset = new Date(weather.sunset);
+      let target: Date;
+      let label: 'sunset' | 'sunrise';
+      if (now < sunset) {
+        target = sunset;
+        label = 'sunset';
+      } else {
+        // After sunset, count to next sunrise (tomorrow)
+        const nextSunrise = new Date(sunrise);
+        nextSunrise.setDate(nextSunrise.getDate() + 1);
+        target = nextSunrise;
+        label = 'sunrise';
+      }
+      const diff = Math.max(0, target.getTime() - now.getTime());
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setSunCountdown(`${h}h ${m}m ${s}s`);
+      setSunLabel(label);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [weather?.sunrise, weather?.sunset]);
+
   const greeting = (() => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
@@ -178,6 +212,19 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 <span className="text-sm">{getWeatherEmoji(weather.code, weather.isDay)}</span>
                 <span className="text-xs text-white/70 font-medium">{weather.temp}°F</span>
                 <span className="text-[10px] text-white/40">{getWeatherDescription(weather.code)}</span>
+              </div>
+            )}
+            {sunCountdown && (
+              <div className="flex items-center gap-1.5 mt-1.5">
+                {sunLabel === 'sunset' ? (
+                  <Sunset className="w-3.5 h-3.5 text-orange-400" />
+                ) : (
+                  <Sunrise className="w-3.5 h-3.5 text-amber-300" />
+                )}
+                <span className="text-[10px] text-white/50">
+                  {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
+                </span>
+                <span className="text-[11px] text-white/80 font-mono font-medium">{sunCountdown}</span>
               </div>
             )}
           </div>
