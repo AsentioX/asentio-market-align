@@ -117,11 +117,14 @@ export const useLocalWeather = () => {
               code: weatherRes.current.weather_code,
               isDay: weatherRes.current.is_day === 1,
               windSpeed: weatherRes.current.wind_speed_10m,
+              humidity: weatherRes.current.relative_humidity_2m ?? 0,
               city,
               lat,
               lon,
               sunrise: weatherRes.daily?.sunrise?.[0] || '',
               sunset: weatherRes.daily?.sunset?.[0] || '',
+              highTemp: Math.round(weatherRes.daily?.temperature_2m_max?.[0] ?? weatherRes.current.temperature_2m),
+              lowTemp: Math.round(weatherRes.daily?.temperature_2m_min?.[0] ?? weatherRes.current.temperature_2m),
             });
           }
         } catch (e: any) {
