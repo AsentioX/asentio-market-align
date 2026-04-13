@@ -57,6 +57,7 @@ const ProfilePage = () => {
       toast.error('Failed to update name');
     } else {
       toast.success('Name updated!');
+      await refreshWOBuddyUser();
     }
     setEditingName(false);
   };
