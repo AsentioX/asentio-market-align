@@ -187,8 +187,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Hero Card — Weather Background */}
-      <div className={`relative rounded-3xl overflow-hidden h-48 bg-gradient-to-br ${weather ? getWeatherGradient(weather.code, weather.isDay) : 'from-slate-700 via-slate-800 to-gray-900'}`}>
+      {/* Hero Card — Google-style Weather Widget */}
+      <div className={`relative rounded-3xl overflow-hidden bg-gradient-to-br ${weather ? getWeatherGradient(weather.code, weather.isDay) : 'from-slate-700 via-slate-800 to-gray-900'}`}>
         {/* Animated weather particles */}
         <div className="absolute inset-0 opacity-20 overflow-hidden">
           {weather && weather.code >= 61 && weather.code <= 82 && (
@@ -199,37 +199,66 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             </>
           )}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-        <div className="relative z-10 h-full flex items-center justify-between px-6">
-            <div className="flex flex-col justify-center">
-              <p className="text-white/60 text-xs uppercase tracking-[0.2em]">{greeting}</p>
-              <h2 className="text-4xl font-bold mt-1">{displayName}</h2>
-              
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+
+        <div className="relative z-10 px-6 py-5">
+          {/* Top row: greeting */}
+          <p className="text-white/60 text-xs uppercase tracking-[0.2em]">{greeting}</p>
+          <h2 className="text-2xl font-bold mt-0.5">{displayName}</h2>
+
+          {/* Main weather row */}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center gap-4">
               {weather && (
-                <div className="flex items-center gap-3 mt-3">
-                  <MapPin className="w-4 h-4 text-white/50" />
-                  <span className="text-sm text-white/60">{weather.city}</span>
-                  <span className="text-base text-white/80 font-medium">{weather.temp}°F</span>
-                  <span className="text-sm text-white/50">{getWeatherDescription(weather.code)}</span>
-                </div>
+                <span className="text-6xl leading-none">{getWeatherEmoji(weather.code, weather.isDay)}</span>
               )}
-              {sunCountdown && (
-                <div className="flex items-center gap-2 mt-2">
-                  {sunLabel === 'sunset' ? (
-                    <Sunset className="w-4 h-4 text-orange-400" />
-                  ) : (
-                    <Sunrise className="w-4 h-4 text-amber-300" />
-                  )}
-                  <span className="text-sm text-white/50">
-                    {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
-                  </span>
-                  <span className="text-sm text-white/80 font-mono font-medium">{sunCountdown}</span>
+              <div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-light tracking-tight">{weather?.temp ?? '--'}</span>
+                  <span className="text-lg text-white/60">°F</span>
                 </div>
+                {weather && (
+                  <p className="text-sm text-white/50 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
+                )}
+              </div>
+            </div>
+
+            {/* Right side: condition + details */}
+            <div className="text-right">
+              {weather && (
+                <>
+                  <p className="text-base font-medium text-white/90">{getWeatherDescription(weather.code)}</p>
+                  <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-white/50">
+                    <span className="flex items-center gap-1"><Droplets className="w-3 h-3" />{weather.humidity}%</span>
+                    <span className="flex items-center gap-1"><Wind className="w-3 h-3" />{Math.round(weather.windSpeed)} mph</span>
+                  </div>
+                </>
               )}
             </div>
+          </div>
+
+          {/* Bottom row: location + sunset/sunrise */}
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/10">
             {weather && (
-              <div className="text-5xl">{getWeatherEmoji(weather.code, weather.isDay)}</div>
+              <div className="flex items-center gap-1.5 text-xs text-white/50">
+                <MapPin className="w-3 h-3" />
+                <span>{weather.city}</span>
+              </div>
             )}
+            {sunCountdown && (
+              <div className="flex items-center gap-1.5">
+                {sunLabel === 'sunset' ? (
+                  <Sunset className="w-3.5 h-3.5 text-orange-400" />
+                ) : (
+                  <Sunrise className="w-3.5 h-3.5 text-amber-300" />
+                )}
+                <span className="text-xs text-white/50">
+                  {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
+                </span>
+                <span className="text-xs text-white/80 font-mono font-medium">{sunCountdown}</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
