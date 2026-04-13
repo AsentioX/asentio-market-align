@@ -8,6 +8,8 @@ interface WeatherData {
   city: string;
   lat: number;
   lon: number;
+  sunrise: string;
+  sunset: string;
 }
 
 const weatherDescriptions: Record<number, string> = {
@@ -101,7 +103,7 @@ export const useLocalWeather = () => {
         try {
           const [weatherRes, city] = await Promise.all([
             fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m&temperature_unit=fahrenheit`
+              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m&daily=sunrise,sunset&temperature_unit=fahrenheit&timezone=auto`
             ).then((r) => r.json()),
             reverseGeocode(lat, lon),
           ]);
@@ -115,6 +117,8 @@ export const useLocalWeather = () => {
               city,
               lat,
               lon,
+              sunrise: weatherRes.daily?.sunrise?.[0] || '',
+              sunset: weatherRes.daily?.sunset?.[0] || '',
             });
           }
         } catch (e: any) {
