@@ -200,50 +200,32 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-        <div className="relative z-10 h-full flex items-center justify-between px-5">
-          <div>
-            <p className="text-white/60 text-[10px] uppercase tracking-[0.2em]">{greeting}</p>
-            <h2 className="text-2xl font-bold mt-1">{displayName}</h2>
+        <div className="relative z-10 h-full flex flex-col justify-center px-6">
+            <p className="text-white/60 text-xs uppercase tracking-[0.2em]">{greeting}</p>
+            <h2 className="text-4xl font-bold mt-1">{displayName}</h2>
             
             {weather && (
-              <div className="flex items-center gap-2 mt-2">
-                <MapPin className="w-3 h-3 text-white/50" />
-                <span className="text-[10px] text-white/50">{weather.city}</span>
-                <span className="text-sm">{getWeatherEmoji(weather.code, weather.isDay)}</span>
-                <span className="text-xs text-white/70 font-medium">{weather.temp}°F</span>
-                <span className="text-[10px] text-white/40">{getWeatherDescription(weather.code)}</span>
+              <div className="flex items-center gap-3 mt-3">
+                <MapPin className="w-4 h-4 text-white/50" />
+                <span className="text-sm text-white/60">{weather.city}</span>
+                <span className="text-lg">{getWeatherEmoji(weather.code, weather.isDay)}</span>
+                <span className="text-base text-white/80 font-medium">{weather.temp}°F</span>
+                <span className="text-sm text-white/50">{getWeatherDescription(weather.code)}</span>
               </div>
             )}
             {sunCountdown && (
-              <div className="flex items-center gap-1.5 mt-1.5">
+              <div className="flex items-center gap-2 mt-2">
                 {sunLabel === 'sunset' ? (
-                  <Sunset className="w-3.5 h-3.5 text-orange-400" />
+                  <Sunset className="w-4 h-4 text-orange-400" />
                 ) : (
-                  <Sunrise className="w-3.5 h-3.5 text-amber-300" />
+                  <Sunrise className="w-4 h-4 text-amber-300" />
                 )}
-                <span className="text-[10px] text-white/50">
+                <span className="text-sm text-white/50">
                   {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
                 </span>
-                <span className="text-[11px] text-white/80 font-mono font-medium">{sunCountdown}</span>
+                <span className="text-sm text-white/80 font-mono font-medium">{sunCountdown}</span>
               </div>
             )}
-          </div>
-          <div className="relative w-20 h-20">
-            <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
-              <circle cx="40" cy="40" r="34" fill="none" stroke="url(#readGrad)" strokeWidth="6" strokeLinecap="round" strokeDasharray={`${(readiness / 100) * 213.6} 213.6`} />
-              <defs>
-                <linearGradient id="readGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#34d399" />
-                  <stop offset="100%" stopColor="#10b981" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold text-emerald-400">{readiness}</span>
-              <span className="text-[8px] text-white/50 uppercase tracking-widest">Ready</span>
-            </div>
-          </div>
         </div>
       </div>
 
