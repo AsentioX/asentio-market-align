@@ -1364,7 +1364,6 @@ interface PlanSessionCardsProps {
 
 const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount }: PlanSessionCardsProps) => {
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
-  const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
 
   return (
     <div className="space-y-3">
@@ -1377,7 +1376,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
         </div>
       )}
 
-      {/* Session cards */}
+      {/* Session cards — always expanded */}
       <div className="space-y-2.5">
         {todayPlan.sessions.map((session, si) => {
           const style = SESSION_TYPE_STYLES[session.workoutType] || SESSION_TYPE_STYLES.strength;
@@ -1388,15 +1387,12 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
           const sessionAllDone = sessionExCount > 0 && session.exercises.every((_, ei) =>
             exerciseActions[`${si}-${ei}`] && exerciseActions[`${si}-${ei}`] !== 'pending'
           );
-          const isExpanded = expandedSession === si;
           const exerciseTypes = [...new Set(session.exercises.map(e => e.type))];
 
           return (
             <div key={si} className={`rounded-2xl border overflow-hidden transition-all ${style.border} ${sessionAllDone ? 'opacity-60' : ''}`}>
-              <button
-                onClick={() => setExpandedSession(isExpanded ? null : si)}
-                className={`w-full flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient} transition-all`}
-              >
+              {/* Session header — no longer a button */}
+              <div className={`flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient}`}>
                 <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl flex-shrink-0">
                   {style.emoji}
                 </div>
@@ -1424,20 +1420,30 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                     </p>
                   )}
                 </div>
-                <ChevronDown className={`w-4 h-4 text-white/20 transition-transform shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
-              </button>
+              </div>
 
-              {isExpanded && (
-                <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
-                  {session.exercises.map((ex, ei) => {
-                    const key = `${si}-${ei}`;
-                    const action = exerciseActions[key] || 'pending';
-                    const isDone = action !== 'pending';
-                    const isExExpanded = expandedExercise === key;
-                    const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
+              {/* Exercises — always visible */}
+              <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
+                {session.exercises.map((ex, ei) => {
+                  const key = `${si}-${ei}`;
+                  const action = exerciseActions[key] || 'pending';
+                  const isDone = action !== 'pending';
+                  const isExExpanded = expandedExercise === key;
+                  const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
 
-                    return (
-                      <div key={ei} className="relative">
+                  // Show rest indicator between exercises
+                  const showRestBefore = ei > 0;
+
+                  return (
+                    <div key={ei}>
+                      {showRestBefore && (
+                        <div className="flex items-center gap-2 py-1 px-2">
+                          <div className="flex-1 h-px bg-white/[0.06]" />
+                          <span className="text-[9px] text-white/20 flex items-center gap-1">😮‍💨 ~1.5 min rest</span>
+                          <div className="flex-1 h-px bg-white/[0.06]" />
+                        </div>
+                      )}
+                      <div className="relative">
                         <button
                           onClick={() => { if (!isDone) setExpandedExercise(isExExpanded ? null : key); }}
                           className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${
@@ -1482,8 +1488,16 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                           </div>
                         )}
                       </div>
-                    );
-                  })}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Rest between sessions */}
+              {si < todayPlan.sessions.length - 1 && !sessionAllDone && (
+                <div className="flex items-center gap-2 py-2 px-4 bg-amber-500/[0.04] border-t border-amber-500/10">
+                  <span className="text-sm">😮‍💨</span>
+                  <span className="text-[10px] text-amber-400/60 font-medium">~3 min rest between sessions</span>
                 </div>
               )}
             </div>
