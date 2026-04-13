@@ -1106,14 +1106,73 @@ const WorkoutPage = () => {
           </div>
         )}
 
-        {/* Add Exercise */}
-        <button
-          onClick={() => setWorkoutPath('new')}
-          className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3.5 transition-all"
-        >
-          <Plus className="w-4 h-4 text-white/50" />
-          <span className="text-sm font-medium text-white/70">Add Exercise</span>
-        </button>
+        {/* Add Exercise inline */}
+        {!showAddExercise ? (
+          <button
+            onClick={() => setShowAddExercise(true)}
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3.5 transition-all"
+          >
+            <Plus className="w-4 h-4 text-white/50" />
+            <span className="text-sm font-medium text-white/70">Add Exercise</span>
+          </button>
+        ) : (
+          <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-white/[0.05] to-white/[0.02] p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Add Exercise</span>
+              <button onClick={() => { setShowAddExercise(false); setAddExerciseSearch(''); }} className="text-[10px] text-white/30 hover:text-white/50">Cancel</button>
+            </div>
+            <input
+              type="text"
+              value={addExerciseSearch}
+              onChange={(e) => setAddExerciseSearch(e.target.value)}
+              placeholder="Search exercises..."
+              className="w-full bg-white/5 border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-emerald-500/30"
+              autoFocus
+            />
+            <div className="max-h-48 overflow-y-auto space-y-1">
+              {EXERCISE_LIBRARY
+                .filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase()) || e.category.toLowerCase().includes(addExerciseSearch.toLowerCase()))
+                .slice(0, 15)
+                .map(ex => {
+                  const icon = EXERCISE_TYPE_ICONS[ex.category === 'endurance' ? 'cardio' : ex.category === 'strength' ? 'strength' : 'bodyweight'];
+                  return (
+                    <button
+                      key={ex.id}
+                      onClick={() => {
+                        const planType: PlanExercise['type'] =
+                          ex.category === 'endurance' ? 'cardio' :
+                          ex.category === 'strength' ? 'strength' :
+                          'bodyweight';
+                        const newEx: PlanExercise = {
+                          name: ex.name,
+                          type: planType,
+                          libraryId: ex.id,
+                          icon: ex.icon,
+                          sets: ex.entryType === 'sets' ? 3 : undefined,
+                          reps: ex.entryType === 'sets' ? 10 : undefined,
+                          duration: ex.entryType !== 'sets' ? '20 min' : undefined,
+                        };
+                        setAddedExercises(prev => [...prev, newEx]);
+                        setShowAddExercise(false);
+                        setAddExerciseSearch('');
+                      }}
+                      className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06] transition-all text-left"
+                    >
+                      <span className="text-lg w-7 text-center">{icon?.emoji || '⚡'}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-white/80 truncate">{ex.name}</p>
+                        <p className="text-[10px] text-white/30 capitalize">{ex.category}</p>
+                      </div>
+                      <Plus className="w-3.5 h-3.5 text-emerald-400/60 shrink-0" />
+                    </button>
+                  );
+                })}
+              {EXERCISE_LIBRARY.filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase())).length === 0 && (
+                <p className="text-xs text-white/30 text-center py-3">No exercises found</p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Finish Workout */}
         <button
