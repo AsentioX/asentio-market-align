@@ -1124,14 +1124,47 @@ const WorkoutPage = () => {
             <div className="space-y-4">
               {/* Today's Plan Card */}
               {hasSessions && (
-                <div className="rounded-2xl border border-emerald-500/20 overflow-hidden bg-emerald-950/40">
+                 <div className="rounded-2xl border border-emerald-500/20 overflow-hidden bg-emerald-950/40">
                   {/* Plan header */}
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-600/5">
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4 text-emerald-400" />
                       <p className="text-sm font-semibold text-white">Today's Plan</p>
                     </div>
-                    <p className="text-xs text-white/50">Duration: <span className="text-white/80 font-medium">{totalPlanDuration} min</span></p>
+                    <p className="text-xs text-white/50">
+                      {todayPlan!.sessions.reduce((t, s) => t + s.exercises.length, 0)} exercises
+                    </p>
+                  </div>
+
+                  {/* Duration picker */}
+                  <div className="px-4 pt-3 pb-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-[10px] text-white/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                        <Timer className="w-3 h-3" /> Workout Duration
+                      </label>
+                      <span className="text-sm font-bold text-emerald-400 tabular-nums">{workoutDuration} min</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] text-white/30">15</span>
+                      <input
+                        type="range"
+                        min={15}
+                        max={120}
+                        step={5}
+                        value={workoutDuration}
+                        onChange={(e) => {
+                          setWorkoutDuration(parseInt(e.target.value));
+                          setExerciseActions({});
+                        }}
+                        className="flex-1 h-1.5 rounded-full appearance-none bg-white/10 accent-emerald-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-400 [&::-webkit-slider-thumb]:shadow-lg"
+                      />
+                      <span className="text-[10px] text-white/30">120</span>
+                    </div>
+                    {workoutDuration < defaultDuration && (
+                      <p className="text-[10px] text-amber-400/60 mt-1.5">
+                        ⚡ Plan adjusted — some exercises trimmed to fit {workoutDuration} min
+                      </p>
+                    )}
                   </div>
 
                   {/* Sessions and exercises */}
