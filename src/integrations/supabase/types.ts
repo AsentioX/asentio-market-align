@@ -2973,7 +2973,7 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      is_wobuddy_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       gov_phase: "visioning" | "drafting" | "community-review" | "finalized"
