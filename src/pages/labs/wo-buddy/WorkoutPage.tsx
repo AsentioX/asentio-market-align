@@ -9,7 +9,7 @@ import WhyThisMatters from './WhyThisMatters';
 import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
-import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExercisesForDay, getAllDriversForDay, type PlanDay, type PlanExercise, type PlanSession } from './planEngine';
+import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExercisesForDay, getAllDriversForDay, adjustPlanForDuration, estimatePlanDuration, type PlanDay, type PlanExercise, type PlanSession } from './planEngine';
 import { EXERCISE_LIBRARY, findExercise } from './exerciseLibrary';
 import { useWearableDevices, useWearableLiveData, getHRZone } from './useWearableDevices';
 
@@ -104,7 +104,22 @@ const WorkoutPage = () => {
   // Today's plan
   const plan = useMemo(() => generatePlanFromGoals(goals), [goals]);
   const todayIndex = getTodayIndex();
-  const todayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
+  const rawTodayPlan = plan.find(p => p.dayOfWeek === todayIndex) || null;
+  const defaultDuration = rawTodayPlan ? estimatePlanDuration(rawTodayPlan) : 30;
+  const [workoutDuration, setWorkoutDuration] = useState<number>(0); // 0 = not initialized yet
+  
+  // Initialize duration from plan estimate
+  useEffect(() => {
+    if (workoutDuration === 0 && defaultDuration > 0) {
+      setWorkoutDuration(defaultDuration);
+    }
+  }, [defaultDuration, workoutDuration]);
+  
+  const todayPlan = useMemo(() => {
+    if (!rawTodayPlan || workoutDuration === 0) return rawTodayPlan;
+    return adjustPlanForDuration(rawTodayPlan, workoutDuration);
+  }, [rawTodayPlan, workoutDuration]);
+  
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
 
   // Active exercise tracking for workout-in-progress
@@ -616,13 +631,6 @@ const WorkoutPage = () => {
   const totalPlanCount = allPlanExercises.length;
   const completedPlanCount = Object.entries(exerciseActions).filter(([, a]) => a === 'completed').length;
 
-  // Calculate total plan duration
-  const totalPlanDuration = todayPlan?.sessions.reduce((total, session) => {
-    return total + session.exercises.reduce((sum, ex) => {
-      const durMatch = ex.duration?.match(/(\d+)/);
-      return sum + (durMatch ? parseInt(durMatch[1]) : 10);
-    }, 0);
-  }, 0) || 0;
 
   // ---- WORKOUT IN PROGRESS MODE ----
   if (workoutStarted) {
@@ -1109,14 +1117,47 @@ const WorkoutPage = () => {
             <div className="space-y-4">
               {/* Today's Plan Card */}
               {hasSessions && (
-                <div className="rounded-2xl border border-emerald-500/20 overflow-hidden bg-emerald-950/40">
+                 <div className="rounded-2xl border border-emerald-500/20 overflow-hidden bg-emerald-950/40">
                   {/* Plan header */}
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-600/5">
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4 text-emerald-400" />
                       <p className="text-sm font-semibold text-white">Today's Plan</p>
                     </div>
-                    <p className="text-xs text-white/50">Duration: <span className="text-white/80 font-medium">{totalPlanDuration} min</span></p>
+                    <p className="text-xs text-white/50">
+                      {todayPlan!.sessions.reduce((t, s) => t + s.exercises.length, 0)} exercises
+                    </p>
+                  </div>
+
+                  {/* Duration picker */}
+                  <div className="px-4 pt-3 pb-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-[10px] text-white/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                        <Timer className="w-3 h-3" /> Workout Duration
+                      </label>
+                      <span className="text-sm font-bold text-emerald-400 tabular-nums">{workoutDuration} min</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] text-white/30">15</span>
+                      <input
+                        type="range"
+                        min={15}
+                        max={120}
+                        step={5}
+                        value={workoutDuration}
+                        onChange={(e) => {
+                          setWorkoutDuration(parseInt(e.target.value));
+                          setExerciseActions({});
+                        }}
+                        className="flex-1 h-1.5 rounded-full appearance-none bg-white/10 accent-emerald-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-400 [&::-webkit-slider-thumb]:shadow-lg"
+                      />
+                      <span className="text-[10px] text-white/30">120</span>
+                    </div>
+                    {workoutDuration < defaultDuration && (
+                      <p className="text-[10px] text-amber-400/60 mt-1.5">
+                        ⚡ Plan adjusted — some exercises trimmed to fit {workoutDuration} min
+                      </p>
+                    )}
                   </div>
 
                   {/* Sessions and exercises */}
@@ -1315,7 +1356,6 @@ interface PlanSessionCardsProps {
 }
 
 const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount }: PlanSessionCardsProps) => {
-  const [expandedSession, setExpandedSession] = useState<number | null>(0); // Start first session expanded
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
 
   return (
@@ -1329,7 +1369,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
         </div>
       )}
 
-      {/* Session cards */}
+      {/* Session cards — always expanded */}
       <div className="space-y-2.5">
         {todayPlan.sessions.map((session, si) => {
           const style = SESSION_TYPE_STYLES[session.workoutType] || SESSION_TYPE_STYLES.strength;
@@ -1340,15 +1380,12 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
           const sessionAllDone = sessionExCount > 0 && session.exercises.every((_, ei) =>
             exerciseActions[`${si}-${ei}`] && exerciseActions[`${si}-${ei}`] !== 'pending'
           );
-          const isExpanded = expandedSession === si;
           const exerciseTypes = [...new Set(session.exercises.map(e => e.type))];
 
           return (
             <div key={si} className={`rounded-2xl border overflow-hidden transition-all ${style.border} ${sessionAllDone ? 'opacity-60' : ''}`}>
-              <button
-                onClick={() => setExpandedSession(isExpanded ? null : si)}
-                className={`w-full flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient} transition-all`}
-              >
+              {/* Session header — no longer a button */}
+              <div className={`flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient}`}>
                 <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl flex-shrink-0">
                   {style.emoji}
                 </div>
@@ -1376,20 +1413,30 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                     </p>
                   )}
                 </div>
-                <ChevronDown className={`w-4 h-4 text-white/20 transition-transform shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
-              </button>
+              </div>
 
-              {isExpanded && (
-                <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
-                  {session.exercises.map((ex, ei) => {
-                    const key = `${si}-${ei}`;
-                    const action = exerciseActions[key] || 'pending';
-                    const isDone = action !== 'pending';
-                    const isExExpanded = expandedExercise === key;
-                    const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
+              {/* Exercises — always visible */}
+              <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
+                {session.exercises.map((ex, ei) => {
+                  const key = `${si}-${ei}`;
+                  const action = exerciseActions[key] || 'pending';
+                  const isDone = action !== 'pending';
+                  const isExExpanded = expandedExercise === key;
+                  const exTypeIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
 
-                    return (
-                      <div key={ei} className="relative">
+                  // Show rest indicator between exercises
+                  const showRestBefore = ei > 0;
+
+                  return (
+                    <div key={ei}>
+                      {showRestBefore && (
+                        <div className="flex items-center gap-2 py-1 px-2">
+                          <div className="flex-1 h-px bg-white/[0.06]" />
+                          <span className="text-[9px] text-white/20 flex items-center gap-1">😮‍💨 ~1.5 min rest</span>
+                          <div className="flex-1 h-px bg-white/[0.06]" />
+                        </div>
+                      )}
+                      <div className="relative">
                         <button
                           onClick={() => { if (!isDone) setExpandedExercise(isExExpanded ? null : key); }}
                           className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${
@@ -1434,8 +1481,16 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                           </div>
                         )}
                       </div>
-                    );
-                  })}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Rest between sessions */}
+              {si < todayPlan.sessions.length - 1 && !sessionAllDone && (
+                <div className="flex items-center gap-2 py-2 px-4 bg-amber-500/[0.04] border-t border-amber-500/10">
+                  <span className="text-sm">😮‍💨</span>
+                  <span className="text-[10px] text-amber-400/60 font-medium">~3 min rest between sessions</span>
                 </div>
               )}
             </div>

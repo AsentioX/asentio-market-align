@@ -228,3 +228,83 @@ export function getAllDriversForDay(day: PlanDay): string[] {
   day.sessions.forEach(s => s.focusDrivers.forEach(d => drivers.add(d)));
   return Array.from(drivers);
 }
+
+// Estimate minutes for a single exercise
+function estimateExerciseMinutes(ex: PlanExercise): number {
+  if (ex.duration) {
+    const match = ex.duration.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 5;
+  }
+  // sets-based: ~2 min per set
+  return (ex.sets || 3) * 2;
+}
+
+const REST_BETWEEN_EXERCISES_MIN = 1.5;
+const REST_BETWEEN_SESSIONS_MIN = 3;
+
+// Adjust a day's plan to fit within a target duration (minutes), including rest periods
+export function adjustPlanForDuration(day: PlanDay, targetMinutes: number): PlanDay {
+  if (day.isRest || day.sessions.length === 0) return day;
+
+  // Build a priority-ordered list of all exercises across sessions
+  const items: { si: number; ei: number; ex: PlanExercise; mins: number }[] = [];
+  day.sessions.forEach((session, si) => {
+    session.exercises.forEach((ex, ei) => {
+      items.push({ si, ei, ex, mins: estimateExerciseMinutes(ex) });
+    });
+  });
+
+  // Greedily pick exercises that fit, respecting rest periods
+  const picked: typeof items = [];
+  let usedMinutes = 0;
+
+  for (const item of items) {
+    const restNeeded = picked.length > 0 ? REST_BETWEEN_EXERCISES_MIN : 0;
+    const sessionChanged = picked.length > 0 && picked[picked.length - 1].si !== item.si;
+    const extraRest = sessionChanged ? REST_BETWEEN_SESSIONS_MIN - REST_BETWEEN_EXERCISES_MIN : 0;
+    const totalRest = restNeeded + extraRest;
+
+    if (usedMinutes + totalRest + item.mins <= targetMinutes) {
+      usedMinutes += totalRest + item.mins;
+      picked.push(item);
+    }
+  }
+
+  // Ensure at least one exercise
+  if (picked.length === 0 && items.length > 0) {
+    picked.push(items[0]);
+  }
+
+  // Rebuild sessions from picked exercises
+  const newSessionMap = new Map<number, PlanExercise[]>();
+  picked.forEach(p => {
+    if (!newSessionMap.has(p.si)) newSessionMap.set(p.si, []);
+    newSessionMap.get(p.si)!.push(p.ex);
+  });
+
+  const newSessions: PlanSession[] = [];
+  day.sessions.forEach((session, si) => {
+    const exercises = newSessionMap.get(si);
+    if (exercises && exercises.length > 0) {
+      newSessions.push({ ...session, exercises });
+    }
+  });
+
+  return { ...day, sessions: newSessions };
+}
+
+// Estimate total duration of a plan day including rest periods
+export function estimatePlanDuration(day: PlanDay): number {
+  if (day.isRest || day.sessions.length === 0) return 0;
+  let total = 0;
+  let exerciseCount = 0;
+  day.sessions.forEach((session, si) => {
+    if (si > 0 && exerciseCount > 0) total += REST_BETWEEN_SESSIONS_MIN;
+    session.exercises.forEach((ex, ei) => {
+      if (ei > 0) total += REST_BETWEEN_EXERCISES_MIN;
+      total += estimateExerciseMinutes(ex);
+      exerciseCount++;
+    });
+  });
+  return Math.round(total);
+}
