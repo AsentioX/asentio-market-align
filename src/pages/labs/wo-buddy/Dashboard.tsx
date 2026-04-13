@@ -214,6 +214,19 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 <span className="text-[10px] text-white/40">{getWeatherDescription(weather.code)}</span>
               </div>
             )}
+            {sunCountdown && (
+              <div className="flex items-center gap-1.5 mt-1.5">
+                {sunLabel === 'sunset' ? (
+                  <Sunset className="w-3.5 h-3.5 text-orange-400" />
+                ) : (
+                  <Sunrise className="w-3.5 h-3.5 text-amber-300" />
+                )}
+                <span className="text-[10px] text-white/50">
+                  {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
+                </span>
+                <span className="text-[11px] text-white/80 font-mono font-medium">{sunCountdown}</span>
+              </div>
+            )}
           </div>
           <div className="relative w-20 h-20">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
