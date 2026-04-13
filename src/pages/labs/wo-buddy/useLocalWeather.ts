@@ -106,7 +106,7 @@ export const useLocalWeather = () => {
         try {
           const [weatherRes, city] = await Promise.all([
             fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m&daily=sunrise,sunset&temperature_unit=fahrenheit&timezone=auto`
+              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto`
             ).then((r) => r.json()),
             reverseGeocode(lat, lon),
           ]);
