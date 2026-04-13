@@ -22,6 +22,7 @@ interface WOBuddyAuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  refreshWOBuddyUser: () => Promise<void>;
 }
 
 const WOBuddyAuthContext = createContext<WOBuddyAuthContextType | undefined>(undefined);
@@ -115,6 +116,17 @@ export const WOBuddyAuthProvider = ({ children }: { children: ReactNode }) => {
     return { error: error as Error | null };
   };
 
+  const refreshWOBuddyUser = useCallback(async () => {
+    if (user) {
+      const { data } = await supabase
+        .from('wobuddy_users')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      if (data) setWobuddyUser(data as WOBuddyUser);
+    }
+  }, [user]);
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -133,6 +145,7 @@ export const WOBuddyAuthProvider = ({ children }: { children: ReactNode }) => {
         signIn,
         signUp,
         signOut,
+        refreshWOBuddyUser,
       }}
     >
       {children}
