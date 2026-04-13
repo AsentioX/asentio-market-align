@@ -10,7 +10,7 @@ import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
 import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExercisesForDay, getAllDriversForDay, adjustPlanForDuration, estimatePlanDuration, type PlanDay, type PlanExercise, type PlanSession } from './planEngine';
-import { EXERCISE_LIBRARY, findExercise } from './exerciseLibrary';
+import { EXERCISE_LIBRARY, CATEGORY_CONFIG, findExercise } from './exerciseLibrary';
 import { useWearableDevices, useWearableLiveData, getHRZone } from './useWearableDevices';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
@@ -1130,46 +1130,55 @@ const WorkoutPage = () => {
               autoFocus
             />
             <div className="max-h-48 overflow-y-auto space-y-1">
-              {EXERCISE_LIBRARY
-                .filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase()) || e.category.toLowerCase().includes(addExerciseSearch.toLowerCase()))
-                .slice(0, 15)
-                .map(ex => {
-                  const icon = EXERCISE_TYPE_ICONS[ex.category === 'endurance' ? 'cardio' : ex.category === 'strength' ? 'strength' : 'bodyweight'];
-                  return (
-                    <button
-                      key={ex.id}
-                      onClick={() => {
-                        const planType: PlanExercise['type'] =
-                          ex.category === 'endurance' ? 'cardio' :
-                          ex.category === 'strength' ? 'strength' :
-                          'bodyweight';
-                        const newEx: PlanExercise = {
-                          name: ex.name,
-                          type: planType,
-                          libraryId: ex.id,
-                          icon: ex.icon,
-                          sets: ex.entryType === 'sets' ? 3 : undefined,
-                          reps: ex.entryType === 'sets' ? 10 : undefined,
-                          duration: ex.entryType !== 'sets' ? '20 min' : undefined,
-                        };
-                        setAddedExercises(prev => [...prev, newEx]);
-                        setShowAddExercise(false);
-                        setAddExerciseSearch('');
-                      }}
-                      className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06] transition-all text-left"
-                    >
-                      <span className="text-lg w-7 text-center">{icon?.emoji || '⚡'}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-white/80 truncate">{ex.name}</p>
-                        <p className="text-[10px] text-white/30 capitalize">{ex.category}</p>
-                      </div>
-                      <Plus className="w-3.5 h-3.5 text-emerald-400/60 shrink-0" />
-                    </button>
-                  );
-                })}
-              {EXERCISE_LIBRARY.filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase())).length === 0 && (
-                <p className="text-xs text-white/30 text-center py-3">No exercises found</p>
-              )}
+              {(() => {
+                const filtered = EXERCISE_LIBRARY.filter(e => !addExerciseSearch || e.name.toLowerCase().includes(addExerciseSearch.toLowerCase()) || e.category.toLowerCase().includes(addExerciseSearch.toLowerCase()));
+                const grouped: Record<string, typeof filtered> = {};
+                filtered.forEach(ex => {
+                  const cat = CATEGORY_CONFIG[ex.category]?.label || ex.category;
+                  if (!grouped[cat]) grouped[cat] = [];
+                  grouped[cat].push(ex);
+                });
+                if (filtered.length === 0) return <p className="text-xs text-white/30 text-center py-3">No exercises found</p>;
+                return Object.entries(grouped).map(([cat, exercises]) => (
+                  <div key={cat}>
+                    <p className="text-[10px] text-white/30 uppercase tracking-wider font-semibold px-1 pt-2 pb-1">{cat}</p>
+                    {exercises.slice(0, 8).map(ex => {
+                      const icon = EXERCISE_TYPE_ICONS[ex.category === 'endurance' ? 'cardio' : ex.category === 'strength' ? 'strength' : 'bodyweight'];
+                      return (
+                        <button
+                          key={ex.id}
+                          onClick={() => {
+                            const planType: PlanExercise['type'] =
+                              ex.category === 'endurance' ? 'cardio' :
+                              ex.category === 'strength' ? 'strength' :
+                              'bodyweight';
+                            const newEx: PlanExercise = {
+                              name: ex.name,
+                              type: planType,
+                              libraryId: ex.id,
+                              icon: ex.icon,
+                              sets: ex.entryType === 'sets' ? 3 : undefined,
+                              reps: ex.entryType === 'sets' ? 10 : undefined,
+                              duration: ex.entryType !== 'sets' ? '20 min' : undefined,
+                            };
+                            setAddedExercises(prev => [...prev, newEx]);
+                            setShowAddExercise(false);
+                            setAddExerciseSearch('');
+                          }}
+                          className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06] transition-all text-left"
+                        >
+                          <span className="text-lg w-7 text-center">{icon?.emoji || '⚡'}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-white/80 truncate">{ex.name}</p>
+                            <p className="text-[10px] text-white/30 capitalize">{ex.category}</p>
+                          </div>
+                          <Plus className="w-3.5 h-3.5 text-emerald-400/60 shrink-0" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                ));
+              })()}
             </div>
           </div>
         )}
@@ -1320,7 +1329,7 @@ const WorkoutPage = () => {
                 >
                   <span className="flex items-center gap-2">
                     {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
-                    Camera Tracking (Demo)
+                    Camera Tracking
                   </span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
                     {cameraTracking ? 'ON' : 'OFF'}
@@ -1359,7 +1368,7 @@ const WorkoutPage = () => {
                 <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
                   {mode === 'strength' && (
                     <>
-                      <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} />
+                      <InputSelect label="Exercise" value={exercise} options={strengthExercises} onChange={setExercise} grouped />
                       <div className="grid grid-cols-3 gap-3">
                         <NumberInput label="Sets" value={sets} onChange={setSets} />
                         <NumberInput label="Reps" value={reps} onChange={setReps} />
@@ -1372,7 +1381,7 @@ const WorkoutPage = () => {
                   )}
                   {mode === 'cardio' && (
                     <>
-                      <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} />
+                      <InputSelect label="Activity" value={cardioActivity} options={cardioActivities} onChange={setCardioActivity} grouped />
                       <div className="grid grid-cols-2 gap-3">
                         <NumberInput label="Distance (km)" value={distance} onChange={setDistance} step={0.5} />
                         <NumberInput label="Time (min)" value={time} onChange={setTime} />
@@ -1384,7 +1393,7 @@ const WorkoutPage = () => {
                   )}
                   {mode === 'bodyweight' && (
                     <>
-                      <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} />
+                      <InputSelect label="Exercise" value={bwExercise} options={bodyweightExercises} onChange={setBwExercise} grouped />
                       <NumberInput label="Total Reps" value={bwReps} onChange={setBwReps} />
                     </>
                   )}
@@ -1393,13 +1402,6 @@ const WorkoutPage = () => {
 
               <WhyThisMatters activityName={mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise} />
 
-              <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] text-white/40 uppercase tracking-wider">Estimated Score</span>
-                  <p className="text-xs text-white/50 mt-0.5">Based on your current inputs</p>
-                </div>
-                <span className="text-2xl font-bold text-emerald-400">+{currentScore}</span>
-              </div>
 
               <button
                 onClick={handleSubmit}
@@ -1904,25 +1906,45 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
 
 function NumberInput({ label, value, onChange, step = 1 }: { label: string; value: number; onChange: (v: number) => void; step?: number }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
-      <div className="flex items-center gap-1">
-        <button onClick={() => onChange(Math.max(0, value - step))} className="w-8 h-8 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-lg transition-colors">−</button>
+      <div className="flex items-center gap-0.5">
+        <button onClick={() => onChange(Math.max(0, value - step))} className="w-7 h-8 shrink-0 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-sm transition-colors">−</button>
         <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 bg-white/5 border border-white/5 rounded-lg px-2 py-1.5 text-center text-sm font-medium text-white focus:outline-none focus:border-emerald-500/30" />
-        <button onClick={() => onChange(value + step)} className="w-8 h-8 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-lg transition-colors">+</button>
+          className="min-w-0 flex-1 bg-white/5 border border-white/5 rounded-lg px-1 py-1.5 text-center text-sm font-medium text-white focus:outline-none focus:border-emerald-500/30" />
+        <button onClick={() => onChange(value + step)} className="w-7 h-8 shrink-0 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-sm transition-colors">+</button>
       </div>
     </div>
   );
 }
 
-function InputSelect({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+function InputSelect({ label, value, options, onChange, grouped }: { label: string; value: string; options: string[]; onChange: (v: string) => void; grouped?: boolean }) {
+  const groupedOptions = useMemo(() => {
+    if (!grouped) return null;
+    const groups: Record<string, string[]> = {};
+    options.forEach(name => {
+      const ex = EXERCISE_LIBRARY.find(e => e.name === name);
+      const cat = ex ? CATEGORY_CONFIG[ex.category]?.label || ex.category : 'Other';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(name);
+    });
+    return groups;
+  }, [options, grouped]);
+
   return (
     <div>
       <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)}
         className="w-full bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
-        {options.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)}
+        {groupedOptions ? (
+          Object.entries(groupedOptions).map(([cat, names]) => (
+            <optgroup key={cat} label={cat} className="bg-[#1a1a2e] text-white/60">
+              {names.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)}
+            </optgroup>
+          ))
+        ) : (
+          options.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)
+        )}
       </select>
     </div>
   );
