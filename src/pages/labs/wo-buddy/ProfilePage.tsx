@@ -14,7 +14,7 @@ import {
 
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
-  const { user, wobuddyUser, signOut } = useWOBuddyAuth();
+  const { user, wobuddyUser, signOut, refreshWOBuddyUser } = useWOBuddyAuth();
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingName, setEditingName] = useState(false);
