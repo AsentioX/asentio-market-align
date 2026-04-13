@@ -10,7 +10,7 @@ import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
 import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExercisesForDay, getAllDriversForDay, adjustPlanForDuration, estimatePlanDuration, type PlanDay, type PlanExercise, type PlanSession } from './planEngine';
-import { EXERCISE_LIBRARY, findExercise } from './exerciseLibrary';
+import { EXERCISE_LIBRARY, CATEGORY_CONFIG, findExercise } from './exerciseLibrary';
 import { useWearableDevices, useWearableLiveData, getHRZone } from './useWearableDevices';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
