@@ -200,31 +200,35 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-        <div className="relative z-10 h-full flex flex-col justify-center px-6">
-            <p className="text-white/60 text-xs uppercase tracking-[0.2em]">{greeting}</p>
-            <h2 className="text-4xl font-bold mt-1">{displayName}</h2>
-            
+        <div className="relative z-10 h-full flex items-center justify-between px-6">
+            <div className="flex flex-col justify-center">
+              <p className="text-white/60 text-xs uppercase tracking-[0.2em]">{greeting}</p>
+              <h2 className="text-4xl font-bold mt-1">{displayName}</h2>
+              
+              {weather && (
+                <div className="flex items-center gap-3 mt-3">
+                  <MapPin className="w-4 h-4 text-white/50" />
+                  <span className="text-sm text-white/60">{weather.city}</span>
+                  <span className="text-base text-white/80 font-medium">{weather.temp}°F</span>
+                  <span className="text-sm text-white/50">{getWeatherDescription(weather.code)}</span>
+                </div>
+              )}
+              {sunCountdown && (
+                <div className="flex items-center gap-2 mt-2">
+                  {sunLabel === 'sunset' ? (
+                    <Sunset className="w-4 h-4 text-orange-400" />
+                  ) : (
+                    <Sunrise className="w-4 h-4 text-amber-300" />
+                  )}
+                  <span className="text-sm text-white/50">
+                    {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
+                  </span>
+                  <span className="text-sm text-white/80 font-mono font-medium">{sunCountdown}</span>
+                </div>
+              )}
+            </div>
             {weather && (
-              <div className="flex items-center gap-3 mt-3">
-                <MapPin className="w-4 h-4 text-white/50" />
-                <span className="text-sm text-white/60">{weather.city}</span>
-                <span className="text-lg">{getWeatherEmoji(weather.code, weather.isDay)}</span>
-                <span className="text-base text-white/80 font-medium">{weather.temp}°F</span>
-                <span className="text-sm text-white/50">{getWeatherDescription(weather.code)}</span>
-              </div>
-            )}
-            {sunCountdown && (
-              <div className="flex items-center gap-2 mt-2">
-                {sunLabel === 'sunset' ? (
-                  <Sunset className="w-4 h-4 text-orange-400" />
-                ) : (
-                  <Sunrise className="w-4 h-4 text-amber-300" />
-                )}
-                <span className="text-sm text-white/50">
-                  {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
-                </span>
-                <span className="text-sm text-white/80 font-mono font-medium">{sunCountdown}</span>
-              </div>
+              <div className="text-5xl">{getWeatherEmoji(weather.code, weather.isDay)}</div>
             )}
         </div>
       </div>
