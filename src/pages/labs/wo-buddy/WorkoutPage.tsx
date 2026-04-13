@@ -115,10 +115,24 @@ const WorkoutPage = () => {
     }
   }, [defaultDuration, workoutDuration]);
   
-  const todayPlan = useMemo(() => {
+  const baseTodayPlan = useMemo(() => {
     if (!rawTodayPlan || workoutDuration === 0) return rawTodayPlan;
     return adjustPlanForDuration(rawTodayPlan, workoutDuration);
   }, [rawTodayPlan, workoutDuration]);
+
+  // Merge added exercises into plan as an extra session
+  const todayPlan = useMemo(() => {
+    if (!baseTodayPlan) return baseTodayPlan;
+    if (addedExercises.length === 0) return baseTodayPlan;
+    const extraSession: PlanSession = {
+      label: 'Added Exercises',
+      workoutType: 'strength',
+      exercises: addedExercises,
+      focusDrivers: [],
+      reason: 'Manually added',
+    };
+    return { ...baseTodayPlan, sessions: [...baseTodayPlan.sessions, extraSession] };
+  }, [baseTodayPlan, addedExercises]);
   
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
   const [addedExercises, setAddedExercises] = useState<PlanExercise[]>([]);
