@@ -1406,7 +1406,7 @@ const WorkoutPage = () => {
                 className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
               >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.15),transparent)]" />
-                <span className="relative">{addedExercises.length > 0 ? 'Save' : 'Complete Workout'}</span>
+                <span className="relative">Save Exercise</span>
               </button>
             </>
           )}
