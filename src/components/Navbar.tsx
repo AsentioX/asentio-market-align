@@ -51,11 +51,8 @@ const Navbar = () => {
           <Link to="/services" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/services") ? "border-b-2 border-asentio-red" : ""}`}>
             {t('nav.services')}
           </Link>
-          <Link to="/xr-directory" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/xr-directory") ? "border-b-2 border-asentio-red" : ""}`}>
+          <Link to="/coming-soon" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/coming-soon") ? "border-b-2 border-asentio-red" : ""}`}>
             XR Directory
-          </Link>
-          <Link to="/labs" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/labs") ? "border-b-2 border-asentio-red" : ""}`}>
-            Labs
           </Link>
           <LanguageToggle />
           <Link to="/contact">
@@ -100,18 +97,11 @@ const Navbar = () => {
               {t('nav.services')}
             </Link>
             <Link
-              to="/xr-directory"
+              to="/coming-soon"
               className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
               onClick={() => setMobileMenuOpen(false)}
             >
               XR Directory
-            </Link>
-            <Link
-              to="/labs"
-              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Labs
             </Link>
             <div className="px-4">
               <LanguageToggle />
