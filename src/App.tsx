@@ -25,6 +25,7 @@ import UseCaseDetail from "./pages/UseCaseDetail";
 import CompanyForm from "./pages/CompanyForm";
 import UseCaseForm from "./pages/UseCaseForm";
 import Labs from "./pages/Labs";
+import ComingSoon from "./pages/ComingSoon";
 import WOBuddyLayout from "./pages/labs/wo-buddy/WOBuddyLayout";
 import WOBuddyAdminDashboard from "./pages/labs/wo-buddy/WOBuddyAdminDashboard";
 import MyDJLayout from "./pages/labs/my-dj/MyDJLayout";
@@ -66,6 +67,7 @@ const AppContent = () => {
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/coming-soon" element={<ComingSoon />} />
           <Route path="/xr-directory" element={<Directory />} />
           <Route path="/xr-directory/company/:companyName" element={<CompanyDetail />} />
           <Route path="/xr-directory/agencies/:slug" element={<AgencyDetail />} />
