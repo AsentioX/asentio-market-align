@@ -13,14 +13,12 @@ export { hero, buildAggressive, buildRefined, buildTechnical };
 export type DrivingStyle = 'daily' | 'performance' | 'track' | 'executive';
 export type Personality = 'subtle' | 'bold' | 'technical';
 export type Usage = 'city' | 'canyon' | 'social' | 'collection';
-export type Budget = 'tier1' | 'tier2' | 'tier3';
 export type BuildTemplate = 'refined' | 'aggressive' | 'technical';
 
 export interface DriverProfile {
   drivingStyle: DrivingStyle;
   personality: Personality;
   usage: Usage;
-  budget: Budget;
 }
 
 export interface VehicleModel {
@@ -139,8 +137,8 @@ export const USAGE_OPTIONS: { value: Usage; label: string; desc: string }[] = [
   { value: 'collection', label: 'Collection', desc: 'A statement piece.' },
 ];
 
-export const BUDGET_OPTIONS: { value: Budget; label: string; desc: string }[] = [
-  { value: 'tier1', label: '$5k – $15k', desc: 'Curated essentials.' },
-  { value: 'tier2', label: '$15k – $50k', desc: 'A complete transformation.' },
-  { value: 'tier3', label: '$50k+', desc: 'No compromises.' },
-];
+export const TEMPLATE_PROMPTS: Record<BuildTemplate, string> = {
+  refined: 'Apply a refined TECHART-style customization to this Porsche: subtle carbon front lip, polished silver forged wheels, lowered stance, elegant editorial lighting. Keep proportions and angle identical.',
+  aggressive: 'Apply an aggressive TECHART-style wide-body customization to this Porsche: GT wide fenders, large rear wing, forged bronze wheels, dramatic stance, moody industrial lighting. Keep proportions and angle identical.',
+  technical: 'Apply a technical motorsport TECHART-style customization to this Porsche: functional carbon aero, magnesium track wheels, cool blue lighting on a race track. Keep proportions and angle identical.',
+};
