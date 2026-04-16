@@ -50,7 +50,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath'); || location.pathname.startsWith('/labs/perkpath');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath'); = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath'); || location.pathname.startsWith('/labs/perkpath');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
