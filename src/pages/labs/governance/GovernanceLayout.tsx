@@ -54,6 +54,13 @@ const GovernanceLayout = () => {
             Labs
           </Link>
           <h1 className="text-base font-semibold text-gray-800">Field Of Views</h1>
+          <button
+            onClick={signOut}
+            className="ml-auto flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Sign Out
+          </button>
         </div>
         <div className="flex items-center gap-1 overflow-x-auto pb-1">
           {PHASES.map((p, i) => (
