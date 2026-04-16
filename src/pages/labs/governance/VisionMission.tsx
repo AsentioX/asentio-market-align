@@ -6,9 +6,27 @@ import { useMembers } from '@/hooks/useGovernance';
 import { Eye, Target, Lightbulb, Pencil, ThumbsUp, Trash2, MessageCircle, Send, ChevronDown, ChevronUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import RichTextEditor from '@/components/governance/RichTextEditor';
+
+// ─── Helpers ───
+// Convert plain-text (with \n) to HTML paragraphs for backward compat
+function plainToHtml(text: string): string {
+  if (text.startsWith('<')) return text; // already HTML
+  return text
+    .split('\n\n')
+    .map((p) => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+    .join('');
+}
+
+// Default content as HTML
+const DEFAULTS = {
+  theWhy: `<p><strong>Computing has finally caught up to our physiology, but our interfaces haven't caught up to our humanity.</strong></p><p>Since the dawn of the punch card, we have been forced to speak "machine." We have evolved from clunky physical inputs to touch and voice, and from distant teletypes to wearable displays. However, as technology shrinks the distance and increases the speed of our communication, it often dilutes the quality of our connection. We exist to ensure that as computing becomes invisible and omnipresent, it remains a tool for human flourishing rather than a replacement for it.</p>`,
+  whyNow: `<p><strong>The "Hardware Gap" has closed, and the "AI Engine" has ignited.</strong></p><p>We are standing at a historic intersection where three technologies have reached a terminal velocity:</p><ul><li><strong>Input:</strong> Eye-tracking, neuro-sensing, and spatial awareness have made the body the interface.</li><li><strong>Output:</strong> Wearable displays (Smart Glasses) have moved from labs to all-day wearable reality.</li><li><strong>Processing:</strong> AI has reached a level of agentic intelligence that can finally understand human intent in real-time.</li></ul><p>There is a brief window of time to decide how these systems will be built. If we don't reimagine the interface now, we risk building a future that optimizes for "data" instead of "people."</p>`,
+  vision: `<p><strong>To pioneer a future where technology is an invisible bridge to deeper human connection and a more grounded society.</strong></p><p>We imagine a world where the "Mainline" of technology doesn't distract us from reality, but enhances our presence within it—where computing serves the human spirit, not the other way around.</p>`,
+  mission: `<p><strong>To convene a global community of explorers who prototype the future of human-centric computing through the convergence of XR and AI.</strong></p><p>How we execute:</p><ul><li><strong>Build the "Kernel":</strong> We provide the playground for the first generation of "Human-Centric" spatial apps.</li><li><strong>Keep the Human in the Loop:</strong> We prioritize social impact, ethics, and communication-first design in every "hack."</li><li><strong>Community as Infrastructure:</strong> We foster a diverse network of "interviewers and explorers" who bridge the gap between technical possibility and human necessity.</li></ul>`,
+};
 
 // ─── Content hooks (gov_settings) ───
 function useVisionContent() {
@@ -20,15 +38,14 @@ function useVisionContent() {
       const { data } = await supabase
         .from('gov_settings')
         .select('key, value')
-        .in('key', ['vision_text', 'mission_text', 'principles_text', 'the_why_text', 'why_now_text']);
+        .in('key', ['vision_text', 'mission_text', 'the_why_text', 'why_now_text']);
       const map: Record<string, string> = {};
       data?.forEach((r) => (map[r.key] = r.value));
       return {
-        theWhy: map['the_why_text'] ?? 'Computing has finally caught up to our physiology, but our interfaces haven\'t caught up to our humanity.\n\nSince the dawn of the punch card, we have been forced to speak "machine." We have evolved from clunky physical inputs to touch and voice, and from distant teletypes to wearable displays. However, as technology shrinks the distance and increases the speed of our communication, it often dilutes the quality of our connection. We exist to ensure that as computing becomes invisible and omnipresent, it remains a tool for human flourishing rather than a replacement for it.',
-        whyNow: map['why_now_text'] ?? 'The "Hardware Gap" has closed, and the "AI Engine" has ignited.\n\nWe are standing at a historic intersection where three technologies have reached a terminal velocity:\n\nInput: Eye-tracking, neuro-sensing, and spatial awareness have made the body the interface.\n\nOutput: Wearable displays (Smart Glasses) have moved from labs to all-day wearable reality.\n\nProcessing: AI has reached a level of agentic intelligence that can finally understand human intent in real-time.\n\nThere is a brief window of time to decide how these systems will be built. If we don\'t reimagine the interface now, we risk building a future that optimizes for "data" instead of "people."',
-        vision: map['vision_text'] ?? 'To pioneer a future where technology is an invisible bridge to deeper human connection and a more grounded society.\n\nWe imagine a world where the "Mainline" of technology doesn\'t distract us from reality, but enhances our presence within it—where computing serves the human spirit, not the other way around.',
-        mission: map['mission_text'] ?? 'To convene a global community of explorers who prototype the future of human-centric computing through the convergence of XR and AI.\n\nHow we execute:\n\nBuild the "Kernel": We provide the playground for the first generation of "Human-Centric" spatial apps.\n\nKeep the Human in the Loop: We prioritize social impact, ethics, and communication-first design in every "hack."\n\nCommunity as Infrastructure: We foster a diverse network of "interviewers and explorers" who bridge the gap between technical possibility and human necessity.',
-        principles: map['principles_text'] ?? '',
+        theWhy: map['the_why_text'] ? plainToHtml(map['the_why_text']) : DEFAULTS.theWhy,
+        whyNow: map['why_now_text'] ? plainToHtml(map['why_now_text']) : DEFAULTS.whyNow,
+        vision: map['vision_text'] ? plainToHtml(map['vision_text']) : DEFAULTS.vision,
+        mission: map['mission_text'] ? plainToHtml(map['mission_text']) : DEFAULTS.mission,
       };
     },
   });
@@ -219,6 +236,19 @@ function SectionDiscussion({ section, authorName }: { section: string; authorNam
   );
 }
 
+// ─── Rich content renderer ───
+function RichContent({ html }: { html: string }) {
+  return (
+    <div
+      className="prose prose-sm max-w-none text-gray-600 leading-relaxed
+        prose-strong:text-gray-800 prose-headings:text-gray-800 prose-headings:text-base prose-headings:font-semibold
+        prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5
+        prose-p:mb-3 prose-p:last:mb-0"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
 // ─── Component ───
 const VisionMission = () => {
   const { user, isAdmin } = useAuth();
@@ -253,20 +283,6 @@ const VisionMission = () => {
   const currentMember = members?.find((m) => m.user_id === user?.id);
   const authorName = currentMember?.name ?? user?.email ?? 'Anonymous';
 
-  // Helper to render multi-line text as paragraphs
-  const renderMultiline = (text: string) => {
-    return text.split('\n\n').map((paragraph, i) => (
-      <p key={i} className="text-gray-600 leading-relaxed mb-4 last:mb-0">
-        {paragraph.split('\n').map((line, j) => (
-          <span key={j}>
-            {line}
-            {j < paragraph.split('\n').length - 1 && <br />}
-          </span>
-        ))}
-      </p>
-    ));
-  };
-
   return (
     <div className="space-y-8 max-w-4xl">
       <div className="flex items-center justify-between">
@@ -290,7 +306,7 @@ const VisionMission = () => {
           <h3 className="text-lg font-semibold text-gray-800">The Why</h3>
           <span className="text-xs text-gray-400 ml-auto">The Core Purpose</span>
         </div>
-        {renderMultiline(content?.theWhy ?? '')}
+        <RichContent html={content?.theWhy ?? ''} />
         <SectionDiscussion section="the-why" authorName={authorName} />
       </div>
 
@@ -303,7 +319,7 @@ const VisionMission = () => {
           <h3 className="text-lg font-semibold text-gray-800">Why Now?</h3>
           <span className="text-xs text-gray-400 ml-auto">The Convergence</span>
         </div>
-        {renderMultiline(content?.whyNow ?? '')}
+        <RichContent html={content?.whyNow ?? ''} />
         <SectionDiscussion section="why-now" authorName={authorName} />
       </div>
 
@@ -317,7 +333,7 @@ const VisionMission = () => {
             <h3 className="text-lg font-semibold text-gray-800">Vision</h3>
             <span className="text-xs text-gray-400 ml-auto">The North Star</span>
           </div>
-          {renderMultiline(content?.vision ?? '')}
+          <RichContent html={content?.vision ?? ''} />
           <SectionDiscussion section="vision" authorName={authorName} />
         </div>
 
@@ -330,33 +346,33 @@ const VisionMission = () => {
             <h3 className="text-lg font-semibold text-gray-800">Mission</h3>
             <span className="text-xs text-gray-400 ml-auto">The How</span>
           </div>
-          {renderMultiline(content?.mission ?? '')}
+          <RichContent html={content?.mission ?? ''} />
           <SectionDiscussion section="mission" authorName={authorName} />
         </div>
       </div>
 
       {/* Edit Modal */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Vision & Mission</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-2">
+          <div className="space-y-5 pt-2">
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">The Why (The Core Purpose)</label>
-              <Textarea value={editTheWhy} onChange={(e) => setEditTheWhy(e.target.value)} rows={6} />
+              <label className="text-sm font-medium text-gray-700 mb-2 block">The Why (The Core Purpose)</label>
+              <RichTextEditor content={editTheWhy} onChange={setEditTheWhy} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Why Now? (The Convergence)</label>
-              <Textarea value={editWhyNow} onChange={(e) => setEditWhyNow(e.target.value)} rows={8} />
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Why Now? (The Convergence)</label>
+              <RichTextEditor content={editWhyNow} onChange={setEditWhyNow} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Vision (The North Star)</label>
-              <Textarea value={editVision} onChange={(e) => setEditVision(e.target.value)} rows={5} />
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Vision (The North Star)</label>
+              <RichTextEditor content={editVision} onChange={setEditVision} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Mission (The How)</label>
-              <Textarea value={editMission} onChange={(e) => setEditMission(e.target.value)} rows={8} />
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Mission (The How)</label>
+              <RichTextEditor content={editMission} onChange={setEditMission} />
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
