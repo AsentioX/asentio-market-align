@@ -33,6 +33,7 @@ import GovernanceLayout from "./pages/labs/governance/GovernanceLayout";
 import GovernanceDashboard from "./pages/labs/governance/GovernanceDashboard";
 import PerkPathLayout from "./pages/labs/perkpath/PerkPathLayout";
 import CPConnectLayout from "./pages/labs/cpconnect/CPConnectLayout";
+import TAStudioLayout from "./pages/labs/tastudio/TAStudioLayout";
 import VisionMission from "./pages/labs/governance/VisionMission";
 import TranscriptUpload from "./pages/labs/governance/TranscriptUpload";
 import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
@@ -51,7 +52,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -80,6 +81,7 @@ const AppContent = () => {
           <Route path="/labs/my-dj" element={<MyDJLayout />} />
           <Route path="/labs/perkpath" element={<PerkPathLayout />} />
           <Route path="/labs/cpconnect" element={<CPConnectLayout />} />
+          <Route path="/labs/tastudio" element={<TAStudioLayout />} />
           <Route path="/labs/fieldofviews" element={<GovernanceLayout />}>
             <Route index element={<GovernanceDashboard />} />
             <Route path="vision" element={<VisionMission />} />

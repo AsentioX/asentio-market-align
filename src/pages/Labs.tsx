@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -87,6 +87,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Construction', 'AI', 'Collaboration'],
     link: '/labs/cpconnect',
+  },
+  {
+    name: 'TA Studio',
+    description: 'AI-driven Porsche customization. Define your identity, generate a TECHART build, and refine your bill of materials in under 60 seconds.',
+    icon: <Car className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Automotive', 'AI', 'Luxury'],
+    link: '/labs/tastudio',
   },
 ];
 
