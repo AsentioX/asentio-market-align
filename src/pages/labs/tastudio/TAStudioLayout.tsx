@@ -12,22 +12,31 @@ const TAStudioLayout = () => {
   const [screen, setScreen] = useState<Screen>('landing');
   const [profile, setProfile] = useState<DriverProfile | null>(null);
   const [currentBuild, setCurrentBuild] = useState<Build | null>(null);
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [garage, setGarage] = useState<Build[]>([]);
 
   const handleStart = () => setScreen('onboarding');
   const handleBrowse = () => setScreen('garage');
 
-  const handleQuizDone = (p: DriverProfile) => {
+  const handleQuizDone = (
+    p: DriverProfile,
+    starting: { kind: 'photo'; dataUrl: string } | { kind: 'model'; modelId: string },
+  ) => {
     setProfile(p);
-    setScreen('models');
-  };
-
-  const handleModelPick = (modelId: string) => {
-    if (!profile) return;
-    const tmpl = selectTemplate(profile);
-    const build = generateBuild(modelId, tmpl);
-    setCurrentBuild(build);
-    setScreen('build');
+    if (starting.kind === 'photo') {
+      // Use a "custom" placeholder modelId — the photo IS the platform.
+      setUserPhoto(starting.dataUrl);
+      const tmpl = selectTemplate(p);
+      const build = generateBuild('custom', tmpl, undefined, starting.dataUrl);
+      setCurrentBuild(build);
+      setScreen('build');
+    } else {
+      setUserPhoto(null);
+      const tmpl = selectTemplate(p);
+      const build = generateBuild(starting.modelId, tmpl);
+      setCurrentBuild(build);
+      setScreen('build');
+    }
   };
 
   const handleSave = (build: Build) => {
@@ -49,7 +58,13 @@ const TAStudioLayout = () => {
       {screen === 'models' && (
         <ModelSelect
           profile={profile!}
-          onPick={handleModelPick}
+          onPick={(modelId) => {
+            if (!profile) return;
+            const tmpl = selectTemplate(profile);
+            const build = generateBuild(modelId, tmpl);
+            setCurrentBuild(build);
+            setScreen('build');
+          }}
           onBack={() => setScreen('onboarding')}
         />
       )}
@@ -57,9 +72,10 @@ const TAStudioLayout = () => {
         <BuildView
           build={currentBuild}
           profile={profile}
+          userPhoto={userPhoto}
           onUpdate={setCurrentBuild}
           onSave={handleSave}
-          onBack={() => setScreen('models')}
+          onBack={() => setScreen('onboarding')}
           onGarage={() => setScreen('garage')}
         />
       )}
