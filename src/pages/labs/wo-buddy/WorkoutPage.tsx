@@ -1413,7 +1413,7 @@ const WorkoutPage = () => {
                     type: mode,
                     sets: mode === 'strength' ? sets : undefined,
                     reps: mode === 'strength' ? reps : mode === 'bodyweight' ? bwReps : undefined,
-                    weight: mode === 'strength' && weight > 0 ? `${weight} lbs` : undefined,
+                    // Encode weight in name when applicable (PlanExercise has no weight field)
                     duration: mode === 'cardio' ? `${time} min` : undefined,
                   };
                   setAddedExercises(prev => [...prev, newEx]);
