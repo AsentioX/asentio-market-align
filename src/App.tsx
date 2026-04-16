@@ -50,7 +50,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/governance') || location.pathname.startsWith('/labs/perkpath');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath'); || location.pathname.startsWith('/labs/perkpath');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -78,7 +78,7 @@ const AppContent = () => {
           <Route path="/labs/wo-buddy/admin" element={<WOBuddyAdminDashboard />} />
           <Route path="/labs/my-dj" element={<MyDJLayout />} />
           <Route path="/labs/perkpath" element={<PerkPathLayout />} />
-          <Route path="/labs/governance" element={<GovernanceLayout />}>
+          <Route path="/labs/fieldofviews" element={<GovernanceLayout />}>
             <Route index element={<GovernanceDashboard />} />
             <Route path="vision" element={<VisionMission />} />
             <Route path="upload" element={<TranscriptUpload />} />

@@ -165,7 +165,7 @@ const TranscriptUpload = () => {
           </div>
           {drafts.length > 0 && (
             <button
-              onClick={() => navigate('/labs/governance/library')}
+              onClick={() => navigate('/labs/fieldofviews/library')}
               className="text-sm text-teal-600 hover:text-teal-700 font-medium"
             >
               View Policy Library →
