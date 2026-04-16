@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { lovable } from '@/integrations/lovable/index';
+import heroImg from '@/assets/cpconnect/hero-login.jpg';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Home, DollarSign, Users, Layers, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
