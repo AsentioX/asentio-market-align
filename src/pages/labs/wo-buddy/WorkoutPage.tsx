@@ -1404,11 +1404,25 @@ const WorkoutPage = () => {
 
 
               <button
-                onClick={handleSubmit}
+                onClick={() => {
+                  // Build a PlanExercise from the current form state and append it
+                  // to the user's plan, then return to the choose screen.
+                  const name = mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise;
+                  const newEx: PlanExercise = {
+                    name,
+                    type: mode,
+                    sets: mode === 'strength' ? sets : undefined,
+                    reps: mode === 'strength' ? reps : mode === 'bodyweight' ? bwReps : undefined,
+                    // Encode weight in name when applicable (PlanExercise has no weight field)
+                    duration: mode === 'cardio' ? `${time} min` : undefined,
+                  };
+                  setAddedExercises(prev => [...prev, newEx]);
+                  setWorkoutPath('choose');
+                }}
                 className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
               >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.15),transparent)]" />
-                <span className="relative">Save Exercise</span>
+                <span className="relative">Add to Workout</span>
               </button>
             </>
           )}
