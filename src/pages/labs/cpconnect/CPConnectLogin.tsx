@@ -65,7 +65,8 @@ const CPConnectLogin = () => {
 
       <div className="flex-1 flex flex-col lg:flex-row">
         {/* Left — Hero */}
-        <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 py-12">
+        <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 py-12 relative">
+          <img src={heroImg} alt="Home renovation" className="absolute inset-0 w-full h-full object-cover opacity-10" />
           <div className="max-w-lg">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold mb-6">
               <Home className="w-3.5 h-3.5" />
