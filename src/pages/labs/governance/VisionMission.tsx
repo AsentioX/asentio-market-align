@@ -242,7 +242,9 @@ function RichContent({ html }: { html: string }) {
     <div
       className="prose prose-sm max-w-none text-gray-600 leading-relaxed
         prose-strong:text-gray-800 prose-headings:text-gray-800 prose-headings:text-base prose-headings:font-semibold
-        prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5
+        prose-ul:my-2 prose-ul:list-disc prose-ul:pl-5
+        prose-ol:my-2 prose-ol:list-decimal prose-ol:pl-5
+        prose-li:my-0.5 prose-li:marker:text-gray-400
         prose-p:mb-3 prose-p:last:mb-0"
       dangerouslySetInnerHTML={{ __html: html }}
     />
