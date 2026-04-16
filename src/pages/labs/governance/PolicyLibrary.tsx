@@ -369,7 +369,7 @@ const PolicyLibrary = () => {
         </div>
       </div>
       <div className="border-t border-gray-100 px-5 py-3 flex items-center justify-between">
-        <Link to={`/labs/fieldofviews/library/${policy.id}`} className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"> className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"> className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors">
+        <Link to={`/labs/fieldofviews/library/${policy.id}`} className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"> text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"> className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors">
           <MessageCircle className="w-4 h-4" />
           Discussion
         </Link>

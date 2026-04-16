@@ -128,11 +128,11 @@ const GovernanceDashboard = () => {
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <h3 className="font-semibold text-gray-800 mb-4">Quick Actions</h3>
           <div className="space-y-3">
-            <Link <Link to="/labs/fieldofviews/upload" className="block w-full text-left p-4 rounded-xl bg-teal-600 text-white hover:bg-teal-700 transition-colors"> className="block w-full text-left p-4 rounded-xl bg-teal-600 text-white hover:bg-teal-700 transition-colors">
+            <Link to="/labs/fieldofviews/upload" className="block w-full text-left p-4 rounded-xl bg-teal-600 text-white hover:bg-teal-700 transition-colors"> className="block w-full text-left p-4 rounded-xl bg-teal-600 text-white hover:bg-teal-700 transition-colors"> className="block w-full text-left p-4 rounded-xl bg-teal-600 text-white hover:bg-teal-700 transition-colors">
               <span className="font-medium">Upload Transcript</span>
               <p className="text-xs text-teal-100 mt-1">Process meeting notes with AI</p>
             </Link>
-            <Link <Link to="/labs/fieldofviews/library" className="block w-full text-left p-4 rounded-xl border-2 border-dashed border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600 transition-colors"> className="block w-full text-left p-4 rounded-xl border-2 border-dashed border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600 transition-colors">
+            <Link to="/labs/fieldofviews/library" className="block w-full text-left p-4 rounded-xl border-2 border-dashed border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600 transition-colors"> className="block w-full text-left p-4 rounded-xl border-2 border-dashed border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600 transition-colors"> className="block w-full text-left p-4 rounded-xl border-2 border-dashed border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600 transition-colors">
               <span className="font-medium">Browse Policy Library</span>
               <p className="text-xs mt-1">View and discuss operating model</p>
             </Link>
