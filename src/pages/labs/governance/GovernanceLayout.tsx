@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Upload, Library, Users, Menu, X, ChevronLeft, FileText, Award, Eye } from 'lucide-react';
+import { LayoutDashboard, Upload, Library, Users, Menu, X, ChevronLeft, FileText, Award, Eye, LogOut } from 'lucide-react';
 import { usePhase, Phase } from '@/hooks/useGovernance';
+import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import GovernanceLogin from './GovernanceLogin';
 
 const NAV = [
   { to: '/labs/governance', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -25,7 +27,20 @@ const PHASES: { key: Phase; label: string }[] = [
 const GovernanceLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { phase, setPhase } = usePhase();
+  const { user, loading, signOut } = useAuth();
   const phaseIdx = PHASES.findIndex((p) => p.key === phase);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <GovernanceLogin />;
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] flex flex-col">
@@ -39,6 +54,13 @@ const GovernanceLayout = () => {
             Labs
           </Link>
           <h1 className="text-base font-semibold text-gray-800">Field Of Views</h1>
+          <button
+            onClick={signOut}
+            className="ml-auto flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Sign Out
+          </button>
         </div>
         <div className="flex items-center gap-1 overflow-x-auto pb-1">
           {PHASES.map((p, i) => (
