@@ -80,6 +80,14 @@ const labApps: LabApp[] = [
     tags: ['Fintech', 'Memberships', 'Savings'],
     link: '/labs/perkpath',
   },
+  {
+    name: 'CP Connect',
+    description: 'Unified project hub for home renovation. Connects contractors and homeowners through smart quotes, AI visualization, and shared Pro-Links.',
+    icon: <Briefcase className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Construction', 'AI', 'Collaboration'],
+    link: '/labs/cpconnect',
+  },
 ];
 
 const statusColors: Record<string, string> = {
