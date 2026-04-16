@@ -26,11 +26,10 @@ const ModelSelect = ({ profile, onPick, onBack }: Props) => {
       <div className="max-w-6xl mx-auto">
         <div className="border border-white/15 bg-white/[0.02] p-8 mb-12">
           <p className="text-xs tracking-[0.4em] text-white/40 mb-4">YOUR PROFILE</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <ProfileItem label="Style" value={styleLabel ?? ''} />
             <ProfileItem label="Character" value={personalityLabel ?? ''} />
             <ProfileItem label="Context" value={profile.usage} />
-            <ProfileItem label="Budget" value={profile.budget.replace('tier', 'Tier ')} />
           </div>
         </div>
 
