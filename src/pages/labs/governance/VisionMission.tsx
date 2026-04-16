@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useMembers } from '@/hooks/useGovernance';
-import { Eye, Target, Lightbulb, Pencil, ThumbsUp, Trash2, MessageCircle, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { Eye, Target, Lightbulb, Pencil, ThumbsUp, Trash2, MessageCircle, Send, ChevronDown, ChevronUp, GraduationCap } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,7 @@ const DEFAULTS = {
   whyNow: `<p><strong>The "Hardware Gap" has closed, and the "AI Engine" has ignited.</strong></p><p>We are standing at a historic intersection where three technologies have reached a terminal velocity:</p><ul><li><strong>Input:</strong> Eye-tracking, neuro-sensing, and spatial awareness have made the body the interface.</li><li><strong>Output:</strong> Wearable displays (Smart Glasses) have moved from labs to all-day wearable reality.</li><li><strong>Processing:</strong> AI has reached a level of agentic intelligence that can finally understand human intent in real-time.</li></ul><p>There is a brief window of time to decide how these systems will be built. If we don't reimagine the interface now, we risk building a future that optimizes for "data" instead of "people."</p>`,
   vision: `<p><strong>To pioneer a future where technology is an invisible bridge to deeper human connection and a more grounded society.</strong></p><p>We imagine a world where the "Mainline" of technology doesn't distract us from reality, but enhances our presence within it—where computing serves the human spirit, not the other way around.</p>`,
   mission: `<p><strong>To convene a global community of explorers who prototype the future of human-centric computing through the convergence of XR and AI.</strong></p><p>How we execute:</p><ul><li><strong>Build the "Kernel":</strong> We provide the playground for the first generation of "Human-Centric" spatial apps.</li><li><strong>Keep the Human in the Loop:</strong> We prioritize social impact, ethics, and communication-first design in every "hack."</li><li><strong>Community as Infrastructure:</strong> We foster a diverse network of "interviewers and explorers" who bridge the gap between technical possibility and human necessity.</li></ul>`,
+  whyMit: `<p>The MIT Reality Hack is the physical manifestation of <em>Mens et Manus</em>—the essential bridge between the visionary "Mind" and the building "Hand." We exist at a historic convergence where hardware has finally become wearable and AI has become agentic, fundamentally shifting the human I/O from punch cards to neuro-sensing and spatial overlays.</p><p>As the birthplace of the hacker ethos, MIT is the only "Kernel" capable of hosting this level of exploration, where we don't just dream of the future but prototype the "Mainline" version of it. By keeping the human at the center of this loop, we ensure that as computing becomes invisible, it remains a tool for deeper connection and the foundation for a more grounded society.</p>`,
 };
 
 // ─── Content hooks (gov_settings) ───
@@ -38,12 +39,13 @@ function useVisionContent() {
       const { data } = await supabase
         .from('gov_settings')
         .select('key, value')
-        .in('key', ['vision_text', 'mission_text', 'the_why_text', 'why_now_text']);
+        .in('key', ['vision_text', 'mission_text', 'the_why_text', 'why_now_text', 'why_mit_text']);
       const map: Record<string, string> = {};
       data?.forEach((r) => (map[r.key] = r.value));
       return {
         theWhy: map['the_why_text'] ? plainToHtml(map['the_why_text']) : DEFAULTS.theWhy,
         whyNow: map['why_now_text'] ? plainToHtml(map['why_now_text']) : DEFAULTS.whyNow,
+        whyMit: map['why_mit_text'] ? plainToHtml(map['why_mit_text']) : DEFAULTS.whyMit,
         vision: map['vision_text'] ? plainToHtml(map['vision_text']) : DEFAULTS.vision,
         mission: map['mission_text'] ? plainToHtml(map['mission_text']) : DEFAULTS.mission,
       };
@@ -260,12 +262,14 @@ const VisionMission = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editTheWhy, setEditTheWhy] = useState('');
   const [editWhyNow, setEditWhyNow] = useState('');
+  const [editWhyMit, setEditWhyMit] = useState('');
   const [editVision, setEditVision] = useState('');
   const [editMission, setEditMission] = useState('');
 
   const openEdit = () => {
     setEditTheWhy(content?.theWhy ?? '');
     setEditWhyNow(content?.whyNow ?? '');
+    setEditWhyMit(content?.whyMit ?? '');
     setEditVision(content?.vision ?? '');
     setEditMission(content?.mission ?? '');
     setEditOpen(true);
@@ -275,6 +279,7 @@ const VisionMission = () => {
     await Promise.all([
       save.mutateAsync({ key: 'the_why_text', value: editTheWhy }),
       save.mutateAsync({ key: 'why_now_text', value: editWhyNow }),
+      save.mutateAsync({ key: 'why_mit_text', value: editWhyMit }),
       save.mutateAsync({ key: 'vision_text', value: editVision }),
       save.mutateAsync({ key: 'mission_text', value: editMission }),
     ]);
@@ -325,6 +330,19 @@ const VisionMission = () => {
         <SectionDiscussion section="why-now" authorName={authorName} />
       </div>
 
+      {/* Why MIT */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+            <GraduationCap className="w-5 h-5 text-red-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-800">Why MIT</h3>
+          <span className="text-xs text-gray-400 ml-auto">Mens et Manus</span>
+        </div>
+        <RichContent html={content?.whyMit ?? ''} />
+        <SectionDiscussion section="why-mit" authorName={authorName} />
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* Vision */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
@@ -367,6 +385,10 @@ const VisionMission = () => {
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">Why Now? (The Convergence)</label>
               <RichTextEditor content={editWhyNow} onChange={setEditWhyNow} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Why MIT (Mens et Manus)</label>
+              <RichTextEditor content={editWhyMit} onChange={setEditWhyMit} />
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">Vision (The North Star)</label>
