@@ -93,20 +93,26 @@ export function selectTemplate(profile: DriverProfile): BuildTemplate {
   return 'refined';
 }
 
-export function generateBuild(modelId: string, template: BuildTemplate, name?: string): Build {
+export function generateBuild(
+  modelId: string,
+  template: BuildTemplate,
+  name?: string,
+  overrideImage?: string,
+): Build {
   const t = TEMPLATES[template];
-  const model = VEHICLE_MODELS.find((m) => m.id === modelId)!;
+  const model = VEHICLE_MODELS.find((m) => m.id === modelId);
   const labels: Record<BuildTemplate, string> = {
     refined: 'Stealth',
     aggressive: 'Apex',
     technical: 'Precision',
   };
+  const platformLabel = model?.name ?? 'Custom';
   return {
     id: `${Date.now()}`,
-    name: name ?? `${labels[template]} ${model.name}`,
+    name: name ?? `${labels[template]} ${platformLabel}`,
     template,
     modelId,
-    image: t.image,
+    image: overrideImage ?? t.image,
     tagline: t.tagline,
     parts: t.parts,
     createdAt: new Date().toISOString(),
