@@ -1,3 +1,7 @@
+import kitchenImg from '@/assets/cpconnect/kitchen-remodel.jpg';
+import bathroomImg from '@/assets/cpconnect/bathroom-reno.jpg';
+import livingRoomImg from '@/assets/cpconnect/living-room.jpg';
+
 export interface Project {
   id: string;
   name: string;
@@ -9,6 +13,7 @@ export interface Project {
   createdAt: string;
   homeowner?: string;
   proLinkId: string;
+  image: string;
 }
 
 export interface Room {
