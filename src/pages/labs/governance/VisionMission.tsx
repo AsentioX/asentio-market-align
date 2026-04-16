@@ -20,14 +20,15 @@ function useVisionContent() {
       const { data } = await supabase
         .from('gov_settings')
         .select('key, value')
-        .in('key', ['vision_text', 'mission_text', 'principles_text', 'why_now_text']);
+        .in('key', ['vision_text', 'mission_text', 'principles_text', 'the_why_text', 'why_now_text']);
       const map: Record<string, string> = {};
       data?.forEach((r) => (map[r.key] = r.value));
       return {
-        vision: map['vision_text'] ?? 'A future where spatial computing policy is shaped transparently, inclusively, and proactively — ensuring XR technologies serve the public good while fostering innovation.',
-        mission: map['mission_text'] ?? 'To convene diverse stakeholders in drafting, debating, and finalising governance policies for extended reality — bridging the gap between technological possibility and societal readiness.',
-        principles: map['principles_text'] ?? 'Transparency — All deliberations and decisions are documented and publicly accessible.\nInclusivity — Perspectives from industry, academia, civil society, and affected communities are actively sought.\nEvidence-based — Policies are grounded in research, real-world data, and expert testimony.\nAdaptive — Governance frameworks evolve alongside the technology they regulate.\nHuman-centred — Individual rights, safety, and well-being remain the primary lens for every policy.',
-        whyNow: map['why_now_text'] ?? 'Spatial computing is transitioning from niche innovation to mainstream adoption. Without proactive governance frameworks, we risk repeating the regulatory gaps that plagued earlier technology waves — from social media to AI. Now is the moment to shape the rules before the technology outpaces our ability to govern it responsibly.',
+        theWhy: map['the_why_text'] ?? 'Computing has finally caught up to our physiology, but our interfaces haven\'t caught up to our humanity.\n\nSince the dawn of the punch card, we have been forced to speak "machine." We have evolved from clunky physical inputs to touch and voice, and from distant teletypes to wearable displays. However, as technology shrinks the distance and increases the speed of our communication, it often dilutes the quality of our connection. We exist to ensure that as computing becomes invisible and omnipresent, it remains a tool for human flourishing rather than a replacement for it.',
+        whyNow: map['why_now_text'] ?? 'The "Hardware Gap" has closed, and the "AI Engine" has ignited.\n\nWe are standing at a historic intersection where three technologies have reached a terminal velocity:\n\nInput: Eye-tracking, neuro-sensing, and spatial awareness have made the body the interface.\n\nOutput: Wearable displays (Smart Glasses) have moved from labs to all-day wearable reality.\n\nProcessing: AI has reached a level of agentic intelligence that can finally understand human intent in real-time.\n\nThere is a brief window of time to decide how these systems will be built. If we don\'t reimagine the interface now, we risk building a future that optimizes for "data" instead of "people."',
+        vision: map['vision_text'] ?? 'To pioneer a future where technology is an invisible bridge to deeper human connection and a more grounded society.\n\nWe imagine a world where the "Mainline" of technology doesn\'t distract us from reality, but enhances our presence within it—where computing serves the human spirit, not the other way around.',
+        mission: map['mission_text'] ?? 'To convene a global community of explorers who prototype the future of human-centric computing through the convergence of XR and AI.\n\nHow we execute:\n\nBuild the "Kernel": We provide the playground for the first generation of "Human-Centric" spatial apps.\n\nKeep the Human in the Loop: We prioritize social impact, ethics, and communication-first design in every "hack."\n\nCommunity as Infrastructure: We foster a diverse network of "interviewers and explorers" who bridge the gap between technical possibility and human necessity.',
+        principles: map['principles_text'] ?? '',
       };
     },
   });
@@ -225,25 +226,25 @@ const VisionMission = () => {
   const { data: members } = useMembers();
 
   const [editOpen, setEditOpen] = useState(false);
+  const [editTheWhy, setEditTheWhy] = useState('');
+  const [editWhyNow, setEditWhyNow] = useState('');
   const [editVision, setEditVision] = useState('');
   const [editMission, setEditMission] = useState('');
-  const [editPrinciples, setEditPrinciples] = useState('');
-  const [editWhyNow, setEditWhyNow] = useState('');
 
   const openEdit = () => {
+    setEditTheWhy(content?.theWhy ?? '');
+    setEditWhyNow(content?.whyNow ?? '');
     setEditVision(content?.vision ?? '');
     setEditMission(content?.mission ?? '');
-    setEditPrinciples(content?.principles ?? '');
-    setEditWhyNow(content?.whyNow ?? '');
     setEditOpen(true);
   };
 
   const handleSave = async () => {
     await Promise.all([
+      save.mutateAsync({ key: 'the_why_text', value: editTheWhy }),
       save.mutateAsync({ key: 'why_now_text', value: editWhyNow }),
       save.mutateAsync({ key: 'vision_text', value: editVision }),
       save.mutateAsync({ key: 'mission_text', value: editMission }),
-      save.mutateAsync({ key: 'principles_text', value: editPrinciples }),
     ]);
     setEditOpen(false);
     toast({ title: 'Saved', description: 'Vision & Mission updated.' });
@@ -252,7 +253,19 @@ const VisionMission = () => {
   const currentMember = members?.find((m) => m.user_id === user?.id);
   const authorName = currentMember?.name ?? user?.email ?? 'Anonymous';
 
-  const principleLines = content?.principles?.split('\n').filter(Boolean) ?? [];
+  // Helper to render multi-line text as paragraphs
+  const renderMultiline = (text: string) => {
+    return text.split('\n\n').map((paragraph, i) => (
+      <p key={i} className="text-gray-600 leading-relaxed mb-4 last:mb-0">
+        {paragraph.split('\n').map((line, j) => (
+          <span key={j}>
+            {line}
+            {j < paragraph.split('\n').length - 1 && <br />}
+          </span>
+        ))}
+      </p>
+    ));
+  };
 
   return (
     <div className="space-y-8 max-w-4xl">
@@ -268,17 +281,29 @@ const VisionMission = () => {
         )}
       </div>
 
-      {/* Why & Why Now */}
+      {/* The Why */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
             <Lightbulb className="w-5 h-5 text-violet-600" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-800">Why & Why Now</h3>
+          <h3 className="text-lg font-semibold text-gray-800">The Why</h3>
+          <span className="text-xs text-gray-400 ml-auto">The Core Purpose</span>
         </div>
-        <p className="text-gray-600 leading-relaxed">
-          {content?.whyNow}
-        </p>
+        {renderMultiline(content?.theWhy ?? '')}
+        <SectionDiscussion section="the-why" authorName={authorName} />
+      </div>
+
+      {/* Why Now? */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+            <Target className="w-5 h-5 text-amber-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-800">Why Now?</h3>
+          <span className="text-xs text-gray-400 ml-auto">The Convergence</span>
+        </div>
+        {renderMultiline(content?.whyNow ?? '')}
         <SectionDiscussion section="why-now" authorName={authorName} />
       </div>
 
@@ -290,8 +315,9 @@ const VisionMission = () => {
               <Eye className="w-5 h-5 text-teal-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-800">Vision</h3>
+            <span className="text-xs text-gray-400 ml-auto">The North Star</span>
           </div>
-          <p className="text-gray-600 leading-relaxed">{content?.vision}</p>
+          {renderMultiline(content?.vision ?? '')}
           <SectionDiscussion section="vision" authorName={authorName} />
         </div>
 
@@ -302,53 +328,35 @@ const VisionMission = () => {
               <Target className="w-5 h-5 text-teal-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-800">Mission</h3>
+            <span className="text-xs text-gray-400 ml-auto">The How</span>
           </div>
-          <p className="text-gray-600 leading-relaxed">{content?.mission}</p>
+          {renderMultiline(content?.mission ?? '')}
           <SectionDiscussion section="mission" authorName={authorName} />
         </div>
       </div>
 
-      {/* Principles */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-            <Lightbulb className="w-5 h-5 text-amber-600" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-800">Guiding Principles</h3>
-        </div>
-        <ul className="space-y-3 text-gray-600">
-          {principleLines.map((item, i) => (
-            <li key={i} className="flex gap-3">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-teal-500 flex-shrink-0" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-        <SectionDiscussion section="principles" authorName={authorName} />
-      </div>
-
       {/* Edit Modal */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Vision & Mission</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Why & Why Now</label>
-              <Textarea value={editWhyNow} onChange={(e) => setEditWhyNow(e.target.value)} rows={3} />
+              <label className="text-sm font-medium text-gray-700 mb-1 block">The Why (The Core Purpose)</label>
+              <Textarea value={editTheWhy} onChange={(e) => setEditTheWhy(e.target.value)} rows={6} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Vision</label>
-              <Textarea value={editVision} onChange={(e) => setEditVision(e.target.value)} rows={3} />
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Why Now? (The Convergence)</label>
+              <Textarea value={editWhyNow} onChange={(e) => setEditWhyNow(e.target.value)} rows={8} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Mission</label>
-              <Textarea value={editMission} onChange={(e) => setEditMission(e.target.value)} rows={3} />
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Vision (The North Star)</label>
+              <Textarea value={editVision} onChange={(e) => setEditVision(e.target.value)} rows={5} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Guiding Principles (one per line)</label>
-              <Textarea value={editPrinciples} onChange={(e) => setEditPrinciples(e.target.value)} rows={6} />
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Mission (The How)</label>
+              <Textarea value={editMission} onChange={(e) => setEditMission(e.target.value)} rows={8} />
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
