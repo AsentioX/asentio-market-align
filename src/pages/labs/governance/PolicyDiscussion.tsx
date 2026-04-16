@@ -130,7 +130,7 @@ const PolicyDiscussion = () => {
     return (
       <div className="max-w-3xl mx-auto text-center py-20">
         <p className="text-gray-400">Policy not found.</p>
-        <Link to="/labs/governance/library" className="text-teal-600 text-sm mt-2 inline-block">← Back to Library</Link>
+        <Link to="/labs/fieldofviews/library" className="text-teal-600 text-sm mt-2 inline-block">← Back to Library</Link>
       </div>
     );
   }
@@ -146,7 +146,7 @@ const PolicyDiscussion = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <Link to="/labs/governance/library" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600">
+      <Link to="/labs/fieldofviews/library" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600">
         <ArrowLeft className="w-4 h-4" /> Back to Library
       </Link>
 

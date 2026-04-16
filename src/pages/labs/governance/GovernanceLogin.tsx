@@ -74,7 +74,7 @@ const GovernanceLogin = () => {
     setSsoLoading(provider);
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin + '/labs/governance',
+        redirect_uri: window.location.origin + '/labs/fieldofviews',
       });
       if (result.error) throw result.error;
       if (result.redirected) return;

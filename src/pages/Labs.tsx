@@ -70,7 +70,7 @@ const labApps: LabApp[] = [
     icon: <Scale className="w-8 h-8" />,
     status: 'beta',
     tags: ['Governance', 'Collaboration', 'AI'],
-    link: '/labs/governance',
+    link: '/labs/fieldofviews',
   },
   {
     name: 'PerkPath',

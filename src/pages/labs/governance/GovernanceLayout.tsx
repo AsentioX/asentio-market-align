@@ -8,13 +8,13 @@ import { Link } from 'react-router-dom';
 import GovernanceLogin from './GovernanceLogin';
 
 const NAV = [
-  { to: '/labs/governance', icon: LayoutDashboard, label: 'Dashboard', end: true },
-  { to: '/labs/governance/vision', icon: Eye, label: 'Vision / Mission', end: false },
-  { to: '/labs/governance/library', icon: Library, label: 'Policy Library', end: false },
-  { to: '/labs/governance/finalized', icon: Award, label: 'Finalized Policies', end: false },
-  { to: '/labs/governance/minutes', icon: FileText, label: 'Meeting Minutes', end: false },
-  { to: '/labs/governance/members', icon: Users, label: 'Task Force', end: false },
-  { to: '/labs/governance/upload', icon: Upload, label: 'Transcript Upload', end: false },
+  { to: '/labs/fieldofviews', icon: LayoutDashboard, label: 'Dashboard', end: true },
+  { to: '/labs/fieldofviews/vision', icon: Eye, label: 'Vision / Mission', end: false },
+  { to: '/labs/fieldofviews/library', icon: Library, label: 'Policy Library', end: false },
+  { to: '/labs/fieldofviews/finalized', icon: Award, label: 'Finalized Policies', end: false },
+  { to: '/labs/fieldofviews/minutes', icon: FileText, label: 'Meeting Minutes', end: false },
+  { to: '/labs/fieldofviews/members', icon: Users, label: 'Task Force', end: false },
+  { to: '/labs/fieldofviews/upload', icon: Upload, label: 'Transcript Upload', end: false },
 ];
 
 const PHASES: { key: Phase; label: string }[] = [
