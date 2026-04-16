@@ -110,8 +110,8 @@ const CPConnectDashboard = () => {
                   className="text-left bg-white rounded-2xl border border-gray-100 p-5 hover:border-amber-200 hover:shadow-md transition-all group"
                 >
                   {/* Render preview */}
-                  <div className="aspect-[16/10] rounded-xl bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 mb-4 flex items-center justify-center">
-                    <Home className="w-8 h-8 text-amber-300 group-hover:text-amber-400 transition-colors" />
+                  <div className="aspect-[16/10] rounded-xl overflow-hidden mb-4">
+                    <img src={project.image} alt={project.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                   </div>
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="text-sm font-semibold text-gray-800">{project.name}</h3>
@@ -148,8 +148,8 @@ const CPConnectDashboard = () => {
                   onClick={() => setSelectedProject(project)}
                   className="w-full flex items-center gap-4 px-5 py-4 hover:bg-amber-50/30 transition-colors text-left"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center flex-shrink-0">
-                    <Home className="w-5 h-5 text-amber-400" />
+                  <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
+                    <img src={project.image} alt={project.name} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-800 truncate">{project.name}</p>

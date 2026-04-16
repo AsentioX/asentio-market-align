@@ -60,17 +60,13 @@ const ProjectView = ({ project, onBack }: Props) => {
         {/* Center — Visual Canvas */}
         <div className="flex-1 p-5 overflow-y-auto">
           {/* Room render placeholder */}
-          <div className="aspect-[16/10] rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 border border-amber-100 flex items-center justify-center mb-5 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-8 left-8 w-32 h-48 border-2 border-amber-400 rounded-lg" />
-              <div className="absolute top-8 left-44 w-64 h-48 border-2 border-amber-400 rounded-lg" />
-              <div className="absolute bottom-8 left-8 w-96 h-24 border-2 border-amber-400 rounded-lg" />
-              <div className="absolute top-8 right-8 w-24 h-32 border-2 border-amber-400 rounded-lg" />
-            </div>
-            <div className="text-center z-10">
-              <Eye className="w-10 h-10 text-amber-400 mx-auto mb-2" />
-              <p className="text-sm font-medium text-amber-700">AI Room Visualization</p>
-              <p className="text-xs text-amber-500 mt-1">{TIER_LABELS[tier]} tier • {project.rooms[0]?.name}</p>
+          <div className="aspect-[16/10] rounded-2xl overflow-hidden border border-gray-100 mb-5 relative">
+            <img src={project.image} alt={project.name} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-5">
+              <div>
+                <p className="text-white text-sm font-medium">AI Room Visualization</p>
+                <p className="text-white/70 text-xs mt-0.5">{TIER_LABELS[tier]} tier • {project.rooms[0]?.name}</p>
+              </div>
             </div>
           </div>
 

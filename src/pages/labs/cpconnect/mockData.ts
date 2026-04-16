@@ -1,3 +1,7 @@
+import kitchenImg from '@/assets/cpconnect/kitchen-remodel.jpg';
+import bathroomImg from '@/assets/cpconnect/bathroom-reno.jpg';
+import livingRoomImg from '@/assets/cpconnect/living-room.jpg';
+
 export interface Project {
   id: string;
   name: string;
@@ -9,6 +13,7 @@ export interface Project {
   createdAt: string;
   homeowner?: string;
   proLinkId: string;
+  image: string;
 }
 
 export interface Room {
@@ -35,6 +40,7 @@ export const MOCK_PROJECTS: Project[] = [
     address: '1247 Oak Street, Austin, TX',
     status: 'in-progress',
     budget: 42500,
+    image: kitchenImg,
     tier: 'standard',
     proLinkId: 'CPL-2026-8A3F',
     homeowner: 'Sarah Mitchell',
@@ -61,6 +67,7 @@ export const MOCK_PROJECTS: Project[] = [
     address: '892 Elm Drive, Denver, CO',
     status: 'pending-approval',
     budget: 28000,
+    image: bathroomImg,
     tier: 'premium',
     proLinkId: 'CPL-2026-7B2E',
     homeowner: 'James & Linda Park',
@@ -85,6 +92,7 @@ export const MOCK_PROJECTS: Project[] = [
     address: '3401 Pine Ave, Portland, OR',
     status: 'draft',
     budget: 18000,
+    image: livingRoomImg,
     tier: 'economy',
     proLinkId: 'CPL-2026-9C1D',
     createdAt: '2026-04-14',
