@@ -207,7 +207,24 @@ export function useWOBuddyWorkouts() {
     return workout;
   }, [user]);
 
-  return { workouts, saveWorkout, loading, isAuthenticated: !!user };
+  const deleteWorkout = useCallback(async (workoutId: string) => {
+    if (!user) return;
+    // Optimistic update
+    setWorkouts(prev => prev.filter(w => w.id !== workoutId));
+    await supabase.from('wobuddy_exercises').delete().eq('workout_id', workoutId);
+    await supabase.from('wobuddy_workouts').delete().eq('id', workoutId).eq('user_id', user.id);
+  }, [user]);
+
+  const deleteWorkoutsByDate = useCallback(async (date: string) => {
+    if (!user) return;
+    const toDelete = workouts.filter(w => w.date === date).map(w => w.id);
+    if (toDelete.length === 0) return;
+    setWorkouts(prev => prev.filter(w => w.date !== date));
+    await supabase.from('wobuddy_exercises').delete().in('workout_id', toDelete);
+    await supabase.from('wobuddy_workouts').delete().in('id', toDelete).eq('user_id', user.id);
+  }, [user, workouts]);
+
+  return { workouts, saveWorkout, deleteWorkout, deleteWorkoutsByDate, loading, isAuthenticated: !!user };
 }
 
 // Re-export mock data for non-DB parts (leaderboard, progress charts)

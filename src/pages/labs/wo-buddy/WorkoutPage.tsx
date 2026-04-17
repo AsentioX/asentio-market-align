@@ -85,7 +85,7 @@ const WorkoutPage = () => {
   const repAccumulatorRef = useRef(0);
   const exerciseDurationRef = useRef(0);
 
-  const { workouts, saveWorkout } = useWOBuddyWorkouts();
+  const { workouts, saveWorkout, deleteWorkoutsByDate } = useWOBuddyWorkouts();
   const { goals, updateGoal } = useWOBuddyGoals();
 
   // Wearable device state
@@ -1336,7 +1336,12 @@ const WorkoutPage = () => {
               </button>
 
               {/* Past Workouts */}
-              <PastWorkoutsList completedWorkouts={completedWorkouts} workouts={workouts} />
+              <PastWorkoutsList
+                completedWorkouts={completedWorkouts}
+                workouts={workouts}
+                onDeleteLocal={(id) => setCompletedWorkouts(prev => prev.filter(w => w.id !== id))}
+                onDeleteByDate={(date) => deleteWorkoutsByDate(date)}
+              />
             </div>
           )}
 
@@ -1708,9 +1713,11 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
 interface PastWorkoutsListProps {
   completedWorkouts: CompletedWorkoutDetail[];
   workouts: Array<{ id: string; type: 'strength' | 'cardio' | 'bodyweight'; exercise: string; score: number; date: string; details?: any }>;
+  onDeleteLocal: (id: string) => void;
+  onDeleteByDate: (date: string) => Promise<void> | void;
 }
 
-const PastWorkoutsList = ({ completedWorkouts, workouts }: PastWorkoutsListProps) => {
+const PastWorkoutsList = ({ completedWorkouts, workouts, onDeleteLocal, onDeleteByDate }: PastWorkoutsListProps) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // Merge completed local workouts with DB workouts (avoid duplicates by date)
@@ -1792,6 +1799,21 @@ const PastWorkoutsList = ({ completedWorkouts, workouts }: PastWorkoutsListProps
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg">+{item.score}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!confirm('Delete this workout? This cannot be undone.')) return;
+                    if (item.id.startsWith('db-')) {
+                      onDeleteByDate(item.date);
+                    } else {
+                      onDeleteLocal(item.id);
+                    }
+                  }}
+                  className="p-1.5 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  aria-label="Delete workout"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
                 <ChevronDown className={`w-4 h-4 text-white/30 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
               </div>
             </button>
