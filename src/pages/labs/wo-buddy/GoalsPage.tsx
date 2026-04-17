@@ -417,18 +417,27 @@ const GoalsPage = () => {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Metric</label>
-                <select value={newMetric} onChange={e => setNewMetric(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
-                  {METRICS.map(m => <option key={m.id} value={m.id} className="bg-[#1a1a2e]">{m.label} ({m.unit})</option>)}
-                </select>
+                <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">
+                  Current ({metricUnit}) <span className="text-amber-400/80 normal-case tracking-normal">*required</span>
+                </label>
+                <input
+                  type="number"
+                  value={newCurrent === '' ? '' : newCurrent}
+                  onChange={e => setNewCurrent(e.target.value === '' ? '' : Number(e.target.value))}
+                  placeholder="Where you are now"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none"
+                />
               </div>
               <div>
                 <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Target ({metricUnit})</label>
                 <input type="number" value={newTarget || ''} onChange={e => setNewTarget(Number(e.target.value))}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
+                  placeholder="Where you want to be"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
             </div>
+            <p className="text-[11px] text-white/40 -mt-2">
+              Tell us your starting point so we can build a realistic plan from where you are today to where you want to go.
+            </p>
             <div>
               <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Target Date (optional)</label>
               <Popover>
