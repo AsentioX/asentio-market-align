@@ -488,9 +488,9 @@ const GoalsPage = () => {
                 ))}
               </div>
             </div>
-            <button onClick={handleCreate} disabled={!newName || newTarget <= 0}
+            <button onClick={handleCreate} disabled={!newName || newTarget <= 0 || !currentStateProvided}
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100">
-              Create Goal
+              {!currentStateProvided ? 'Enter your current state to continue' : 'Create Goal & Build Plan'}
             </button>
           </div>
         )}
