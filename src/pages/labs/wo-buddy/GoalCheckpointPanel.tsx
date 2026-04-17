@@ -36,8 +36,7 @@ const GoalCheckpointPanel = ({
     [checkpoints, goalId]
   );
 
-
-
+  const next = useMemo(
     () => goalCheckpoints.find(c => c.status === 'pending'),
     [goalCheckpoints]
   );
@@ -45,6 +44,7 @@ const GoalCheckpointPanel = ({
     () => goalCheckpoints.filter(c => c.status !== 'pending'),
     [goalCheckpoints]
   );
+
 
   // Compute "expected at this checkpoint" so the user sees how they're tracking
   const expectedAtNext = useMemo(() => {
