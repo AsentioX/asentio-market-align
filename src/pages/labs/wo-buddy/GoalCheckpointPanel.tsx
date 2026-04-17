@@ -45,6 +45,29 @@ const GoalCheckpointPanel = ({
     [goalCheckpoints]
   );
 
+  const next = useMemo(
+    () => goalCheckpoints.find(c => c.status === 'pending'),
+    [goalCheckpoints]
+  );
+  const past = useMemo(
+    () => goalCheckpoints.filter(c => c.status !== 'pending'),
+    [goalCheckpoints]
+  );
+
+  // Compute "expected at this checkpoint" so the user sees how they're tracking
+  const expectedAtNext = useMemo(() => {
+    if (!next || !deadline) return null;
+    const totalRange = targetValue - startValue;
+    if (totalRange === 0) return targetValue;
+    const created = new Date(goalCheckpoints[0]?.scheduled_for || next.scheduled_for).getTime() - 28 * 24 * 60 * 60 * 1000;
+    const deadlineMs = new Date(deadline).getTime();
+    const checkpointMs = new Date(next.scheduled_for).getTime();
+    const totalMs = deadlineMs - created;
+    if (totalMs <= 0) return targetValue;
+    const fraction = Math.min(1, Math.max(0, (checkpointMs - created) / totalMs));
+    return Number((startValue + totalRange * fraction).toFixed(1));
+  }, [next, deadline, startValue, targetValue, goalCheckpoints]);
+
   if (goalCheckpoints.length === 0) {
     return (
       <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
@@ -72,20 +95,6 @@ const GoalCheckpointPanel = ({
     await skipCheckpoint(next.id);
     setSubmitting(false);
   };
-
-  // Compute "expected at this checkpoint" so the user sees how they're tracking
-  const expectedAtNext = useMemo(() => {
-    if (!next || !deadline) return null;
-    const totalRange = targetValue - startValue;
-    if (totalRange === 0) return targetValue;
-    const created = new Date(goalCheckpoints[0]?.scheduled_for || next.scheduled_for).getTime() - 28 * 24 * 60 * 60 * 1000;
-    const deadlineMs = new Date(deadline).getTime();
-    const checkpointMs = new Date(next.scheduled_for).getTime();
-    const totalMs = deadlineMs - created;
-    if (totalMs <= 0) return targetValue;
-    const fraction = Math.min(1, Math.max(0, (checkpointMs - created) / totalMs));
-    return Number((startValue + totalRange * fraction).toFixed(1));
-  }, [next, deadline, startValue, targetValue, goalCheckpoints]);
 
   const isDue = next && new Date(next.scheduled_for) <= new Date();
 
