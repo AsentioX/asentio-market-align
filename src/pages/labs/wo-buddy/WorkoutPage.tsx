@@ -142,14 +142,28 @@ const WorkoutPage = () => {
   }, [editedExercises, baseTodayPlan]);
 
   // Build the unified single-session plan that the rest of the UI consumes.
+  // Preserve the actual workout type and label from the source sessions so the
+  // Workout tab visually matches what the Goals tab shows for today.
   const todayPlan = useMemo<PlanDay | null>(() => {
     if (!baseTodayPlan) return baseTodayPlan;
     if (resolvedExercises.length === 0 && baseTodayPlan.sessions.length === 0) return baseTodayPlan;
     const allFocusDrivers = Array.from(new Set(baseTodayPlan.sessions.flatMap(s => s.focusDrivers)));
-    const primaryReason = baseTodayPlan.sessions[0]?.reason || '';
+    const primarySession = baseTodayPlan.sessions[0];
+    const primaryReason = primarySession?.reason || '';
+    // Derive the most representative workout type:
+    // - if all sessions share a type, use it
+    // - otherwise prefer the primary session's type (matches Goals tab's primary card icon)
+    const sessionTypes = baseTodayPlan.sessions.map(s => s.workoutType);
+    const uniqueTypes = Array.from(new Set(sessionTypes));
+    const unifiedType: PlanSession['workoutType'] =
+      uniqueTypes.length === 1 ? uniqueTypes[0] : (primarySession?.workoutType || 'strength');
+    // Build a label that mirrors the Goals tab (joins multi-session labels with " + ")
+    const unifiedLabel = baseTodayPlan.sessions.length > 1
+      ? baseTodayPlan.sessions.map(s => s.label).join(' + ')
+      : (primarySession?.label || "Today's Plan");
     const unifiedSession: PlanSession = {
-      label: "Today's Plan",
-      workoutType: 'strength',
+      label: unifiedLabel,
+      workoutType: unifiedType,
       exercises: resolvedExercises,
       focusDrivers: allFocusDrivers,
       reason: primaryReason,
