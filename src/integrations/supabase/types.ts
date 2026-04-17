@@ -2289,6 +2289,56 @@ export type Database = {
           },
         ]
       }
+      wobuddy_goal_checkpoints: {
+        Row: {
+          created_at: string
+          goal_id: string
+          id: string
+          measured_at: string | null
+          measured_value: number | null
+          note: string | null
+          scheduled_for: string
+          sequence_number: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal_id: string
+          id?: string
+          measured_at?: string | null
+          measured_value?: number | null
+          note?: string | null
+          scheduled_for: string
+          sequence_number?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal_id?: string
+          id?: string
+          measured_at?: string | null
+          measured_value?: number | null
+          note?: string | null
+          scheduled_for?: string
+          sequence_number?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_goal_checkpoints_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wobuddy_goal_drivers: {
         Row: {
           driver_id: string
