@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays, Play, Pause, Timer, ChevronDown, Hash, ImageIcon, SkipForward } from 'lucide-react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays, Play, Pause, Timer, ChevronDown, ChevronUp, Hash, ImageIcon, SkipForward, Trash2, GripVertical, Clock } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine, Area, AreaChart, CartesianGrid } from 'recharts';
 import { calculateScore } from './mockData';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
@@ -116,7 +116,6 @@ const WorkoutPage = () => {
   }, [defaultDuration, workoutDuration]);
   
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
-  const [addedExercises, setAddedExercises] = useState<PlanExercise[]>([]);
   const [showAddExercise, setShowAddExercise] = useState(false);
   const [addExerciseSearch, setAddExerciseSearch] = useState('');
 
@@ -125,19 +124,53 @@ const WorkoutPage = () => {
     return adjustPlanForDuration(rawTodayPlan, workoutDuration);
   }, [rawTodayPlan, workoutDuration]);
 
-  // Merge added exercises into plan as an extra session
-  const todayPlan = useMemo(() => {
+  // Editable, flattened plan exercise list. null = not yet edited (use baseTodayPlan flattened).
+  // Once the user reorders / deletes / adds, this becomes the source of truth.
+  const [editedExercises, setEditedExercises] = useState<PlanExercise[] | null>(null);
+
+  // Reset edits when the underlying plan changes (e.g. duration slider).
+  useEffect(() => {
+    setEditedExercises(null);
+    setExerciseActions({});
+  }, [baseTodayPlan]);
+
+  // Resolved flat exercise list (either user-edited or derived from baseTodayPlan).
+  const resolvedExercises = useMemo<PlanExercise[]>(() => {
+    if (editedExercises !== null) return editedExercises;
+    if (!baseTodayPlan) return [];
+    return baseTodayPlan.sessions.flatMap(s => s.exercises);
+  }, [editedExercises, baseTodayPlan]);
+
+  // Build the unified single-session plan that the rest of the UI consumes.
+  const todayPlan = useMemo<PlanDay | null>(() => {
     if (!baseTodayPlan) return baseTodayPlan;
-    if (addedExercises.length === 0) return baseTodayPlan;
-    const extraSession: PlanSession = {
-      label: 'Added Exercises',
+    if (resolvedExercises.length === 0 && baseTodayPlan.sessions.length === 0) return baseTodayPlan;
+    const allFocusDrivers = Array.from(new Set(baseTodayPlan.sessions.flatMap(s => s.focusDrivers)));
+    const primaryReason = baseTodayPlan.sessions[0]?.reason || '';
+    const unifiedSession: PlanSession = {
+      label: "Today's Plan",
       workoutType: 'strength',
-      exercises: addedExercises,
-      focusDrivers: [],
-      reason: 'Manually added',
+      exercises: resolvedExercises,
+      focusDrivers: allFocusDrivers,
+      reason: primaryReason,
     };
-    return { ...baseTodayPlan, sessions: [...baseTodayPlan.sessions, extraSession] };
-  }, [baseTodayPlan, addedExercises]);
+    return { ...baseTodayPlan, sessions: [unifiedSession] };
+  }, [baseTodayPlan, resolvedExercises]);
+
+  // Helpers to mutate the editable exercise list (always commit via setEditedExercises so we lock in the order).
+  const commitExerciseList = (updater: (list: PlanExercise[]) => PlanExercise[]) => {
+    setEditedExercises(prev => updater(prev ?? resolvedExercises));
+    setExerciseActions({});
+  };
+  const addPlanExercise = (ex: PlanExercise) => commitExerciseList(list => [...list, ex]);
+  const removePlanExercise = (idx: number) => commitExerciseList(list => list.filter((_, i) => i !== idx));
+  const movePlanExercise = (idx: number, dir: -1 | 1) => commitExerciseList(list => {
+    const target = idx + dir;
+    if (target < 0 || target >= list.length) return list;
+    const next = [...list];
+    [next[idx], next[target]] = [next[target], next[idx]];
+    return next;
+  });
 
   // Active exercise tracking for workout-in-progress
   const [activeExerciseKey, setActiveExerciseKey] = useState<string | null>(null);
@@ -1161,7 +1194,7 @@ const WorkoutPage = () => {
                               reps: ex.entryType === 'sets' ? 10 : undefined,
                               duration: ex.entryType !== 'sets' ? '20 min' : undefined,
                             };
-                            setAddedExercises(prev => [...prev, newEx]);
+                            addPlanExercise(newEx);
                             setShowAddExercise(false);
                             setAddExerciseSearch('');
                           }}
@@ -1214,6 +1247,18 @@ const WorkoutPage = () => {
                     </p>
                   </div>
 
+                  {/* Estimated finish time */}
+                  {workoutDuration > 0 && (
+                    <div className="px-4 pt-3 -mb-1 flex items-center justify-between">
+                      <span className="text-[10px] text-white/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                        <Clock className="w-3 h-3" /> Estimated Finish
+                      </span>
+                      <span className="text-xs font-semibold text-emerald-300 tabular-nums">
+                        {new Date(Date.now() + workoutDuration * 60_000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  )}
+
                   {/* Duration picker */}
                   <div className="px-4 pt-3 pb-1">
                     <div className="flex items-center justify-between mb-2">
@@ -1253,6 +1298,9 @@ const WorkoutPage = () => {
                       onExerciseAction={handleExerciseAction}
                       totalPlanCount={totalPlanCount}
                       completedPlanCount={completedPlanCount}
+                      onMoveExercise={(idx, dir) => movePlanExercise(idx, dir)}
+                      onRemoveExercise={(idx) => removePlanExercise(idx)}
+                      editable
                     />
                   </div>
 
@@ -1317,54 +1365,63 @@ const WorkoutPage = () => {
                 ))}
               </div>
 
-              {/* Camera tracking toggle */}
-              {mode !== 'cardio' && (
-                <button
-                  onClick={() => setCameraTracking(!cameraTracking)}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition-all ${
-                    cameraTracking
-                      ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-                      : 'bg-white/[0.03] border-white/5 text-white/40'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
-                    Camera Tracking
-                  </span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
-                    {cameraTracking ? 'ON' : 'OFF'}
-                  </span>
-                </button>
-              )}
-
-              {cameraTracking && (
-                <CameraTrackingView
-                  exercise={currentDetectedExercise || (mode === 'strength' ? exercise : bwExercise)}
-                  repCount={repAccumulatorRef.current + (mode === 'strength' ? reps : bwReps)}
-                  onRepDetected={handleRepDetected}
-                  heartRate={heartRate}
-                  intensity={intensity}
-                />
-              )}
-
-              {trackedExercises.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
-                      <ListChecks className="w-3.5 h-3.5" /> Captured Exercises
-                    </h3>
-                    <span className="text-[10px] text-white/30">{trackedExercises.length} exercises</span>
+              {/* Popular quick-add chips for the active mode */}
+              {(() => {
+                const popularByMode: Record<Mode, string[]> = {
+                  strength: ['Squats', 'Deadlifts', 'Bench Press', 'Overhead Press', 'Lunges'],
+                  cardio: ['Running', 'Cycling', 'Rowing', 'Jump Rope', 'Sprint Intervals'],
+                  bodyweight: ['Push-Ups', 'Pull-Ups', 'Plank', 'Sit-Ups / Crunches', 'Burpees'],
+                };
+                const popular = popularByMode[mode]
+                  .map(n => EXERCISE_LIBRARY.find(e => e.name === n))
+                  .filter((e): e is typeof EXERCISE_LIBRARY[number] => !!e);
+                return (
+                  <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.06] to-white/[0.02] p-3.5 space-y-2.5">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3 text-emerald-400" />
+                      <span className="text-[10px] font-semibold uppercase tracking-widest text-white/50">
+                        Popular {modeConfig[mode].label}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {popular.map(ex => {
+                        const planType: PlanExercise['type'] =
+                          ex.category === 'endurance' ? 'cardio' :
+                          ex.category === 'strength' ? 'strength' : 'bodyweight';
+                        return (
+                          <button
+                            key={ex.id}
+                            onClick={() => {
+                              const newEx: PlanExercise = {
+                                name: ex.name,
+                                type: planType,
+                                libraryId: ex.id,
+                                icon: ex.icon,
+                                sets: ex.entryType === 'sets' ? 3 : undefined,
+                                reps: ex.entryType === 'sets' ? 10 : undefined,
+                                duration: ex.entryType !== 'sets' ? '20 min' : undefined,
+                              };
+                              addPlanExercise(newEx);
+                              setWorkoutPath('choose');
+                            }}
+                            className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-emerald-500/10 hover:border-emerald-500/25 transition-all text-left group"
+                          >
+                            <span className="text-lg w-7 text-center">{ex.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-white/85 truncate">{ex.name}</p>
+                              <p className="text-[10px] text-white/35 capitalize truncate">{ex.subcategory}</p>
+                            </div>
+                            <Plus className="w-3.5 h-3.5 text-emerald-400/70 shrink-0 group-hover:scale-110 transition-transform" />
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    {trackedExercises.map(ex => (
-                      <ExerciseWidget key={ex.id} exercise={ex} onUpdate={handleUpdateExercise} onRemove={handleRemoveExercise} allExercises={allExerciseNames} />
-                    ))}
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
-              {/* Manual inputs */}
-              {!cameraTracking && (
+              {/* Manual entry — always visible (camera tracking removed from add-exercise flow) */}
+              {true && (
                 <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
                   {mode === 'strength' && (
                     <>
@@ -1416,7 +1473,7 @@ const WorkoutPage = () => {
                     // Encode weight in name when applicable (PlanExercise has no weight field)
                     duration: mode === 'cardio' ? `${time} min` : undefined,
                   };
-                  setAddedExercises(prev => [...prev, newEx]);
+                  addPlanExercise(newEx);
                   setWorkoutPath('choose');
                 }}
                 className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
@@ -1445,9 +1502,12 @@ interface PlanSessionCardsProps {
   onExerciseAction: (sessionIdx: number, exIdx: number, action: ExerciseAction) => void;
   totalPlanCount: number;
   completedPlanCount: number;
+  onMoveExercise?: (idx: number, dir: -1 | 1) => void;
+  onRemoveExercise?: (idx: number) => void;
+  editable?: boolean;
 }
 
-const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount }: PlanSessionCardsProps) => {
+const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount, onMoveExercise, onRemoveExercise, editable }: PlanSessionCardsProps) => {
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
 
   return (
@@ -1529,26 +1589,58 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                         </div>
                       )}
                       <div className="relative">
-                        <button
-                          onClick={() => { if (!isDone) setExpandedExercise(isExExpanded ? null : key); }}
-                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${
+                        <div
+                          className={`w-full flex items-center gap-2 p-2.5 rounded-xl transition-all ${
                             action === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/15'
                             : action === 'dismissed' ? 'bg-red-500/5 border border-red-500/10 opacity-50'
-                            : action === 'deferred' ? 'bg-amber-500/5 border border-amber-500/10 opacity-60'
                             : 'bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06]'
                           }`}
                         >
-                          <span className="text-lg w-7 text-center">
-                            {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : action === 'deferred' ? '⏭️' : exTypeIcon.emoji}
-                          </span>
-                          <div className="flex-1 min-w-0 text-left">
-                            <p className={`text-xs font-medium ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
-                            <p className="text-[10px] text-white/30">
-                              {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
-                            </p>
-                          </div>
-                          {!isDone && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
-                        </button>
+                          <button
+                            onClick={() => { if (!isDone) setExpandedExercise(isExExpanded ? null : key); }}
+                            className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                          >
+                            <span className="text-lg w-7 text-center shrink-0">
+                              {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : exTypeIcon.emoji}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-xs font-medium truncate ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
+                              <p className="text-[10px] text-white/30">
+                                {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
+                              </p>
+                            </div>
+                          </button>
+
+                          {/* Reorder + delete controls */}
+                          {editable && !isDone && (
+                            <div className="flex items-center gap-0.5 shrink-0">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onMoveExercise?.(ei, -1); }}
+                                disabled={ei === 0}
+                                aria-label="Move exercise up"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-white/70 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onMoveExercise?.(ei, 1); }}
+                                disabled={ei === session.exercises.length - 1}
+                                aria-label="Move exercise down"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-white/70 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onRemoveExercise?.(ei); setExpandedExercise(null); }}
+                                aria-label="Delete exercise"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                          {!isDone && !editable && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
+                        </div>
 
                         {isExExpanded && !isDone && (
                           <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-white/10">
@@ -1559,16 +1651,16 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                               <Check className="w-3.5 h-3.5" /> Start
                             </button>
                             <button
-                              onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'deferred'); setExpandedExercise(null); }}
-                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/25 transition-colors"
-                            >
-                              <ArrowRight className="w-3.5 h-3.5" /> Defer
-                            </button>
-                            <button
                               onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'dismissed'); setExpandedExercise(null); }}
                               className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
                             >
-                              ✕
+                              ✕ Skip
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setExpandedExercise(null); }}
+                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-white/10 transition-colors"
+                            >
+                              Cancel
                             </button>
                           </div>
                         )}
@@ -1603,7 +1695,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
           {completedPlanCount === totalPlanCount
             ? '🎉 Plan complete! Great discipline.'
             : completedPlanCount >= totalPlanCount / 2
-              ? `⚠️ ${totalPlanCount - completedPlanCount} exercise${totalPlanCount - completedPlanCount > 1 ? 's' : ''} skipped/deferred`
+              ? `⚠️ ${totalPlanCount - completedPlanCount} exercise${totalPlanCount - completedPlanCount > 1 ? 's' : ''} skipped`
               : `🔴 Most exercises skipped — this impacts your burndown`
           }
         </div>
