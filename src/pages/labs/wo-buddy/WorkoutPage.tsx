@@ -1247,6 +1247,18 @@ const WorkoutPage = () => {
                     </p>
                   </div>
 
+                  {/* Estimated finish time */}
+                  {workoutDuration > 0 && (
+                    <div className="px-4 pt-3 -mb-1 flex items-center justify-between">
+                      <span className="text-[10px] text-white/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                        <Clock className="w-3 h-3" /> Estimated Finish
+                      </span>
+                      <span className="text-xs font-semibold text-emerald-300 tabular-nums">
+                        {new Date(Date.now() + workoutDuration * 60_000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  )}
+
                   {/* Duration picker */}
                   <div className="px-4 pt-3 pb-1">
                     <div className="flex items-center justify-between mb-2">
@@ -1286,6 +1298,9 @@ const WorkoutPage = () => {
                       onExerciseAction={handleExerciseAction}
                       totalPlanCount={totalPlanCount}
                       completedPlanCount={completedPlanCount}
+                      onMoveExercise={(idx, dir) => movePlanExercise(idx, dir)}
+                      onRemoveExercise={(idx) => removePlanExercise(idx)}
+                      editable
                     />
                   </div>
 
