@@ -1365,54 +1365,63 @@ const WorkoutPage = () => {
                 ))}
               </div>
 
-              {/* Camera tracking toggle */}
-              {mode !== 'cardio' && (
-                <button
-                  onClick={() => setCameraTracking(!cameraTracking)}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition-all ${
-                    cameraTracking
-                      ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border-emerald-500/20 text-emerald-400'
-                      : 'bg-white/[0.03] border-white/5 text-white/40'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    {cameraTracking ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
-                    Camera Tracking
-                  </span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${cameraTracking ? 'bg-emerald-500/20' : 'bg-white/5'}`}>
-                    {cameraTracking ? 'ON' : 'OFF'}
-                  </span>
-                </button>
-              )}
-
-              {cameraTracking && (
-                <CameraTrackingView
-                  exercise={currentDetectedExercise || (mode === 'strength' ? exercise : bwExercise)}
-                  repCount={repAccumulatorRef.current + (mode === 'strength' ? reps : bwReps)}
-                  onRepDetected={handleRepDetected}
-                  heartRate={heartRate}
-                  intensity={intensity}
-                />
-              )}
-
-              {trackedExercises.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
-                      <ListChecks className="w-3.5 h-3.5" /> Captured Exercises
-                    </h3>
-                    <span className="text-[10px] text-white/30">{trackedExercises.length} exercises</span>
+              {/* Popular quick-add chips for the active mode */}
+              {(() => {
+                const popularByMode: Record<Mode, string[]> = {
+                  strength: ['Squats', 'Deadlifts', 'Bench Press', 'Overhead Press', 'Lunges'],
+                  cardio: ['Running', 'Cycling', 'Rowing', 'Jump Rope', 'Sprint Intervals'],
+                  bodyweight: ['Push-Ups', 'Pull-Ups', 'Plank', 'Sit-Ups / Crunches', 'Burpees'],
+                };
+                const popular = popularByMode[mode]
+                  .map(n => EXERCISE_LIBRARY.find(e => e.name === n))
+                  .filter((e): e is typeof EXERCISE_LIBRARY[number] => !!e);
+                return (
+                  <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.06] to-white/[0.02] p-3.5 space-y-2.5">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3 text-emerald-400" />
+                      <span className="text-[10px] font-semibold uppercase tracking-widest text-white/50">
+                        Popular {modeConfig[mode].label}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {popular.map(ex => {
+                        const planType: PlanExercise['type'] =
+                          ex.category === 'endurance' ? 'cardio' :
+                          ex.category === 'strength' ? 'strength' : 'bodyweight';
+                        return (
+                          <button
+                            key={ex.id}
+                            onClick={() => {
+                              const newEx: PlanExercise = {
+                                name: ex.name,
+                                type: planType,
+                                libraryId: ex.id,
+                                icon: ex.icon,
+                                sets: ex.entryType === 'sets' ? 3 : undefined,
+                                reps: ex.entryType === 'sets' ? 10 : undefined,
+                                duration: ex.entryType !== 'sets' ? '20 min' : undefined,
+                              };
+                              addPlanExercise(newEx);
+                              setWorkoutPath('choose');
+                            }}
+                            className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-emerald-500/10 hover:border-emerald-500/25 transition-all text-left group"
+                          >
+                            <span className="text-lg w-7 text-center">{ex.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-white/85 truncate">{ex.name}</p>
+                              <p className="text-[10px] text-white/35 capitalize truncate">{ex.subcategory}</p>
+                            </div>
+                            <Plus className="w-3.5 h-3.5 text-emerald-400/70 shrink-0 group-hover:scale-110 transition-transform" />
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    {trackedExercises.map(ex => (
-                      <ExerciseWidget key={ex.id} exercise={ex} onUpdate={handleUpdateExercise} onRemove={handleRemoveExercise} allExercises={allExerciseNames} />
-                    ))}
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
-              {/* Manual inputs */}
-              {!cameraTracking && (
+              {/* Manual entry — always visible (camera tracking removed from add-exercise flow) */}
+              {true && (
                 <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08] space-y-4">
                   {mode === 'strength' && (
                     <>
