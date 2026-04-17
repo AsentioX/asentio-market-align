@@ -110,6 +110,7 @@ export function useWOBuddyGoals() {
 
   const createGoal = useCallback(async (goal: {
     name: string; category: string; metric: string; target_value: number;
+    current_value?: number;
     timeframe?: string; deadline?: string; drivers: string[];
   }) => {
     if (!user) return null;
@@ -122,6 +123,7 @@ export function useWOBuddyGoals() {
         category: goal.category,
         metric: goal.metric,
         target_value: goal.target_value,
+        current_value: goal.current_value ?? 0,
         timeframe: goal.timeframe || null,
         deadline: goal.deadline || null,
       })
