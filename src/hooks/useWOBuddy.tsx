@@ -131,14 +131,39 @@ export function useWOBuddyWorkouts() {
         .limit(20);
 
       if (data && data.length > 0) {
-        setWorkouts(data.map(w => ({
-          id: w.id,
-          type: w.mode as Workout['type'],
-          exercise: w.mode,
-          score: w.total_score,
-          date: new Date(w.created_at).toISOString().split('T')[0],
-          details: {},
-        })));
+        const workoutIds = data.map(w => w.id);
+        const { data: exData } = await supabase
+          .from('wobuddy_exercises')
+          .select('*')
+          .in('workout_id', workoutIds);
+
+        const exByWorkout = (exData || []).reduce<Record<string, any[]>>((acc, ex) => {
+          (acc[ex.workout_id] ||= []).push(ex);
+          return acc;
+        }, {});
+
+        setWorkouts(data.map(w => {
+          const exs = exByWorkout[w.id] || [];
+          const primary = exs[0];
+          return {
+            id: w.id,
+            type: (primary?.type || w.mode) as Workout['type'],
+            exercise: primary?.name || w.mode,
+            score: w.total_score,
+            date: new Date(w.created_at).toISOString().split('T')[0],
+            details: {
+              exercises: exs.map(e => ({
+                name: e.name,
+                type: e.type,
+                reps: e.reps,
+                sets: e.sets,
+                weight: e.weight_lbs ? Number(e.weight_lbs) : undefined,
+                distance: e.distance_km ? Number(e.distance_km) : undefined,
+                duration_seconds: e.duration_seconds,
+              })),
+            } as any,
+          };
+        }));
       }
       setLoading(false);
     };

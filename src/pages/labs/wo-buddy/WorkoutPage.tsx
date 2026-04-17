@@ -1726,13 +1726,37 @@ const PastWorkoutsList = ({ completedWorkouts, workouts }: PastWorkoutsListProps
 
   Object.entries(dbGrouped).forEach(([date, dayWorkouts]) => {
     if (!localDates.has(date)) {
+      // Flatten any persisted exercise details from each workout's details.exercises
+      const exercises: CompletedWorkoutDetail['exercises'] = [];
+      let totalDurationSec = 0;
+      dayWorkouts.forEach(w => {
+        const persisted = (w.details as any)?.exercises as Array<any> | undefined;
+        if (persisted && persisted.length > 0) {
+          persisted.forEach(e => {
+            const durSec = Number(e.duration_seconds) || 0;
+            totalDurationSec += durSec;
+            exercises.push({
+              name: e.name,
+              type: e.type,
+              reps: e.reps || undefined,
+              sets: e.sets && e.sets > 1 ? e.sets : undefined,
+              weight: e.weight || undefined,
+              duration: e.type === 'cardio' && durSec > 0
+                ? `${Math.max(1, Math.round(durSec / 60))} min${e.distance ? ` · ${e.distance} km` : ''}`
+                : (durSec > 0 && e.type !== 'strength' && !e.reps ? `${Math.max(1, Math.round(durSec / 60))} min` : undefined),
+            });
+          });
+        } else {
+          exercises.push({ name: w.exercise, type: w.type });
+        }
+      });
       allItems.push({
         id: `db-${date}`,
         date,
-        duration: dayWorkouts.length * 15 * 60,
+        duration: totalDurationSec > 0 ? totalDurationSec : dayWorkouts.length * 15 * 60,
         score: dayWorkouts.reduce((s, w) => s + w.score, 0),
         mode: dayWorkouts[0].type,
-        exercises: dayWorkouts.map(w => ({ name: w.exercise, type: w.type })),
+        exercises,
       });
     }
   });
