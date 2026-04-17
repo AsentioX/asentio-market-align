@@ -221,6 +221,7 @@ const GoalsPage = () => {
   const [newCategory, setNewCategory] = useState('performance');
   const [newMetric, setNewMetric] = useState('reps');
   const [newTarget, setNewTarget] = useState(0);
+  const [newCurrent, setNewCurrent] = useState<number | ''>('');
   const [newTimeframe, setNewTimeframe] = useState('');
   const [newDeadline, setNewDeadline] = useState<Date | undefined>(undefined);
   const [newDrivers, setNewDrivers] = useState<string[]>([]);
@@ -231,16 +232,20 @@ const GoalsPage = () => {
   const todayIndex = getTodayIndex();
   const activeGoals = goals.filter(g => g.status !== 'achieved');
 
+  const currentStateProvided = typeof newCurrent === 'number' && newCurrent >= 0;
+
   const handleCreate = async () => {
-    if (!newName || newTarget <= 0) return;
+    if (!newName || newTarget <= 0 || !currentStateProvided) return;
     await createGoal({
       name: newName, category: newCategory, metric: newMetric,
-      target_value: newTarget, timeframe: newTimeframe || undefined,
+      target_value: newTarget,
+      current_value: typeof newCurrent === 'number' ? newCurrent : 0,
+      timeframe: newTimeframe || undefined,
       deadline: newDeadline ? format(newDeadline, 'yyyy-MM-dd') : undefined,
       drivers: newDrivers,
     });
     setShowCreate(false);
-    setNewName(''); setNewTarget(0); setNewDrivers([]); setNewTimeframe(''); setNewDeadline(undefined);
+    setNewName(''); setNewTarget(0); setNewCurrent(''); setNewDrivers([]); setNewTimeframe(''); setNewDeadline(undefined);
   };
 
   const handleTemplate = (t: typeof GOAL_TEMPLATES[0]) => {
@@ -248,6 +253,7 @@ const GoalsPage = () => {
     setNewCategory(t.category);
     setNewMetric(t.metric);
     setNewTarget(t.target);
+    setNewCurrent('');
     setNewDrivers(t.drivers);
     setShowCreate(true);
   };
@@ -409,20 +415,36 @@ const GoalsPage = () => {
                 ))}
               </div>
             </div>
+            <div>
+              <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Metric</label>
+              <select value={newMetric} onChange={e => setNewMetric(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
+                {METRICS.map(m => <option key={m.id} value={m.id} className="bg-[#1a1a2e]">{m.label} ({m.unit})</option>)}
+              </select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Metric</label>
-                <select value={newMetric} onChange={e => setNewMetric(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
-                  {METRICS.map(m => <option key={m.id} value={m.id} className="bg-[#1a1a2e]">{m.label} ({m.unit})</option>)}
-                </select>
+                <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">
+                  Current ({metricUnit}) <span className="text-amber-400/80 normal-case tracking-normal">*required</span>
+                </label>
+                <input
+                  type="number"
+                  value={newCurrent === '' ? '' : newCurrent}
+                  onChange={e => setNewCurrent(e.target.value === '' ? '' : Number(e.target.value))}
+                  placeholder="Where you are now"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none"
+                />
               </div>
               <div>
                 <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Target ({metricUnit})</label>
                 <input type="number" value={newTarget || ''} onChange={e => setNewTarget(Number(e.target.value))}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
+                  placeholder="Where you want to be"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
             </div>
+            <p className="text-[11px] text-white/40 -mt-2">
+              Tell us your starting point so we can build a realistic plan from where you are today to where you want to go.
+            </p>
             <div>
               <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Target Date (optional)</label>
               <Popover>
@@ -466,9 +488,9 @@ const GoalsPage = () => {
                 ))}
               </div>
             </div>
-            <button onClick={handleCreate} disabled={!newName || newTarget <= 0}
+            <button onClick={handleCreate} disabled={!newName || newTarget <= 0 || !currentStateProvided}
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100">
-              Create Goal
+              {!currentStateProvided ? 'Enter your current state to continue' : 'Create Goal & Build Plan'}
             </button>
           </div>
         )}
