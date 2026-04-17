@@ -1707,7 +1707,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
 // ---- Past Workouts List with expand/collapse ----
 interface PastWorkoutsListProps {
   completedWorkouts: CompletedWorkoutDetail[];
-  workouts: Array<{ id: string; type: 'strength' | 'cardio' | 'bodyweight'; exercise: string; score: number; date: string }>;
+  workouts: Array<{ id: string; type: 'strength' | 'cardio' | 'bodyweight'; exercise: string; score: number; date: string; details?: any }>;
 }
 
 const PastWorkoutsList = ({ completedWorkouts, workouts }: PastWorkoutsListProps) => {
