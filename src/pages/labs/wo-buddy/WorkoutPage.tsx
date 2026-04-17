@@ -1194,7 +1194,7 @@ const WorkoutPage = () => {
                               reps: ex.entryType === 'sets' ? 10 : undefined,
                               duration: ex.entryType !== 'sets' ? '20 min' : undefined,
                             };
-                            setAddedExercises(prev => [...prev, newEx]);
+                            addPlanExercise(newEx);
                             setShowAddExercise(false);
                             setAddExerciseSearch('');
                           }}
