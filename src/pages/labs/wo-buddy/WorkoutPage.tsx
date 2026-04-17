@@ -1695,7 +1695,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
           {completedPlanCount === totalPlanCount
             ? '🎉 Plan complete! Great discipline.'
             : completedPlanCount >= totalPlanCount / 2
-              ? `⚠️ ${totalPlanCount - completedPlanCount} exercise${totalPlanCount - completedPlanCount > 1 ? 's' : ''} skipped/deferred`
+              ? `⚠️ ${totalPlanCount - completedPlanCount} exercise${totalPlanCount - completedPlanCount > 1 ? 's' : ''} skipped`
               : `🔴 Most exercises skipped — this impacts your burndown`
           }
         </div>
