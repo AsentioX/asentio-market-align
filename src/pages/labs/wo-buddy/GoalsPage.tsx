@@ -6,6 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import ExerciseLibraryPage from './ExerciseLibraryPage';
+import GoalCheckpointPanel from './GoalCheckpointPanel';
 import { useWOBuddyGoals, usePerformanceDrivers } from '@/hooks/useWOBuddyGoals';
 import {
   GOAL_CATEGORIES, METRICS, PERFORMANCE_DRIVERS, GOAL_TEMPLATES,
@@ -582,6 +583,18 @@ const GoalsPage = () => {
                         </div>
                       )}
                       {goal.timeframe && <p className="text-[10px] text-white/30">Timeframe: {goal.timeframe}</p>}
+
+                      {/* 4-week checkpoint panel — measures progress and adapts the plan */}
+                      <GoalCheckpointPanel
+                        goalId={goal.id}
+                        goalName={goal.name}
+                        metricUnit={metric?.unit || ''}
+                        startValue={Number(goal.current_value) || 0}
+                        targetValue={Number(goal.target_value) || 0}
+                        currentValue={Number(goal.current_value) || 0}
+                        deadline={goal.deadline}
+                      />
+
                       <button onClick={() => deleteGoal(goal.id)}
                         className="flex items-center gap-1.5 text-[11px] text-red-400/60 hover:text-red-400 transition-colors mt-1">
                         <Trash2 className="w-3 h-3" /> Remove Goal
