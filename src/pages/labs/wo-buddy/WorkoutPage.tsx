@@ -1502,9 +1502,12 @@ interface PlanSessionCardsProps {
   onExerciseAction: (sessionIdx: number, exIdx: number, action: ExerciseAction) => void;
   totalPlanCount: number;
   completedPlanCount: number;
+  onMoveExercise?: (idx: number, dir: -1 | 1) => void;
+  onRemoveExercise?: (idx: number) => void;
+  editable?: boolean;
 }
 
-const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount }: PlanSessionCardsProps) => {
+const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalPlanCount, completedPlanCount, onMoveExercise, onRemoveExercise, editable }: PlanSessionCardsProps) => {
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
 
   return (
@@ -1586,26 +1589,58 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                         </div>
                       )}
                       <div className="relative">
-                        <button
-                          onClick={() => { if (!isDone) setExpandedExercise(isExExpanded ? null : key); }}
-                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${
+                        <div
+                          className={`w-full flex items-center gap-2 p-2.5 rounded-xl transition-all ${
                             action === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/15'
                             : action === 'dismissed' ? 'bg-red-500/5 border border-red-500/10 opacity-50'
-                            : action === 'deferred' ? 'bg-amber-500/5 border border-amber-500/10 opacity-60'
                             : 'bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06]'
                           }`}
                         >
-                          <span className="text-lg w-7 text-center">
-                            {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : action === 'deferred' ? '⏭️' : exTypeIcon.emoji}
-                          </span>
-                          <div className="flex-1 min-w-0 text-left">
-                            <p className={`text-xs font-medium ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
-                            <p className="text-[10px] text-white/30">
-                              {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
-                            </p>
-                          </div>
-                          {!isDone && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
-                        </button>
+                          <button
+                            onClick={() => { if (!isDone) setExpandedExercise(isExExpanded ? null : key); }}
+                            className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                          >
+                            <span className="text-lg w-7 text-center shrink-0">
+                              {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : exTypeIcon.emoji}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-xs font-medium truncate ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
+                              <p className="text-[10px] text-white/30">
+                                {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
+                              </p>
+                            </div>
+                          </button>
+
+                          {/* Reorder + delete controls */}
+                          {editable && !isDone && (
+                            <div className="flex items-center gap-0.5 shrink-0">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onMoveExercise?.(ei, -1); }}
+                                disabled={ei === 0}
+                                aria-label="Move exercise up"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-white/70 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onMoveExercise?.(ei, 1); }}
+                                disabled={ei === session.exercises.length - 1}
+                                aria-label="Move exercise down"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-white/70 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onRemoveExercise?.(ei); setExpandedExercise(null); }}
+                                aria-label="Delete exercise"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                          {!isDone && !editable && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
+                        </div>
 
                         {isExExpanded && !isDone && (
                           <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-white/10">
@@ -1616,16 +1651,16 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                               <Check className="w-3.5 h-3.5" /> Start
                             </button>
                             <button
-                              onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'deferred'); setExpandedExercise(null); }}
-                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/25 transition-colors"
-                            >
-                              <ArrowRight className="w-3.5 h-3.5" /> Defer
-                            </button>
-                            <button
                               onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'dismissed'); setExpandedExercise(null); }}
                               className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
                             >
-                              ✕
+                              ✕ Skip
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setExpandedExercise(null); }}
+                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-white/10 transition-colors"
+                            >
+                              Cancel
                             </button>
                           </div>
                         )}
