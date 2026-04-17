@@ -415,6 +415,13 @@ const GoalsPage = () => {
                 ))}
               </div>
             </div>
+            <div>
+              <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">Metric</label>
+              <select value={newMetric} onChange={e => setNewMetric(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
+                {METRICS.map(m => <option key={m.id} value={m.id} className="bg-[#1a1a2e]">{m.label} ({m.unit})</option>)}
+              </select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5 block">
