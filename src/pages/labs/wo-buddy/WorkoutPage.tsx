@@ -1449,7 +1449,7 @@ const WorkoutPage = () => {
                     // Encode weight in name when applicable (PlanExercise has no weight field)
                     duration: mode === 'cardio' ? `${time} min` : undefined,
                   };
-                  setAddedExercises(prev => [...prev, newEx]);
+                  addPlanExercise(newEx);
                   setWorkoutPath('choose');
                 }}
                 className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
