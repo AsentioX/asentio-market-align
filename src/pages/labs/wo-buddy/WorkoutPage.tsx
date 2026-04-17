@@ -116,7 +116,6 @@ const WorkoutPage = () => {
   }, [defaultDuration, workoutDuration]);
   
   const [exerciseActions, setExerciseActions] = useState<Record<string, ExerciseAction>>({});
-  const [addedExercises, setAddedExercises] = useState<PlanExercise[]>([]);
   const [showAddExercise, setShowAddExercise] = useState(false);
   const [addExerciseSearch, setAddExerciseSearch] = useState('');
 
@@ -125,19 +124,53 @@ const WorkoutPage = () => {
     return adjustPlanForDuration(rawTodayPlan, workoutDuration);
   }, [rawTodayPlan, workoutDuration]);
 
-  // Merge added exercises into plan as an extra session
-  const todayPlan = useMemo(() => {
+  // Editable, flattened plan exercise list. null = not yet edited (use baseTodayPlan flattened).
+  // Once the user reorders / deletes / adds, this becomes the source of truth.
+  const [editedExercises, setEditedExercises] = useState<PlanExercise[] | null>(null);
+
+  // Reset edits when the underlying plan changes (e.g. duration slider).
+  useEffect(() => {
+    setEditedExercises(null);
+    setExerciseActions({});
+  }, [baseTodayPlan]);
+
+  // Resolved flat exercise list (either user-edited or derived from baseTodayPlan).
+  const resolvedExercises = useMemo<PlanExercise[]>(() => {
+    if (editedExercises !== null) return editedExercises;
+    if (!baseTodayPlan) return [];
+    return baseTodayPlan.sessions.flatMap(s => s.exercises);
+  }, [editedExercises, baseTodayPlan]);
+
+  // Build the unified single-session plan that the rest of the UI consumes.
+  const todayPlan = useMemo<PlanDay | null>(() => {
     if (!baseTodayPlan) return baseTodayPlan;
-    if (addedExercises.length === 0) return baseTodayPlan;
-    const extraSession: PlanSession = {
-      label: 'Added Exercises',
+    if (resolvedExercises.length === 0 && baseTodayPlan.sessions.length === 0) return baseTodayPlan;
+    const allFocusDrivers = Array.from(new Set(baseTodayPlan.sessions.flatMap(s => s.focusDrivers)));
+    const primaryReason = baseTodayPlan.sessions[0]?.reason || '';
+    const unifiedSession: PlanSession = {
+      label: "Today's Plan",
       workoutType: 'strength',
-      exercises: addedExercises,
-      focusDrivers: [],
-      reason: 'Manually added',
+      exercises: resolvedExercises,
+      focusDrivers: allFocusDrivers,
+      reason: primaryReason,
     };
-    return { ...baseTodayPlan, sessions: [...baseTodayPlan.sessions, extraSession] };
-  }, [baseTodayPlan, addedExercises]);
+    return { ...baseTodayPlan, sessions: [unifiedSession] };
+  }, [baseTodayPlan, resolvedExercises]);
+
+  // Helpers to mutate the editable exercise list (always commit via setEditedExercises so we lock in the order).
+  const commitExerciseList = (updater: (list: PlanExercise[]) => PlanExercise[]) => {
+    setEditedExercises(prev => updater(prev ?? resolvedExercises));
+    setExerciseActions({});
+  };
+  const addPlanExercise = (ex: PlanExercise) => commitExerciseList(list => [...list, ex]);
+  const removePlanExercise = (idx: number) => commitExerciseList(list => list.filter((_, i) => i !== idx));
+  const movePlanExercise = (idx: number, dir: -1 | 1) => commitExerciseList(list => {
+    const target = idx + dir;
+    if (target < 0 || target >= list.length) return list;
+    const next = [...list];
+    [next[idx], next[target]] = [next[target], next[idx]];
+    return next;
+  });
 
   // Active exercise tracking for workout-in-progress
   const [activeExerciseKey, setActiveExerciseKey] = useState<string | null>(null);
