@@ -221,6 +221,7 @@ const GoalsPage = () => {
   const [newCategory, setNewCategory] = useState('performance');
   const [newMetric, setNewMetric] = useState('reps');
   const [newTarget, setNewTarget] = useState(0);
+  const [newCurrent, setNewCurrent] = useState<number | ''>('');
   const [newTimeframe, setNewTimeframe] = useState('');
   const [newDeadline, setNewDeadline] = useState<Date | undefined>(undefined);
   const [newDrivers, setNewDrivers] = useState<string[]>([]);
@@ -231,16 +232,20 @@ const GoalsPage = () => {
   const todayIndex = getTodayIndex();
   const activeGoals = goals.filter(g => g.status !== 'achieved');
 
+  const currentStateProvided = typeof newCurrent === 'number' && newCurrent >= 0;
+
   const handleCreate = async () => {
-    if (!newName || newTarget <= 0) return;
+    if (!newName || newTarget <= 0 || !currentStateProvided) return;
     await createGoal({
       name: newName, category: newCategory, metric: newMetric,
-      target_value: newTarget, timeframe: newTimeframe || undefined,
+      target_value: newTarget,
+      current_value: typeof newCurrent === 'number' ? newCurrent : 0,
+      timeframe: newTimeframe || undefined,
       deadline: newDeadline ? format(newDeadline, 'yyyy-MM-dd') : undefined,
       drivers: newDrivers,
     });
     setShowCreate(false);
-    setNewName(''); setNewTarget(0); setNewDrivers([]); setNewTimeframe(''); setNewDeadline(undefined);
+    setNewName(''); setNewTarget(0); setNewCurrent(''); setNewDrivers([]); setNewTimeframe(''); setNewDeadline(undefined);
   };
 
   const handleTemplate = (t: typeof GOAL_TEMPLATES[0]) => {
@@ -248,6 +253,7 @@ const GoalsPage = () => {
     setNewCategory(t.category);
     setNewMetric(t.metric);
     setNewTarget(t.target);
+    setNewCurrent('');
     setNewDrivers(t.drivers);
     setShowCreate(true);
   };
