@@ -36,16 +36,8 @@ const GoalCheckpointPanel = ({
     [checkpoints, goalId]
   );
 
-  const next = useMemo(
-    () => goalCheckpoints.find(c => c.status === 'pending'),
-    [goalCheckpoints]
-  );
-  const past = useMemo(
-    () => goalCheckpoints.filter(c => c.status !== 'pending'),
-    [goalCheckpoints]
-  );
 
-  const next = useMemo(
+
     () => goalCheckpoints.find(c => c.status === 'pending'),
     [goalCheckpoints]
   );
