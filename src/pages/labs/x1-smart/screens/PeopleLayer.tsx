@@ -120,9 +120,19 @@ const PersonDrawer = ({ person, onClose }: { person: Person; onClose: () => void
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-2xl -translate-y-10 translate-x-10" />
             <div className="relative flex items-center gap-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center font-bold text-white text-2xl border border-white/30">
-                  {person.initials}
-                </div>
+                {HEADSHOTS[person.name] ? (
+                  <img
+                    src={HEADSHOTS[person.name]}
+                    alt={person.name}
+                    className="w-20 h-20 rounded-2xl object-cover border border-white/30"
+                    width={80}
+                    height={80}
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center font-bold text-white text-2xl border border-white/30">
+                    {person.initials}
+                  </div>
+                )}
                 <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full ${pres.dot} ring-[3px] ring-white`} />
               </div>
               <div className="text-white">
