@@ -12,7 +12,11 @@ export const sourceBadgeMeta: Record<SourceBadge, { color: string; soft: string;
 };
 
 export function SourceBadgePill({ source }: { source: SourceBadge }) {
-  const m = sourceBadgeMeta[source];
+  const m = sourceBadgeMeta[source] ?? {
+    color: 'var(--cf-text-muted)',
+    soft: 'var(--cf-surface-alt)',
+    short: String(source ?? 'Source'),
+  };
   return (
     <span
       className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded"
