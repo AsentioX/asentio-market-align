@@ -128,15 +128,31 @@ const TranscriptUpload = () => {
             <FileText className="w-10 h-10 text-teal-600" />
             <p className="text-sm font-medium text-gray-700">{file.name}</p>
             <p className="text-xs text-gray-400">{(file.size / 1024).toFixed(1)} KB</p>
-            <div className="flex gap-3 mt-2">
-              <button onClick={simulateParsing} disabled={parsing} className="px-5 py-2 bg-teal-600 text-white rounded-xl text-sm font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
+              <button onClick={simulateParsing} disabled={parsing || aiProcessing} className="px-5 py-2 bg-teal-600 text-white rounded-xl text-sm font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors flex items-center gap-2">
                 {parsing ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                 {parsing ? 'Processing…' : 'Extract Insights'}
               </button>
-              <button onClick={() => setFile(null)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+              <button onClick={processWithAI} disabled={parsing || aiProcessing} className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center gap-2">
+                {aiProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {aiProcessing ? 'AI thinking…' : 'Process with AI'}
+              </button>
+              <button onClick={() => { setFile(null); setAiResult(null); }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
                 Clear
               </button>
             </div>
+            {aiResult && (
+              <div className="mt-4 w-full max-w-md mx-auto bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-left text-sm">
+                <p className="font-semibold text-indigo-900 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4" /> AI memory updated
+                </p>
+                <ul className="mt-2 space-y-1 text-indigo-800 text-xs">
+                  <li>• {aiResult.matched} existing topic{aiResult.matched !== 1 && 's'} matched</li>
+                  <li>• {aiResult.insightsAdded} new insight{aiResult.insightsAdded !== 1 && 's'} appended</li>
+                  <li>• {aiResult.actionItemsCreated} action item{aiResult.actionItemsCreated !== 1 && 's'} created</li>
+                </ul>
+              </div>
+            )}
           </div>
         ) : (
           <label className="cursor-pointer flex flex-col items-center gap-3">
