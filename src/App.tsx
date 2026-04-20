@@ -38,6 +38,20 @@ import RowWindowLayout from "./pages/labs/rowwindow/RowWindowLayout";
 import AOTULayout from "./pages/labs/aotu/AOTULayout";
 import AOTUHome from "./pages/labs/aotu/AOTUHome";
 import AOTUStub from "./pages/labs/aotu/AOTUStub";
+import VibinLayout from "./pages/labs/vibin/VibinLayout";
+import VibinHome from "./pages/labs/vibin/screens/Home";
+import VibinCards from "./pages/labs/vibin/screens/Cards";
+import VibinCardDetail from "./pages/labs/vibin/screens/CardDetail";
+import VibinCardCreate from "./pages/labs/vibin/screens/CardCreate";
+import VibinDecks from "./pages/labs/vibin/screens/Decks";
+import VibinDeckDetail from "./pages/labs/vibin/screens/DeckDetail";
+import VibinDeckCreate from "./pages/labs/vibin/screens/DeckCreate";
+import VibinTrips from "./pages/labs/vibin/screens/Trips";
+import VibinTripCreate from "./pages/labs/vibin/screens/TripCreate";
+import VibinTripDetail from "./pages/labs/vibin/screens/TripDetail";
+import VibinProfile from "./pages/labs/vibin/screens/Profile";
+import VibinOnboarding from "./pages/labs/vibin/screens/Onboarding";
+import VibinShare from "./pages/labs/vibin/screens/ShareView";
 import VisionMission from "./pages/labs/governance/VisionMission";
 import TranscriptUpload from "./pages/labs/governance/TranscriptUpload";
 import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
@@ -56,7 +70,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -87,6 +101,21 @@ const AppContent = () => {
           <Route path="/labs/cpconnect" element={<CPConnectLayout />} />
           <Route path="/labs/tastudio" element={<TAStudioLayout />} />
           <Route path="/labs/rowwindow" element={<RowWindowLayout />} />
+          <Route path="/labs/vibin" element={<VibinLayout />}>
+            <Route index element={<VibinHome />} />
+            <Route path="cards" element={<VibinCards />} />
+            <Route path="cards/new" element={<VibinCardCreate />} />
+            <Route path="cards/:id" element={<VibinCardDetail />} />
+            <Route path="decks" element={<VibinDecks />} />
+            <Route path="decks/new" element={<VibinDeckCreate />} />
+            <Route path="decks/:id" element={<VibinDeckDetail />} />
+            <Route path="trips" element={<VibinTrips />} />
+            <Route path="trips/new" element={<VibinTripCreate />} />
+            <Route path="trips/:id" element={<VibinTripDetail />} />
+            <Route path="profile" element={<VibinProfile />} />
+            <Route path="onboarding" element={<VibinOnboarding />} />
+            <Route path="share/:type/:id" element={<VibinShare />} />
+          </Route>
           <Route path="/labs/aotu" element={<AOTULayout />}>
             <Route index element={<AOTUHome />} />
             <Route path="platform" element={<AOTUStub />} />
