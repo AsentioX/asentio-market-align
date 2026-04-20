@@ -90,18 +90,8 @@ const X1SmartLayout = () => {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 text-xs text-stone-500 bg-white/80 border border-black/[0.06] rounded-full px-3 py-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${meta.badgeDot} opacity-75`} />
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${meta.badgeDot}`} />
-            </span>
-            <span className="font-medium">{meta.badge}</span>
-          </div>
-        </div>
-
-        {/* App mode toggle: AiHome ↔ AiSpaces */}
-        <div className="max-w-6xl mx-auto px-5 pb-3">
-          <div className="inline-flex p-1 rounded-2xl bg-stone-900 shadow-lg">
+          {/* App mode toggle (upper right) */}
+          <div className="inline-flex p-1 rounded-2xl bg-stone-900 shadow-lg ml-auto">
             <ModeToggleBtn
               active={appMode === 'aihome'}
               onClick={() => setAppMode('aihome')}
