@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 const ICONS = { manual: Eye, assisted: Sparkles, autonomous: Zap } as const;
 const COLORS = {
-  manual: { bg: 'bg-stone-500', ring: 'ring-stone-500', light: 'bg-stone-50', border: 'border-stone-300', text: 'text-stone-600' },
+  manual: { bg: 'bg-indigo-600', ring: 'ring-indigo-500', light: 'bg-indigo-50', border: 'border-indigo-300', text: 'text-indigo-700' },
   assisted: { bg: 'bg-blue-500', ring: 'ring-blue-500', light: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-600' },
   autonomous: { bg: 'bg-violet-500', ring: 'ring-violet-500', light: 'bg-violet-50', border: 'border-violet-300', text: 'text-violet-700' },
 } as const;
@@ -43,31 +43,17 @@ const AutonomyLayer = () => {
               }}
               className={`relative flex-1 text-left rounded-2xl border-2 p-3 sm:p-4 transition-all overflow-hidden ${
                 active
-                  ? `bg-white ring-4 ${colors.ring} ${colors.border}`
+                  ? `bg-white shadow-lg ring-4 ${colors.ring} ${colors.border}`
                   : 'bg-stone-50 border-stone-200 hover:border-stone-300 hover:bg-white'
               }`}
             >
-              {active && (
-                <>
-                  <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${colors.bg} animate-pulse`} />
-                  <div className={`absolute inset-x-0 top-0 h-1 ${colors.bg}`} />
-                </>
-              )}
-
               <div className="relative flex items-center gap-2 sm:gap-3">
                 <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${colors.bg} flex items-center justify-center shadow-sm ${!active && 'opacity-70'}`}>
                   <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <div className={`text-sm sm:text-[15px] font-bold tracking-tight ${active ? 'text-stone-900' : 'text-stone-600'}`}>
-                      {level.label}
-                    </div>
-                    {active && (
-                      <span className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-bold ${colors.text} px-1.5 py-0.5 rounded bg-white border ${colors.border} flex-shrink-0`}>
-                        Selected
-                      </span>
-                    )}
+                  <div className={`text-sm sm:text-[15px] font-bold tracking-tight ${active ? 'text-stone-900' : 'text-stone-600'}`}>
+                    {level.label}
                   </div>
                   <div className="text-[10px] sm:text-[11px] text-stone-500 mt-0.5 leading-snug truncate hidden sm:block">{level.description}</div>
                 </div>
