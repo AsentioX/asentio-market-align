@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -103,6 +103,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Rowing', 'Tides', 'Safety'],
     link: '/labs/rowwindow',
+  },
+  {
+    name: 'AOTU.ai',
+    description: 'AI operators for real-world automation. BrainFrame edge platform, modular VisionCapsules, and pre-packaged solutions.',
+    icon: <Eye className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Edge AI', 'Computer Vision', 'Enterprise'],
+    link: '/labs/aotu',
   },
 ];
 
