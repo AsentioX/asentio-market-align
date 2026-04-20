@@ -34,7 +34,7 @@ export const VESSEL_PROFILES: Record<VesselProfile['id'], VesselProfile> = {
 
 // Safety thresholds (feet, MLLW) — BIAC channel constraints
 export const TIDE_RED_FT = 1.0;
-export const TIDE_GREEN_FT = 3.0;
+export const TIDE_GREEN_FT = 2.0;
 
 // Generate a 24h sinusoidal tide series anchored to "now".
 // Two highs (~6.2 ft) and two lows (~0.4 ft) per ~24h — typical SF Bay mixed semidiurnal.
