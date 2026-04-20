@@ -163,6 +163,192 @@ export type Database = {
         }
         Relationships: []
       }
+      cf_contractors: {
+        Row: {
+          address: string | null
+          bond_amount: number | null
+          bond_cancellation_date: string | null
+          bond_company: string | null
+          bond_effective_date: string | null
+          bond_number: string | null
+          business_name: string
+          business_type: string | null
+          cb_surety_amount: number | null
+          cb_surety_cancellation_date: string | null
+          cb_surety_company: string | null
+          cb_surety_effective_date: string | null
+          cb_surety_number: string | null
+          city: string | null
+          classifications: string[] | null
+          confidence_score: number | null
+          contractor_type: string | null
+          county: string | null
+          created_at: string
+          estimated_business_maturity: string | null
+          estimated_company_size: string | null
+          expiration_date: string | null
+          id: string
+          inactivation_date: string | null
+          issue_date: string | null
+          last_verified_date: string | null
+          license_number: string
+          license_status: string | null
+          license_status_date: string | null
+          phone: string | null
+          primary_classification: string | null
+          reactivation_date: string | null
+          reissue_date: string | null
+          source_count: number | null
+          source_urls: string[] | null
+          state: string | null
+          updated_at: string
+          wc_cancellation_date: string | null
+          wc_company: string | null
+          wc_effective_date: string | null
+          wc_policy_number: string | null
+          wc_status: string | null
+          years_in_business: number | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          bond_amount?: number | null
+          bond_cancellation_date?: string | null
+          bond_company?: string | null
+          bond_effective_date?: string | null
+          bond_number?: string | null
+          business_name: string
+          business_type?: string | null
+          cb_surety_amount?: number | null
+          cb_surety_cancellation_date?: string | null
+          cb_surety_company?: string | null
+          cb_surety_effective_date?: string | null
+          cb_surety_number?: string | null
+          city?: string | null
+          classifications?: string[] | null
+          confidence_score?: number | null
+          contractor_type?: string | null
+          county?: string | null
+          created_at?: string
+          estimated_business_maturity?: string | null
+          estimated_company_size?: string | null
+          expiration_date?: string | null
+          id?: string
+          inactivation_date?: string | null
+          issue_date?: string | null
+          last_verified_date?: string | null
+          license_number: string
+          license_status?: string | null
+          license_status_date?: string | null
+          phone?: string | null
+          primary_classification?: string | null
+          reactivation_date?: string | null
+          reissue_date?: string | null
+          source_count?: number | null
+          source_urls?: string[] | null
+          state?: string | null
+          updated_at?: string
+          wc_cancellation_date?: string | null
+          wc_company?: string | null
+          wc_effective_date?: string | null
+          wc_policy_number?: string | null
+          wc_status?: string | null
+          years_in_business?: number | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          bond_amount?: number | null
+          bond_cancellation_date?: string | null
+          bond_company?: string | null
+          bond_effective_date?: string | null
+          bond_number?: string | null
+          business_name?: string
+          business_type?: string | null
+          cb_surety_amount?: number | null
+          cb_surety_cancellation_date?: string | null
+          cb_surety_company?: string | null
+          cb_surety_effective_date?: string | null
+          cb_surety_number?: string | null
+          city?: string | null
+          classifications?: string[] | null
+          confidence_score?: number | null
+          contractor_type?: string | null
+          county?: string | null
+          created_at?: string
+          estimated_business_maturity?: string | null
+          estimated_company_size?: string | null
+          expiration_date?: string | null
+          id?: string
+          inactivation_date?: string | null
+          issue_date?: string | null
+          last_verified_date?: string | null
+          license_number?: string
+          license_status?: string | null
+          license_status_date?: string | null
+          phone?: string | null
+          primary_classification?: string | null
+          reactivation_date?: string | null
+          reissue_date?: string | null
+          source_count?: number | null
+          source_urls?: string[] | null
+          state?: string | null
+          updated_at?: string
+          wc_cancellation_date?: string | null
+          wc_company?: string | null
+          wc_effective_date?: string | null
+          wc_policy_number?: string | null
+          wc_status?: string | null
+          years_in_business?: number | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      cf_ingest_runs: {
+        Row: {
+          created_by: string | null
+          error_message: string | null
+          failed_rows: number | null
+          file_name: string | null
+          finished_at: string | null
+          id: string
+          inserted_rows: number | null
+          source: string
+          started_at: string
+          status: string
+          total_rows: number | null
+          updated_rows: number | null
+        }
+        Insert: {
+          created_by?: string | null
+          error_message?: string | null
+          failed_rows?: number | null
+          file_name?: string | null
+          finished_at?: string | null
+          id?: string
+          inserted_rows?: number | null
+          source?: string
+          started_at?: string
+          status?: string
+          total_rows?: number | null
+          updated_rows?: number | null
+        }
+        Update: {
+          created_by?: string | null
+          error_message?: string | null
+          failed_rows?: number | null
+          file_name?: string | null
+          finished_at?: string | null
+          id?: string
+          inserted_rows?: number | null
+          source?: string
+          started_at?: string
+          status?: string
+          total_rows?: number | null
+          updated_rows?: number | null
+        }
+        Relationships: []
+      }
       crm_contacts: {
         Row: {
           company: string | null
