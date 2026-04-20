@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, ChevronDown, Check, X, Sparkles, ShieldAlert, UserCheck, Lightbulb, Zap, Eye, TrendingUp, Activity } from 'lucide-react';
+import { Brain, ChevronDown, Check, X, Sparkles, ShieldAlert, UserCheck, Lightbulb, Zap, Eye, TrendingUp, Activity, LayoutGrid, Shield, Zap as ZapIcon, Users } from 'lucide-react';
 import { FEED_EVENTS, type EventKind } from '../x1Data';
 import { PRIORITY_STYLES } from '../x1Theme';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
 const KIND_META: Record<EventKind, { icon: any; label: string; gradient: string }> = {
