@@ -2,6 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Smartphone, Shield, Activity, X } from 'lucide-react';
 import { PEOPLE, type Person, type PresenceState } from '../x1Data';
+import headshotJon from '../assets/headshot-jon.jpg';
+import headshotSusan from '../assets/headshot-susan.jpg';
+import headshotMaya from '../assets/headshot-maya.jpg';
+
+const HEADSHOTS: Record<string, string> = {
+  'Jon': headshotJon,
+  'Susan': headshotSusan,
+  'Maya': headshotMaya,
+};
 
 const PRESENCE_META: Record<PresenceState, { label: string; dot: string; text: string; soft: string }> = {
   home: { label: 'Home', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
@@ -44,9 +53,19 @@ const PeopleLayer = () => {
               className="group text-left rounded-2xl border border-black/[0.06] bg-white hover:border-black/12 hover:shadow-md p-4 transition-all flex items-center gap-4 shadow-sm"
             >
               <div className="relative flex-shrink-0">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${grad} flex items-center justify-center font-bold text-white text-base shadow-lg`}>
-                  {p.initials}
-                </div>
+                {HEADSHOTS[p.name] ? (
+                  <img
+                    src={HEADSHOTS[p.name]}
+                    alt={p.name}
+                    className="w-14 h-14 rounded-2xl object-cover shadow-lg"
+                    width={56}
+                    height={56}
+                  />
+                ) : (
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${grad} flex items-center justify-center font-bold text-white text-base shadow-lg`}>
+                    {p.initials}
+                  </div>
+                )}
                 <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${pres.dot} ring-[3px] ring-white`} />
               </div>
               <div className="flex-1 min-w-0">
@@ -101,9 +120,19 @@ const PersonDrawer = ({ person, onClose }: { person: Person; onClose: () => void
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-2xl -translate-y-10 translate-x-10" />
             <div className="relative flex items-center gap-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center font-bold text-white text-2xl border border-white/30">
-                  {person.initials}
-                </div>
+                {HEADSHOTS[person.name] ? (
+                  <img
+                    src={HEADSHOTS[person.name]}
+                    alt={person.name}
+                    className="w-20 h-20 rounded-2xl object-cover border border-white/30"
+                    width={80}
+                    height={80}
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center font-bold text-white text-2xl border border-white/30">
+                    {person.initials}
+                  </div>
+                )}
                 <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full ${pres.dot} ring-[3px] ring-white`} />
               </div>
               <div className="text-white">
