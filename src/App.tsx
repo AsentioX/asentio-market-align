@@ -52,6 +52,11 @@ import VibinTripDetail from "./pages/labs/vibin/screens/TripDetail";
 import VibinProfile from "./pages/labs/vibin/screens/Profile";
 import VibinOnboarding from "./pages/labs/vibin/screens/Onboarding";
 import VibinShare from "./pages/labs/vibin/screens/ShareView";
+import ContractorFinderLayout from "./pages/labs/contractor-finder/ContractorFinderLayout";
+import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
+import CFExplore from "./pages/labs/contractor-finder/Explore";
+import CFSegments from "./pages/labs/contractor-finder/Segments";
+import CFPipeline from "./pages/labs/contractor-finder/Pipeline";
 import VisionMission from "./pages/labs/governance/VisionMission";
 import TranscriptUpload from "./pages/labs/governance/TranscriptUpload";
 import PolicyLibrary from "./pages/labs/governance/PolicyLibrary";
@@ -70,7 +75,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -115,6 +120,12 @@ const AppContent = () => {
             <Route path="profile" element={<VibinProfile />} />
             <Route path="onboarding" element={<VibinOnboarding />} />
             <Route path="share/:type/:id" element={<VibinShare />} />
+          </Route>
+          <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
+            <Route index element={<CFDashboard />} />
+            <Route path="explore" element={<CFExplore />} />
+            <Route path="segments" element={<CFSegments />} />
+            <Route path="pipeline" element={<CFPipeline />} />
           </Route>
           <Route path="/labs/aotu" element={<AOTULayout />}>
             <Route index element={<AOTUHome />} />

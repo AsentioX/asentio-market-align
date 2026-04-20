@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -119,6 +119,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Travel', 'Social', 'Mobile'],
     link: '/labs/vibin',
+  },
+  {
+    name: 'Contractor Finder',
+    description: 'B2B contractor discovery and segmentation. Search licensed pros by trade, location, size, and digital maturity. AI-powered natural-language segments.',
+    icon: <HardHat className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Construction', 'Lead Gen', 'AI'],
+    link: '/labs/contractor-finder',
   },
 ];
 
