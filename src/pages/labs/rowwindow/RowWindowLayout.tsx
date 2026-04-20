@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor } from 'lucide-react';
+import { Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   VESSEL_PROFILES,
   VesselProfile,
   TIDE_GREEN_FT,
   TIDE_RED_FT,
+  TidePoint,
+  WindReading,
   assessLaunchWindow,
+  fetchLiveConditions,
   formatCountdown,
   generateMockTideSeries,
   getCurrentTide,
@@ -17,11 +20,20 @@ import {
 } from './tideEngine';
 
 const DURATIONS = [60, 90, 120];
+const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 
 const RowWindowLayout = () => {
   const [now, setNow] = useState<number>(Date.now());
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
+
+  // Live data state — seeded with mock so first paint is instant
+  const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(Date.now()));
+  const [wind, setWind] = useState<WindReading>(() => getMockWind(Date.now()));
+  const [source, setSource] = useState<'noaa' | 'mock'>('mock');
+  const [fetchedAt, setFetchedAt] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Tick every 30s to keep countdowns fresh
   useEffect(() => {
@@ -29,8 +41,30 @@ const RowWindowLayout = () => {
     return () => clearInterval(id);
   }, []);
 
-  const series = useMemo(() => generateMockTideSeries(now), [now]);
-  const wind = useMemo(() => getMockWind(now), [now]);
+  // Live NOAA fetch — initial load + periodic refresh
+  useEffect(() => {
+    const ac = new AbortController();
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      const result = await fetchLiveConditions(Date.now(), ac.signal);
+      if (cancelled) return;
+      setSeries(result.series);
+      setWind(result.wind);
+      setSource(result.source);
+      setFetchError(result.error ?? null);
+      setFetchedAt(Date.now());
+      setLoading(false);
+    };
+    load();
+    const id = setInterval(load, LIVE_REFRESH_MS);
+    return () => {
+      cancelled = true;
+      ac.abort();
+      clearInterval(id);
+    };
+  }, []);
+
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
   const nextTurn = useMemo(() => getNextTurn(series, now), [series, now]);
@@ -73,9 +107,32 @@ const RowWindowLayout = () => {
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-slate-400">Local time</div>
-            <div className="text-sm font-mono text-slate-200">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+          <div className="flex items-center gap-3">
+            <div
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border ${
+                source === 'noaa'
+                  ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-300'
+                  : 'border-amber-400/30 bg-amber-500/10 text-amber-300'
+              }`}
+              title={
+                source === 'noaa'
+                  ? `Live NOAA data${fetchedAt ? ` · updated ${new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}`
+                  : fetchError
+                    ? `NOAA unavailable — using mock model. ${fetchError}`
+                    : 'Mock model'
+              }
+            >
+              {loading ? (
+                <RefreshCw className="w-3 h-3 animate-spin" />
+              ) : (
+                <Radio className={`w-3 h-3 ${source === 'noaa' ? 'animate-pulse' : ''}`} />
+              )}
+              {source === 'noaa' ? 'LIVE · NOAA' : 'MOCK'}
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-slate-400">Local time</div>
+              <div className="text-sm font-mono text-slate-200">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            </div>
           </div>
         </div>
       </header>
@@ -238,7 +295,16 @@ const RowWindowLayout = () => {
             </ResponsiveContainer>
           </div>
           <p className="mt-3 text-[11px] text-slate-500">
-            Mock 24h sinusoidal model. Wire <span className="font-mono text-slate-400">tideEngine.ts</span> to NOAA CO-OPS feed (station 9414523) to go live.
+            {source === 'noaa' ? (
+              <>
+                Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${'9414523'}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-300">NOAA CO-OPS Station 9414523</a> (Redwood City, MLLW datum) · 6-min interval
+                {fetchedAt && <> · refreshed {new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</>}
+              </>
+            ) : (
+              <>
+                NOAA feed unavailable — using mock 24h sinusoidal model.{fetchError ? ` (${fetchError})` : ''}
+              </>
+            )}
           </p>
         </section>
       </main>
