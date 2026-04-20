@@ -6,9 +6,9 @@ import { toast } from 'sonner';
 
 const ICONS = { manual: Eye, assisted: Sparkles, autonomous: Zap } as const;
 const COLORS = {
-  manual: { bg: 'bg-stone-500', ring: 'ring-stone-500', light: 'bg-stone-100', border: 'border-stone-200' },
-  assisted: { bg: 'bg-blue-500', ring: 'ring-blue-500', light: 'bg-blue-50', border: 'border-blue-200' },
-  autonomous: { bg: 'bg-violet-500', ring: 'ring-violet-500', light: 'bg-violet-50', border: 'border-violet-200' },
+  manual: { bg: 'bg-stone-500', ring: 'ring-stone-500', light: 'bg-stone-50', border: 'border-stone-300', text: 'text-stone-600' },
+  assisted: { bg: 'bg-blue-500', ring: 'ring-blue-500', light: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-600' },
+  autonomous: { bg: 'bg-violet-500', ring: 'ring-violet-500', light: 'bg-violet-50', border: 'border-violet-300', text: 'text-violet-700' },
 } as const;
 
 const RECENT_DECISIONS = [
@@ -25,14 +25,14 @@ const AutonomyLayer = () => {
     <div className="space-y-6">
       <div>
         <h2 className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold mb-2">Autonomy & control</h2>
-        <p className="text-[17px] text-stone-700 leading-snug">Decide how much X1 acts on your behalf — and see <span className="text-stone-900 font-semibold">why</span> every decision was made.</p>
+        <p className="text-base sm:text-[17px] text-stone-700 leading-snug">Decide how much X1 acts on your behalf — and see <span className="text-stone-900 font-semibold">why</span> every decision was made.</p>
       </div>
 
       {/* Mode selector — horizontal row of buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-2 sm:gap-3">
         {AUTONOMY_LEVELS.map((level) => {
           const Icon = ICONS[level.value];
-          const grad = GRADIENTS[level.value];
+          const colors = COLORS[level.value];
           const active = mode === level.value;
           return (
             <button
@@ -41,28 +41,35 @@ const AutonomyLayer = () => {
                 setMode(level.value);
                 toast.success(`Autonomy → ${level.label}`, { description: level.description });
               }}
-              className={`relative flex-1 text-left rounded-2xl border p-4 transition-all overflow-hidden ${
+              className={`relative flex-1 text-left rounded-2xl border-2 p-3 sm:p-4 transition-all overflow-hidden ${
                 active
-                  ? 'border-stone-900 bg-white shadow-xl scale-[1.01]'
-                  : 'border-black/[0.06] bg-white hover:border-black/15 hover:shadow-md shadow-sm'
+                  ? `bg-white ring-4 ${colors.ring} ${colors.border}`
+                  : 'bg-stone-50 border-stone-200 hover:border-stone-300 hover:bg-white'
               }`}
             >
-              <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${grad} opacity-12 rounded-full blur-2xl -translate-y-6 translate-x-6`} />
+              {active && (
+                <>
+                  <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${colors.bg} animate-pulse`} />
+                  <div className={`absolute inset-x-0 top-0 h-1 ${colors.bg}`} />
+                </>
+              )}
 
-              <div className="relative flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${grad} flex items-center justify-center shadow-md`}>
-                  <Icon className="w-5 h-5 text-white" strokeWidth={2} />
+              <div className="relative flex items-center gap-2 sm:gap-3">
+                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${colors.bg} flex items-center justify-center shadow-sm ${!active && 'opacity-70'}`}>
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <div className="text-[15px] font-bold text-stone-900 tracking-tight">{level.label}</div>
+                  <div className="flex items-center gap-1.5">
+                    <div className={`text-sm sm:text-[15px] font-bold tracking-tight ${active ? 'text-stone-900' : 'text-stone-600'}`}>
+                      {level.label}
+                    </div>
                     {active && (
-                      <span className="text-[9px] uppercase tracking-wider font-bold text-violet-700 px-2 py-0.5 rounded-full bg-violet-100 border border-violet-200 flex-shrink-0">
-                        Active
+                      <span className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-bold ${colors.text} px-1.5 py-0.5 rounded bg-white border ${colors.border} flex-shrink-0`}>
+                        Selected
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] text-stone-500 mt-0.5 leading-snug truncate">{level.description}</div>
+                  <div className="text-[10px] sm:text-[11px] text-stone-500 mt-0.5 leading-snug truncate hidden sm:block">{level.description}</div>
                 </div>
               </div>
             </button>
@@ -96,7 +103,7 @@ const AutonomyLayer = () => {
         </div>
         <div className="space-y-2">
           {RECENT_DECISIONS.map((d, i) => (
-            <div key={i} className="rounded-2xl border border-black/[0.06] bg-white p-4 flex items-center gap-3.5 shadow-sm hover:shadow-md transition-shadow">
+            <div key={i} className="rounded-2xl border border-black/[0.06] bg-white p-3 sm:p-4 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow">
               <div className={`w-1 self-stretch rounded-full ${
                 d.confidence >= 0.85 ? 'bg-violet-500' : d.confidence >= 0.7 ? 'bg-amber-500' : 'bg-stone-300'
               }`} />
@@ -120,7 +127,7 @@ const AutonomyLayer = () => {
                 onClick={() => toast.success('Override saved', { description: 'X1 will adjust future behavior.' })}
                 className="flex-shrink-0 inline-flex items-center gap-1.5 text-[11px] text-stone-600 hover:text-stone-900 font-semibold px-3 py-1.5 rounded-lg hover:bg-stone-100 transition-colors"
               >
-                <Undo2 className="w-3 h-3" /> Override
+                <Undo2 className="w-3 h-3" /> <span className="hidden sm:inline">Override</span>
               </button>
             </div>
           ))}
