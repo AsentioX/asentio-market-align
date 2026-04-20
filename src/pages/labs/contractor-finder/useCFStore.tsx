@@ -87,12 +87,41 @@ const load = (): PersistedState => {
 
 export function CFProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<PersistedState>(() => load());
+  const [isLoadingDb, setIsLoadingDb] = useState(true);
+  const [dataSource, setDataSource] = useState<'seed' | 'database'>('seed');
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {}
   }, [state]);
+
+  const reloadFromDb = useCallback(async () => {
+    setIsLoadingDb(true);
+    try {
+      const { data, error, count } = await supabase
+        .from('cf_contractors')
+        .select('*', { count: 'exact' })
+        .order('last_verified_date', { ascending: false })
+        .limit(5000);
+      if (!error && data && data.length > 0) {
+        setState((p) => ({ ...p, contractors: data.map(mapDbRow) }));
+        setDataSource('database');
+        console.info(`[CF] Loaded ${data.length} contractors from database (total: ${count})`);
+      } else {
+        setDataSource('seed');
+      }
+    } catch (e) {
+      console.warn('[CF] DB load failed, using seed', e);
+      setDataSource('seed');
+    } finally {
+      setIsLoadingDb(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    reloadFromDb();
+  }, [reloadFromDb]);
 
   const applyFilters = useCallback(
     (f: SegmentFilters): Contractor[] => {
