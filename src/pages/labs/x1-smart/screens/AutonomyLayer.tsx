@@ -5,10 +5,10 @@ import { AUTONOMY_LEVELS, type AutonomyMode } from '../x1Data';
 import { toast } from 'sonner';
 
 const ICONS = { manual: Eye, assisted: Sparkles, autonomous: Zap } as const;
-const GRADIENTS = {
-  manual: 'from-stone-400 via-stone-500 to-stone-600',
-  assisted: 'from-cyan-400 via-blue-500 to-indigo-500',
-  autonomous: 'from-violet-500 via-fuchsia-500 to-pink-500',
+const COLORS = {
+  manual: { bg: 'bg-stone-500', ring: 'ring-stone-500', light: 'bg-stone-100', border: 'border-stone-200' },
+  assisted: { bg: 'bg-blue-500', ring: 'ring-blue-500', light: 'bg-blue-50', border: 'border-blue-200' },
+  autonomous: { bg: 'bg-violet-500', ring: 'ring-violet-500', light: 'bg-violet-50', border: 'border-violet-200' },
 } as const;
 
 const RECENT_DECISIONS = [
