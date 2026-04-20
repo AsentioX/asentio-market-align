@@ -43,16 +43,10 @@ const AutonomyLayer = () => {
               }}
               className={`relative flex-1 text-left rounded-2xl border-2 p-3 sm:p-4 transition-all overflow-hidden ${
                 active
-                  ? `bg-white ring-4 ${colors.ring} ${colors.border}`
+                  ? `bg-white shadow-lg ${colors.ring} ${colors.border}`
                   : 'bg-stone-50 border-stone-200 hover:border-stone-300 hover:bg-white'
               }`}
             >
-              {active && (
-                <>
-                  <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${colors.bg} animate-pulse`} />
-                  <div className={`absolute inset-x-0 top-0 h-1 ${colors.bg}`} />
-                </>
-              )}
 
               <div className="relative flex items-center gap-2 sm:gap-3">
                 <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${colors.bg} flex items-center justify-center shadow-sm ${!active && 'opacity-70'}`}>
