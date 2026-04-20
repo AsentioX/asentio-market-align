@@ -7,6 +7,7 @@ import {
   Sparkles, Loader2, Flag, RefreshCw, BookmarkPlus, Copy, Check
 } from 'lucide-react';
 import { ConfidenceMeter, LicenseStatusBadge, SourceBadgePill, relativeTime } from './Atoms';
+import { formatTrade } from '../tradeLabels';
 import { toast } from 'sonner';
 
 interface AISummary {
@@ -170,7 +171,7 @@ export function ContractorDetailDrawer({ contractor, onClose }: { contractor: Co
           <Section title="Licensing & Insurance">
             <div className="grid grid-cols-2 gap-3 text-xs">
               <KV label="License #" value={contractor.license_number} />
-              <KV label="Classification" value={contractor.license_classification} />
+              <KV label="Classification" value={formatTrade(contractor.license_classification) || contractor.license_classification || '—'} />
               <KV label="Issued" value={contractor.license_issue_date || '—'} />
               <KV label="Expires" value={contractor.license_expiration_date || '—'} />
               <KV label="Bond" value={contractor.bond_status} />
