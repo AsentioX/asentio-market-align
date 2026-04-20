@@ -63,6 +63,40 @@ const TranscriptUpload = () => {
     }, 2500);
   };
 
+  const processWithAI = async () => {
+    if (!file) return;
+    setAiProcessing(true);
+    setAiResult(null);
+    try {
+      const transcript = await file.text();
+      const { data, error } = await supabase.functions.invoke('process-transcript', {
+        body: { transcript },
+      });
+      if (error) throw error;
+      setAiResult({
+        matched: data?.matched_topics?.length ?? 0,
+        insightsAdded: data?.insights_added ?? 0,
+        actionItemsCreated: data?.action_items_created ?? 0,
+      });
+      qc.invalidateQueries({ queryKey: ['gov-policies'] });
+      qc.invalidateQueries({ queryKey: ['gov-action-items'] });
+      qc.invalidateQueries({ queryKey: ['gov-topic-history'] });
+      toast({
+        title: 'Transcript processed',
+        description: `Updated ${data?.matched_topics?.length ?? 0} topics with ${data?.action_items_created ?? 0} new action items.`,
+      });
+    } catch (e: any) {
+      console.error('AI processing error:', e);
+      toast({
+        title: 'AI processing failed',
+        description: e?.message ?? 'Could not process transcript.',
+        variant: 'destructive',
+      });
+    } finally {
+      setAiProcessing(false);
+    }
+  };
+
   const approveCard = (draft: Draft) => {
     addPolicy.mutate({ title: draft.title, summary: draft.summary, context_snippet: draft.context_snippet ?? undefined, status: 'draft' });
     removeDraft.mutate(draft.id);
