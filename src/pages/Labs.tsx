@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -95,6 +95,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Automotive', 'AI', 'Luxury'],
     link: '/labs/tastudio',
+  },
+  {
+    name: 'RowWindow',
+    description: 'Launch-window calculator for rowers at BIAC. Tide forecast, vessel-aware wind thresholds, and chop alerts for safer rows.',
+    icon: <Waves className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Rowing', 'Tides', 'Safety'],
+    link: '/labs/rowwindow',
   },
 ];
 
