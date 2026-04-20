@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useCF } from './useCFStore';
 import { Users, MapPin, Building2, Mail, Globe, Phone, Award, ShieldCheck, TrendingUp, Bookmark, ArrowRight, Sparkles, Activity } from 'lucide-react';
 import { ConfidenceMeter, LicenseStatusBadge, relativeTime } from './components/Atoms';
+import { tradeLabel } from './tradeLabels';
 
 function StatCard({ icon: Icon, label, value, sub, accent }: { icon: any; label: string; value: string; sub?: string; accent: string }) {
   return (
