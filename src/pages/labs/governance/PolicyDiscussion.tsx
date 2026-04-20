@@ -95,7 +95,9 @@ const PolicyDiscussion = () => {
   const deleteProposal = useDeleteProposal();
   const canParticipate = useCanParticipate();
   const { user, isAdmin } = useAuth();
+  const { data: govRole } = useGovRole();
   const { data: members = [] } = useMembers();
+  const canEdit = isAdmin || govRole === 'admin' || govRole === 'team-lead' || govRole === 'member';
 
   // Resolve current user's member name (by user_id or email)
   const currentMember = useMemo(() => {
