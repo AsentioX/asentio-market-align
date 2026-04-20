@@ -2,6 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Smartphone, Shield, Activity, X } from 'lucide-react';
 import { PEOPLE, type Person, type PresenceState } from '../x1Data';
+import headshotJon from '../assets/headshot-jon.jpg';
+import headshotSusan from '../assets/headshot-susan.jpg';
+import headshotMaya from '../assets/headshot-maya.jpg';
+
+const HEADSHOTS: Record<string, string> = {
+  'Jon': headshotJon,
+  'Susan': headshotSusan,
+  'Maya': headshotMaya,
+};
 
 const PRESENCE_META: Record<PresenceState, { label: string; dot: string; text: string; soft: string }> = {
   home: { label: 'Home', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
