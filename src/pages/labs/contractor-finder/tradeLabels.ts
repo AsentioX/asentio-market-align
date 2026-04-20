@@ -86,7 +86,13 @@ export const TRADE_LABELS: Record<string, string> = {
 export function tradeLabel(code: string | null | undefined): string {
   if (!code) return '';
   const upper = code.trim().toUpperCase();
-  return TRADE_LABELS[upper] ?? code;
+  if (TRADE_LABELS[upper]) return TRADE_LABELS[upper];
+  // Tolerate codes without dashes (e.g., "C10" → "C-10", "D03" → "D-03")
+  const dashed = upper.replace(/^([A-Z]+)(\d+)$/, '$1-$2');
+  if (TRADE_LABELS[dashed]) return TRADE_LABELS[dashed];
+  // Try padded variant for D-codes (D-3 → D-03)
+  const padded = dashed.replace(/^([A-Z]+)-(\d)$/, '$1-0$2');
+  return TRADE_LABELS[padded] ?? code;
 }
 
 /** Returns "C-10 · Electrical" or the friendly label alone if no code is provided. */
