@@ -171,113 +171,113 @@ const PolicyDiscussion = () => {
 
           <HistoryThread topicId={policy.id} />
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-        <h2 className="text-xl font-bold text-gray-800">{policy.title}</h2>
-        <p className="text-sm text-gray-500 mt-2">{policy.summary}</p>
-        {policy.context_snippet && (
-          <blockquote className="mt-3 pl-3 border-l-2 border-teal-200 text-xs text-gray-400 italic">
-            {policy.context_snippet}
-          </blockquote>
-        )}
-      </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-gray-800">Comments</h3>
+              {canParticipate && (
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="px-4 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition-colors flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" /> New Comment
+                </button>
+              )}
+            </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">Comments</h3>
-          {canParticipate && (
-            <button
-              onClick={() => setShowForm(true)}
-              className="px-4 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 transition-colors flex items-center gap-1.5"
-            >
-              <Plus className="w-3.5 h-3.5" /> New Comment
-            </button>
-          )}
-        </div>
+            {!canParticipate && (
+              <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+                Community Members have view-only access. Contact an admin to upgrade your role.
+              </p>
+            )}
 
-        {!canParticipate && (
-          <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
-            Community Members have view-only access. Contact an admin to upgrade your role.
-          </p>
-        )}
-
-        {showForm && (
-          <div className="bg-white rounded-xl border border-teal-200 p-5 shadow-sm space-y-3">
-            {currentMember && (
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                {(() => {
-                  const { emoji, bgColor } = parseBgColor(currentMember.avatar);
-                  return (
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${bgColor}`}>{emoji}</span>
-                  );
-                })()}
-                Posting as <span className="font-medium text-gray-700">{currentMember.name}</span>
+            {showForm && (
+              <div className="bg-white rounded-xl border border-teal-200 p-5 shadow-sm space-y-3">
+                {currentMember && (
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    {(() => {
+                      const { emoji, bgColor } = parseBgColor(currentMember.avatar);
+                      return (
+                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${bgColor}`}>{emoji}</span>
+                      );
+                    })()}
+                    Posting as <span className="font-medium text-gray-700">{currentMember.name}</span>
+                  </div>
+                )}
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Comment title…"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <textarea
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  placeholder="Describe your comment…"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <div className="flex gap-2">
+                  <button onClick={handleSubmit} disabled={addProposal.isPending} className="px-4 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium">Submit</button>
+                  <button onClick={() => setShowForm(false)} className="px-4 py-1.5 text-gray-500 text-xs">Cancel</button>
+                </div>
               </div>
             )}
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Comment title…"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <textarea
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              placeholder="Describe your comment…"
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <div className="flex gap-2">
-              <button onClick={handleSubmit} disabled={addProposal.isPending} className="px-4 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium">Submit</button>
-              <button onClick={() => setShowForm(false)} className="px-4 py-1.5 text-gray-500 text-xs">Cancel</button>
-            </div>
-          </div>
-        )}
 
-        {sortedProposals.length === 0 && !showForm && (
-          <p className="text-sm text-gray-400 py-6 text-center">No comments yet. Start the conversation!</p>
-        )}
+            {sortedProposals.length === 0 && !showForm && (
+              <p className="text-sm text-gray-400 py-6 text-center">No comments yet. Start the conversation!</p>
+            )}
 
-        {sortedProposals.map((proposal) => {
-          const member = getMemberByName(proposal.author);
-          const avatarInfo = member ? parseBgColor(member.avatar) : null;
+            {sortedProposals.map((proposal) => {
+              const member = getMemberByName(proposal.author);
+              const avatarInfo = member ? parseBgColor(member.avatar) : null;
 
-          return (
-            <div key={proposal.id} className="bg-white rounded-xl border-2 border-gray-200 p-5 shadow-sm">
-              <div className="flex items-start gap-3 mb-2">
-                {avatarInfo ? (
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center text-lg flex-shrink-0 ${avatarInfo.bgColor}`}>
-                    {avatarInfo.emoji}
-                  </span>
-                ) : (
-                  <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-500 flex-shrink-0">
-                    {proposal.author.charAt(0).toUpperCase()}
-                  </span>
-                )}
-                <div className="flex-1">
-                  <h4 className="font-semibold text-gray-800">{proposal.title}</h4>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    by <span className="font-medium text-gray-600">{proposal.author}</span>
-                    {member && <span className="ml-1 text-gray-300">· {member.role}</span>}
-                  </p>
+              return (
+                <div key={proposal.id} className="bg-white rounded-xl border-2 border-gray-200 p-5 shadow-sm">
+                  <div className="flex items-start gap-3 mb-2">
+                    {avatarInfo ? (
+                      <span className={`w-8 h-8 rounded-full flex items-center justify-center text-lg flex-shrink-0 ${avatarInfo.bgColor}`}>
+                        {avatarInfo.emoji}
+                      </span>
+                    ) : (
+                      <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-500 flex-shrink-0">
+                        {proposal.author.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-800">{proposal.title}</h4>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        by <span className="font-medium text-gray-600">{proposal.author}</span>
+                        {member && <span className="ml-1 text-gray-300">· {member.role}</span>}
+                      </p>
+                    </div>
+                    {((user && proposal.created_by === user.id) || isAdmin) && (
+                      <button
+                        onClick={() => deleteProposal.mutate({ proposalId: proposal.id, policyId: policy.id })}
+                        disabled={deleteProposal.isPending}
+                        className="text-gray-300 hover:text-red-500 transition-colors p-1 flex-shrink-0"
+                        title="Delete comment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  {proposal.description && <p className="text-sm text-gray-600 mb-4 ml-11">{proposal.description}</p>}
+                  <div className="ml-11">
+                    <ProposalVotes proposalId={proposal.id} canParticipate={canParticipate} isVotingMode={!!policy.voting_start && !policy.passed_at} />
+                  </div>
                 </div>
-                {((user && proposal.created_by === user.id) || isAdmin) && (
-                  <button
-                    onClick={() => deleteProposal.mutate({ proposalId: proposal.id, policyId: policy.id })}
-                    disabled={deleteProposal.isPending}
-                    className="text-gray-300 hover:text-red-500 transition-colors p-1 flex-shrink-0"
-                    title="Delete comment"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              {proposal.description && <p className="text-sm text-gray-600 mb-4 ml-11">{proposal.description}</p>}
-              <div className="ml-11">
-                <ProposalVotes proposalId={proposal.id} canParticipate={canParticipate} isVotingMode={!!policy.voting_start && !policy.passed_at} />
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        </div>
+
+        <PitCrewSidebar
+          topicId={policy.id}
+          ownerId={policy.owner_id ?? null}
+          vibe={policy.vibe ?? null}
+          elephant={policy.elephant_in_room ?? null}
+          canEdit={canEdit}
+        />
       </div>
     </div>
   );
