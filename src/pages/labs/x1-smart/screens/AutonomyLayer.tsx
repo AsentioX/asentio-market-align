@@ -53,17 +53,12 @@ const AutonomyLayer = () => {
                   <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <div className={`text-sm sm:text-[15px] font-bold tracking-tight ${active ? 'text-stone-900' : 'text-stone-600'}`}>
-                      {level.label}
-                    </div>
-                    {active && (
-                      <span className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-bold ${colors.text} px-1.5 py-0.5 rounded bg-white border ${colors.border} flex-shrink-0`}>
-                        Selected
-                      </span>
-                    )}
+                  <div className="text-sm sm:text-[15px] font-bold tracking-tight ${active ? 'text-stone-900' : 'text-stone-600'}">
+                    {level.label}
                   </div>
                   <div className="text-[10px] sm:text-[11px] text-stone-500 mt-0.5 leading-snug truncate hidden sm:block">{level.description}</div>
+                </div>
+              </div>
                 </div>
               </div>
             </button>
