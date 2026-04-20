@@ -203,8 +203,8 @@ export function CFProvider({ children }: { children: ReactNode }) {
     }));
 
   const value = useMemo<CFStore>(
-    () => ({ ...state, saveSegment, deleteSegment, updateSegment, addToSegment, removeFromSegment, flagContractor, refreshContractor, applyFilters }),
-    [state, applyFilters]
+    () => ({ ...state, isLoadingDb, dataSource, reloadFromDb, saveSegment, deleteSegment, updateSegment, addToSegment, removeFromSegment, flagContractor, refreshContractor, applyFilters }),
+    [state, isLoadingDb, dataSource, reloadFromDb, applyFilters]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
