@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 const ICONS = { manual: Eye, assisted: Sparkles, autonomous: Zap } as const;
 const COLORS = {
-  manual: { bg: 'bg-stone-500', ring: 'ring-stone-500', light: 'bg-stone-50', border: 'border-stone-300', text: 'text-stone-600' },
+  manual: { bg: 'bg-indigo-600', ring: 'ring-indigo-500', light: 'bg-indigo-50', border: 'border-indigo-300', text: 'text-indigo-700' },
   assisted: { bg: 'bg-blue-500', ring: 'ring-blue-500', light: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-600' },
   autonomous: { bg: 'bg-violet-500', ring: 'ring-violet-500', light: 'bg-violet-50', border: 'border-violet-300', text: 'text-violet-700' },
 } as const;
