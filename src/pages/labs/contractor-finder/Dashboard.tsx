@@ -144,7 +144,12 @@ export default function Dashboard() {
               const pct = (count / max) * 100;
               return (
                 <div key={type} className="flex items-center gap-3">
-                  <div className="w-44 text-xs font-medium truncate">{type}</div>
+                  <div className="w-44 text-xs font-medium truncate" title={tradeLabel(type)}>
+                    <span className="font-mono">{type}</span>
+                    {tradeLabel(type) !== type && (
+                      <span style={{ color: 'hsl(var(--cf-text-muted))' }}> · {tradeLabel(type)}</span>
+                    )}
+                  </div>
                   <div className="flex-1 h-7 rounded-md relative overflow-hidden" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
                     <div
                       className="h-full rounded-md flex items-center px-2 text-xs font-semibold text-white"
