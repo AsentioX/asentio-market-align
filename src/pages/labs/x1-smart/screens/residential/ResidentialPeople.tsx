@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Smartphone, Shield, Activity, X, Clock, Zap } from 'lucide-react';
-import { RES_PEOPLE, type ResPerson, type ResPresence } from '../residentialData';
+import { RES_PEOPLE, type ResPerson, type ResPresence } from '../../residentialData';
 import headshotJon from '../assets/headshot-jon.jpg';
 import headshotSusan from '../assets/headshot-susan.jpg';
 import headshotMaya from '../assets/headshot-maya.jpg';
