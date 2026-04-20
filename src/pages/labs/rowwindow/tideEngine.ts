@@ -176,3 +176,127 @@ export function getMockWind(now = Date.now()): WindReading {
   ];
   return presets[hour % presets.length];
 }
+
+// =====================================================================
+// LIVE NOAA CO-OPS INTEGRATION
+// Station 9414523 — Redwood City, San Francisco Bay
+// API docs: https://api.tidesandcurrents.noaa.gov/api/prod/
+// CORS-enabled, no auth required.
+// =====================================================================
+
+export const NOAA_STATION_ID = '9414523';
+const NOAA_BASE = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
+
+// Wind station near BIAC — Redwood City has no wind sensor, so use
+// 9414750 (Alameda) as the closest South Bay meteorological station.
+export const NOAA_WIND_STATION_ID = '9414750';
+
+function fmtNoaaDate(d: Date): string {
+  // yyyyMMdd HH:mm — NOAA expects this format with a space (URL-encode later)
+  const yyyy = d.getUTCFullYear();
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const mi = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${yyyy}${mm}${dd} ${hh}:${mi}`;
+}
+
+function degToCompass(deg: number): string {
+  const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  const idx = Math.round(((deg % 360) / 22.5)) % 16;
+  return dirs[idx];
+}
+
+/**
+ * Fetch high-resolution tide PREDICTIONS from NOAA for a window around `now`.
+ * Returns 6-minute interval points in feet (MLLW datum).
+ */
+export async function fetchNoaaTideSeries(
+  centerMs = Date.now(),
+  hoursBefore = 6,
+  hoursAfter = 18,
+  signal?: AbortSignal,
+): Promise<TidePoint[]> {
+  const begin = new Date(centerMs - hoursBefore * 3600_000);
+  const end = new Date(centerMs + hoursAfter * 3600_000);
+  const params = new URLSearchParams({
+    product: 'predictions',
+    application: 'RowWindow_BIAC',
+    begin_date: fmtNoaaDate(begin),
+    end_date: fmtNoaaDate(end),
+    datum: 'MLLW',
+    station: NOAA_STATION_ID,
+    time_zone: 'gmt',
+    units: 'english',
+    interval: '6', // 6-min high-res
+    format: 'json',
+  });
+  const res = await fetch(`${NOAA_BASE}?${params.toString()}`, { signal });
+  if (!res.ok) throw new Error(`NOAA tide fetch failed: ${res.status}`);
+  const json = await res.json();
+  if (!json?.predictions || !Array.isArray(json.predictions)) {
+    throw new Error('NOAA tide response malformed');
+  }
+  return json.predictions.map((p: { t: string; v: string }) => ({
+    // NOAA returns "YYYY-MM-DD HH:mm" in GMT — append Z to parse as UTC
+    t: new Date(p.t.replace(' ', 'T') + 'Z').getTime(),
+    height: Number(Number(p.v).toFixed(2)),
+  }));
+}
+
+/**
+ * Fetch latest observed wind from NOAA met station.
+ * Returns null if station has no recent data (some stations are tide-only).
+ */
+export async function fetchNoaaWind(signal?: AbortSignal): Promise<WindReading | null> {
+  const params = new URLSearchParams({
+    product: 'wind',
+    application: 'RowWindow_BIAC',
+    date: 'latest',
+    station: NOAA_WIND_STATION_ID,
+    time_zone: 'gmt',
+    units: 'english', // wind speed in knots
+    format: 'json',
+  });
+  const res = await fetch(`${NOAA_BASE}?${params.toString()}`, { signal });
+  if (!res.ok) throw new Error(`NOAA wind fetch failed: ${res.status}`);
+  const json = await res.json();
+  const obs = json?.data?.[0];
+  if (!obs) return null;
+  const speedKnots = Number(obs.s);
+  const directionDeg = Number(obs.d);
+  if (!Number.isFinite(speedKnots) || !Number.isFinite(directionDeg)) return null;
+  return {
+    speedKnots: Number(speedKnots.toFixed(1)),
+    directionDeg,
+    directionLabel: typeof obs.dr === 'string' && obs.dr.trim() ? obs.dr.trim() : degToCompass(directionDeg),
+  };
+}
+
+/**
+ * Convenience: fetch live tide + wind in parallel, with mock fallback.
+ * Always resolves — never throws — so the UI stays responsive.
+ */
+export async function fetchLiveConditions(
+  centerMs = Date.now(),
+  signal?: AbortSignal,
+): Promise<{ series: TidePoint[]; wind: WindReading; source: 'noaa' | 'mock'; error?: string }> {
+  try {
+    const [series, wind] = await Promise.all([
+      fetchNoaaTideSeries(centerMs, 6, 18, signal),
+      fetchNoaaWind(signal).catch(() => null),
+    ]);
+    return {
+      series,
+      wind: wind ?? getMockWind(centerMs),
+      source: 'noaa',
+    };
+  } catch (err) {
+    return {
+      series: generateMockTideSeries(centerMs),
+      wind: getMockWind(centerMs),
+      source: 'mock',
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
