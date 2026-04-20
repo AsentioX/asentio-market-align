@@ -17,6 +17,11 @@ export interface Policy {
   passed_at: string | null;
   category: string | null;
   parent_id: string | null;
+  owner_id: string | null;
+  priority: number;
+  vibe: string | null;
+  elephant_in_room: string | null;
+  last_discussed_at: string | null;
 }
 
 export interface Proposal {

@@ -243,6 +243,59 @@ export type Database = {
           },
         ]
       }
+      gov_action_items: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          deadline: string | null
+          driver_id: string | null
+          friction_point: string | null
+          id: string
+          is_completed: boolean
+          outcome: string | null
+          task_description: string
+          topic_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          driver_id?: string | null
+          friction_point?: string | null
+          id?: string
+          is_completed?: boolean
+          outcome?: string | null
+          task_description: string
+          topic_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          driver_id?: string | null
+          friction_point?: string | null
+          id?: string
+          is_completed?: boolean
+          outcome?: string | null
+          task_description?: string
+          topic_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_action_items_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gov_docket_items: {
         Row: {
           added_by: string | null
@@ -379,13 +432,18 @@ export type Database = {
           context_snippet: string | null
           created_at: string
           created_by: string | null
+          elephant_in_room: string | null
           id: string
+          last_discussed_at: string | null
+          owner_id: string | null
           parent_id: string | null
           passed_at: string | null
+          priority: number
           status: Database["public"]["Enums"]["gov_policy_status"]
           summary: string
           title: string
           updated_at: string
+          vibe: string | null
           voting_deadline: string | null
           voting_start: string | null
         }
@@ -394,13 +452,18 @@ export type Database = {
           context_snippet?: string | null
           created_at?: string
           created_by?: string | null
+          elephant_in_room?: string | null
           id?: string
+          last_discussed_at?: string | null
+          owner_id?: string | null
           parent_id?: string | null
           passed_at?: string | null
+          priority?: number
           status?: Database["public"]["Enums"]["gov_policy_status"]
           summary: string
           title: string
           updated_at?: string
+          vibe?: string | null
           voting_deadline?: string | null
           voting_start?: string | null
         }
@@ -409,13 +472,18 @@ export type Database = {
           context_snippet?: string | null
           created_at?: string
           created_by?: string | null
+          elephant_in_room?: string | null
           id?: string
+          last_discussed_at?: string | null
+          owner_id?: string | null
           parent_id?: string | null
           passed_at?: string | null
+          priority?: number
           status?: Database["public"]["Enums"]["gov_policy_status"]
           summary?: string
           title?: string
           updated_at?: string
+          vibe?: string | null
           voting_deadline?: string | null
           voting_start?: string | null
         }
@@ -551,6 +619,125 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      gov_topic_assignees: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          id: string
+          member_id: string
+          role: string
+          topic_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          member_id: string
+          role?: string
+          topic_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          member_id?: string
+          role?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_topic_assignees_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "gov_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gov_topic_assignees_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gov_topic_history: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json
+          topic_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json
+          topic_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_topic_history_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gov_topic_relations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          related_topic_id: string
+          relation_type: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          related_topic_id: string
+          relation_type?: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          related_topic_id?: string
+          relation_type?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gov_topic_relations_related_topic_id_fkey"
+            columns: ["related_topic_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gov_topic_relations_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "gov_policies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gov_vision_comment_votes: {
         Row: {
