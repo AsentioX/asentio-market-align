@@ -55,7 +55,7 @@ const AutonomyLayer = () => {
                   <div className={`text-sm sm:text-[15px] font-bold tracking-tight ${active ? 'text-stone-900' : 'text-stone-600'}`}>
                     {level.label}
                   </div>
-                  <div className="text-[10px] sm:text-[11px] text-stone-500 mt-0.5 leading-snug truncate hidden sm:block">{level.description}</div>
+                  <div className="text-[10px] sm:text-[11px] text-stone-500 mt-0.5 leading-snug hidden sm:block line-clamp-2">{level.description}</div>
                 </div>
               </div>
             </button>
