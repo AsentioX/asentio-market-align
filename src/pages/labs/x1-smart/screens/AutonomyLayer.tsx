@@ -28,8 +28,8 @@ const AutonomyLayer = () => {
         <p className="text-[17px] text-stone-700 leading-snug">Decide how much X1 acts on your behalf — and see <span className="text-stone-900 font-semibold">why</span> every decision was made.</p>
       </div>
 
-      {/* Mode selector — bold visual cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      {/* Mode selector — horizontal row of buttons */}
+      <div className="flex gap-3">
         {AUTONOMY_LEVELS.map((level) => {
           const Icon = ICONS[level.value];
           const grad = GRADIENTS[level.value];
@@ -41,26 +41,30 @@ const AutonomyLayer = () => {
                 setMode(level.value);
                 toast.success(`Autonomy → ${level.label}`, { description: level.description });
               }}
-              className={`relative text-left rounded-3xl border p-5 transition-all overflow-hidden ${
+              className={`relative flex-1 text-left rounded-2xl border p-4 transition-all overflow-hidden ${
                 active
-                  ? 'border-stone-900 bg-white shadow-xl scale-[1.02]'
+                  ? 'border-stone-900 bg-white shadow-xl scale-[1.01]'
                   : 'border-black/[0.06] bg-white hover:border-black/15 hover:shadow-md shadow-sm'
               }`}
             >
-              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${grad} opacity-15 rounded-full blur-2xl -translate-y-8 translate-x-8`} />
+              <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${grad} opacity-12 rounded-full blur-2xl -translate-y-6 translate-x-6`} />
 
-              <div className="relative flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${grad} flex items-center justify-center shadow-lg`}>
-                  <Icon className="w-6 h-6 text-white" strokeWidth={2} />
+              <div className="relative flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${grad} flex items-center justify-center shadow-md`}>
+                  <Icon className="w-5 h-5 text-white" strokeWidth={2} />
                 </div>
-                {active && (
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-violet-700 px-2.5 py-1 rounded-full bg-violet-100 border border-violet-200">
-                    Active
-                  </span>
-                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="text-[15px] font-bold text-stone-900 tracking-tight">{level.label}</div>
+                    {active && (
+                      <span className="text-[9px] uppercase tracking-wider font-bold text-violet-700 px-2 py-0.5 rounded-full bg-violet-100 border border-violet-200 flex-shrink-0">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-stone-500 mt-0.5 leading-snug truncate">{level.description}</div>
+                </div>
               </div>
-              <div className="relative text-lg font-bold text-stone-900 tracking-tight">{level.label}</div>
-              <div className="relative text-[12px] text-stone-600 mt-1.5 leading-relaxed">{level.description}</div>
             </button>
           );
         })}
