@@ -174,7 +174,7 @@ export default function Pipeline() {
           }}
         >
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: dataSource === 'database' ? 'hsl(var(--cf-success))' : 'hsl(var(--cf-warning))' }} />
-          {dataSource === 'database' ? 'Live data' : 'Demo data (no ingest yet)'}
+          {dataSource === 'database' ? 'Live data' : 'No data yet — upload CSLB file below'}
         </div>
       </div>
 
