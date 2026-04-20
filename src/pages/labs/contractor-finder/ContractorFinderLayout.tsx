@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Outlet, NavLink, Link } from 'react-router-dom';
-import { LayoutDashboard, Search, Bookmark, Database, HardHat, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Search, Bookmark, Database, HardHat, Sparkles, BookOpen } from 'lucide-react';
 import { CFProvider } from './useCFStore';
 import { cfTheme } from './cfTheme';
+import { TradeLegendModal } from './components/TradeLegendModal';
 
 const navItems = [
   { to: '/labs/contractor-finder', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -11,6 +13,7 @@ const navItems = [
 ];
 
 export default function ContractorFinderLayout() {
+  const [showLegend, setShowLegend] = useState(false);
   return (
     <CFProvider>
       <div
@@ -68,6 +71,18 @@ export default function ContractorFinderLayout() {
               </nav>
 
               <div className="ml-auto flex items-center gap-3">
+                <button
+                  onClick={() => setShowLegend(true)}
+                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md transition-colors hover:bg-[hsl(var(--cf-surface-alt))]"
+                  style={{
+                    border: '1px solid hsl(var(--cf-border))',
+                    color: 'hsl(var(--cf-text-muted))',
+                  }}
+                  title="View CSLB trade code legend"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Trade Codes
+                </button>
                 <div
                   className="hidden md:flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full"
                   style={{
@@ -109,6 +124,7 @@ export default function ContractorFinderLayout() {
             </div>
           </footer>
         </div>
+        {showLegend && <TradeLegendModal onClose={() => setShowLegend(false)} />}
       </div>
     </CFProvider>
   );
