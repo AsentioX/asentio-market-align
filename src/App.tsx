@@ -53,6 +53,7 @@ import VibinProfile from "./pages/labs/vibin/screens/Profile";
 import VibinOnboarding from "./pages/labs/vibin/screens/Onboarding";
 import VibinShare from "./pages/labs/vibin/screens/ShareView";
 import ContractorFinderLayout from "./pages/labs/contractor-finder/ContractorFinderLayout";
+import X1SmartLayout from "./pages/labs/x1-smart/X1SmartLayout";
 import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
 import CFExplore from "./pages/labs/contractor-finder/Explore";
 import CFSegments from "./pages/labs/contractor-finder/Segments";
@@ -75,7 +76,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -121,6 +122,7 @@ const AppContent = () => {
             <Route path="onboarding" element={<VibinOnboarding />} />
             <Route path="share/:type/:id" element={<VibinShare />} />
           </Route>
+          <Route path="/labs/x1-smart" element={<X1SmartLayout />} />
           <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
             <Route index element={<CFDashboard />} />
             <Route path="explore" element={<CFExplore />} />
