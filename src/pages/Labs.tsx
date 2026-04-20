@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -111,6 +111,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Edge AI', 'Computer Vision', 'Enterprise'],
     link: '/labs/aotu',
+  },
+  {
+    name: 'Vibin',
+    description: 'Social travel curation. Create visual cards of places, build deck itineraries, and remix friends\' trips on the fly.',
+    icon: <MapPin className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Travel', 'Social', 'Mobile'],
+    link: '/labs/vibin',
   },
 ];
 
