@@ -15,9 +15,27 @@ const KIND_META: Record<EventKind, { icon: any; label: string; gradient: string 
   anomaly: { icon: Eye, label: 'Anomaly', gradient: 'from-rose-400 to-red-500' },
 };
 
+type CategoryTab = 'all' | 'security' | 'identity' | 'automation';
+
+const CATEGORY_META: Record<CategoryTab, { icon: any; label: string }> = {
+  all: { icon: LayoutGrid, label: 'All' },
+  security: { icon: Shield, label: 'Security' },
+  identity: { icon: Users, label: 'Identity' },
+  automation: { icon: ZapIcon, label: 'Automation' },
+};
+
 const IntelligenceFeed = () => {
   const [expanded, setExpanded] = useState<string | null>(FEED_EVENTS[0]?.id ?? null);
   const [resolved, setResolved] = useState<Record<string, 'approved' | 'dismissed'>>({});
+  const [activeTab, setActiveTab] = useState<CategoryTab>('all');
+
+  const filteredEvents = useMemo(() => {
+    if (activeTab === 'all') return FEED_EVENTS;
+    if (activeTab === 'security') return FEED_EVENTS.filter(e => e.kind === 'security' || e.kind === 'anomaly');
+    if (activeTab === 'identity') return FEED_EVENTS.filter(e => e.kind === 'identity');
+    if (activeTab === 'automation') return FEED_EVENTS.filter(e => e.kind === 'action' || e.kind === 'suggestion' || e.kind === 'insight');
+    return FEED_EVENTS;
+  }, [activeTab]);
 
   const handle = (id: string, action: 'approved' | 'dismissed', label: string) => {
     setResolved((r) => ({ ...r, [id]: action }));
@@ -55,8 +73,38 @@ const IntelligenceFeed = () => {
         </div>
       </div>
 
+      {/* Category Tabs */}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CategoryTab)} className="w-full">
+        <TabsList className="w-full bg-stone-100/80 p-1 h-auto flex">
+          {(Object.keys(CATEGORY_META) as CategoryTab[]).map((key) => {
+            const { icon: Icon, label } = CATEGORY_META[key];
+            const isActive = activeTab === key;
+            return (
+              <TabsTrigger
+                key={key}
+                value={key}
+                className={`
+                  flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-medium rounded-lg transition-all
+                  data-[state=active]:bg-white data-[state=active]:text-stone-900 data-[state=active]:shadow-sm
+                  data-[state=inactive]:text-stone-500 data-[state=inactive]:hover:text-stone-700
+                `}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-600' : 'text-stone-400'}`} />
+                <span className="hidden sm:inline">{label}</span>
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+      </Tabs>
+
+      {/* Live feed header with count */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold">Live feed</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold">Live feed</h2>
+          <span className="text-[11px] text-stone-400 bg-stone-100 rounded-full px-2 py-0.5">
+            {filteredEvents.length}
+          </span>
+        </div>
         <div className="flex items-center gap-1.5 text-[11px] text-stone-500 bg-white border border-black/[0.06] rounded-full px-2.5 py-1">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="font-medium">Streaming</span>
@@ -64,8 +112,16 @@ const IntelligenceFeed = () => {
       </div>
 
       {/* Event cards */}
-      <div className="space-y-3">
-        {FEED_EVENTS.map((event) => {
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="space-y-3"
+        >
+          {filteredEvents.map((event) => {
           const isExpanded = expanded === event.id;
           const status = resolved[event.id];
           const p = PRIORITY_STYLES[event.priority];
