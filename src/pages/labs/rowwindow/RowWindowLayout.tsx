@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor } from 'lucide-react';
+import { Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   VESSEL_PROFILES,
   VesselProfile,
   TIDE_GREEN_FT,
   TIDE_RED_FT,
+  TidePoint,
+  WindReading,
   assessLaunchWindow,
+  fetchLiveConditions,
   formatCountdown,
   generateMockTideSeries,
   getCurrentTide,
@@ -17,11 +20,20 @@ import {
 } from './tideEngine';
 
 const DURATIONS = [60, 90, 120];
+const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 
 const RowWindowLayout = () => {
   const [now, setNow] = useState<number>(Date.now());
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
+
+  // Live data state — seeded with mock so first paint is instant
+  const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(Date.now()));
+  const [wind, setWind] = useState<WindReading>(() => getMockWind(Date.now()));
+  const [source, setSource] = useState<'noaa' | 'mock'>('mock');
+  const [fetchedAt, setFetchedAt] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Tick every 30s to keep countdowns fresh
   useEffect(() => {
@@ -29,8 +41,30 @@ const RowWindowLayout = () => {
     return () => clearInterval(id);
   }, []);
 
-  const series = useMemo(() => generateMockTideSeries(now), [now]);
-  const wind = useMemo(() => getMockWind(now), [now]);
+  // Live NOAA fetch — initial load + periodic refresh
+  useEffect(() => {
+    const ac = new AbortController();
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      const result = await fetchLiveConditions(Date.now(), ac.signal);
+      if (cancelled) return;
+      setSeries(result.series);
+      setWind(result.wind);
+      setSource(result.source);
+      setFetchError(result.error ?? null);
+      setFetchedAt(Date.now());
+      setLoading(false);
+    };
+    load();
+    const id = setInterval(load, LIVE_REFRESH_MS);
+    return () => {
+      cancelled = true;
+      ac.abort();
+      clearInterval(id);
+    };
+  }, []);
+
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
   const nextTurn = useMemo(() => getNextTurn(series, now), [series, now]);
