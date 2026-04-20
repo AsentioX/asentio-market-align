@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { Contractor, SavedSegment, SegmentFilters, ContractorType, CompanySize, BusinessMaturity, LicenseStatus, SourceBadge } from './types';
-import { seedContractors, seedSegments } from './seedData';
 import { supabase } from '@/integrations/supabase/client';
 
 const STORAGE_KEY = 'cf:v1';
@@ -13,7 +12,7 @@ interface PersistedState {
 
 interface CFStore extends PersistedState {
   isLoadingDb: boolean;
-  dataSource: 'seed' | 'database';
+  dataSource: 'empty' | 'database';
   reloadFromDb: () => Promise<void>;
   saveSegment: (s: Omit<SavedSegment, 'id' | 'created_at'>) => SavedSegment;
   deleteSegment: (id: string) => void;
@@ -69,30 +68,35 @@ function mapDbRow(r: any): Contractor {
 
 const Ctx = createContext<CFStore | null>(null);
 
+const EMPTY_STATE: PersistedState = { contractors: [], segments: [], flagged: [] };
+
 const load = (): PersistedState => {
-  if (typeof window === 'undefined') return { contractors: seedContractors, segments: seedSegments, flagged: [] };
+  if (typeof window === 'undefined') return EMPTY_STATE;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { contractors: seedContractors, segments: seedSegments, flagged: [] };
+    if (!raw) return EMPTY_STATE;
     const parsed = JSON.parse(raw) as PersistedState;
+    // Never restore stale contractors from localStorage — always pull fresh from DB.
     return {
-      contractors: parsed.contractors?.length ? parsed.contractors : seedContractors,
-      segments: parsed.segments ?? seedSegments,
+      contractors: [],
+      segments: parsed.segments ?? [],
       flagged: parsed.flagged ?? [],
     };
   } catch {
-    return { contractors: seedContractors, segments: seedSegments, flagged: [] };
+    return EMPTY_STATE;
   }
 };
 
 export function CFProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<PersistedState>(() => load());
   const [isLoadingDb, setIsLoadingDb] = useState(true);
-  const [dataSource, setDataSource] = useState<'seed' | 'database'>('seed');
+  const [dataSource, setDataSource] = useState<'empty' | 'database'>('empty');
 
   useEffect(() => {
+    // Persist segments & flagged only — contractors come from DB.
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const { segments, flagged } = state;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ contractors: [], segments, flagged }));
     } catch {}
   }, [state]);
 
@@ -104,16 +108,18 @@ export function CFProvider({ children }: { children: ReactNode }) {
         .select('*', { count: 'exact' })
         .order('last_verified_date', { ascending: false })
         .limit(5000);
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         setState((p) => ({ ...p, contractors: data.map(mapDbRow) }));
-        setDataSource('database');
+        setDataSource(data.length > 0 ? 'database' : 'empty');
         console.info(`[CF] Loaded ${data.length} contractors from database (total: ${count})`);
       } else {
-        setDataSource('seed');
+        setState((p) => ({ ...p, contractors: [] }));
+        setDataSource('empty');
       }
     } catch (e) {
-      console.warn('[CF] DB load failed, using seed', e);
-      setDataSource('seed');
+      console.warn('[CF] DB load failed', e);
+      setState((p) => ({ ...p, contractors: [] }));
+      setDataSource('empty');
     } finally {
       setIsLoadingDb(false);
     }
