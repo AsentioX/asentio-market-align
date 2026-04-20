@@ -1,53 +1,47 @@
-// X1 Smart design tokens — calm, confident, intelligent
-// Apple Home + Tesla Autopilot + Verkada inspiration
+// X1 Smart design tokens — light, modern, graphical
+// Apple Home + Linear + Arc Browser inspiration
 
 export const X1_THEME = {
-  // Surfaces
-  bg: 'bg-[#0a0e14]', // deep near-black with cool tint
-  bgGradient: 'bg-gradient-to-b from-[#0a0e14] via-[#0d1220] to-[#0a0e14]',
-  surface: 'bg-white/[0.03]',
-  surfaceHover: 'hover:bg-white/[0.06]',
-  surfaceElevated: 'bg-white/[0.05]',
-  border: 'border-white/[0.08]',
-  borderStrong: 'border-white/[0.14]',
+  // Surfaces — warm off-white with subtle depth
+  bg: 'bg-[#fafaf7]',
+  bgGradient: 'bg-gradient-to-b from-[#fafaf7] via-[#f4f4ee] to-[#eef0e9]',
+  surface: 'bg-white',
+  surfaceHover: 'hover:bg-white',
+  surfaceElevated: 'bg-white',
+  border: 'border-black/[0.06]',
+  borderStrong: 'border-black/[0.12]',
 
   // Text
-  text: 'text-white',
-  textMuted: 'text-white/60',
-  textDim: 'text-white/40',
+  text: 'text-[#0a0a0a]',
+  textMuted: 'text-[#0a0a0a]/60',
+  textDim: 'text-[#0a0a0a]/40',
 
-  // Accents — confident teal/cyan = "intelligence"
-  accent: 'text-cyan-300',
-  accentBg: 'bg-cyan-400',
-  accentSoft: 'bg-cyan-400/10',
-  accentBorder: 'border-cyan-400/30',
-  accentGlow: 'shadow-[0_0_24px_-4px_rgba(34,211,238,0.4)]',
-
-  // Priority colors
-  critical: 'text-red-400',
-  criticalBg: 'bg-red-500/10',
-  criticalBorder: 'border-red-500/30',
-  high: 'text-amber-300',
-  highBg: 'bg-amber-400/10',
-  highBorder: 'border-amber-400/25',
-  normal: 'text-cyan-300',
-  normalBg: 'bg-cyan-400/10',
-  normalBorder: 'border-cyan-400/25',
-  low: 'text-white/50',
-  lowBg: 'bg-white/[0.04]',
-  lowBorder: 'border-white/10',
+  // Accent — confident indigo/violet = "intelligence"
+  accent: 'text-indigo-600',
+  accentBg: 'bg-indigo-600',
+  accentSoft: 'bg-indigo-500/10',
+  accentBorder: 'border-indigo-500/30',
 } as const;
 
 export const PRIORITY_STYLES = {
-  critical: { dot: 'bg-red-400', glow: 'shadow-[0_0_12px_rgba(248,113,113,0.6)]', text: 'text-red-300', ring: 'ring-red-400/40' },
-  high: { dot: 'bg-amber-300', glow: 'shadow-[0_0_10px_rgba(252,211,77,0.5)]', text: 'text-amber-200', ring: 'ring-amber-400/30' },
-  normal: { dot: 'bg-cyan-300', glow: 'shadow-[0_0_8px_rgba(103,232,249,0.4)]', text: 'text-cyan-200', ring: 'ring-cyan-400/30' },
-  low: { dot: 'bg-white/30', glow: '', text: 'text-white/50', ring: 'ring-white/10' },
+  critical: { dot: 'bg-rose-500', glow: 'shadow-[0_0_12px_rgba(244,63,94,0.4)]', text: 'text-rose-600', ring: 'ring-rose-400/40', soft: 'bg-rose-50', border: 'border-rose-200' },
+  high: { dot: 'bg-amber-500', glow: 'shadow-[0_0_10px_rgba(245,158,11,0.4)]', text: 'text-amber-700', ring: 'ring-amber-400/30', soft: 'bg-amber-50', border: 'border-amber-200' },
+  normal: { dot: 'bg-indigo-500', glow: 'shadow-[0_0_8px_rgba(99,102,241,0.4)]', text: 'text-indigo-600', ring: 'ring-indigo-400/30', soft: 'bg-indigo-50', border: 'border-indigo-200' },
+  low: { dot: 'bg-stone-300', glow: '', text: 'text-stone-500', ring: 'ring-stone-200', soft: 'bg-stone-50', border: 'border-stone-200' },
 } as const;
 
 export const STATE_STYLES = {
-  secure: { dot: 'bg-emerald-400', label: 'Secure', text: 'text-emerald-300' },
-  active: { dot: 'bg-cyan-300', label: 'Active', text: 'text-cyan-200' },
-  idle: { dot: 'bg-white/40', label: 'Idle', text: 'text-white/60' },
-  alert: { dot: 'bg-red-400', label: 'Alert', text: 'text-red-300' },
+  secure: { dot: 'bg-emerald-500', label: 'Secure', text: 'text-emerald-700', soft: 'bg-emerald-50', border: 'border-emerald-200' },
+  active: { dot: 'bg-indigo-500', label: 'Active', text: 'text-indigo-600', soft: 'bg-indigo-50', border: 'border-indigo-200' },
+  idle: { dot: 'bg-stone-400', label: 'Idle', text: 'text-stone-500', soft: 'bg-stone-50', border: 'border-stone-200' },
+  alert: { dot: 'bg-rose-500', label: 'Alert', text: 'text-rose-600', soft: 'bg-rose-50', border: 'border-rose-200' },
+} as const;
+
+// Vibrant gradient palette for graphical accents
+export const GRADIENTS = {
+  primary: 'bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500',
+  warm: 'bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400',
+  cool: 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-500',
+  fresh: 'bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400',
+  alert: 'bg-gradient-to-br from-rose-500 via-red-500 to-orange-500',
 } as const;
