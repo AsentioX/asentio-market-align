@@ -12,10 +12,21 @@ import { ConfidenceMeter, LicenseStatusBadge, SourceBadgePill, CompletenessIcons
 import { ContractorDetailDrawer } from './components/ContractorDetailDrawer';
 import { tradeLabel, formatTrade } from './tradeLabels';
 
-const ALL_TYPES: ContractorType[] = [
-  'General Contractor', 'Flooring Installer', 'Painter', 'Electrician', 'Plumber',
-  'Roofer', 'Kitchen / Bath Remodeler', 'HVAC', 'Cabinet Installer', 'Tile Installer',
-  'Landscaping', 'Handyman',
+// Friendly contractor types mapped to the CSLB code we display next to them.
+// (Filter logic continues to match on the friendly name; the code is for readability.)
+const ALL_TYPES: Array<{ type: ContractorType; code?: string }> = [
+  { type: 'General Contractor', code: 'B' },
+  { type: 'Flooring Installer', code: 'C-15' },
+  { type: 'Painter', code: 'C-33' },
+  { type: 'Electrician', code: 'C-10' },
+  { type: 'Plumber', code: 'C-36' },
+  { type: 'Roofer', code: 'C-39' },
+  { type: 'Kitchen / Bath Remodeler', code: 'B-2' },
+  { type: 'HVAC', code: 'C-20' },
+  { type: 'Cabinet Installer', code: 'C-6' },
+  { type: 'Tile Installer', code: 'C-54' },
+  { type: 'Landscaping', code: 'C-27' },
+  { type: 'Handyman' },
 ];
 const ALL_STATUS: LicenseStatus[] = ['Active', 'Inactive', 'Expired', 'Suspended'];
 const ALL_SIZES: CompanySize[] = ['Solo Operator', 'Small Crew', 'Growing Local', 'Mid-Sized', 'Multi-Location'];
@@ -226,12 +237,12 @@ export default function Explore() {
             {/* Trade */}
             <FilterGroup label={`Contractor Type${filters.contractorTypes?.length ? ` (${filters.contractorTypes.length})` : ''}`}>
               <div className="space-y-1">
-                {ALL_TYPES.map((t) => (
+                {ALL_TYPES.map(({ type, code }) => (
                   <Checkbox
-                    key={t}
-                    checked={filters.contractorTypes?.includes(t) ?? false}
-                    onChange={() => setFilters({ ...filters, contractorTypes: toggleArr(filters.contractorTypes, t) as ContractorType[] })}
-                    label={t}
+                    key={type}
+                    checked={filters.contractorTypes?.includes(type) ?? false}
+                    onChange={() => setFilters({ ...filters, contractorTypes: toggleArr(filters.contractorTypes, type) as ContractorType[] })}
+                    label={code ? `${code} · ${type}` : type}
                   />
                 ))}
               </div>
