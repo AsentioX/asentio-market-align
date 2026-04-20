@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { ConfidenceMeter, LicenseStatusBadge, SourceBadgePill, CompletenessIcons, relativeTime } from './components/Atoms';
 import { ContractorDetailDrawer } from './components/ContractorDetailDrawer';
+import { tradeLabel, formatTrade } from './tradeLabels';
 
 const ALL_TYPES: ContractorType[] = [
   'General Contractor', 'Flooring Installer', 'Painter', 'Electrician', 'Plumber',
@@ -433,8 +434,19 @@ function ContractorCard({ c, onSelect }: { c: Contractor; onSelect: () => void }
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-sm truncate">{c.company_name}</div>
-          <div className="text-xs" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-            {c.contractor_type} · {c.city}, {c.state}
+          <div className="text-xs flex items-center gap-1.5 flex-wrap" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+            {c.license_classification && (
+              <span
+                className="font-mono font-bold text-[10px] tabular-nums px-1.5 py-0.5 rounded"
+                style={{ background: 'hsl(var(--cf-primary-soft))', color: 'hsl(var(--cf-primary))' }}
+                title={tradeLabel(c.license_classification)}
+              >
+                {c.license_classification}
+              </span>
+            )}
+            <span className="truncate">{tradeLabel(c.license_classification) || c.contractor_type}</span>
+            <span>·</span>
+            <span className="truncate">{c.city}, {c.state}</span>
           </div>
         </div>
         <LicenseStatusBadge status={c.license_status} />
@@ -484,7 +496,16 @@ function ContractorTable({ contractors, onSelect }: { contractors: Contractor[];
           {contractors.map((c) => (
             <tr key={c.contractor_id} onClick={() => onSelect(c.contractor_id)} className="cursor-pointer hover:bg-[hsl(var(--cf-surface-alt))] border-t" style={{ borderColor: 'hsl(var(--cf-border))' }}>
               <td className="px-4 py-2.5 font-medium">{c.company_name}</td>
-              <td className="px-3 py-2.5 text-xs" style={{ color: 'hsl(var(--cf-text-muted))' }}>{c.contractor_type}</td>
+              <td className="px-3 py-2.5 text-xs" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+                {c.license_classification ? (
+                  <span title={tradeLabel(c.license_classification)}>
+                    <span className="font-mono font-bold mr-1.5">{c.license_classification}</span>
+                    <span>{tradeLabel(c.license_classification)}</span>
+                  </span>
+                ) : (
+                  c.contractor_type
+                )}
+              </td>
               <td className="px-3 py-2.5 text-xs" style={{ color: 'hsl(var(--cf-text-muted))' }}>{c.city}, {c.state}</td>
               <td className="px-3 py-2.5"><LicenseStatusBadge status={c.license_status} /></td>
               <td className="px-3 py-2.5 text-xs" style={{ color: 'hsl(var(--cf-text-muted))' }}>{c.estimated_company_size}</td>
