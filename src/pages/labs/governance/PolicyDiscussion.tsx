@@ -150,10 +150,26 @@ const PolicyDiscussion = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <Link to="/labs/fieldofviews/library" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600">
         <ArrowLeft className="w-4 h-4" /> Back to Library
       </Link>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+        <div className="space-y-6 min-w-0">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-gray-800">{policy.title}</h2>
+            <p className="text-sm text-gray-500 mt-2">{policy.summary}</p>
+            {policy.context_snippet && (
+              <blockquote className="mt-3 pl-3 border-l-2 border-teal-200 text-xs text-gray-400 italic">
+                {policy.context_snippet}
+              </blockquote>
+            )}
+          </div>
+
+          <ActionItemsPanel topicId={policy.id} canEdit={canEdit} />
+
+          <HistoryThread topicId={policy.id} />
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <h2 className="text-xl font-bold text-gray-800">{policy.title}</h2>
