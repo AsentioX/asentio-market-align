@@ -33,12 +33,16 @@ const SIMULATED_EXTRACTIONS = [
 const TranscriptUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
+  const [aiProcessing, setAiProcessing] = useState(false);
+  const [aiResult, setAiResult] = useState<{ matched: number; insightsAdded: number; actionItemsCreated: number } | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editSummary, setEditSummary] = useState('');
   const { drafts, addDrafts, removeDraft } = useDrafts();
   const { addPolicy } = usePolicyMutations();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const qc = useQueryClient();
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
