@@ -33,7 +33,7 @@ export const VESSEL_PROFILES: Record<VesselProfile['id'], VesselProfile> = {
 };
 
 // Safety thresholds (feet, MLLW) — BIAC channel constraints
-export const TIDE_RED_FT = 1.5;
+export const TIDE_RED_FT = 1.0;
 export const TIDE_GREEN_FT = 3.0;
 
 // Generate a 24h sinusoidal tide series anchored to "now".
