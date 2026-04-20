@@ -1,8 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, useCanParticipate, useMembers, VoteType, useDeleteProposal } from '@/hooks/useGovernance';
+import { usePolicy, useProposals, useProposalMutations, useVoteTally, useCastVote, useCanParticipate, useMembers, VoteType, useDeleteProposal, useGovRole } from '@/hooks/useGovernance';
 import { useAuth } from '@/hooks/useAuth';
 import { ArrowLeft, Plus, Loader2, Trash2 } from 'lucide-react';
+import { PitCrewSidebar } from '@/components/governance/PitCrewSidebar';
+import { ActionItemsPanel } from '@/components/governance/ActionItemsPanel';
+import { HistoryThread } from '@/components/governance/HistoryThread';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
