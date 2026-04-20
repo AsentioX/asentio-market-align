@@ -295,7 +295,16 @@ const RowWindowLayout = () => {
             </ResponsiveContainer>
           </div>
           <p className="mt-3 text-[11px] text-slate-500">
-            Mock 24h sinusoidal model. Wire <span className="font-mono text-slate-400">tideEngine.ts</span> to NOAA CO-OPS feed (station 9414523) to go live.
+            {source === 'noaa' ? (
+              <>
+                Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${'9414523'}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-300">NOAA CO-OPS Station 9414523</a> (Redwood City, MLLW datum) · 6-min interval
+                {fetchedAt && <> · refreshed {new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</>}
+              </>
+            ) : (
+              <>
+                NOAA feed unavailable — using mock 24h sinusoidal model.{fetchError ? ` (${fetchError})` : ''}
+              </>
+            )}
           </p>
         </section>
       </main>
