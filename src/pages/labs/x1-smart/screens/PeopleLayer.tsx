@@ -53,9 +53,19 @@ const PeopleLayer = () => {
               className="group text-left rounded-2xl border border-black/[0.06] bg-white hover:border-black/12 hover:shadow-md p-4 transition-all flex items-center gap-4 shadow-sm"
             >
               <div className="relative flex-shrink-0">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${grad} flex items-center justify-center font-bold text-white text-base shadow-lg`}>
-                  {p.initials}
-                </div>
+                {HEADSHOTS[p.name] ? (
+                  <img
+                    src={HEADSHOTS[p.name]}
+                    alt={p.name}
+                    className="w-14 h-14 rounded-2xl object-cover shadow-lg"
+                    width={56}
+                    height={56}
+                  />
+                ) : (
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${grad} flex items-center justify-center font-bold text-white text-base shadow-lg`}>
+                    {p.initials}
+                  </div>
+                )}
                 <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${pres.dot} ring-[3px] ring-white`} />
               </div>
               <div className="flex-1 min-w-0">
