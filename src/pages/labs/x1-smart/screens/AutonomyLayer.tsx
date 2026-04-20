@@ -5,6 +5,11 @@ import { AUTONOMY_LEVELS, type AutonomyMode } from '../x1Data';
 import { toast } from 'sonner';
 
 const ICONS = { manual: Eye, assisted: Sparkles, autonomous: Zap } as const;
+const GRADIENTS = {
+  manual: 'from-stone-400 via-stone-500 to-stone-600',
+  assisted: 'from-cyan-400 via-blue-500 to-indigo-500',
+  autonomous: 'from-violet-500 via-fuchsia-500 to-pink-500',
+} as const;
 
 const RECENT_DECISIONS = [
   { time: '4m ago', action: 'Unlocked door for Jon (face match)', confidence: 0.99, mode: 'autonomous' as const },
@@ -17,16 +22,17 @@ const AutonomyLayer = () => {
   const [mode, setMode] = useState<AutonomyMode>('assisted');
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-xs uppercase tracking-[0.18em] text-white/40 font-medium mb-1">Autonomy & control</h2>
-        <p className="text-[15px] text-white/70">Decide how much X1 acts on your behalf — and see why every decision was made.</p>
+        <h2 className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold mb-2">Autonomy & control</h2>
+        <p className="text-[17px] text-stone-700 leading-snug">Decide how much X1 acts on your behalf — and see <span className="text-stone-900 font-semibold">why</span> every decision was made.</p>
       </div>
 
-      {/* Mode selector */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+      {/* Mode selector — bold visual cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {AUTONOMY_LEVELS.map((level) => {
           const Icon = ICONS[level.value];
+          const grad = GRADIENTS[level.value];
           const active = mode === level.value;
           return (
             <button
@@ -35,76 +41,80 @@ const AutonomyLayer = () => {
                 setMode(level.value);
                 toast.success(`Autonomy → ${level.label}`, { description: level.description });
               }}
-              className={`text-left rounded-2xl border backdrop-blur-sm p-5 transition-all ${
+              className={`relative text-left rounded-3xl border p-5 transition-all overflow-hidden ${
                 active
-                  ? 'border-cyan-400/40 bg-cyan-400/[0.04] shadow-[0_0_32px_-10px_rgba(34,211,238,0.5)]'
-                  : 'border-white/[0.06] bg-white/[0.025] hover:border-white/12'
+                  ? 'border-stone-900 bg-white shadow-xl scale-[1.02]'
+                  : 'border-black/[0.06] bg-white hover:border-black/15 hover:shadow-md shadow-sm'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                  active ? 'bg-cyan-400/15 text-cyan-300' : 'bg-white/[0.04] text-white/55'
-                }`}>
-                  <Icon className="w-4.5 h-4.5" />
+              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${grad} opacity-15 rounded-full blur-2xl -translate-y-8 translate-x-8`} />
+
+              <div className="relative flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${grad} flex items-center justify-center shadow-lg`}>
+                  <Icon className="w-6 h-6 text-white" strokeWidth={2} />
                 </div>
                 {active && (
-                  <motion.span
-                    layoutId="autonomy-active"
-                    className="text-[10px] uppercase tracking-wider font-semibold text-cyan-300 px-2 py-0.5 rounded-full bg-cyan-400/10 border border-cyan-400/30"
-                  >
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-violet-700 px-2.5 py-1 rounded-full bg-violet-100 border border-violet-200">
                     Active
-                  </motion.span>
+                  </span>
                 )}
               </div>
-              <div className="text-base font-semibold text-white">{level.label}</div>
-              <div className="text-[12px] text-white/50 mt-1 leading-relaxed">{level.description}</div>
+              <div className="relative text-lg font-bold text-stone-900 tracking-tight">{level.label}</div>
+              <div className="relative text-[12px] text-stone-600 mt-1.5 leading-relaxed">{level.description}</div>
             </button>
           );
         })}
       </div>
 
       {/* Confidence threshold */}
-      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm p-5">
-        <div className="flex items-center justify-between mb-3">
+      <div className="rounded-3xl border border-black/[0.06] bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="text-sm font-medium text-white">Confidence threshold for auto-action</div>
-            <div className="text-[12px] text-white/45 mt-0.5">Below this, X1 will ask before acting.</div>
+            <div className="text-sm font-semibold text-stone-900">Confidence threshold for auto-action</div>
+            <div className="text-[12px] text-stone-500 mt-0.5">Below this, X1 will ask before acting.</div>
           </div>
-          <div className="text-2xl font-semibold tracking-tight text-cyan-300">85%</div>
+          <div className="text-3xl font-bold tracking-tight bg-gradient-to-br from-indigo-600 to-violet-600 bg-clip-text text-transparent">85%</div>
         </div>
-        <div className="relative h-2 rounded-full bg-white/[0.06] overflow-hidden">
-          <div className="absolute inset-y-0 left-0 w-[85%] bg-gradient-to-r from-cyan-400 to-cyan-300 rounded-full" />
-          <div className="absolute top-1/2 left-[85%] -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white shadow-lg shadow-cyan-400/40 ring-2 ring-cyan-400/30" />
+        <div className="relative h-2.5 rounded-full bg-stone-100 overflow-hidden">
+          <div className="absolute inset-y-0 left-0 w-[85%] bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 rounded-full" />
+          <div className="absolute top-1/2 left-[85%] -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white shadow-lg ring-2 ring-violet-500" />
         </div>
-        <div className="flex justify-between text-[10px] text-white/35 mt-1.5">
+        <div className="flex justify-between text-[10px] text-stone-400 mt-2 font-medium uppercase tracking-wider">
           <span>Cautious · ask more</span>
           <span>Trusting · act more</span>
         </div>
       </div>
 
-      {/* Decision log with reasoning */}
+      {/* Decision log */}
       <div>
-        <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-white/40 font-semibold mb-3">
+        <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500 font-bold mb-3">
           <Brain className="w-3 h-3" /> Recent decisions · transparent reasoning
         </div>
         <div className="space-y-2">
           {RECENT_DECISIONS.map((d, i) => (
-            <div key={i} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 flex items-center gap-3.5">
+            <div key={i} className="rounded-2xl border border-black/[0.06] bg-white p-4 flex items-center gap-3.5 shadow-sm hover:shadow-md transition-shadow">
+              <div className={`w-1 self-stretch rounded-full ${
+                d.confidence >= 0.85 ? 'bg-violet-500' : d.confidence >= 0.7 ? 'bg-amber-500' : 'bg-stone-300'
+              }`} />
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-white/85 leading-snug">{d.action}</div>
-                <div className="flex items-center gap-2 mt-1 text-[11px] text-white/40">
+                <div className="text-sm text-stone-900 font-medium leading-snug">{d.action}</div>
+                <div className="flex items-center gap-2 mt-1.5 text-[11px] text-stone-500 font-medium">
                   <span>{d.time}</span>
-                  <span className="text-white/20">·</span>
-                  <span className="capitalize">{d.mode} mode</span>
-                  <span className="text-white/20">·</span>
-                  <span className={d.confidence >= 0.85 ? 'text-cyan-300' : d.confidence >= 0.7 ? 'text-amber-300' : 'text-white/50'}>
+                  <span className="text-stone-300">·</span>
+                  <span className="capitalize">{d.mode}</span>
+                  <span className="text-stone-300">·</span>
+                  <span className={
+                    d.confidence >= 0.85 ? 'text-violet-600 font-semibold' :
+                    d.confidence >= 0.7 ? 'text-amber-700 font-semibold' :
+                    'text-stone-500'
+                  }>
                     {Math.round(d.confidence * 100)}% confidence
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => toast.success('Override saved', { description: 'X1 will adjust future behavior.' })}
-                className="flex-shrink-0 inline-flex items-center gap-1.5 text-[11px] text-white/50 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors"
+                className="flex-shrink-0 inline-flex items-center gap-1.5 text-[11px] text-stone-600 hover:text-stone-900 font-semibold px-3 py-1.5 rounded-lg hover:bg-stone-100 transition-colors"
               >
                 <Undo2 className="w-3 h-3" /> Override
               </button>
@@ -114,11 +124,14 @@ const AutonomyLayer = () => {
       </div>
 
       {/* Trust card */}
-      <div className="rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.05] to-transparent p-5 flex items-start gap-3">
-        <Shield className="w-5 h-5 text-cyan-300 flex-shrink-0 mt-0.5" />
-        <div>
-          <div className="text-sm font-medium text-white">Every decision is reversible.</div>
-          <div className="text-[12px] text-white/55 mt-1 leading-relaxed">
+      <div className="relative rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-indigo-50 to-white p-6 flex items-start gap-4 overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-violet-300/40 to-fuchsia-300/30 rounded-full blur-3xl -translate-y-12 translate-x-12" />
+        <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/30">
+          <Shield className="w-5 h-5 text-white" strokeWidth={2} />
+        </div>
+        <div className="relative">
+          <div className="text-base font-semibold text-stone-900">Every decision is reversible.</div>
+          <div className="text-[13px] text-stone-600 mt-1.5 leading-relaxed">
             X1 logs every action with full reasoning. Override once and the system updates its model — no rules to write.
           </div>
         </div>
