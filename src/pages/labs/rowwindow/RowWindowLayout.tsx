@@ -107,9 +107,32 @@ const RowWindowLayout = () => {
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-slate-400">Local time</div>
-            <div className="text-sm font-mono text-slate-200">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+          <div className="flex items-center gap-3">
+            <div
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border ${
+                source === 'noaa'
+                  ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-300'
+                  : 'border-amber-400/30 bg-amber-500/10 text-amber-300'
+              }`}
+              title={
+                source === 'noaa'
+                  ? `Live NOAA data${fetchedAt ? ` · updated ${new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}`
+                  : fetchError
+                    ? `NOAA unavailable — using mock model. ${fetchError}`
+                    : 'Mock model'
+              }
+            >
+              {loading ? (
+                <RefreshCw className="w-3 h-3 animate-spin" />
+              ) : (
+                <Radio className={`w-3 h-3 ${source === 'noaa' ? 'animate-pulse' : ''}`} />
+              )}
+              {source === 'noaa' ? 'LIVE · NOAA' : 'MOCK'}
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-slate-400">Local time</div>
+              <div className="text-sm font-mono text-slate-200">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            </div>
           </div>
         </div>
       </header>
