@@ -122,133 +122,136 @@ const IntelligenceFeed = () => {
           className="space-y-3"
         >
           {filteredEvents.map((event) => {
-          const isExpanded = expanded === event.id;
-          const status = resolved[event.id];
-          const p = PRIORITY_STYLES[event.priority];
-          const kind = KIND_META[event.kind];
-          const KindIcon = kind.icon;
+            const isExpanded = expanded === event.id;
+            const status = resolved[event.id];
+            const p = PRIORITY_STYLES[event.priority];
+            const kind = KIND_META[event.kind];
+            const KindIcon = kind.icon;
 
-          return (
-            <motion.article
-              key={event.id}
-              layout
-              className={`relative rounded-2xl bg-white border overflow-hidden transition-all shadow-sm ${
-                isExpanded ? 'border-black/12 shadow-md' : 'border-black/[0.06] hover:border-black/12 hover:shadow-md'
-              } ${status === 'approved' ? 'opacity-60' : ''}`}
-            >
-              {/* Left priority accent bar */}
-              <div className={`absolute left-0 top-0 bottom-0 w-1 ${p.dot}`} />
-
-              <button
-                onClick={() => setExpanded(isExpanded ? null : event.id)}
-                className="w-full text-left p-4 pl-5 flex items-start gap-3.5"
+            return (
+              <motion.article
+                key={event.id}
+                layout
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={`relative rounded-2xl bg-white border overflow-hidden transition-all shadow-sm ${
+                  isExpanded ? 'border-black/12 shadow-md' : 'border-black/[0.06] hover:border-black/12 hover:shadow-md'
+                } ${status === 'approved' ? 'opacity-60' : ''}`}
               >
-                {/* Gradient icon tile */}
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${kind.gradient} flex items-center justify-center flex-shrink-0 shadow-md`}>
-                  <KindIcon className="w-5 h-5 text-white" strokeWidth={2} />
-                </div>
+                {/* Left priority accent bar */}
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${p.dot}`} />
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className={`text-[10px] uppercase tracking-wider font-bold ${p.text}`}>
-                      {kind.label}
-                    </span>
-                    <span className="text-[11px] text-stone-300">·</span>
-                    <span className="text-[11px] text-stone-500">{event.timestamp}</span>
-                    {event.confidence !== undefined && (
-                      <>
-                        <span className="text-[11px] text-stone-300">·</span>
-                        <span className="text-[11px] text-stone-500 inline-flex items-center gap-1">
-                          <ConfidenceMeter value={event.confidence} />
-                          {Math.round(event.confidence * 100)}% confident
-                        </span>
-                      </>
-                    )}
+                <button
+                  onClick={() => setExpanded(isExpanded ? null : event.id)}
+                  className="w-full text-left p-4 pl-5 flex items-start gap-3.5"
+                >
+                  {/* Gradient icon tile */}
+                  <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${kind.gradient} flex items-center justify-center flex-shrink-0 shadow-md`}>
+                    <KindIcon className="w-5 h-5 text-white" strokeWidth={2} />
                   </div>
-                  <h3 className="text-[15px] font-semibold text-stone-900 mt-1 leading-snug">{event.title}</h3>
-                  <p className="text-[13px] text-stone-600 mt-1 leading-relaxed">{event.detail}</p>
-                </div>
 
-                {(event.reasoning || event.suggestedAction) && (
-                  <ChevronDown
-                    className={`w-4 h-4 text-stone-400 flex-shrink-0 mt-1 transition-transform ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`}
-                  />
-                )}
-              </button>
-
-              <AnimatePresence>
-                {isExpanded && (event.reasoning || event.suggestedAction) && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-4 pb-4 pl-[68px] space-y-4">
-                      {event.reasoning && (
-                        <div className="rounded-xl bg-gradient-to-br from-violet-50 to-indigo-50/50 border border-violet-100 p-4">
-                          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-violet-700 font-bold mb-2.5">
-                            <Brain className="w-3 h-3" />
-                            <span>Why X1 thinks this</span>
-                          </div>
-                          <ul className="space-y-2">
-                            {event.reasoning.map((r, i) => (
-                              <li key={i} className="text-[13px] text-stone-700 flex gap-2 leading-relaxed">
-                                <span className="text-violet-500 mt-1.5">›</span>
-                                <span>{r}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {event.suggestedAction && !status && (
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handle(event.id, 'approved', event.suggestedAction!.label);
-                            }}
-                            className="flex-1 group relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white px-4 py-3 text-[13px] font-semibold transition-all flex items-center justify-between shadow-md shadow-violet-500/30"
-                          >
-                            <span className="flex items-center gap-2">
-                              <Check className="w-4 h-4" strokeWidth={2.5} />
-                              {event.suggestedAction.label}
-                            </span>
-                            <span className="text-[11px] font-medium opacity-90">{event.suggestedAction.impact}</span>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handle(event.id, 'dismissed', '');
-                            }}
-                            className="w-11 h-11 rounded-xl border border-black/10 hover:border-black/20 hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-stone-900 transition-colors bg-white"
-                            aria-label="Dismiss"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-
-                      {status && (
-                        <div className={`text-[12px] flex items-center gap-1.5 font-medium ${
-                          status === 'approved' ? 'text-emerald-600' : 'text-stone-400'
-                        }`}>
-                          {status === 'approved' ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-                          {status === 'approved' ? 'Approved · X1 will run this automatically' : 'Dismissed'}
-                        </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <span className={`text-[10px] uppercase tracking-wider font-bold ${p.text}`}>
+                        {kind.label}
+                      </span>
+                      <span className="text-[11px] text-stone-300">·</span>
+                      <span className="text-[11px] text-stone-500">{event.timestamp}</span>
+                      {event.confidence !== undefined && (
+                        <>
+                          <span className="text-[11px] text-stone-300">·</span>
+                          <span className="text-[11px] text-stone-500 inline-flex items-center gap-1">
+                            <ConfidenceMeter value={event.confidence} />
+                            {Math.round(event.confidence * 100)}% confident
+                          </span>
+                        </>
                       )}
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.article>
-          );
-        })}
-      </div>
+                    <h3 className="text-[15px] font-semibold text-stone-900 mt-1 leading-snug">{event.title}</h3>
+                    <p className="text-[13px] text-stone-600 mt-1 leading-relaxed">{event.detail}</p>
+                  </div>
+
+                  {(event.reasoning || event.suggestedAction) && (
+                    <ChevronDown
+                      className={`w-4 h-4 text-stone-400 flex-shrink-0 mt-1 transition-transform ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                    />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {isExpanded && (event.reasoning || event.suggestedAction) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-4 pb-4 pl-[68px] space-y-4">
+                        {event.reasoning && (
+                          <div className="rounded-xl bg-gradient-to-br from-violet-50 to-indigo-50/50 border border-violet-100 p-4">
+                            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-violet-700 font-bold mb-2.5">
+                              <Brain className="w-3 h-3" />
+                              <span>Why X1 thinks this</span>
+                            </div>
+                            <ul className="space-y-2">
+                              {event.reasoning.map((r, i) => (
+                                <li key={i} className="text-[13px] text-stone-700 flex gap-2 leading-relaxed">
+                                  <span className="text-violet-500 mt-1.5">›</span>
+                                  <span>{r}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {event.suggestedAction && !status && (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handle(event.id, 'approved', event.suggestedAction!.label);
+                              }}
+                              className="flex-1 group relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white px-4 py-3 text-[13px] font-semibold transition-all flex items-center justify-between shadow-md shadow-violet-500/30"
+                            >
+                              <span className="flex items-center gap-2">
+                                <Check className="w-4 h-4" strokeWidth={2.5} />
+                                {event.suggestedAction.label}
+                              </span>
+                              <span className="text-[11px] font-medium opacity-90">{event.suggestedAction.impact}</span>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handle(event.id, 'dismissed', '');
+                              }}
+                              className="w-11 h-11 rounded-xl border border-black/10 hover:border-black/20 hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-stone-900 transition-colors bg-white"
+                              aria-label="Dismiss"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+
+                        {status && (
+                          <div className={`text-[12px] flex items-center gap-1.5 font-medium ${
+                            status === 'approved' ? 'text-emerald-600' : 'text-stone-400'
+                          }`}>
+                            {status === 'approved' ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                            {status === 'approved' ? 'Approved · X1 will run this automatically' : 'Dismissed'}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.article>
+            );
+          })}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
