@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
-import { Contractor, SavedSegment, SegmentFilters } from './types';
+import { Contractor, SavedSegment, SegmentFilters, ContractorType, CompanySize, BusinessMaturity, LicenseStatus, SourceBadge } from './types';
 import { seedContractors, seedSegments } from './seedData';
+import { supabase } from '@/integrations/supabase/client';
 
 const STORAGE_KEY = 'cf:v1';
 
@@ -11,6 +12,9 @@ interface PersistedState {
 }
 
 interface CFStore extends PersistedState {
+  isLoadingDb: boolean;
+  dataSource: 'seed' | 'database';
+  reloadFromDb: () => Promise<void>;
   saveSegment: (s: Omit<SavedSegment, 'id' | 'created_at'>) => SavedSegment;
   deleteSegment: (id: string) => void;
   updateSegment: (id: string, patch: Partial<SavedSegment>) => void;
@@ -19,6 +23,48 @@ interface CFStore extends PersistedState {
   flagContractor: (id: string) => void;
   refreshContractor: (id: string) => void;
   applyFilters: (filters: SegmentFilters) => Contractor[];
+}
+
+// Map a DB row (cf_contractors) into the in-memory Contractor shape used by the UI
+function mapDbRow(r: any): Contractor {
+  const status: LicenseStatus = (() => {
+    const s = (r.license_status || '').toUpperCase();
+    if (s.startsWith('CLEAR') || s.startsWith('ACTIVE')) return 'Active';
+    if (s.startsWith('SUSP')) return 'Suspended';
+    if (s.startsWith('EXPIR')) return 'Expired';
+    return 'Inactive';
+  })();
+  return {
+    contractor_id: r.id,
+    company_name: r.business_name || 'Unknown',
+    contractor_type: (r.contractor_type as ContractorType) || ('General Contractor' as ContractorType),
+    specialties: r.classifications ?? [],
+    license_number: r.license_number,
+    license_classification: r.primary_classification ?? '',
+    license_status: status,
+    license_issue_date: r.issue_date ?? '',
+    license_expiration_date: r.expiration_date ?? '',
+    bond_status: r.bond_amount ? 'Active' : 'None',
+    insurance_status: r.wc_company ? 'Active' : 'None',
+    address: r.address ?? '',
+    city: r.city ?? '',
+    county: r.county ?? '',
+    state: r.state ?? 'CA',
+    zip_code: r.zip_code ?? '',
+    latitude: 0,
+    longitude: 0,
+    phone: r.phone ?? '',
+    source_count: r.source_count ?? 1,
+    source_urls: (r.source_urls ?? ['Official License Source']) as SourceBadge[],
+    years_in_business: r.issue_date ? new Date().getFullYear() - new Date(r.issue_date).getFullYear() : 0,
+    estimated_company_size: (r.estimated_company_size as CompanySize) ?? 'Small Crew',
+    estimated_business_maturity: (r.estimated_business_maturity as BusinessMaturity) ?? 'Established',
+    service_area: r.city ? [r.city] : [],
+    tags: [],
+    confidence_score: r.confidence_score ?? 80,
+    last_verified_date: r.last_verified_date ?? new Date().toISOString(),
+    commercial_residential: 'Both',
+  };
 }
 
 const Ctx = createContext<CFStore | null>(null);
