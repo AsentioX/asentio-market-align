@@ -1,5 +1,5 @@
-import { Database, CheckCircle2, AlertTriangle, RefreshCw, Mail, Globe, Phone, Award } from 'lucide-react';
-import { Contractor, SourceBadge } from './types';
+import { CheckCircle2, AlertTriangle, Mail, Globe, Phone, Award } from 'lucide-react';
+import { Contractor, SourceBadge } from '../types';
 
 export const sourceBadgeMeta: Record<SourceBadge, { color: string; soft: string; short: string }> = {
   'Official License Source': { color: 'var(--cf-primary)', soft: 'var(--cf-primary-soft)', short: 'CSLB' },
