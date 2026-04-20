@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -127,6 +127,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Construction', 'Lead Gen', 'AI'],
     link: '/labs/contractor-finder',
+  },
+  {
+    name: 'X1 Smart',
+    description: 'AI-first intelligence layer for physical spaces. Replaces device dashboards with a system that understands people, learns patterns, and acts on your behalf.',
+    icon: <Sparkles className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Physical AI', 'Spaces', 'Intelligent IoT'],
+    link: '/labs/x1-smart',
   },
 ];
 
