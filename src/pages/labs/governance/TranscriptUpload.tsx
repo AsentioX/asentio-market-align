@@ -1,8 +1,11 @@
 import { useState, useCallback } from 'react';
-import { Upload, FileText, Loader2, Check, X, Pencil, ArrowRight } from 'lucide-react';
+import { Upload, FileText, Loader2, Check, X, Pencil, ArrowRight, Sparkles } from 'lucide-react';
 import { useDrafts, usePolicyMutations, Draft } from '@/hooks/useGovernance';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 const SIMULATED_EXTRACTIONS = [
   {
