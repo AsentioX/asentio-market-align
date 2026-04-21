@@ -12,7 +12,7 @@ type AnyEvent = ResFeedEvent | ComFeedEvent;
 
 const KIND_META: Record<AnyEventKind, { icon: any; label: string; gradient: string }> = {
   identity: { icon: UserCheck, label: 'Identity', gradient: 'from-emerald-400 to-teal-500' },
-  security: { icon: ShieldAlert, label: 'Security', gradient: 'from-amber-400 to-orange-500' },
+  security: { icon: ShieldAlert, label: 'Security', gradient: 'from-cyan-400 to-blue-500' },
   insight: { icon: Lightbulb, label: 'Insight', gradient: 'from-cyan-400 to-blue-500' },
   suggestion: { icon: Sparkles, label: 'Suggestion', gradient: 'from-violet-400 to-fuchsia-500' },
   action: { icon: Zap, label: 'Auto-action', gradient: 'from-indigo-400 to-violet-500' },
