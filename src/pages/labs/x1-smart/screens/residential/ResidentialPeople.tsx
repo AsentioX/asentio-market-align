@@ -2,15 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Smartphone, Shield, Activity, X, Clock, Zap } from 'lucide-react';
 import { RES_PEOPLE, type ResPerson, type ResPresence } from '../../residentialData';
-import headshotJon from '../../assets/headshot-jon.jpg';
-import headshotSusan from '../../assets/headshot-susan.jpg';
-import headshotMaya from '../../assets/headshot-maya.jpg';
-
-const HEADSHOTS: Record<string, string> = {
-  'Jon Cheng': headshotJon,
-  'Sarah Cheng': headshotSusan,
-  'Maya Patel': headshotMaya,
-};
+import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
 
 const PRESENCE_META: Record<ResPresence, { label: string; dot: string; text: string; soft: string }> = {
   home: { label: 'Home', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
