@@ -133,7 +133,10 @@ const SegmentOverview = () => (
           return (
             <a
               key={s.id}
-              href={`#${s.id}`}
+              href={`#tiers`}
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("aotu:set-tier", { detail: s.id }));
+              }}
               className="group bg-[#161B22] rounded-2xl p-8 border border-white/10 hover:border-[#FF5E1A]/50 hover:bg-[#1C232E] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(255,94,26,0.25)] flex flex-col"
             >
               <div
