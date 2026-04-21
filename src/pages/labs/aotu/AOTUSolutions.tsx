@@ -743,7 +743,7 @@ const TieredSolutions = () => {
         </div>
 
         {/* Tab bar */}
-        <div className="flex flex-wrap gap-2 p-1.5 rounded-xl bg-[#161B22] border border-white/10 w-fit max-w-full overflow-x-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 rounded-xl bg-[#161B22] border border-white/10 w-full">
           {tiers.map((t) => {
             const Icon = t.icon;
             const isActive = t.key === active;
@@ -751,7 +751,7 @@ const TieredSolutions = () => {
               <button
                 key={t.key}
                 onClick={() => setActive(t.key)}
-                className={`group flex items-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all whitespace-nowrap ${
+                className={`group flex items-center justify-center sm:justify-start gap-2.5 px-4 sm:px-5 py-3 rounded-lg text-[13px] font-semibold transition-all whitespace-nowrap w-full ${
                   isActive
                     ? "text-[#0A0A0A]"
                     : "text-[#F4FDFF]/70 hover:text-[#F4FDFF] hover:bg-white/[0.04]"
