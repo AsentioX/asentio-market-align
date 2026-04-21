@@ -1,13 +1,22 @@
-// AOTU brand palette — neutral light marketing + dark technical surfaces
-// Editorial enterprise aesthetic, cobalt accent, electric lime for AI signal
+// AOTU brand palette — "Obsidian Core" dark mode tech aesthetic
+// Deep charcoal foundation, cyber orange energy, glassmorphism slate containers
 
 export const aotuColors = {
-  ink: "#0A0F1C",      // near-black for type / dark surfaces
-  cobalt: "#1E40FF",   // primary brand accent (CTAs, links)
-  signal: "#FF6B00",   // high contrast orange — AI / live signal accent
-  fog: "#F4F5F7",      // off-white background
-  rule: "#E5E7EB",     // hairline rules
-  mute: "#6B7280",     // muted labels
+  bg: "#0A0A0A",        // Deep Charcoal — full-page background
+  surface: "#161B22",   // Subtle Slate — containers / cards
+  surfaceAlt: "#1C232E",// Slightly lifted slate for hover/elevated
+  accent: "#FF5E1A",    // Cyber Orange — primary CTA + highlights
+  accentHover: "#FF8C42",// Lighter Glow — hover/active state
+  text: "#F4FDFF",      // Cool White — primary typography
+  textMute: "#8B95A1",  // Muted body / secondary
+  textFaint: "#5A6470", // Faint labels
+  rule: "#222831",      // Hairline borders on dark
+  // Legacy keys (kept for compatibility with imports)
+  ink: "#0A0A0A",
+  cobalt: "#FF5E1A",
+  signal: "#FF5E1A",
+  fog: "#161B22",
+  mute: "#8B95A1",
 };
 
 export const aotuFont = {
