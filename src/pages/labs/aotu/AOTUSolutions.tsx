@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -132,7 +133,10 @@ const SegmentOverview = () => (
           return (
             <a
               key={s.id}
-              href={`#${s.id}`}
+              href={`#tiers`}
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("aotu:set-tier", { detail: s.id }));
+              }}
               className="group bg-[#161B22] rounded-2xl p-8 border border-white/10 hover:border-[#FF5E1A]/50 hover:bg-[#1C232E] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(255,94,26,0.25)] flex flex-col"
             >
               <div
@@ -622,80 +626,170 @@ const FinalCTA = () => (
   </section>
 );
 
+// ---------- Tiered Solutions (tabbed) ----------
+type TierData = Omit<TierProps, "variant">;
+
+const tiers: { key: string; tabLabel: string; tabSub: string; icon: typeof Home; data: TierData }[] = [
+  {
+    key: "smb",
+    tabLabel: "SMB / Consumer",
+    tabSub: "Tier 01",
+    icon: Home,
+    data: {
+      id: "smb",
+      tag: "Tier 01 · SMB / Consumer",
+      title: "Simple AI monitoring for small teams and single locations.",
+      desc: "For small businesses and property owners who need reliable monitoring without complexity.",
+      positioning: "Get started in minutes",
+      benefits: ["Plug-and-play setup", "Low cost entry", "Core operators included"],
+      useCases: ["Small retail security", "Home & rental monitoring", "Small office oversight"],
+      capsules: [
+        { icon: ShieldAlert, name: "Intrusion detection" },
+        { icon: Zap, name: "Motion alerts" },
+        { icon: Boxes, name: "Basic anomaly detection" },
+        { icon: Camera, name: "Live camera feed" },
+      ],
+      primaryCTA: { label: "Get started", to: "/labs/aotu/contact" },
+      secondaryCTA: { label: "Request demo", to: "/labs/aotu/contact" },
+    },
+  },
+  {
+    key: "prosumer",
+    tabLabel: "Prosumer",
+    tabSub: "Tier 02",
+    icon: Building2,
+    data: {
+      id: "prosumer",
+      tag: "Tier 02 · Prosumer",
+      title: "Advanced AI operators for growing businesses and multi-site users.",
+      desc: "For tech-forward operators and growing businesses that want more control, customization, and intelligence.",
+      positioning: "Scale your operations",
+      benefits: ["Multi-camera & multi-site", "Customizable capsules", "Higher performance"],
+      useCases: ["Multi-location retail", "Warehouses", "Short-term rentals", "Smart property mgmt"],
+      capsules: [
+        { icon: HardHat, name: "PPE detection" },
+        { icon: UserX, name: "Loitering detection" },
+        { icon: Car, name: "Vehicle detection" },
+        { icon: Layers, name: "Custom workflows" },
+      ],
+      primaryCTA: { label: "Explore capabilities", to: "/labs/aotu/marketplace" },
+      secondaryCTA: { label: "Build your setup", to: "/labs/aotu/contact" },
+    },
+  },
+  {
+    key: "enterprise",
+    tabLabel: "Commercial / Enterprise",
+    tabSub: "Tier 03",
+    icon: Factory,
+    data: {
+      id: "enterprise",
+      tag: "Tier 03 · Commercial / Enterprise",
+      title: "AI operators at scale for enterprise and industrial environments.",
+      desc: "For large organizations that need real-time automation across many sites, systems, and teams.",
+      positioning: "Replace manual monitoring",
+      benefits: [
+        "Full BrainFrame deployment",
+        "Large-scale orchestration",
+        "Integrates with your stack",
+        "Enterprise-grade SLAs",
+      ],
+      useCases: [
+        "Manufacturing safety",
+        "Logistics & supply chain",
+        "Smart infrastructure",
+        "Large-scale security ops",
+      ],
+      capsules: [
+        { icon: Boxes, name: "Full library + custom dev" },
+        { icon: HardHat, name: "Compliance monitoring" },
+        { icon: ShieldAlert, name: "Advanced anomaly detection" },
+        { icon: Flame, name: "Hazard & fire detection" },
+      ],
+      primaryCTA: { label: "Talk to sales", to: "/labs/aotu/contact" },
+      secondaryCTA: { label: "Request enterprise demo", to: "/labs/aotu/contact" },
+    },
+  },
+];
+
+const TieredSolutions = () => {
+  const [active, setActive] = useState(tiers[0].key);
+  const activeTier = tiers.find((t) => t.key === active) ?? tiers[0];
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail;
+      if (detail && tiers.some((t) => t.key === detail)) setActive(detail);
+    };
+    window.addEventListener("aotu:set-tier", handler);
+    return () => window.removeEventListener("aotu:set-tier", handler);
+  }, []);
+
+  return (
+    <section id="tiers" className="bg-[#0A0A0A] border-b border-white/[0.06]">
+      <div className="max-w-7xl mx-auto px-6 pt-20 md:pt-24">
+        <div className="max-w-2xl mb-10">
+          <div
+            className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF5E1A] mb-3"
+            style={{ fontFamily: '"JetBrains Mono", monospace' }}
+          >
+            // Solution tiers
+          </div>
+          <h2
+            className="text-[36px] md:text-[48px] font-semibold tracking-tight leading-[1.05] text-[#F4FDFF]"
+            style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
+          >
+            Pick the tier that fits.
+          </h2>
+        </div>
+
+        {/* Tab bar */}
+        <div className="flex flex-wrap gap-2 p-1.5 rounded-xl bg-[#161B22] border border-white/10 w-fit max-w-full overflow-x-auto">
+          {tiers.map((t) => {
+            const Icon = t.icon;
+            const isActive = t.key === active;
+            return (
+              <button
+                key={t.key}
+                onClick={() => setActive(t.key)}
+                className={`group flex items-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all whitespace-nowrap ${
+                  isActive
+                    ? "text-[#0A0A0A]"
+                    : "text-[#F4FDFF]/70 hover:text-[#F4FDFF] hover:bg-white/[0.04]"
+                }`}
+                style={isActive ? { background: ACCENT } : undefined}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="flex flex-col items-start leading-tight text-left">
+                  <span
+                    className={`text-[9.5px] uppercase tracking-[0.18em] font-semibold ${
+                      isActive ? "text-[#0A0A0A]/70" : "text-[#F4FDFF]/40"
+                    }`}
+                    style={{ fontFamily: '"JetBrains Mono", monospace' }}
+                  >
+                    {t.tabSub}
+                  </span>
+                  <span style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+                    {t.tabLabel}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <TierSection key={activeTier.key} {...activeTier.data} variant="surface" />
+    </section>
+  );
+};
+
 // ---------- Page ----------
 const AOTUSolutions = () => {
   return (
     <>
       <Hero />
       <SegmentOverview />
-
-      <TierSection
-        id="smb"
-        tag="Tier 01 · SMB / Consumer"
-        title="Simple AI monitoring for small teams and single locations."
-        desc="For small businesses and property owners who need reliable monitoring without complexity."
-        positioning="Get started in minutes"
-        benefits={["Plug-and-play setup", "Low cost entry", "Core operators included"]}
-        useCases={["Small retail security", "Home & rental monitoring", "Small office oversight"]}
-        capsules={[
-          { icon: ShieldAlert, name: "Intrusion detection" },
-          { icon: Zap, name: "Motion alerts" },
-          { icon: Boxes, name: "Basic anomaly detection" },
-          { icon: Camera, name: "Live camera feed" },
-        ]}
-        primaryCTA={{ label: "Get started", to: "/labs/aotu/contact" }}
-        secondaryCTA={{ label: "Request demo", to: "/labs/aotu/contact" }}
-        variant="surface"
-      />
-
-      <TierSection
-        id="prosumer"
-        tag="Tier 02 · Prosumer"
-        title="Advanced AI operators for growing businesses and multi-site users."
-        desc="For tech-forward operators and growing businesses that want more control, customization, and intelligence."
-        positioning="Scale your operations"
-        benefits={["Multi-camera & multi-site", "Customizable capsules", "Higher performance"]}
-        useCases={["Multi-location retail", "Warehouses", "Short-term rentals", "Smart property mgmt"]}
-        capsules={[
-          { icon: HardHat, name: "PPE detection" },
-          { icon: UserX, name: "Loitering detection" },
-          { icon: Car, name: "Vehicle detection" },
-          { icon: Layers, name: "Custom workflows" },
-        ]}
-        primaryCTA={{ label: "Explore capabilities", to: "/labs/aotu/marketplace" }}
-        secondaryCTA={{ label: "Build your setup", to: "/labs/aotu/contact" }}
-        variant="elevated"
-      />
-
-      <TierSection
-        id="enterprise"
-        tag="Tier 03 · Commercial / Enterprise"
-        title="AI operators at scale for enterprise and industrial environments."
-        desc="For large organizations that need real-time automation across many sites, systems, and teams."
-        positioning="Replace manual monitoring"
-        benefits={[
-          "Full BrainFrame deployment",
-          "Large-scale orchestration",
-          "Integrates with your stack",
-          "Enterprise-grade SLAs",
-        ]}
-        useCases={[
-          "Manufacturing safety",
-          "Logistics & supply chain",
-          "Smart infrastructure",
-          "Large-scale security ops",
-        ]}
-        capsules={[
-          { icon: Boxes, name: "Full library + custom dev" },
-          { icon: HardHat, name: "Compliance monitoring" },
-          { icon: ShieldAlert, name: "Advanced anomaly detection" },
-          { icon: Flame, name: "Hazard & fire detection" },
-        ]}
-        primaryCTA={{ label: "Talk to sales", to: "/labs/aotu/contact" }}
-        secondaryCTA={{ label: "Request enterprise demo", to: "/labs/aotu/contact" }}
-        variant="surface"
-      />
-
+      <TieredSolutions />
       <ComparisonTable />
       <CapsuleConnection />
       <DeploymentSimplicity />
