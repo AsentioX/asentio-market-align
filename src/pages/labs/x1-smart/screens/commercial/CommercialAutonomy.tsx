@@ -18,7 +18,8 @@ const CommercialAutonomy = () => {
     toast.success('Suggestion accepted', { description: 'X1 will now run this automatically.' });
   };
 
-  const active = rules.filter((r) => r.active && !r.suggested);
+  const policies = rules.filter((r) => !r.suggested);
+  const activeCount = policies.filter((r) => r.active).length;
   const suggested = rules.filter((r) => r.suggested);
 
   return (
@@ -44,14 +45,14 @@ const CommercialAutonomy = () => {
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500 font-bold">
-            <Power className="w-3 h-3" /> Active policies · {active.length}
+            <Power className="w-3 h-3" /> Policies · {activeCount} of {policies.length} active
           </div>
           <button className="inline-flex items-center gap-1 text-[12px] font-semibold text-indigo-600 hover:text-indigo-800">
             <Plus className="w-3.5 h-3.5" /> New policy
           </button>
         </div>
         <div className="space-y-2">
-          {active.map((r) => <RuleCard key={r.id} rule={r} onToggle={() => toggle(r.id)} />)}
+          {policies.map((r) => <RuleCard key={r.id} rule={r} onToggle={() => toggle(r.id)} />)}
         </div>
       </div>
 
@@ -72,7 +73,7 @@ const CommercialAutonomy = () => {
 };
 
 const RuleCard = ({ rule, onToggle }: { rule: ComRule; onToggle: () => void }) => (
-  <motion.div layout className="rounded-2xl border border-black/[0.06] bg-white p-4 shadow-sm">
+  <motion.div layout className={`rounded-2xl border border-black/[0.06] bg-white p-4 shadow-sm transition-opacity ${rule.active ? '' : 'opacity-60'}`}>
     <div className="flex items-start justify-between gap-3">
       <div className="flex-1 min-w-0">
         <div className="text-sm font-semibold text-stone-900 mb-2">{rule.name}</div>
