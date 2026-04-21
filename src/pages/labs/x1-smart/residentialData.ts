@@ -3,6 +3,23 @@ export type ResPresence = 'home' | 'away' | 'approaching' | 'unknown';
 export type ResRole = 'owner' | 'family' | 'guest' | 'vendor' | 'unknown';
 export type ResHomeMode = 'home' | 'away' | 'night' | 'vacation';
 export type ResSpaceState = 'active' | 'secure' | 'alert';
+export type ResEventKind = 'identity' | 'security' | 'insight' | 'suggestion' | 'action' | 'anomaly';
+export type ResEventPriority = 'critical' | 'high' | 'normal' | 'low';
+
+export interface ResFeedEvent {
+  id: string;
+  kind: ResEventKind;
+  priority: ResEventPriority;
+  title: string;
+  detail: string;
+  spaceId?: string;
+  personId?: string;
+  timestamp: string;
+  confidence?: number;
+  reasoning?: string[];
+  suggestedAction?: { label: string; impact: string };
+  resolved?: boolean;
+}
 
 export interface ResPerson {
   id: string;
@@ -243,5 +260,108 @@ export const RES_RULES: ResRule[] = [
     active: false,
     suggested: true,
     confidence: 0.81,
+  },
+];
+
+export const RES_FEED: ResFeedEvent[] = [
+  {
+    id: 'r-e1',
+    kind: 'identity',
+    priority: 'normal',
+    title: 'Welcome home, Jon',
+    detail: 'Recognized at front door. Door unlocked, hallway lights → 60%, climate → 71°.',
+    spaceId: 'primary',
+    personId: 'jon',
+    timestamp: '2 min ago',
+    confidence: 0.99,
+    resolved: true,
+  },
+  {
+    id: 'r-e2',
+    kind: 'security',
+    priority: 'high',
+    title: 'Unrecognized person near back door',
+    detail: 'Lingered 47 seconds. No identity match. No knock or interaction with door.',
+    spaceId: 'primary',
+    personId: 'unknown',
+    timestamp: '8 min ago',
+    confidence: 0.78,
+    reasoning: [
+      'Face not in identity library',
+      'Dwell time exceeded 30s threshold',
+      'No expected delivery or appointment',
+    ],
+    suggestedAction: { label: 'Add to watchlist + save clip', impact: 'Future sightings auto-flagged' },
+  },
+  {
+    id: 'r-e3',
+    kind: 'identity',
+    priority: 'normal',
+    title: 'Sarah is approaching home',
+    detail: 'Geofence entered 0.4 mi out — ETA 2 min. Garage door queued, hallway lights staged.',
+    spaceId: 'primary',
+    personId: 'sarah',
+    timestamp: '3 min ago',
+    confidence: 0.97,
+  },
+  {
+    id: 'r-e4',
+    kind: 'suggestion',
+    priority: 'normal',
+    title: 'Automate your 10pm lock routine?',
+    detail: "You've manually locked the front door between 9:55–10:10pm on 23 of the last 30 nights.",
+    spaceId: 'primary',
+    timestamp: '12 min ago',
+    confidence: 0.88,
+    reasoning: [
+      'Pattern detected over 30-day window',
+      '23/30 nights between 9:55–10:10pm',
+      'Always when you are home',
+    ],
+    suggestedAction: { label: 'Enable auto-lock at 10pm', impact: 'Runs nightly when you are home' },
+  },
+  {
+    id: 'r-e5',
+    kind: 'action',
+    priority: 'low',
+    title: 'Door unlocked for FedEx → relocked',
+    detail: 'FedEx driver recognized. Front door unlocked for 47s, package placed, auto-relocked.',
+    spaceId: 'primary',
+    personId: 'fedex',
+    timestamp: '34 min ago',
+    confidence: 0.96,
+    resolved: true,
+  },
+  {
+    id: 'r-e6',
+    kind: 'insight',
+    priority: 'normal',
+    title: 'Energy use down 18% this week',
+    detail: 'Adaptive scenes reduced HVAC runtime by 4.2 hours vs last week. No comfort complaints.',
+    spaceId: 'primary',
+    timestamp: '1 hr ago',
+    confidence: 0.82,
+  },
+  {
+    id: 'r-e7',
+    kind: 'suggestion',
+    priority: 'high',
+    title: 'Enable Vacation Mode for Tahoe rental?',
+    detail: 'No presence detected for 6 days. Maya checks in Friday 3pm.',
+    spaceId: 'rental',
+    timestamp: '2 hr ago',
+    confidence: 0.94,
+    suggestedAction: { label: 'Enable vacation mode', impact: 'Lights randomized, alerts heightened, eco HVAC' },
+  },
+  {
+    id: 'r-e8',
+    kind: 'action',
+    priority: 'normal',
+    title: 'Aspen home pre-warmed for weekend trip',
+    detail: 'Calendar shows Aspen trip Sat. Heat ramped to 68°, water on, lights staged.',
+    spaceId: 'vacation',
+    timestamp: '4 hr ago',
+    confidence: 0.9,
+    resolved: true,
   },
 ];

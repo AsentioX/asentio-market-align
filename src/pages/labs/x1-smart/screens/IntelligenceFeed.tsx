@@ -1,12 +1,16 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, ChevronDown, Check, X, Sparkles, ShieldAlert, UserCheck, Lightbulb, Zap, Eye, TrendingUp, Activity, LayoutGrid, Shield, Zap as ZapIcon, Users } from 'lucide-react';
-import { FEED_EVENTS, type EventKind } from '../x1Data';
+import { RES_FEED, type ResFeedEvent, type ResEventKind } from '../residentialData';
+import { COM_FEED, type ComFeedEvent, type ComEventKind } from '../commercialData';
 import { PRIORITY_STYLES } from '../x1Theme';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
-const KIND_META: Record<EventKind, { icon: any; label: string; gradient: string }> = {
+type AnyEventKind = ResEventKind | ComEventKind;
+type AnyEvent = ResFeedEvent | ComFeedEvent;
+
+const KIND_META: Record<AnyEventKind, { icon: any; label: string; gradient: string }> = {
   identity: { icon: UserCheck, label: 'Identity', gradient: 'from-emerald-400 to-teal-500' },
   security: { icon: ShieldAlert, label: 'Security', gradient: 'from-amber-400 to-orange-500' },
   insight: { icon: Lightbulb, label: 'Insight', gradient: 'from-cyan-400 to-blue-500' },
@@ -24,25 +28,52 @@ const CATEGORY_META: Record<CategoryTab, { icon: any; label: string }> = {
   automation: { icon: ZapIcon, label: 'Automation' },
 };
 
-const IntelligenceFeed = () => {
-  const [expanded, setExpanded] = useState<string | null>(FEED_EVENTS[0]?.id ?? null);
+interface IntelligenceFeedProps {
+  appMode: 'aihome' | 'aispaces';
+}
+
+const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
+  const events: AnyEvent[] = appMode === 'aihome' ? RES_FEED : COM_FEED;
+  const [expanded, setExpanded] = useState<string | null>(events[0]?.id ?? null);
   const [resolved, setResolved] = useState<Record<string, 'approved' | 'dismissed'>>({});
   const [activeTab, setActiveTab] = useState<CategoryTab>('all');
 
   const filteredEvents = useMemo(() => {
-    if (activeTab === 'all') return FEED_EVENTS;
-    if (activeTab === 'security') return FEED_EVENTS.filter(e => e.kind === 'security' || e.kind === 'anomaly');
-    if (activeTab === 'identity') return FEED_EVENTS.filter(e => e.kind === 'identity');
-    if (activeTab === 'automation') return FEED_EVENTS.filter(e => e.kind === 'action' || e.kind === 'suggestion' || e.kind === 'insight');
-    return FEED_EVENTS;
-  }, [activeTab]);
+    if (activeTab === 'all') return events;
+    if (activeTab === 'security') return events.filter(e => e.kind === 'security' || e.kind === 'anomaly');
+    if (activeTab === 'identity') return events.filter(e => e.kind === 'identity');
+    if (activeTab === 'automation') return events.filter(e => e.kind === 'action' || e.kind === 'suggestion' || e.kind === 'insight');
+    return events;
+  }, [activeTab, events]);
 
   const handle = (id: string, action: 'approved' | 'dismissed', label: string) => {
     setResolved((r) => ({ ...r, [id]: action }));
     toast.success(action === 'approved' ? `Approved · ${label}` : 'Dismissed', {
-      description: action === 'approved' ? 'System will learn from this confirmation.' : 'X1 won\'t suggest this again.',
+      description: action === 'approved' ? 'System will learn from this confirmation.' : "X1 won't suggest this again.",
     });
   };
+
+  const hero = appMode === 'aihome'
+    ? {
+        eyebrow: 'Tonight · 7:42 PM',
+        greeting: <>Good evening, Jon. <span className="text-stone-400">Everything looks calm at home.</span></>,
+        sub: <><span className="text-amber-700 font-medium">1 thing needs your attention</span> at the back door · <span className="text-violet-600 font-medium">2 suggestions</span> ready to review · 3 auto-actions completed today.</>,
+        stats: [
+          { icon: Activity, label: 'Actions today', value: '3', gradient: 'from-emerald-400 to-teal-500' },
+          { icon: TrendingUp, label: 'Energy saved', value: '18%', gradient: 'from-cyan-400 to-blue-500' },
+          { icon: Sparkles, label: 'Patterns learned', value: '23', gradient: 'from-amber-400 to-orange-500' },
+        ],
+      }
+    : {
+        eyebrow: 'Today · 1:08 PM',
+        greeting: <>Good afternoon. <span className="text-stone-400">3 sites operational, 1 needs attention.</span></>,
+        sub: <><span className="text-rose-700 font-medium">1 critical event</span> at Warehouse · <span className="text-violet-600 font-medium">2 policy suggestions</span> ready · 17 people on-site across 3 sites.</>,
+        stats: [
+          { icon: Activity, label: 'Events today', value: '47', gradient: 'from-indigo-400 to-violet-500' },
+          { icon: TrendingUp, label: 'HVAC saved', value: '22%', gradient: 'from-emerald-400 to-teal-500' },
+          { icon: Sparkles, label: 'Patterns learned', value: '47', gradient: 'from-amber-400 to-orange-500' },
+        ],
+      };
 
   return (
     <div className="space-y-6">
@@ -54,22 +85,17 @@ const IntelligenceFeed = () => {
             <Brain className="w-6 h-6 text-white" strokeWidth={2} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-violet-600 font-semibold mb-1.5">Tonight · 7:42 PM</div>
-            <h1 className="text-[26px] leading-[1.15] font-semibold tracking-tight text-stone-900">
-              Good evening, Jon. <span className="text-stone-400">Everything looks calm at home.</span>
-            </h1>
-            <p className="text-sm text-stone-600 mt-3 leading-relaxed">
-              <span className="text-amber-700 font-medium">1 thing needs your attention</span> at Warehouse B ·
-              <span className="text-violet-600 font-medium"> 2 suggestions</span> ready to review · 4 auto-actions completed today.
-            </p>
+            <div className="text-[11px] uppercase tracking-[0.18em] text-violet-600 font-semibold mb-1.5">{hero.eyebrow}</div>
+            <h1 className="text-[26px] leading-[1.15] font-semibold tracking-tight text-stone-900">{hero.greeting}</h1>
+            <p className="text-sm text-stone-600 mt-3 leading-relaxed">{hero.sub}</p>
           </div>
         </div>
 
         {/* Quick stats strip */}
         <div className="relative mt-5 grid grid-cols-3 gap-3">
-          <StatChip icon={Activity} label="Actions today" value="4" gradient="from-indigo-400 to-violet-500" />
-          <StatChip icon={TrendingUp} label="Energy saved" value="18%" gradient="from-emerald-400 to-teal-500" />
-          <StatChip icon={Sparkles} label="Patterns learned" value="23" gradient="from-amber-400 to-orange-500" />
+          {hero.stats.map((s) => (
+            <StatChip key={s.label} icon={s.icon} label={s.label} value={s.value} gradient={s.gradient} />
+          ))}
         </div>
       </div>
 
@@ -114,7 +140,7 @@ const IntelligenceFeed = () => {
       {/* Event cards */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={activeTab}
+          key={`${appMode}-${activeTab}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
@@ -138,14 +164,12 @@ const IntelligenceFeed = () => {
                   isExpanded ? 'border-black/12 shadow-md' : 'border-black/[0.06] hover:border-black/12 hover:shadow-md'
                 } ${status === 'approved' ? 'opacity-60' : ''}`}
               >
-                {/* Left priority accent bar */}
                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${p.dot}`} />
 
                 <button
                   onClick={() => setExpanded(isExpanded ? null : event.id)}
                   className="w-full text-left p-4 pl-5 flex items-start gap-3.5"
                 >
-                  {/* Gradient icon tile */}
                   <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${kind.gradient} flex items-center justify-center flex-shrink-0 shadow-md`}>
                     <KindIcon className="w-5 h-5 text-white" strokeWidth={2} />
                   </div>

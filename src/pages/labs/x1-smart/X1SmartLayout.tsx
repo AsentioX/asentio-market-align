@@ -151,7 +151,7 @@ const X1SmartLayout = () => {
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.25 }}
           >
-            {surface === 'feed' && <IntelligenceFeed />}
+            {surface === 'feed' && <IntelligenceFeed appMode={appMode} />}
             {surface === 'people' && (appMode === 'aihome' ? <ResidentialPeople /> : <CommercialPeople />)}
             {surface === 'spaces' && (appMode === 'aihome' ? <ResidentialSpaces /> : <CommercialSpaces />)}
             {surface === 'autonomy' && (appMode === 'aihome' ? <ResidentialAutonomy /> : <CommercialAutonomy />)}

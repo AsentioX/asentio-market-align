@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Shield, Activity, X, Clock, Briefcase, MapPin, AlertTriangle, Filter } from 'lucide-react';
 import { COM_PEOPLE, type ComPerson, type ComRole, type ComRisk } from '../../commercialData';
+import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
 
 const PRESENCE_META = {
   'on-site': { label: 'On-site', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
@@ -66,9 +67,13 @@ const CommercialPeople = () => {
               }`}
             >
               <div className="relative flex-shrink-0">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${p.avatarColor} flex items-center justify-center font-bold text-white text-base shadow-md`}>
-                  {p.initials}
-                </div>
+                {PERSON_HEADSHOTS[p.id] ? (
+                  <img src={PERSON_HEADSHOTS[p.id]} alt={p.name} loading="lazy" className="w-12 h-12 rounded-xl object-cover shadow-md" width={48} height={48} />
+                ) : (
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${p.avatarColor} flex items-center justify-center font-bold text-white text-base shadow-md`}>
+                    {p.initials}
+                  </div>
+                )}
                 <span className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full ${pres.dot} ring-[3px] ring-white`} />
               </div>
               <div className="flex-1 min-w-0">
@@ -139,7 +144,11 @@ const PersonDrawer = ({ person, onClose }: { person: ComPerson; onClose: () => v
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-2xl -translate-y-10 translate-x-10" />
             <div className="relative flex items-center gap-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center font-bold text-white text-2xl border border-white/30">{person.initials}</div>
+                {PERSON_HEADSHOTS[person.id] ? (
+                  <img src={PERSON_HEADSHOTS[person.id]} alt={person.name} loading="lazy" className="w-20 h-20 rounded-2xl object-cover border border-white/30" width={80} height={80} />
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center font-bold text-white text-2xl border border-white/30">{person.initials}</div>
+                )}
                 <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full ${pres.dot} ring-[3px] ring-white`} />
               </div>
               <div className="text-white">
