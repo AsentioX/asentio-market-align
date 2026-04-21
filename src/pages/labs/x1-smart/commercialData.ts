@@ -135,7 +135,7 @@ export const COM_PEOPLE: ComPerson[] = [
     title: 'HVAC technician · CoolFlow',
     presence: 'approaching',
     initials: 'MR',
-    avatarColor: 'from-amber-500 via-orange-400 to-rose-500',
+    avatarColor: 'from-cyan-500 via-blue-500 to-indigo-500',
     accessLevel: 'escorted',
     zones: ['Warehouse · Mechanical room'],
     schedule: 'Today only · 2p–4p',
