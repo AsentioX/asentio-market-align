@@ -51,9 +51,12 @@ export interface ResSpace {
   suggestedActions: string[];
 }
 
+export type ResRuleCategory = 'atmosphere' | 'security' | 'environment' | 'resident' | 'guest';
+
 export interface ResRule {
   id: string;
   name: string;
+  category: ResRuleCategory;
   ifClause: string;
   thenClause: string;
   active: boolean;

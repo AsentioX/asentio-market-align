@@ -55,9 +55,12 @@ export interface ComSpace {
   suggestedActions: string[];
 }
 
+export type ComRuleCategory = 'security' | 'environment';
+
 export interface ComRule {
   id: string;
   name: string;
+  category: ComRuleCategory;
   ifClause: string;
   thenClause: string;
   active: boolean;
