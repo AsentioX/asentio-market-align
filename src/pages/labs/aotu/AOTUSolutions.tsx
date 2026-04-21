@@ -715,6 +715,15 @@ const TieredSolutions = () => {
   const [active, setActive] = useState(tiers[0].key);
   const activeTier = tiers.find((t) => t.key === active) ?? tiers[0];
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail;
+      if (detail && tiers.some((t) => t.key === detail)) setActive(detail);
+    };
+    window.addEventListener("aotu:set-tier", handler);
+    return () => window.removeEventListener("aotu:set-tier", handler);
+  }, []);
+
   return (
     <section id="tiers" className="bg-[#0A0A0A] border-b border-white/[0.06]">
       <div className="max-w-7xl mx-auto px-6 pt-20 md:pt-24">
