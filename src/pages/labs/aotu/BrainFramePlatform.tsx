@@ -582,13 +582,129 @@ const FinalCTA = () => (
   </section>
 );
 
+// ---------- BrainFrame In Action (large imagery) ----------
+const useCases = [
+  {
+    img: useWarehouse,
+    tag: "Logistics & Manufacturing",
+    title: "See every forklift, worker, and zone — in real time.",
+    desc: "Track movement, enforce safety zones, and prevent collisions across sprawling warehouse floors.",
+    capsule: "Forklift + PPE Detection",
+  },
+  {
+    img: useRetail,
+    tag: "Retail",
+    title: "Understand customer behavior without watching every feed.",
+    desc: "Detect dwell, queues, and theft patterns across stores — turning camera networks into business intelligence.",
+    capsule: "Loitering + Anomaly Detection",
+  },
+  {
+    img: usePerimeter,
+    tag: "Perimeter & Access",
+    title: "Know who and what enters — the moment it happens.",
+    desc: "License plate recognition, vehicle tracking, and intrusion alerts across parking lots and entryways.",
+    capsule: "Vehicle + Intrusion Detection",
+  },
+  {
+    img: useConstruction,
+    tag: "Construction & Industrial",
+    title: "Enforce PPE compliance automatically.",
+    desc: "Spot missing hard hats, vests, and harnesses across active job sites — without a human reviewing footage.",
+    capsule: "PPE Detection",
+  },
+];
+
+const InAction = () => (
+  <section className="bg-[#0A0A0A] border-b border-white/[0.06]">
+    <div className="max-w-7xl mx-auto px-6 py-24 md:py-32">
+      <div className="max-w-3xl mb-14">
+        <div
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-3"
+          style={{ fontFamily: '"JetBrains Mono", monospace', color: ACCENT }}
+        >
+          // In action
+        </div>
+        <h2
+          className="text-[36px] md:text-[52px] font-semibold leading-[1.05] tracking-tight text-[#F4FDFF]"
+          style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
+        >
+          BrainFrame in the real world.
+        </h2>
+        <p className="mt-5 text-[18px] text-[#F4FDFF]/60 leading-relaxed">
+          Every camera, every site, every shift — turned into an AI operator working on your behalf.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {useCases.map((u, i) => (
+          <Link
+            key={u.title}
+            to="/labs/aotu/solutions"
+            className="group relative rounded-2xl overflow-hidden border border-white/10 bg-[#161B22] hover:border-[#FF5E1A]/40 transition-all"
+          >
+            <div className="relative aspect-[16/10] overflow-hidden">
+              <img
+                src={u.img}
+                alt={u.title}
+                width={1280}
+                height={896}
+                loading={i < 2 ? "eager" : "lazy"}
+                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/30 to-transparent" />
+              <div
+                className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 border border-white/10 backdrop-blur"
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: ACCENT }} />
+                <span
+                  className="text-[10px] uppercase tracking-[0.18em] text-[#F4FDFF]/85"
+                  style={{ fontFamily: '"JetBrains Mono", monospace' }}
+                >
+                  {u.tag}
+                </span>
+              </div>
+            </div>
+            <div className="p-7">
+              <h3
+                className="text-[22px] md:text-[24px] font-semibold leading-tight text-[#F4FDFF]"
+                style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+              >
+                {u.title}
+              </h3>
+              <p className="mt-3 text-[15px] text-[#F4FDFF]/60 leading-relaxed">{u.desc}</p>
+              <div className="mt-5 flex items-center justify-between">
+                <div
+                  className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#F4FDFF]/50"
+                  style={{ fontFamily: '"JetBrains Mono", monospace' }}
+                >
+                  <Boxes className="w-3.5 h-3.5" style={{ color: ACCENT }} />
+                  {u.capsule}
+                </div>
+                <div
+                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold group-hover:gap-2.5 transition-all"
+                  style={{ color: ACCENT }}
+                >
+                  Explore
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 // ---------- Page ----------
 const BrainFramePlatform = () => {
   return (
     <>
       <Hero />
+      <HeroShowcase />
       <WhatItDoes />
       <HowItWorks />
+      <InAction />
       <Architecture />
       <WhyBrainFrame />
       <CapsuleIntegration />
