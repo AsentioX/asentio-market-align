@@ -4,6 +4,23 @@ export type ComPresence = 'on-site' | 'off-site' | 'approaching' | 'unauthorized
 export type ComRisk = 'low' | 'medium' | 'high';
 export type ComSpaceMode = 'open' | 'closed' | 'after-hours' | 'maintenance' | 'emergency';
 export type ComSpaceState = 'active' | 'secure' | 'alert';
+export type ComEventKind = 'identity' | 'security' | 'insight' | 'suggestion' | 'action' | 'anomaly';
+export type ComEventPriority = 'critical' | 'high' | 'normal' | 'low';
+
+export interface ComFeedEvent {
+  id: string;
+  kind: ComEventKind;
+  priority: ComEventPriority;
+  title: string;
+  detail: string;
+  spaceId?: string;
+  personId?: string;
+  timestamp: string;
+  confidence?: number;
+  reasoning?: string[];
+  suggestedAction?: { label: string; impact: string };
+  resolved?: boolean;
+}
 
 export interface ComPerson {
   id: string;

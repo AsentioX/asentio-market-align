@@ -3,6 +3,23 @@ export type ResPresence = 'home' | 'away' | 'approaching' | 'unknown';
 export type ResRole = 'owner' | 'family' | 'guest' | 'vendor' | 'unknown';
 export type ResHomeMode = 'home' | 'away' | 'night' | 'vacation';
 export type ResSpaceState = 'active' | 'secure' | 'alert';
+export type ResEventKind = 'identity' | 'security' | 'insight' | 'suggestion' | 'action' | 'anomaly';
+export type ResEventPriority = 'critical' | 'high' | 'normal' | 'low';
+
+export interface ResFeedEvent {
+  id: string;
+  kind: ResEventKind;
+  priority: ResEventPriority;
+  title: string;
+  detail: string;
+  spaceId?: string;
+  personId?: string;
+  timestamp: string;
+  confidence?: number;
+  reasoning?: string[];
+  suggestedAction?: { label: string; impact: string };
+  resolved?: boolean;
+}
 
 export interface ResPerson {
   id: string;
