@@ -19,6 +19,11 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
+import heroOps from "@/assets/aotu/hero-operations.jpg";
+import useWarehouse from "@/assets/aotu/usecase-warehouse.jpg";
+import useRetail from "@/assets/aotu/usecase-retail.jpg";
+import usePerimeter from "@/assets/aotu/usecase-perimeter.jpg";
+import useConstruction from "@/assets/aotu/usecase-construction.jpg";
 
 const ACCENT = "#FF5E1A";
 const ACCENT_HOVER = "#FF8C42";
