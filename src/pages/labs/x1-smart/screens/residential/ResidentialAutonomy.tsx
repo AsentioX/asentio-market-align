@@ -18,7 +18,8 @@ const ResidentialAutonomy = () => {
     toast.success('Suggestion accepted', { description: 'X1 will now run this automatically.' });
   };
 
-  const active = rules.filter((r) => r.active && !r.suggested);
+  const automations = rules.filter((r) => !r.suggested);
+  const activeCount = automations.filter((r) => r.active).length;
   const suggested = rules.filter((r) => r.suggested);
 
   return (
