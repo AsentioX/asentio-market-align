@@ -25,7 +25,7 @@ export const X1_THEME = {
 
 export const PRIORITY_STYLES = {
   critical: { dot: 'bg-rose-500', glow: 'shadow-[0_0_12px_rgba(244,63,94,0.4)]', text: 'text-rose-600', ring: 'ring-rose-400/40', soft: 'bg-rose-50', border: 'border-rose-200' },
-  high: { dot: 'bg-amber-500', glow: 'shadow-[0_0_10px_rgba(245,158,11,0.4)]', text: 'text-amber-700', ring: 'ring-amber-400/30', soft: 'bg-amber-50', border: 'border-amber-200' },
+  high: { dot: 'bg-cyan-500', glow: 'shadow-[0_0_10px_rgba(6,182,212,0.4)]', text: 'text-cyan-600', ring: 'ring-cyan-400/30', soft: 'bg-cyan-50', border: 'border-cyan-200' },
   normal: { dot: 'bg-indigo-500', glow: 'shadow-[0_0_8px_rgba(99,102,241,0.4)]', text: 'text-indigo-600', ring: 'ring-indigo-400/30', soft: 'bg-indigo-50', border: 'border-indigo-200' },
   low: { dot: 'bg-stone-300', glow: '', text: 'text-stone-500', ring: 'ring-stone-200', soft: 'bg-stone-50', border: 'border-stone-200' },
 } as const;
