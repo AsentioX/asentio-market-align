@@ -256,51 +256,86 @@ export const COM_SPACES: ComSpace[] = [
 ];
 
 export const COM_RULES: ComRule[] = [
+  // ── SECURITY ────────────────────────────────────────────
   {
-    id: 'c1',
+    id: 'c-sec-1',
     name: 'Employee badge access',
+    category: 'security',
     ifClause: 'IF employee badge scanned during scheduled hours',
     thenClause: 'THEN unlock zone · log entry · update occupancy',
     active: true,
   },
   {
-    id: 'c2',
+    id: 'c-sec-2',
     name: 'After-hours intrusion',
+    category: 'security',
     ifClause: 'IF motion detected after-hours AND no badge scan',
     thenClause: 'THEN alert security · lock perimeter · save 60s clip',
     active: true,
   },
   {
-    id: 'c3',
+    id: 'c-sec-3',
     name: 'Vendor access window',
+    category: 'security',
     ifClause: 'IF vendor arrives within scheduled window AND zones match',
     thenClause: 'THEN grant time-bound access · auto-expire · notify host',
     active: true,
   },
   {
-    id: 'c4',
+    id: 'c-sec-4',
     name: 'Visitor escort',
+    category: 'security',
     ifClause: 'IF visitor leaves authorized zone unescorted',
     thenClause: 'THEN alert host · log event · request return to escort',
     active: true,
   },
   {
-    id: 'c5',
+    id: 'c-sec-5',
     name: 'All-sites secure at 8pm',
+    category: 'security',
     ifClause: 'IF time = 8:00pm AND any site still open',
     thenClause: 'THEN switch to Closed · arm alarms · lock all doors',
     active: false,
     suggested: true,
     confidence: 0.93,
   },
+
+  // ── ENVIRONMENT (HVAC, lighting) ────────────────────────
   {
-    id: 'c6',
+    id: 'c-env-1',
+    name: 'Open-hours HVAC ramp',
+    category: 'environment',
+    ifClause: 'IF site mode = Open AND occupancy > 10%',
+    thenClause: 'THEN ramp HVAC to comfort setpoint · raise lighting to 80%',
+    active: true,
+  },
+  {
+    id: 'c-env-2',
+    name: 'Zone lighting on entry',
+    category: 'environment',
+    ifClause: 'IF first person enters a zone',
+    thenClause: 'THEN raise zone lighting to task level · log presence',
+    active: true,
+  },
+  {
+    id: 'c-env-3',
     name: 'Occupancy-aware HVAC',
+    category: 'environment',
     ifClause: 'IF zone occupancy < 25% for 30 min',
     thenClause: 'THEN reduce HVAC + lighting in that zone',
     active: false,
     suggested: true,
     confidence: 0.86,
+  },
+  {
+    id: 'c-env-4',
+    name: 'Conf room idle shutoff',
+    category: 'environment',
+    ifClause: 'IF conference room booked but unoccupied > 15 min',
+    thenClause: 'THEN release booking · cut HVAC + lighting in zone',
+    active: false,
+    suggested: true,
+    confidence: 0.82,
   },
 ];
 
