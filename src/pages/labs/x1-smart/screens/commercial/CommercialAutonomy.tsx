@@ -73,7 +73,7 @@ const CommercialAutonomy = () => {
 };
 
 const RuleCard = ({ rule, onToggle }: { rule: ComRule; onToggle: () => void }) => (
-  <motion.div layout className="rounded-2xl border border-black/[0.06] bg-white p-4 shadow-sm">
+  <motion.div layout className={`rounded-2xl border border-black/[0.06] bg-white p-4 shadow-sm transition-opacity ${rule.active ? '' : 'opacity-60'}`}>
     <div className="flex items-start justify-between gap-3">
       <div className="flex-1 min-w-0">
         <div className="text-sm font-semibold text-stone-900 mb-2">{rule.name}</div>
