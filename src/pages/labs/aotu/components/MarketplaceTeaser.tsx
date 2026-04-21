@@ -12,18 +12,18 @@ const capsules = [
 
 const MarketplaceTeaser = () => {
   return (
-    <section className="bg-white border-b border-[#E5E7EB]">
+    <section className="bg-[#0A0A0A] border-b border-white/[0.06]">
       <div className="max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="flex items-end justify-between flex-wrap gap-6 mb-14">
           <div className="max-w-2xl">
             <div
-              className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00B8FF] mb-3"
+              className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF5E1A] mb-3"
               style={{ fontFamily: '"JetBrains Mono", monospace' }}
             >
               // Marketplace
             </div>
             <h2
-              className="text-[36px] md:text-[52px] font-semibold tracking-tight leading-[1.05] text-[#0A0F1C]"
+              className="text-[36px] md:text-[52px] font-semibold tracking-tight leading-[1.05] text-[#F4FDFF]"
               style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
             >
               Explore AI operators.
@@ -31,7 +31,7 @@ const MarketplaceTeaser = () => {
           </div>
           <Link
             to="/labs/aotu/marketplace"
-            className="text-[14px] font-semibold text-[#0A0F1C] inline-flex items-center gap-1.5 hover:text-[#00B8FF] transition-colors"
+            className="text-[14px] font-semibold text-[#F4FDFF] inline-flex items-center gap-1.5 hover:text-[#FF5E1A] transition-colors"
           >
             View all
             <ArrowUpRight className="w-4 h-4" />
@@ -45,22 +45,22 @@ const MarketplaceTeaser = () => {
               <Link
                 key={c.name}
                 to="/labs/aotu/marketplace"
-                className="group bg-white border border-[#E5E7EB] rounded-2xl p-6 hover:border-[#00B8FF]/50 hover:-translate-y-0.5 transition-all flex items-start gap-4"
+                className="group bg-[#161B22] border border-white/10 rounded-2xl p-6 hover:border-[#FF5E1A]/50 hover:bg-[#1C232E] hover:-translate-y-0.5 transition-all flex items-start gap-4"
               >
-                <div className="w-11 h-11 rounded-lg bg-[#00B8FF]/10 text-[#00B8FF] flex items-center justify-center shrink-0">
+                <div className="w-11 h-11 rounded-lg bg-[#FF5E1A]/15 text-[#FF5E1A] flex items-center justify-center shrink-0 border border-[#FF5E1A]/20">
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div
-                    className="text-[16px] font-semibold text-[#0A0F1C] mb-1"
+                    className="text-[16px] font-semibold text-[#F4FDFF] mb-1"
                     style={{ fontFamily: '"Space Grotesk", sans-serif' }}
                   >
                     {c.name}
                   </div>
-                  <div className="text-[13.5px] text-[#0A0F1C]/60 leading-relaxed mb-3">
+                  <div className="text-[13.5px] text-[#F4FDFF]/55 leading-relaxed mb-3">
                     {c.desc}
                   </div>
-                  <div className="text-[12.5px] font-semibold inline-flex items-center gap-1 text-[#0A0F1C] group-hover:text-[#00B8FF] transition-colors">
+                  <div className="text-[12.5px] font-semibold inline-flex items-center gap-1 text-[#F4FDFF] group-hover:text-[#FF5E1A] transition-colors">
                     View
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                   </div>

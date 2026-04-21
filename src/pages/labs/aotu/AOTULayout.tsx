@@ -5,7 +5,7 @@ import AOTUFooter from "./components/AOTUFooter";
 const AOTULayout = () => {
   return (
     <div
-      className="min-h-screen bg-[#F4F5F7] text-[#0A0F1C]"
+      className="min-h-screen bg-[#0A0A0A] text-[#F4FDFF]"
       style={{
         fontFamily: '"Inter", system-ui, sans-serif',
       }}
