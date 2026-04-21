@@ -104,6 +104,49 @@ const Hero = () => (
   </section>
 );
 
+// ---------- Hero Visual Showcase ----------
+const HeroShowcase = () => (
+  <section className="bg-[#0A0A0A] border-b border-white/[0.06]">
+    <div className="max-w-7xl mx-auto px-6 -mt-12 md:-mt-20 pb-24 md:pb-32">
+      <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#161B22] shadow-2xl shadow-black/60">
+        <img
+          src={heroOps}
+          alt="BrainFrame operations command center with live AI detection across multiple camera feeds"
+          width={1920}
+          height={1080}
+          className="w-full h-auto block"
+        />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div
+              className="text-[10.5px] uppercase tracking-[0.18em] mb-2"
+              style={{ fontFamily: '"JetBrains Mono", monospace', color: ACCENT }}
+            >
+              // Live deployment
+            </div>
+            <div
+              className="text-[20px] md:text-[28px] font-semibold text-[#F4FDFF] max-w-2xl leading-tight"
+              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            >
+              One operator, every camera, every site — in real time.
+            </div>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 border border-white/10 backdrop-blur">
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: ACCENT }} />
+            <span
+              className="text-[10.5px] uppercase tracking-[0.18em] text-[#F4FDFF]/80"
+              style={{ fontFamily: '"JetBrains Mono", monospace' }}
+            >
+              Live · 12 sites · 248 streams
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 // ---------- What BrainFrame Does ----------
 const capabilities = [
   { icon: Zap, title: "Real-Time Detection", desc: "Process live video streams and detect events instantly." },
