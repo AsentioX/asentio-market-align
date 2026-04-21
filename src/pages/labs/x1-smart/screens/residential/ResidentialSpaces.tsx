@@ -8,7 +8,7 @@ const TYPE_ICON = { primary: Home, vacation: Mountain, rental: KeyRound } as con
 const TYPE_GRAD = {
   primary: 'from-emerald-400 via-teal-400 to-cyan-400',
   vacation: 'from-violet-500 via-purple-500 to-fuchsia-500',
-  rental: 'from-cyan-500 via-blue-400 to-indigo-400',
+  rental: 'from-amber-400 via-orange-400 to-rose-400',
 } as const;
 
 const STATE_META = {

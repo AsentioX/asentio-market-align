@@ -7,7 +7,7 @@ import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
 const PRESENCE_META: Record<ResPresence, { label: string; dot: string; text: string; soft: string }> = {
   home: { label: 'Home', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
   away: { label: 'Away', dot: 'bg-stone-400', text: 'text-stone-500', soft: 'bg-stone-50 border-stone-200' },
-  approaching: { label: 'Approaching', dot: 'bg-cyan-500 animate-pulse', text: 'text-cyan-600', soft: 'bg-cyan-50 border-cyan-200' },
+  approaching: { label: 'Approaching', dot: 'bg-amber-500 animate-pulse', text: 'text-amber-700', soft: 'bg-amber-50 border-amber-200' },
   unknown: { label: 'Unknown', dot: 'bg-rose-500 animate-pulse', text: 'text-rose-600', soft: 'bg-rose-50 border-rose-200' },
 };
 

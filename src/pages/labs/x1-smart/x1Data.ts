@@ -102,7 +102,7 @@ export const PEOPLE: Person[] = [
     name: 'Unrecognized Person',
     role: 'unknown',
     presence: 'approaching',
-    avatarColor: 'from-cyan-500 to-blue-500',
+    avatarColor: 'from-amber-500 to-orange-400',
     initials: '?',
     lastSeen: '3m ago · Back door',
     recentActivity: [
