@@ -57,11 +57,11 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
     ? {
         eyebrow: 'Tonight · 7:42 PM',
         greeting: <>Good evening, Jon. <span className="text-stone-400">Everything looks calm at home.</span></>,
-        sub: <><span className="text-amber-700 font-medium">1 thing needs your attention</span> at the back door · <span className="text-violet-600 font-medium">2 suggestions</span> ready to review · 3 auto-actions completed today.</>,
+        sub: <><span className="text-cyan-600 font-medium">1 thing needs your attention</span> at the back door · <span className="text-violet-600 font-medium">2 suggestions</span> ready to review · 3 auto-actions completed today.</>,
         stats: [
           { icon: Activity, label: 'Actions today', value: '3', gradient: 'from-emerald-400 to-teal-500' },
           { icon: TrendingUp, label: 'Energy saved', value: '18%', gradient: 'from-cyan-400 to-blue-500' },
-          { icon: Sparkles, label: 'Patterns learned', value: '23', gradient: 'from-amber-400 to-orange-500' },
+          { icon: Sparkles, label: 'Patterns learned', value: '23', gradient: 'from-cyan-400 to-blue-500' },
         ],
       }
     : {
@@ -71,7 +71,7 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
         stats: [
           { icon: Activity, label: 'Events today', value: '47', gradient: 'from-indigo-400 to-violet-500' },
           { icon: TrendingUp, label: 'HVAC saved', value: '22%', gradient: 'from-emerald-400 to-teal-500' },
-          { icon: Sparkles, label: 'Patterns learned', value: '47', gradient: 'from-amber-400 to-orange-500' },
+          { icon: Sparkles, label: 'Patterns learned', value: '47', gradient: 'from-cyan-400 to-blue-500' },
         ],
       };
 
