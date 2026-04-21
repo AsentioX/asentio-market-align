@@ -39,8 +39,8 @@ export const STATE_STYLES = {
 
 // Vibrant gradient palette for graphical accents
 export const GRADIENTS = {
-  primary: 'bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500',
-  warm: 'bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400',
+  primary: 'bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500',
+  accent: 'bg-gradient-to-br from-cyan-400 via-blue-500 to-cyan-500',
   cool: 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-500',
   fresh: 'bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400',
   alert: 'bg-gradient-to-br from-rose-500 via-red-500 to-orange-500',
