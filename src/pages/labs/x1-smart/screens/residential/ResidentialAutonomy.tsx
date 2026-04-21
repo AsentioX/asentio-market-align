@@ -1,8 +1,18 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Sparkles, Power, Brain } from 'lucide-react';
-import { RES_RULES, type ResRule } from '../../residentialData';
+import { Plus, Sparkles, Power, Brain, Sun, Shield, Thermometer, Home as HomeIcon, UserPlus } from 'lucide-react';
+import { RES_RULES, type ResRule, type ResRuleCategory } from '../../residentialData';
 import { toast } from 'sonner';
+
+const CATEGORY_META: Record<ResRuleCategory, { label: string; icon: any; gradient: string; tint: string }> = {
+  atmosphere:  { label: 'Atmosphere',          icon: Sun,         gradient: 'from-amber-400 to-orange-500',   tint: 'text-amber-700' },
+  security:    { label: 'Security',             icon: Shield,      gradient: 'from-rose-400 to-red-500',       tint: 'text-rose-700' },
+  environment: { label: 'Environment · HVAC + Lighting', icon: Thermometer, gradient: 'from-cyan-400 to-blue-500', tint: 'text-cyan-700' },
+  resident:    { label: 'By Resident',          icon: HomeIcon,    gradient: 'from-emerald-400 to-teal-500',   tint: 'text-emerald-700' },
+  guest:       { label: 'By Guest',             icon: UserPlus,    gradient: 'from-violet-400 to-fuchsia-500', tint: 'text-violet-700' },
+};
+
+const CATEGORY_ORDER: ResRuleCategory[] = ['atmosphere', 'security', 'environment', 'resident', 'guest'];
 
 const ResidentialAutonomy = () => {
   const [rules, setRules] = useState<ResRule[]>(RES_RULES);
@@ -21,6 +31,13 @@ const ResidentialAutonomy = () => {
   const automations = rules.filter((r) => !r.suggested);
   const activeCount = automations.filter((r) => r.active).length;
   const suggested = rules.filter((r) => r.suggested);
+
+  const groupedAutomations = useMemo(() => {
+    const map = new Map<ResRuleCategory, ResRule[]>();
+    CATEGORY_ORDER.forEach((c) => map.set(c, []));
+    automations.forEach((r) => map.get(r.category)?.push(r));
+    return map;
+  }, [automations]);
 
   return (
     <div className="space-y-6">
@@ -43,9 +60,9 @@ const ResidentialAutonomy = () => {
         </div>
       </div>
 
-      {/* Active rules */}
+      {/* Active rules — grouped by category */}
       <div>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500 font-bold">
             <Power className="w-3 h-3" /> Automations · {activeCount} of {automations.length} active
           </div>
@@ -53,10 +70,29 @@ const ResidentialAutonomy = () => {
             <Plus className="w-3.5 h-3.5" /> New rule
           </button>
         </div>
-        <div className="space-y-2">
-          {automations.map((r) => (
-            <RuleCard key={r.id} rule={r} onToggle={() => toggle(r.id)} />
-          ))}
+
+        <div className="space-y-6">
+          {CATEGORY_ORDER.map((cat) => {
+            const list = groupedAutomations.get(cat) || [];
+            if (list.length === 0) return null;
+            const meta = CATEGORY_META[cat];
+            const CatIcon = meta.icon;
+            const catActive = list.filter((r) => r.active).length;
+            return (
+              <div key={cat}>
+                <div className="flex items-center gap-2.5 mb-2.5">
+                  <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${meta.gradient} flex items-center justify-center shadow-sm`}>
+                    <CatIcon className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
+                  </div>
+                  <div className={`text-[11px] uppercase tracking-[0.16em] font-bold ${meta.tint}`}>{meta.label}</div>
+                  <span className="text-[11px] text-stone-400 bg-stone-100 rounded-full px-2 py-0.5 font-medium">{catActive}/{list.length}</span>
+                </div>
+                <div className="space-y-2">
+                  {list.map((r) => <RuleCard key={r.id} rule={r} onToggle={() => toggle(r.id)} />)}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -83,8 +119,8 @@ const RuleCard = ({ rule, onToggle }: { rule: ResRule; onToggle: () => void }) =
       <div className="flex-1 min-w-0">
         <div className="text-sm font-semibold text-stone-900 mb-2">{rule.name}</div>
         <div className="space-y-1 font-mono text-[12px] leading-relaxed">
-          <div className="text-indigo-700"><span className="font-bold">{rule.ifClause.split(' ')[0]}</span> {rule.ifClause.replace(/^IF /, '')}</div>
-          <div className="text-emerald-700"><span className="font-bold">{rule.thenClause.split(' ')[0]}</span> {rule.thenClause.replace(/^THEN /, '')}</div>
+          <div className="text-indigo-700"><span className="font-bold">IF</span> {rule.ifClause.replace(/^IF /, '')}</div>
+          <div className="text-emerald-700"><span className="font-bold">THEN</span> {rule.thenClause.replace(/^THEN /, '')}</div>
         </div>
       </div>
       <button
@@ -97,28 +133,32 @@ const RuleCard = ({ rule, onToggle }: { rule: ResRule; onToggle: () => void }) =
   </motion.div>
 );
 
-const SuggestedRuleCard = ({ rule, onAccept, onDismiss }: { rule: ResRule; onAccept: () => void; onDismiss: () => void }) => (
-  <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300 bg-gradient-to-br from-violet-50/50 to-indigo-50/30 p-4">
-    <div className="mb-3">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-[10px] uppercase tracking-wider font-bold text-violet-700 bg-violet-100 px-2 py-0.5 rounded-full">Suggested</span>
-        {rule.confidence && <span className="text-[11px] text-violet-700 font-semibold">{Math.round(rule.confidence * 100)}% confident</span>}
+const SuggestedRuleCard = ({ rule, onAccept, onDismiss }: { rule: ResRule; onAccept: () => void; onDismiss: () => void }) => {
+  const meta = CATEGORY_META[rule.category];
+  return (
+    <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300 bg-gradient-to-br from-violet-50/50 to-indigo-50/30 p-4">
+      <div className="mb-3">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <span className="text-[10px] uppercase tracking-wider font-bold text-violet-700 bg-violet-100 px-2 py-0.5 rounded-full">Suggested</span>
+          <span className={`text-[10px] uppercase tracking-wider font-bold ${meta.tint} bg-white px-2 py-0.5 rounded-full border border-stone-200`}>{meta.label}</span>
+          {rule.confidence && <span className="text-[11px] text-violet-700 font-semibold">{Math.round(rule.confidence * 100)}% confident</span>}
+        </div>
+        <div className="text-sm font-semibold text-stone-900 mb-2">{rule.name}</div>
+        <div className="space-y-1 font-mono text-[12px] leading-relaxed">
+          <div className="text-indigo-700"><span className="font-bold">IF</span> {rule.ifClause.replace(/^IF /, '')}</div>
+          <div className="text-emerald-700"><span className="font-bold">THEN</span> {rule.thenClause.replace(/^THEN /, '')}</div>
+        </div>
       </div>
-      <div className="text-sm font-semibold text-stone-900 mb-2">{rule.name}</div>
-      <div className="space-y-1 font-mono text-[12px] leading-relaxed">
-        <div className="text-indigo-700"><span className="font-bold">IF</span> {rule.ifClause.replace(/^IF /, '')}</div>
-        <div className="text-emerald-700"><span className="font-bold">THEN</span> {rule.thenClause.replace(/^THEN /, '')}</div>
+      <div className="flex gap-2">
+        <button onClick={onAccept} className="flex-1 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white text-[13px] font-semibold py-2 shadow-md shadow-violet-500/30 hover:shadow-lg transition-shadow">
+          Enable
+        </button>
+        <button onClick={onDismiss} className="px-4 rounded-xl border border-stone-200 bg-white text-stone-600 text-[13px] font-semibold hover:bg-stone-50">
+          Dismiss
+        </button>
       </div>
-    </div>
-    <div className="flex gap-2">
-      <button onClick={onAccept} className="flex-1 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white text-[13px] font-semibold py-2 shadow-md shadow-violet-500/30 hover:shadow-lg transition-shadow">
-        Enable
-      </button>
-      <button onClick={onDismiss} className="px-4 rounded-xl border border-stone-200 bg-white text-stone-600 text-[13px] font-semibold hover:bg-stone-50">
-        Dismiss
-      </button>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 export default ResidentialAutonomy;
