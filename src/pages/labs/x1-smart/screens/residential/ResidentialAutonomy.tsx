@@ -47,14 +47,14 @@ const ResidentialAutonomy = () => {
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500 font-bold">
-            <Power className="w-3 h-3" /> Active automations · {active.length}
+            <Power className="w-3 h-3" /> Automations · {activeCount} of {automations.length} active
           </div>
           <button className="inline-flex items-center gap-1 text-[12px] font-semibold text-indigo-600 hover:text-indigo-800">
             <Plus className="w-3.5 h-3.5" /> New rule
           </button>
         </div>
         <div className="space-y-2">
-          {active.map((r) => (
+          {automations.map((r) => (
             <RuleCard key={r.id} rule={r} onToggle={() => toggle(r.id)} />
           ))}
         </div>
