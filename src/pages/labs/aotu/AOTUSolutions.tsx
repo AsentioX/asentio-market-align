@@ -14,34 +14,34 @@ import {
   Boxes,
   Flame,
   Check,
-  Minus,
   Sparkles,
 } from "lucide-react";
 
-const ACCENT = "#FF6B00";
+const ACCENT = "#FF5E1A";
+const ACCENT_HOVER = "#FF8C42";
 
 // ---------- Hero ----------
 const Hero = () => (
-  <section className="relative overflow-hidden border-b border-[#E5E7EB]">
+  <section className="relative overflow-hidden border-b border-white/[0.06] bg-[#0A0A0A]">
     <div
-      className="absolute inset-0 opacity-[0.35] pointer-events-none"
+      className="absolute inset-0 opacity-[0.5] pointer-events-none"
       style={{
         backgroundImage:
-          "linear-gradient(to right, #0A0F1C12 1px, transparent 1px), linear-gradient(to bottom, #0A0F1C12 1px, transparent 1px)",
+          "linear-gradient(to right, #FFFFFF0A 1px, transparent 1px), linear-gradient(to bottom, #FFFFFF0A 1px, transparent 1px)",
         backgroundSize: "56px 56px",
         maskImage:
           "radial-gradient(ellipse 80% 60% at 50% 30%, black, transparent)",
       }}
     />
     <div
-      className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full opacity-25 pointer-events-none blur-3xl"
+      className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full opacity-30 pointer-events-none blur-3xl"
       style={{ background: `radial-gradient(circle, ${ACCENT} 0%, transparent 60%)` }}
     />
     <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-28 md:pt-32 md:pb-36">
       <div className="flex items-center gap-2 mb-8">
         <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: ACCENT }} />
         <span
-          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0F1C]/70"
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F4FDFF]/65"
           style={{ fontFamily: '"JetBrains Mono", monospace' }}
         >
           Solutions · Every scale
@@ -49,7 +49,7 @@ const Hero = () => (
       </div>
 
       <h1
-        className="text-[44px] sm:text-[62px] md:text-[80px] leading-[0.98] font-semibold tracking-tight text-[#0A0F1C] max-w-5xl"
+        className="text-[44px] sm:text-[62px] md:text-[80px] leading-[0.98] font-semibold tracking-tight text-[#F4FDFF] max-w-5xl"
         style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
       >
         AI operators for{" "}
@@ -63,14 +63,17 @@ const Hero = () => (
         .
       </h1>
 
-      <p className="mt-8 max-w-2xl text-[18px] md:text-[20px] leading-[1.5] text-[#0A0F1C]/65">
+      <p className="mt-8 max-w-2xl text-[18px] md:text-[20px] leading-[1.5] text-[#F4FDFF]/60">
         From single-site monitoring to enterprise-wide automation, AOTU delivers AI operators tailored to your needs.
       </p>
 
       <div className="mt-10 flex flex-wrap gap-3">
         <a
           href="#segments"
-          className="group inline-flex items-center gap-2 bg-[#0A0F1C] text-white px-6 py-3.5 rounded-md text-[14px] font-semibold transition-colors hover:bg-[#FF6B00]"
+          className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-md text-[14px] font-semibold transition-colors text-[#0A0A0A]"
+          style={{ background: ACCENT }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = ACCENT_HOVER)}
+          onMouseLeave={(e) => (e.currentTarget.style.background = ACCENT)}
         >
           Find your solution
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -106,17 +109,17 @@ const segments = [
 ];
 
 const SegmentOverview = () => (
-  <section id="segments" className="bg-[#F4F5F7] border-b border-[#E5E7EB]">
+  <section id="segments" className="bg-[#0A0A0A] border-b border-white/[0.06]">
     <div className="max-w-7xl mx-auto px-6 py-24 md:py-28">
       <div className="max-w-2xl mb-14">
         <div
-          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF6B00] mb-3"
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF5E1A] mb-3"
           style={{ fontFamily: '"JetBrains Mono", monospace' }}
         >
           // Choose your tier
         </div>
         <h2
-          className="text-[36px] md:text-[52px] font-semibold tracking-tight leading-[1.05] text-[#0A0F1C]"
+          className="text-[36px] md:text-[52px] font-semibold tracking-tight leading-[1.05] text-[#F4FDFF]"
           style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
         >
           Three solutions. One platform.
@@ -130,30 +133,30 @@ const SegmentOverview = () => (
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="group bg-white rounded-2xl p-8 border border-[#E5E7EB] hover:border-[#FF6B00]/50 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(10,15,28,0.12)] flex flex-col"
+              className="group bg-[#161B22] rounded-2xl p-8 border border-white/10 hover:border-[#FF5E1A]/50 hover:bg-[#1C232E] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(255,94,26,0.25)] flex flex-col"
             >
               <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center mb-8"
-                style={{ background: `${ACCENT}1A`, color: ACCENT }}
+                className="w-12 h-12 rounded-lg flex items-center justify-center mb-8 border"
+                style={{ background: `${ACCENT}26`, color: ACCENT, borderColor: `${ACCENT}33` }}
               >
                 <Icon className="w-5 h-5" />
               </div>
               <div
-                className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A0F1C]/45 mb-2"
+                className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F4FDFF]/40 mb-2"
                 style={{ fontFamily: '"JetBrains Mono", monospace' }}
               >
                 {s.label}
               </div>
               <h3
-                className="text-[22px] font-semibold leading-tight mb-3 text-[#0A0F1C]"
+                className="text-[22px] font-semibold leading-tight mb-3 text-[#F4FDFF]"
                 style={{ fontFamily: '"Space Grotesk", sans-serif' }}
               >
                 {s.benefit}
               </h3>
-              <p className="text-[14.5px] text-[#0A0F1C]/65 leading-relaxed mb-8">
+              <p className="text-[14.5px] text-[#F4FDFF]/60 leading-relaxed mb-8">
                 {s.desc}
               </p>
-              <div className="mt-auto text-[13px] font-semibold inline-flex items-center gap-1.5 text-[#0A0F1C] group-hover:text-[#FF6B00] transition-colors">
+              <div className="mt-auto text-[13px] font-semibold inline-flex items-center gap-1.5 text-[#F4FDFF] group-hover:text-[#FF5E1A] transition-colors">
                 Explore
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
@@ -177,7 +180,7 @@ type TierProps = {
   capsules: { icon: typeof ShieldAlert; name: string }[];
   primaryCTA: { label: string; to: string };
   secondaryCTA: { label: string; to: string };
-  variant: "light" | "dark" | "fog";
+  variant: "surface" | "elevated";
 };
 
 const TierSection = ({
@@ -193,16 +196,11 @@ const TierSection = ({
   secondaryCTA,
   variant,
 }: TierProps) => {
-  const isDark = variant === "dark";
-  const bg = isDark ? "bg-[#0A0F1C]" : variant === "fog" ? "bg-[#F4F5F7]" : "bg-white";
-  const textColor = isDark ? "text-white" : "text-[#0A0F1C]";
-  const subColor = isDark ? "text-white/65" : "text-[#0A0F1C]/65";
-  const muteColor = isDark ? "text-white/45" : "text-[#0A0F1C]/45";
-  const cardBg = isDark ? "bg-white/[0.04]" : "bg-white";
-  const cardBorder = isDark ? "border-white/10" : "border-[#E5E7EB]";
+  const sectionBg = variant === "elevated" ? "bg-[#0E1218]" : "bg-[#0A0A0A]";
+  const cardBg = variant === "elevated" ? "bg-[#1C232E]" : "bg-[#161B22]";
 
   return (
-    <section id={id} className={`${bg} border-b border-[#E5E7EB] ${isDark ? "border-b-0" : ""}`}>
+    <section id={id} className={`${sectionBg} border-b border-white/[0.06]`}>
       <div className="max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
           {/* Left: positioning */}
@@ -214,19 +212,17 @@ const TierSection = ({
               // {tag}
             </div>
             <h2
-              className={`text-[34px] md:text-[44px] font-semibold tracking-tight leading-[1.08] ${textColor}`}
+              className="text-[34px] md:text-[44px] font-semibold tracking-tight leading-[1.08] text-[#F4FDFF]"
               style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
             >
               {title}
             </h2>
-            <p className={`mt-6 text-[16.5px] leading-relaxed ${subColor}`}>{desc}</p>
+            <p className="mt-6 text-[16.5px] leading-relaxed text-[#F4FDFF]/60">{desc}</p>
 
-            <div
-              className={`mt-8 inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${isDark ? "bg-white/10" : "bg-[#0A0F1C]/[0.06]"}`}
-            >
+            <div className="mt-8 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10">
               <Sparkles className="w-3.5 h-3.5" style={{ color: ACCENT }} />
               <span
-                className={`text-[12px] font-semibold ${textColor}`}
+                className="text-[12px] font-semibold text-[#F4FDFF]"
                 style={{ fontFamily: '"JetBrains Mono", monospace' }}
               >
                 {positioning}
@@ -236,15 +232,17 @@ const TierSection = ({
             <div className="mt-10 flex flex-wrap gap-3">
               <Link
                 to={primaryCTA.to}
-                className="group inline-flex items-center gap-2 px-5 py-3 rounded-md text-[13.5px] font-semibold transition-colors text-white hover:opacity-90"
+                className="group inline-flex items-center gap-2 px-5 py-3 rounded-md text-[13.5px] font-semibold transition-colors text-[#0A0A0A]"
                 style={{ background: ACCENT }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = ACCENT_HOVER)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = ACCENT)}
               >
                 {primaryCTA.label}
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 to={secondaryCTA.to}
-                className={`inline-flex items-center gap-2 px-5 py-3 rounded-md text-[13.5px] font-semibold border transition-colors ${isDark ? "border-white/20 text-white hover:bg-white/10" : "border-[#0A0F1C]/15 text-[#0A0F1C] hover:bg-[#0A0F1C]/[0.04]"}`}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-md text-[13.5px] font-semibold border border-white/15 text-[#F4FDFF] hover:bg-white/[0.06] hover:border-[#FF5E1A]/40 transition-colors"
               >
                 {secondaryCTA.label}
               </Link>
@@ -253,10 +251,9 @@ const TierSection = ({
 
           {/* Right: details */}
           <div className="lg:col-span-7 space-y-8">
-            {/* Benefits */}
             <div>
               <div
-                className={`text-[10.5px] font-semibold uppercase tracking-[0.18em] mb-4 ${muteColor}`}
+                className="text-[10.5px] font-semibold uppercase tracking-[0.18em] mb-4 text-[#F4FDFF]/40"
                 style={{ fontFamily: '"JetBrains Mono", monospace' }}
               >
                 Key benefits
@@ -265,10 +262,10 @@ const TierSection = ({
                 {benefits.map((b) => (
                   <div
                     key={b}
-                    className={`${cardBg} ${cardBorder} border rounded-xl p-4`}
+                    className={`${cardBg} border border-white/10 rounded-xl p-4`}
                   >
                     <Check className="w-4 h-4 mb-2" style={{ color: ACCENT }} />
-                    <div className={`text-[13.5px] font-medium leading-snug ${textColor}`}>
+                    <div className="text-[13.5px] font-medium leading-snug text-[#F4FDFF]">
                       {b}
                     </div>
                   </div>
@@ -276,10 +273,9 @@ const TierSection = ({
               </div>
             </div>
 
-            {/* Use cases */}
             <div>
               <div
-                className={`text-[10.5px] font-semibold uppercase tracking-[0.18em] mb-4 ${muteColor}`}
+                className="text-[10.5px] font-semibold uppercase tracking-[0.18em] mb-4 text-[#F4FDFF]/40"
                 style={{ fontFamily: '"JetBrains Mono", monospace' }}
               >
                 Example use cases
@@ -288,7 +284,7 @@ const TierSection = ({
                 {useCases.map((u) => (
                   <span
                     key={u}
-                    className={`text-[12.5px] px-3 py-1.5 rounded-full border ${cardBorder} ${subColor}`}
+                    className="text-[12.5px] px-3 py-1.5 rounded-full border border-white/10 text-[#F4FDFF]/65"
                   >
                     {u}
                   </span>
@@ -296,10 +292,9 @@ const TierSection = ({
               </div>
             </div>
 
-            {/* Capsules */}
             <div>
               <div
-                className={`text-[10.5px] font-semibold uppercase tracking-[0.18em] mb-4 ${muteColor}`}
+                className="text-[10.5px] font-semibold uppercase tracking-[0.18em] mb-4 text-[#F4FDFF]/40"
                 style={{ fontFamily: '"JetBrains Mono", monospace' }}
               >
                 Included VisionCapsules
@@ -310,15 +305,15 @@ const TierSection = ({
                   return (
                     <div
                       key={c.name}
-                      className={`${cardBg} ${cardBorder} border rounded-lg px-4 py-3 flex items-center gap-3`}
+                      className={`${cardBg} border border-white/10 rounded-lg px-4 py-3 flex items-center gap-3`}
                     >
                       <div
-                        className="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
-                        style={{ background: `${ACCENT}1A`, color: ACCENT }}
+                        className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 border"
+                        style={{ background: `${ACCENT}26`, color: ACCENT, borderColor: `${ACCENT}33` }}
                       >
                         <Icon className="w-4 h-4" />
                       </div>
-                      <div className={`text-[13.5px] font-medium ${textColor}`}>
+                      <div className="text-[13.5px] font-medium text-[#F4FDFF]">
                         {c.name}
                       </div>
                     </div>
@@ -344,50 +339,50 @@ const compareRows: { label: string; smb: string; pro: string; ent: string }[] = 
 ];
 
 const ComparisonTable = () => (
-  <section className="bg-white border-b border-[#E5E7EB]">
+  <section className="bg-[#0A0A0A] border-b border-white/[0.06]">
     <div className="max-w-7xl mx-auto px-6 py-24 md:py-28">
       <div className="max-w-2xl mb-12">
         <div
-          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF6B00] mb-3"
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF5E1A] mb-3"
           style={{ fontFamily: '"JetBrains Mono", monospace' }}
         >
           // Compare tiers
         </div>
         <h2
-          className="text-[36px] md:text-[48px] font-semibold tracking-tight leading-[1.05] text-[#0A0F1C]"
+          className="text-[36px] md:text-[48px] font-semibold tracking-tight leading-[1.05] text-[#F4FDFF]"
           style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
         >
           Find the right fit at a glance.
         </h2>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[#E5E7EB]">
+      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#161B22]">
         <table className="w-full text-left">
           <thead>
-            <tr className="bg-[#F4F5F7] border-b border-[#E5E7EB]">
+            <tr className="bg-black/30 border-b border-white/10">
               <th
-                className="py-5 px-5 text-[11px] uppercase tracking-[0.18em] font-semibold text-[#0A0F1C]/50 w-[28%]"
+                className="py-5 px-5 text-[11px] uppercase tracking-[0.18em] font-semibold text-[#F4FDFF]/40 w-[28%]"
                 style={{ fontFamily: '"JetBrains Mono", monospace' }}
               >
                 Feature
               </th>
               <th className="py-5 px-5">
                 <div
-                  className="text-[10.5px] uppercase tracking-[0.18em] text-[#0A0F1C]/45 font-semibold mb-1"
+                  className="text-[10.5px] uppercase tracking-[0.18em] text-[#F4FDFF]/40 font-semibold mb-1"
                   style={{ fontFamily: '"JetBrains Mono", monospace' }}
                 >
                   Tier 01
                 </div>
                 <div
-                  className="text-[15px] font-semibold text-[#0A0F1C]"
+                  className="text-[15px] font-semibold text-[#F4FDFF]"
                   style={{ fontFamily: '"Space Grotesk", sans-serif' }}
                 >
                   SMB / Consumer
                 </div>
               </th>
               <th
-                className="py-5 px-5 border-l border-[#E5E7EB]"
-                style={{ background: `${ACCENT}0D` }}
+                className="py-5 px-5 border-l border-white/10"
+                style={{ background: `${ACCENT}14` }}
               >
                 <div
                   className="text-[10.5px] uppercase tracking-[0.18em] font-semibold mb-1"
@@ -396,21 +391,21 @@ const ComparisonTable = () => (
                   Tier 02
                 </div>
                 <div
-                  className="text-[15px] font-semibold text-[#0A0F1C]"
+                  className="text-[15px] font-semibold text-[#F4FDFF]"
                   style={{ fontFamily: '"Space Grotesk", sans-serif' }}
                 >
                   Prosumer
                 </div>
               </th>
-              <th className="py-5 px-5 border-l border-[#E5E7EB]">
+              <th className="py-5 px-5 border-l border-white/10">
                 <div
-                  className="text-[10.5px] uppercase tracking-[0.18em] text-[#0A0F1C]/45 font-semibold mb-1"
+                  className="text-[10.5px] uppercase tracking-[0.18em] text-[#F4FDFF]/40 font-semibold mb-1"
                   style={{ fontFamily: '"JetBrains Mono", monospace' }}
                 >
                   Tier 03
                 </div>
                 <div
-                  className="text-[15px] font-semibold text-[#0A0F1C]"
+                  className="text-[15px] font-semibold text-[#F4FDFF]"
                   style={{ fontFamily: '"Space Grotesk", sans-serif' }}
                 >
                   Enterprise
@@ -422,19 +417,19 @@ const ComparisonTable = () => (
             {compareRows.map((row, i) => (
               <tr
                 key={row.label}
-                className={`border-b border-[#E5E7EB] last:border-b-0 ${i % 2 === 1 ? "bg-[#F4F5F7]/40" : ""}`}
+                className={`border-b border-white/[0.06] last:border-b-0 ${i % 2 === 1 ? "bg-white/[0.02]" : ""}`}
               >
-                <td className="py-4 px-5 text-[13.5px] font-semibold text-[#0A0F1C]">
+                <td className="py-4 px-5 text-[13.5px] font-semibold text-[#F4FDFF]">
                   {row.label}
                 </td>
-                <td className="py-4 px-5 text-[13.5px] text-[#0A0F1C]/70">{row.smb}</td>
+                <td className="py-4 px-5 text-[13.5px] text-[#F4FDFF]/65">{row.smb}</td>
                 <td
-                  className="py-4 px-5 text-[13.5px] text-[#0A0F1C]/85 font-medium border-l border-[#E5E7EB]"
-                  style={{ background: `${ACCENT}08` }}
+                  className="py-4 px-5 text-[13.5px] text-[#F4FDFF]/90 font-medium border-l border-white/10"
+                  style={{ background: `${ACCENT}0D` }}
                 >
                   {row.pro}
                 </td>
-                <td className="py-4 px-5 text-[13.5px] text-[#0A0F1C]/70 border-l border-[#E5E7EB]">
+                <td className="py-4 px-5 text-[13.5px] text-[#F4FDFF]/65 border-l border-white/10">
                   {row.ent}
                 </td>
               </tr>
@@ -457,28 +452,28 @@ const capsuleSamples = [
 ];
 
 const CapsuleConnection = () => (
-  <section className="bg-[#F4F5F7] border-b border-[#E5E7EB]">
+  <section className="bg-[#0A0A0A] border-b border-white/[0.06]">
     <div className="max-w-7xl mx-auto px-6 py-24 md:py-28">
       <div className="grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-5">
           <div
-            className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF6B00] mb-3"
+            className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF5E1A] mb-3"
             style={{ fontFamily: '"JetBrains Mono", monospace' }}
           >
             // Powered by VisionCapsules
           </div>
           <h2
-            className="text-[34px] md:text-[44px] font-semibold tracking-tight leading-[1.05] text-[#0A0F1C]"
+            className="text-[34px] md:text-[44px] font-semibold tracking-tight leading-[1.05] text-[#F4FDFF]"
             style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
           >
             One library. Every tier.
           </h2>
-          <p className="mt-5 text-[16px] text-[#0A0F1C]/65 leading-relaxed max-w-md">
+          <p className="mt-5 text-[16px] text-[#F4FDFF]/60 leading-relaxed max-w-md">
             All solutions are built on modular AI operators that can be deployed, combined, and scaled across any environment.
           </p>
           <Link
             to="/labs/aotu/marketplace"
-            className="mt-8 inline-flex items-center gap-2 text-[14px] font-semibold text-[#0A0F1C] hover:text-[#FF6B00] transition-colors"
+            className="mt-8 inline-flex items-center gap-2 text-[14px] font-semibold text-[#F4FDFF] hover:text-[#FF5E1A] transition-colors"
           >
             Explore Marketplace
             <ArrowRight className="w-4 h-4" />
@@ -492,16 +487,16 @@ const CapsuleConnection = () => (
               return (
                 <div
                   key={c.name}
-                  className="bg-white border border-[#E5E7EB] rounded-xl p-5 hover:border-[#FF6B00]/40 hover:-translate-y-0.5 transition-all"
+                  className="bg-[#161B22] border border-white/10 rounded-xl p-5 hover:border-[#FF5E1A]/40 hover:bg-[#1C232E] hover:-translate-y-0.5 transition-all"
                 >
                   <div
-                    className="w-9 h-9 rounded-md flex items-center justify-center mb-4"
-                    style={{ background: `${ACCENT}1A`, color: ACCENT }}
+                    className="w-9 h-9 rounded-md flex items-center justify-center mb-4 border"
+                    style={{ background: `${ACCENT}26`, color: ACCENT, borderColor: `${ACCENT}33` }}
                   >
-                    <Icon className="w-4.5 h-4.5" />
+                    <Icon className="w-4 h-4" />
                   </div>
                   <div
-                    className="text-[14px] font-semibold text-[#0A0F1C]"
+                    className="text-[14px] font-semibold text-[#F4FDFF]"
                     style={{ fontFamily: '"Space Grotesk", sans-serif' }}
                   >
                     {c.name}
@@ -524,17 +519,17 @@ const steps = [
 ];
 
 const DeploymentSimplicity = () => (
-  <section className="bg-white border-b border-[#E5E7EB]">
+  <section className="bg-[#0A0A0A] border-b border-white/[0.06]">
     <div className="max-w-7xl mx-auto px-6 py-24 md:py-28">
       <div className="max-w-2xl mb-14">
         <div
-          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF6B00] mb-3"
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF5E1A] mb-3"
           style={{ fontFamily: '"JetBrains Mono", monospace' }}
         >
           // Deployment
         </div>
         <h2
-          className="text-[36px] md:text-[48px] font-semibold tracking-tight leading-[1.05] text-[#0A0F1C]"
+          className="text-[36px] md:text-[48px] font-semibold tracking-tight leading-[1.05] text-[#F4FDFF]"
           style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
         >
           From setup to operation in weeks.
@@ -543,7 +538,7 @@ const DeploymentSimplicity = () => (
 
       <div className="relative">
         <div
-          className="hidden md:block absolute top-12 left-[12%] right-[12%] border-t-2 border-dashed border-[#0A0F1C]/15"
+          className="hidden md:block absolute top-12 left-[12%] right-[12%] border-t-2 border-dashed border-white/15"
           aria-hidden
         />
         <div className="grid md:grid-cols-3 gap-8 relative">
@@ -552,25 +547,23 @@ const DeploymentSimplicity = () => (
             return (
               <div key={s.n} className="text-center md:text-left">
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-5">
-                  <div
-                    className="w-24 h-24 rounded-2xl bg-white border border-[#E5E7EB] flex items-center justify-center shrink-0 shadow-[0_8px_24px_-12px_rgba(10,15,28,0.15)] relative z-10"
-                  >
+                  <div className="w-24 h-24 rounded-2xl bg-[#161B22] border border-white/10 flex items-center justify-center shrink-0 shadow-[0_8px_24px_-12px_rgba(255,94,26,0.25)] relative z-10">
                     <Icon className="w-9 h-9" style={{ color: ACCENT }} />
                   </div>
                   <div>
                     <div
-                      className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#0A0F1C]/45 mb-1.5"
+                      className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#F4FDFF]/40 mb-1.5"
                       style={{ fontFamily: '"JetBrains Mono", monospace' }}
                     >
                       Step {s.n}
                     </div>
                     <h3
-                      className="text-[20px] font-semibold text-[#0A0F1C] mb-2"
+                      className="text-[20px] font-semibold text-[#F4FDFF] mb-2"
                       style={{ fontFamily: '"Space Grotesk", sans-serif' }}
                     >
                       {s.title}
                     </h3>
-                    <p className="text-[14.5px] text-[#0A0F1C]/65 leading-relaxed">{s.desc}</p>
+                    <p className="text-[14.5px] text-[#F4FDFF]/60 leading-relaxed">{s.desc}</p>
                   </div>
                 </div>
               </div>
@@ -584,7 +577,7 @@ const DeploymentSimplicity = () => (
 
 // ---------- Final CTA ----------
 const FinalCTA = () => (
-  <section className="bg-[#0A0F1C] relative overflow-hidden">
+  <section className="bg-[#0A0A0A] relative overflow-hidden">
     <div
       className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full opacity-30 blur-3xl pointer-events-none"
       style={{ background: `radial-gradient(circle, ${ACCENT} 0%, transparent 60%)` }}
@@ -598,26 +591,28 @@ const FinalCTA = () => (
           // Get started
         </div>
         <h2
-          className="text-[40px] md:text-[60px] font-semibold tracking-tight leading-[1.04] text-white"
+          className="text-[40px] md:text-[60px] font-semibold tracking-tight leading-[1.04] text-[#F4FDFF]"
           style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}
         >
           Find the right AI operators for your needs.
         </h2>
-        <p className="mt-6 text-[18px] text-white/65 leading-relaxed max-w-2xl">
+        <p className="mt-6 text-[18px] text-[#F4FDFF]/60 leading-relaxed max-w-2xl">
           Whether you're starting small or scaling globally, AOTU has a solution for you.
         </p>
         <div className="mt-10 flex flex-wrap gap-3">
           <Link
             to="/labs/aotu/contact"
-            className="group inline-flex items-center gap-2 text-white px-6 py-3.5 rounded-md text-[14px] font-semibold transition-opacity hover:opacity-90"
+            className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-md text-[14px] font-semibold transition-colors text-[#0A0A0A]"
             style={{ background: ACCENT }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = ACCENT_HOVER)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = ACCENT)}
           >
             Request demo
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
           <Link
             to="/labs/aotu/contact"
-            className="inline-flex items-center gap-2 border border-white/20 text-white px-6 py-3.5 rounded-md text-[14px] font-semibold hover:bg-white/10 transition-colors"
+            className="inline-flex items-center gap-2 border border-white/15 bg-[#161B22] text-[#F4FDFF] px-6 py-3.5 rounded-md text-[14px] font-semibold hover:bg-[#1C232E] hover:border-[#FF5E1A]/40 transition-colors"
           >
             Talk to sales
           </Link>
@@ -650,7 +645,7 @@ const AOTUSolutions = () => {
         ]}
         primaryCTA={{ label: "Get started", to: "/labs/aotu/contact" }}
         secondaryCTA={{ label: "Request demo", to: "/labs/aotu/contact" }}
-        variant="light"
+        variant="surface"
       />
 
       <TierSection
@@ -669,7 +664,7 @@ const AOTUSolutions = () => {
         ]}
         primaryCTA={{ label: "Explore capabilities", to: "/labs/aotu/marketplace" }}
         secondaryCTA={{ label: "Build your setup", to: "/labs/aotu/contact" }}
-        variant="fog"
+        variant="elevated"
       />
 
       <TierSection
@@ -698,7 +693,7 @@ const AOTUSolutions = () => {
         ]}
         primaryCTA={{ label: "Talk to sales", to: "/labs/aotu/contact" }}
         secondaryCTA={{ label: "Request enterprise demo", to: "/labs/aotu/contact" }}
-        variant="dark"
+        variant="surface"
       />
 
       <ComparisonTable />
