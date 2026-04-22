@@ -50,10 +50,16 @@ export default function Pipeline() {
   const { reloadFromDb, dataSource } = useCF();
   const [runs, setRuns] = useState<IngestRun[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [emailStats, setEmailStats] = useState<EmailStats | null>(null);
+  const [extractionRuns, setExtractionRuns] = useState<ExtractionRun[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>('');
+  const [websiteCsvUploading, setWebsiteCsvUploading] = useState(false);
+  const [extractionRunning, setExtractionRunning] = useState(false);
+  const [batchLimit, setBatchLimit] = useState(25);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const websiteCsvRef = useRef<HTMLInputElement>(null);
 
   const loadRuns = async () => {
     const { data } = await supabase
