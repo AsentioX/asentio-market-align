@@ -196,6 +196,65 @@ export default function Pipeline() {
     }
   };
 
+  // Stage 3 — bulk-attach websites via CSV (license_number,website)
+  const handleWebsiteCsv = async (file: File) => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setWebsiteCsvUploading(true);
+    try {
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+      const startIdx = /license/i.test(lines[0] ?? '') ? 1 : 0;
+      const rows = lines.slice(startIdx).map((l) => {
+        const parts = l.split(',').map((p) => p.trim().replace(/^"|"$/g, ''));
+        return { license_number: parts[0], website: parts[1] };
+      }).filter((r) => r.license_number && r.website);
+
+      let updated = 0;
+      for (const r of rows) {
+        const { error } = await supabase
+          .from('cf_contractors')
+          .update({ website: r.website, email_extraction_status: 'pending' })
+          .eq('license_number', r.license_number);
+        if (!error) updated++;
+      }
+      toast({ title: 'Websites attached', description: `Updated ${updated.toLocaleString()} of ${rows.length.toLocaleString()} rows.` });
+      await Promise.all([loadEmailStats(), reloadFromDb()]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'CSV upload failed', description: msg, variant: 'destructive' });
+    } finally {
+      setWebsiteCsvUploading(false);
+      if (websiteCsvRef.current) websiteCsvRef.current.value = '';
+    }
+  };
+
+  const runExtraction = async () => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setExtractionRunning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cf-extract-emails', {
+        body: { limit: batchLimit, onlyMissing: true },
+      });
+      if (error) throw error;
+      toast({
+        title: 'Extraction complete',
+        description: `Processed ${data?.processed ?? 0} · Found ${data?.emails_found ?? 0} email${(data?.emails_found ?? 0) === 1 ? '' : 's'}.`,
+      });
+      await Promise.all([loadEmailStats(), loadExtractionRuns(), reloadFromDb()]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Extraction failed', description: msg, variant: 'destructive' });
+    } finally {
+      setExtractionRunning(false);
+    }
+  };
+
   const fmtTime = (iso: string | null) => {
     if (!iso) return '—';
     const d = new Date(iso);
