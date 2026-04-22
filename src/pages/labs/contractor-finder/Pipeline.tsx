@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play } from 'lucide-react';
+import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCF } from './useCFStore';
 import { useToast } from '@/hooks/use-toast';
@@ -30,6 +30,7 @@ interface EmailStats {
   pending: number;
   failed: number;
   noEmail: number;
+  missingWebsite: number;
 }
 
 interface ExtractionRun {
@@ -58,6 +59,8 @@ export default function Pipeline() {
   const [websiteCsvUploading, setWebsiteCsvUploading] = useState(false);
   const [extractionRunning, setExtractionRunning] = useState(false);
   const [batchLimit, setBatchLimit] = useState(25);
+  const [discoveryRunning, setDiscoveryRunning] = useState(false);
+  const [discoveryLimit, setDiscoveryLimit] = useState(25);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const websiteCsvRef = useRef<HTMLInputElement>(null);
 
@@ -108,20 +111,28 @@ export default function Pipeline() {
   };
 
   const loadEmailStats = async () => {
-    const [{ count: withWebsite }, { count: withEmail }, { count: pending }, { count: failed }, { count: noEmail }] =
-      await Promise.all([
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('website', 'is', null).neq('website', ''),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('email', 'is', null),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'pending').not('website', 'is', null).neq('website', ''),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'failed'),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'no_email_found'),
-      ]);
+    const [
+      { count: withWebsite },
+      { count: withEmail },
+      { count: pending },
+      { count: failed },
+      { count: noEmail },
+      { count: total },
+    ] = await Promise.all([
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('website', 'is', null).neq('website', ''),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('email', 'is', null),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'pending').not('website', 'is', null).neq('website', ''),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'failed'),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'no_email_found'),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }),
+    ]);
     setEmailStats({
       withWebsite: withWebsite ?? 0,
       withEmail: withEmail ?? 0,
       pending: pending ?? 0,
       failed: failed ?? 0,
       noEmail: noEmail ?? 0,
+      missingWebsite: Math.max(0, (total ?? 0) - (withWebsite ?? 0)),
     });
   };
 
@@ -228,6 +239,30 @@ export default function Pipeline() {
     } finally {
       setWebsiteCsvUploading(false);
       if (websiteCsvRef.current) websiteCsvRef.current.value = '';
+    }
+  };
+
+  const runDiscovery = async () => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setDiscoveryRunning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cf-discover-websites', {
+        body: { limit: discoveryLimit },
+      });
+      if (error) throw error;
+      toast({
+        title: 'Website discovery complete',
+        description: `Processed ${data?.processed ?? 0} · Found ${data?.websites_found ?? 0} website${(data?.websites_found ?? 0) === 1 ? '' : 's'}.`,
+      });
+      await Promise.all([loadEmailStats(), loadExtractionRuns(), reloadFromDb()]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Discovery failed', description: msg, variant: 'destructive' });
+    } finally {
+      setDiscoveryRunning(false);
     }
   };
 
