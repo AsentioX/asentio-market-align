@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play } from 'lucide-react';
+import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCF } from './useCFStore';
 import { useToast } from '@/hooks/use-toast';
@@ -30,6 +30,7 @@ interface EmailStats {
   pending: number;
   failed: number;
   noEmail: number;
+  missingWebsite: number;
 }
 
 interface ExtractionRun {
@@ -58,6 +59,8 @@ export default function Pipeline() {
   const [websiteCsvUploading, setWebsiteCsvUploading] = useState(false);
   const [extractionRunning, setExtractionRunning] = useState(false);
   const [batchLimit, setBatchLimit] = useState(25);
+  const [discoveryRunning, setDiscoveryRunning] = useState(false);
+  const [discoveryLimit, setDiscoveryLimit] = useState(25);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const websiteCsvRef = useRef<HTMLInputElement>(null);
 
@@ -108,20 +111,28 @@ export default function Pipeline() {
   };
 
   const loadEmailStats = async () => {
-    const [{ count: withWebsite }, { count: withEmail }, { count: pending }, { count: failed }, { count: noEmail }] =
-      await Promise.all([
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('website', 'is', null).neq('website', ''),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('email', 'is', null),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'pending').not('website', 'is', null).neq('website', ''),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'failed'),
-        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'no_email_found'),
-      ]);
+    const [
+      { count: withWebsite },
+      { count: withEmail },
+      { count: pending },
+      { count: failed },
+      { count: noEmail },
+      { count: total },
+    ] = await Promise.all([
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('website', 'is', null).neq('website', ''),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('email', 'is', null),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'pending').not('website', 'is', null).neq('website', ''),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'failed'),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'no_email_found'),
+      supabase.from('cf_contractors').select('*', { count: 'exact', head: true }),
+    ]);
     setEmailStats({
       withWebsite: withWebsite ?? 0,
       withEmail: withEmail ?? 0,
       pending: pending ?? 0,
       failed: failed ?? 0,
       noEmail: noEmail ?? 0,
+      missingWebsite: Math.max(0, (total ?? 0) - (withWebsite ?? 0)),
     });
   };
 
@@ -231,6 +242,30 @@ export default function Pipeline() {
     }
   };
 
+  const runDiscovery = async () => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setDiscoveryRunning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cf-discover-websites', {
+        body: { limit: discoveryLimit },
+      });
+      if (error) throw error;
+      toast({
+        title: 'Website discovery complete',
+        description: `Processed ${data?.processed ?? 0} · Found ${data?.websites_found ?? 0} website${(data?.websites_found ?? 0) === 1 ? '' : 's'}.`,
+      });
+      await Promise.all([loadEmailStats(), loadExtractionRuns(), reloadFromDb()]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Discovery failed', description: msg, variant: 'destructive' });
+    } finally {
+      setDiscoveryRunning(false);
+    }
+  };
+
   const runExtraction = async () => {
     if (!isAuthed) {
       toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
@@ -299,9 +334,9 @@ export default function Pipeline() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 relative">
           {[
             { icon: Award, name: 'Official Source', sub: 'CSLB License Master', color: 'var(--cf-primary)', live: dataSource === 'database' },
-            { icon: Globe, name: 'Business Enrichment', sub: 'Google · Yelp · Houzz', color: 'var(--cf-accent)', live: false },
-            { icon: Database, name: 'Website Extraction', sub: 'Crawl homepage + /contact', color: 'var(--cf-purple)', live: (emailStats?.withEmail ?? 0) > 0 },
-            { icon: Mail, name: 'Validation', sub: 'Email verify · dedupe · score', color: 'var(--cf-success)', live: false },
+            { icon: Search, name: 'Website Discovery', sub: 'Firecrawl search → bare domain', color: 'var(--cf-accent)', live: (emailStats?.withWebsite ?? 0) > 0 },
+            { icon: Mail, name: 'Email Extraction', sub: 'Crawl homepage + /contact', color: 'var(--cf-purple)', live: (emailStats?.withEmail ?? 0) > 0 },
+            { icon: CheckCircle2, name: 'Validation', sub: 'Email verify · dedupe · score', color: 'var(--cf-success)', live: false },
           ].map((stage, i) => (
             <div key={i} className="relative">
               <div
@@ -332,6 +367,76 @@ export default function Pipeline() {
               )}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Stage 2 — Website discovery via Firecrawl Search */}
+      <div className="rounded-xl p-6" style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}>
+        <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Search className="w-4 h-4" style={{ color: 'hsl(var(--cf-accent))' }} />
+              <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'hsl(var(--cf-accent))' }}>
+                Stage 2 · Website Discovery
+              </span>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'hsl(var(--cf-success))', color: 'white' }}>LIVE</span>
+            </div>
+            <h3 className="font-semibold text-base">Find each contractor's official website automatically</h3>
+            <p className="text-xs mt-1 max-w-2xl" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              CSLB doesn't publish websites. We run a focused Firecrawl <code className="px-1 rounded" style={{ background: 'hsl(var(--cf-surface-alt))' }}>/search</code> per contractor (business name + city), filter out directory junk (Yelp, BBB, Houzz, Angi, social, gov), score the rest by name + phone match, and save the best bare domain so Stage 3 can crawl it.
+            </p>
+          </div>
+        </div>
+
+        {/* Discovery stats */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-5">
+          {[
+            { label: 'Missing website', value: emailStats?.missingWebsite ?? 0, color: 'var(--cf-warning)' },
+            { label: 'Website attached', value: emailStats?.withWebsite ?? 0, color: 'var(--cf-primary)' },
+            { label: 'Coverage', value: emailStats ? Math.round(((emailStats.withWebsite) / Math.max(1, emailStats.withWebsite + emailStats.missingWebsite)) * 100) : 0, suffix: '%', color: 'var(--cf-accent)' },
+          ].map((s) => (
+            <div key={s.label} className="rounded-lg p-3" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: 'hsl(var(--cf-text-subtle))' }}>{s.label}</div>
+              <div className="text-xl font-bold tabular-nums" style={{ color: `hsl(${s.color})` }}>
+                {s.value.toLocaleString()}{s.suffix ?? ''}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Search className="w-4 h-4" style={{ color: 'hsl(var(--cf-accent))' }} />
+            <h4 className="font-semibold text-sm">Discover websites for contractors missing one</h4>
+          </div>
+          <p className="text-xs mb-3" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+            ~1 Firecrawl search credit per contractor · ~2–4s each · directory domains automatically rejected.
+          </p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <label className="text-xs font-semibold" style={{ color: 'hsl(var(--cf-text-muted))' }}>Batch size</label>
+            <select
+              value={discoveryLimit}
+              onChange={(e) => setDiscoveryLimit(Number(e.target.value))}
+              disabled={discoveryRunning}
+              className="text-xs px-2 py-1 rounded-md"
+              style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+            >
+              {[10, 25, 50, 100, 200].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <button
+              onClick={runDiscovery}
+              disabled={!isAuthed || discoveryRunning || (emailStats?.missingWebsite ?? 0) === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+              style={{ background: 'hsl(var(--cf-accent))' }}
+            >
+              {discoveryRunning ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Searching {discoveryLimit}…</> : <><Search className="w-3.5 h-3.5" /> Run discovery batch</>}
+            </button>
+            {(emailStats?.missingWebsite ?? 0) === 0 && (emailStats?.withWebsite ?? 0) > 0 && (
+              <span className="text-[11px]" style={{ color: 'hsl(var(--cf-success))' }}>
+                ✓ Every contractor has a website attached.
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -374,10 +479,10 @@ export default function Pipeline() {
           <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
             <div className="flex items-center gap-2 mb-1">
               <Link2 className="w-4 h-4" style={{ color: 'hsl(var(--cf-primary))' }} />
-              <h4 className="font-semibold text-sm">1. Attach websites (CSV)</h4>
+              <h4 className="font-semibold text-sm">Bulk attach websites (CSV) — optional</h4>
             </div>
             <p className="text-xs mb-3" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-              Two columns, no quotes needed: <code>license_number,website</code>. Header row optional.
+              Use this to import a hand-curated or vendor-enriched list. Stage 2 auto-discovery covers the rest. Two columns: <code>license_number,website</code>.
             </p>
             <input
               ref={websiteCsvRef}
