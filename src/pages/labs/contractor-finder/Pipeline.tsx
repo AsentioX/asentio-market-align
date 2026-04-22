@@ -479,10 +479,10 @@ export default function Pipeline() {
           <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
             <div className="flex items-center gap-2 mb-1">
               <Link2 className="w-4 h-4" style={{ color: 'hsl(var(--cf-primary))' }} />
-              <h4 className="font-semibold text-sm">1. Attach websites (CSV)</h4>
+              <h4 className="font-semibold text-sm">Bulk attach websites (CSV) — optional</h4>
             </div>
             <p className="text-xs mb-3" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-              Two columns, no quotes needed: <code>license_number,website</code>. Header row optional.
+              Use this to import a hand-curated or vendor-enriched list. Stage 2 auto-discovery covers the rest. Two columns: <code>license_number,website</code>.
             </p>
             <input
               ref={websiteCsvRef}
