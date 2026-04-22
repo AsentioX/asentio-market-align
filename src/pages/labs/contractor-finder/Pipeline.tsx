@@ -300,7 +300,7 @@ export default function Pipeline() {
           {[
             { icon: Award, name: 'Official Source', sub: 'CSLB License Master', color: 'var(--cf-primary)', live: dataSource === 'database' },
             { icon: Globe, name: 'Business Enrichment', sub: 'Google · Yelp · Houzz', color: 'var(--cf-accent)', live: false },
-            { icon: Database, name: 'Website Extraction', sub: 'Crawl for contact emails', color: 'var(--cf-purple)', live: false },
+            { icon: Database, name: 'Website Extraction', sub: 'Crawl homepage + /contact', color: 'var(--cf-purple)', live: (emailStats?.withEmail ?? 0) > 0 },
             { icon: Mail, name: 'Validation', sub: 'Email verify · dedupe · score', color: 'var(--cf-success)', live: false },
           ].map((stage, i) => (
             <div key={i} className="relative">
