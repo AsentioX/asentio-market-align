@@ -184,9 +184,15 @@ export type Database = {
           contractor_type: string | null
           county: string | null
           created_at: string
+          email: string | null
+          email_extracted_at: string | null
+          email_extraction_error: string | null
+          email_extraction_status: string
+          email_source: string | null
           estimated_business_maturity: string | null
           estimated_company_size: string | null
           expiration_date: string | null
+          extra_emails: string[] | null
           id: string
           inactivation_date: string | null
           issue_date: string | null
@@ -207,6 +213,7 @@ export type Database = {
           wc_effective_date: string | null
           wc_policy_number: string | null
           wc_status: string | null
+          website: string | null
           years_in_business: number | null
           zip_code: string | null
         }
@@ -230,9 +237,15 @@ export type Database = {
           contractor_type?: string | null
           county?: string | null
           created_at?: string
+          email?: string | null
+          email_extracted_at?: string | null
+          email_extraction_error?: string | null
+          email_extraction_status?: string
+          email_source?: string | null
           estimated_business_maturity?: string | null
           estimated_company_size?: string | null
           expiration_date?: string | null
+          extra_emails?: string[] | null
           id?: string
           inactivation_date?: string | null
           issue_date?: string | null
@@ -253,6 +266,7 @@ export type Database = {
           wc_effective_date?: string | null
           wc_policy_number?: string | null
           wc_status?: string | null
+          website?: string | null
           years_in_business?: number | null
           zip_code?: string | null
         }
@@ -276,9 +290,15 @@ export type Database = {
           contractor_type?: string | null
           county?: string | null
           created_at?: string
+          email?: string | null
+          email_extracted_at?: string | null
+          email_extraction_error?: string | null
+          email_extraction_status?: string
+          email_source?: string | null
           estimated_business_maturity?: string | null
           estimated_company_size?: string | null
           expiration_date?: string | null
+          extra_emails?: string[] | null
           id?: string
           inactivation_date?: string | null
           issue_date?: string | null
@@ -299,8 +319,57 @@ export type Database = {
           wc_effective_date?: string | null
           wc_policy_number?: string | null
           wc_status?: string | null
+          website?: string | null
           years_in_business?: number | null
           zip_code?: string | null
+        }
+        Relationships: []
+      }
+      cf_extraction_runs: {
+        Row: {
+          created_by: string | null
+          emails_found: number
+          error_message: string | null
+          failed: number
+          filter_json: Json | null
+          finished_at: string | null
+          id: string
+          processed: number
+          source: string
+          started_at: string
+          status: string
+          succeeded: number
+          total_targets: number
+        }
+        Insert: {
+          created_by?: string | null
+          emails_found?: number
+          error_message?: string | null
+          failed?: number
+          filter_json?: Json | null
+          finished_at?: string | null
+          id?: string
+          processed?: number
+          source?: string
+          started_at?: string
+          status?: string
+          succeeded?: number
+          total_targets?: number
+        }
+        Update: {
+          created_by?: string | null
+          emails_found?: number
+          error_message?: string | null
+          failed?: number
+          filter_json?: Json | null
+          finished_at?: string | null
+          id?: string
+          processed?: number
+          source?: string
+          started_at?: string
+          status?: string
+          succeeded?: number
+          total_targets?: number
         }
         Relationships: []
       }

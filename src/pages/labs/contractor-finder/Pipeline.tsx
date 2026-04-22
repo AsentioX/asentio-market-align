@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail } from 'lucide-react';
+import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCF } from './useCFStore';
 import { useToast } from '@/hooks/use-toast';
@@ -24,15 +24,42 @@ interface Stats {
   lastVerified: string | null;
 }
 
+interface EmailStats {
+  withWebsite: number;
+  withEmail: number;
+  pending: number;
+  failed: number;
+  noEmail: number;
+}
+
+interface ExtractionRun {
+  id: string;
+  status: string;
+  total_targets: number;
+  processed: number;
+  succeeded: number;
+  failed: number;
+  emails_found: number;
+  started_at: string;
+  finished_at: string | null;
+  error_message: string | null;
+}
+
 export default function Pipeline() {
   const { toast } = useToast();
   const { reloadFromDb, dataSource } = useCF();
   const [runs, setRuns] = useState<IngestRun[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [emailStats, setEmailStats] = useState<EmailStats | null>(null);
+  const [extractionRuns, setExtractionRuns] = useState<ExtractionRun[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>('');
+  const [websiteCsvUploading, setWebsiteCsvUploading] = useState(false);
+  const [extractionRunning, setExtractionRunning] = useState(false);
+  const [batchLimit, setBatchLimit] = useState(25);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const websiteCsvRef = useRef<HTMLInputElement>(null);
 
   const loadRuns = async () => {
     const { data } = await supabase
@@ -80,9 +107,38 @@ export default function Pipeline() {
     });
   };
 
+  const loadEmailStats = async () => {
+    const [{ count: withWebsite }, { count: withEmail }, { count: pending }, { count: failed }, { count: noEmail }] =
+      await Promise.all([
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('website', 'is', null).neq('website', ''),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('email', 'is', null),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'pending').not('website', 'is', null).neq('website', ''),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'failed'),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'no_email_found'),
+      ]);
+    setEmailStats({
+      withWebsite: withWebsite ?? 0,
+      withEmail: withEmail ?? 0,
+      pending: pending ?? 0,
+      failed: failed ?? 0,
+      noEmail: noEmail ?? 0,
+    });
+  };
+
+  const loadExtractionRuns = async () => {
+    const { data } = await supabase
+      .from('cf_extraction_runs')
+      .select('id, status, total_targets, processed, succeeded, failed, emails_found, started_at, finished_at, error_message')
+      .order('started_at', { ascending: false })
+      .limit(5);
+    if (data) setExtractionRuns(data as ExtractionRun[]);
+  };
+
   useEffect(() => {
     loadRuns();
     loadStats();
+    loadEmailStats();
+    loadExtractionRuns();
     supabase.auth.getSession().then(({ data }) => setIsAuthed(!!data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setIsAuthed(!!session));
     return () => sub.subscription.unsubscribe();
@@ -140,6 +196,65 @@ export default function Pipeline() {
     }
   };
 
+  // Stage 3 — bulk-attach websites via CSV (license_number,website)
+  const handleWebsiteCsv = async (file: File) => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setWebsiteCsvUploading(true);
+    try {
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+      const startIdx = /license/i.test(lines[0] ?? '') ? 1 : 0;
+      const rows = lines.slice(startIdx).map((l) => {
+        const parts = l.split(',').map((p) => p.trim().replace(/^"|"$/g, ''));
+        return { license_number: parts[0], website: parts[1] };
+      }).filter((r) => r.license_number && r.website);
+
+      let updated = 0;
+      for (const r of rows) {
+        const { error } = await supabase
+          .from('cf_contractors')
+          .update({ website: r.website, email_extraction_status: 'pending' })
+          .eq('license_number', r.license_number);
+        if (!error) updated++;
+      }
+      toast({ title: 'Websites attached', description: `Updated ${updated.toLocaleString()} of ${rows.length.toLocaleString()} rows.` });
+      await Promise.all([loadEmailStats(), reloadFromDb()]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'CSV upload failed', description: msg, variant: 'destructive' });
+    } finally {
+      setWebsiteCsvUploading(false);
+      if (websiteCsvRef.current) websiteCsvRef.current.value = '';
+    }
+  };
+
+  const runExtraction = async () => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setExtractionRunning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cf-extract-emails', {
+        body: { limit: batchLimit, onlyMissing: true },
+      });
+      if (error) throw error;
+      toast({
+        title: 'Extraction complete',
+        description: `Processed ${data?.processed ?? 0} · Found ${data?.emails_found ?? 0} email${(data?.emails_found ?? 0) === 1 ? '' : 's'}.`,
+      });
+      await Promise.all([loadEmailStats(), loadExtractionRuns(), reloadFromDb()]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Extraction failed', description: msg, variant: 'destructive' });
+    } finally {
+      setExtractionRunning(false);
+    }
+  };
+
   const fmtTime = (iso: string | null) => {
     if (!iso) return '—';
     const d = new Date(iso);
@@ -163,7 +278,7 @@ export default function Pipeline() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Data Pipeline & Provenance</h1>
           <p className="text-sm" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-            Layered ingestion: official CSLB licensing source of truth → enrichment (planned) → validation.
+            Layered ingestion: official CSLB licensing source of truth → website email extraction (live) → enrichment & validation (planned).
           </p>
         </div>
         <div
@@ -185,7 +300,7 @@ export default function Pipeline() {
           {[
             { icon: Award, name: 'Official Source', sub: 'CSLB License Master', color: 'var(--cf-primary)', live: dataSource === 'database' },
             { icon: Globe, name: 'Business Enrichment', sub: 'Google · Yelp · Houzz', color: 'var(--cf-accent)', live: false },
-            { icon: Database, name: 'Website Extraction', sub: 'Crawl for contact emails', color: 'var(--cf-purple)', live: false },
+            { icon: Database, name: 'Website Extraction', sub: 'Crawl homepage + /contact', color: 'var(--cf-purple)', live: (emailStats?.withEmail ?? 0) > 0 },
             { icon: Mail, name: 'Validation', sub: 'Email verify · dedupe · score', color: 'var(--cf-success)', live: false },
           ].map((stage, i) => (
             <div key={i} className="relative">
@@ -218,6 +333,142 @@ export default function Pipeline() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Stage 3 — Website email extraction */}
+      <div className="rounded-xl p-6" style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}>
+        <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Mail className="w-4 h-4" style={{ color: 'hsl(var(--cf-purple))' }} />
+              <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'hsl(var(--cf-purple))' }}>
+                Stage 3 · Website Email Extraction
+              </span>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'hsl(var(--cf-success))', color: 'white' }}>LIVE</span>
+            </div>
+            <h3 className="font-semibold text-base">Crawl contractor websites for public contact emails</h3>
+            <p className="text-xs mt-1 max-w-2xl" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              CSLB doesn't publish websites or emails. Attach websites first (CSV: <code className="px-1 rounded" style={{ background: 'hsl(var(--cf-surface-alt))' }}>license_number,website</code>), then run a batch — Firecrawl scrapes <strong>homepage + /contact</strong> and we extract emails with deduplication. We never scrape paywalled or hidden pages.
+            </p>
+          </div>
+        </div>
+
+        {/* Email pipeline stats */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-5">
+          {[
+            { label: 'With website', value: emailStats?.withWebsite ?? 0, color: 'var(--cf-primary)' },
+            { label: 'Email found', value: emailStats?.withEmail ?? 0, color: 'var(--cf-success)' },
+            { label: 'Pending crawl', value: emailStats?.pending ?? 0, color: 'var(--cf-text-subtle)' },
+            { label: 'No email on site', value: emailStats?.noEmail ?? 0, color: 'var(--cf-warning)' },
+            { label: 'Failed', value: emailStats?.failed ?? 0, color: 'var(--cf-danger, var(--cf-warning))' },
+          ].map((s) => (
+            <div key={s.label} className="rounded-lg p-3" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: 'hsl(var(--cf-text-subtle))' }}>{s.label}</div>
+              <div className="text-xl font-bold tabular-nums" style={{ color: `hsl(${s.color})` }}>{s.value.toLocaleString()}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Attach websites */}
+          <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
+            <div className="flex items-center gap-2 mb-1">
+              <Link2 className="w-4 h-4" style={{ color: 'hsl(var(--cf-primary))' }} />
+              <h4 className="font-semibold text-sm">1. Attach websites (CSV)</h4>
+            </div>
+            <p className="text-xs mb-3" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              Two columns, no quotes needed: <code>license_number,website</code>. Header row optional.
+            </p>
+            <input
+              ref={websiteCsvRef}
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              disabled={websiteCsvUploading || !isAuthed}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleWebsiteCsv(f);
+              }}
+            />
+            <button
+              onClick={() => websiteCsvRef.current?.click()}
+              disabled={!isAuthed || websiteCsvUploading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+              style={{ background: 'hsl(var(--cf-primary))' }}
+            >
+              {websiteCsvUploading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading…</> : <><Upload className="w-3.5 h-3.5" /> Upload websites CSV</>}
+            </button>
+          </div>
+
+          {/* Run extraction */}
+          <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
+            <div className="flex items-center gap-2 mb-1">
+              <Play className="w-4 h-4" style={{ color: 'hsl(var(--cf-purple))' }} />
+              <h4 className="font-semibold text-sm">2. Run a crawl batch</h4>
+            </div>
+            <p className="text-xs mb-3" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              Processes contractors that have a website but no email yet. Polite, sequential — ~3–8s per contractor.
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <label className="text-xs font-semibold" style={{ color: 'hsl(var(--cf-text-muted))' }}>Batch size</label>
+              <select
+                value={batchLimit}
+                onChange={(e) => setBatchLimit(Number(e.target.value))}
+                disabled={extractionRunning}
+                className="text-xs px-2 py-1 rounded-md"
+                style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+              >
+                {[10, 25, 50, 100, 200].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+              <button
+                onClick={runExtraction}
+                disabled={!isAuthed || extractionRunning || (emailStats?.pending ?? 0) === 0}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+                style={{ background: 'hsl(var(--cf-purple))' }}
+              >
+                {extractionRunning ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Crawling {batchLimit}…</> : <><Play className="w-3.5 h-3.5" /> Run batch</>}
+              </button>
+            </div>
+            {(emailStats?.pending ?? 0) === 0 && (emailStats?.withWebsite ?? 0) === 0 && (
+              <div className="text-[11px] mt-2" style={{ color: 'hsl(var(--cf-warning))' }}>
+                No websites attached yet — upload a CSV first.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Recent extraction runs */}
+        {extractionRuns.length > 0 && (
+          <div className="mt-5">
+            <h4 className="text-xs uppercase font-semibold tracking-wide mb-2" style={{ color: 'hsl(var(--cf-text-subtle))' }}>Recent crawl batches</h4>
+            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid hsl(var(--cf-border))' }}>
+              <table className="w-full text-xs">
+                <thead style={{ background: 'hsl(var(--cf-surface-alt))', color: 'hsl(var(--cf-text-subtle))' }}>
+                  <tr>
+                    <th className="text-left px-3 py-2 font-semibold">Status</th>
+                    <th className="text-right px-3 py-2 font-semibold">Targets</th>
+                    <th className="text-right px-3 py-2 font-semibold">Processed</th>
+                    <th className="text-right px-3 py-2 font-semibold">Emails found</th>
+                    <th className="text-right px-3 py-2 font-semibold">Failed</th>
+                    <th className="text-left px-3 py-2 font-semibold">Started</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {extractionRuns.map((r) => (
+                    <tr key={r.id} className="border-t" style={{ borderColor: 'hsl(var(--cf-border))' }}>
+                      <td className="px-3 py-2"><RunStatusPill status={r.status === 'complete' ? 'complete' : r.status === 'failed' ? 'failed' : 'parsing'} /></td>
+                      <td className="px-3 py-2 text-right tabular-nums">{r.total_targets.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-right tabular-nums">{r.processed.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-right tabular-nums font-semibold" style={{ color: 'hsl(var(--cf-success))' }}>{r.emails_found.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-right tabular-nums" style={{ color: r.failed ? 'hsl(var(--cf-warning))' : 'inherit' }}>{r.failed.toLocaleString()}</td>
+                      <td className="px-3 py-2" style={{ color: 'hsl(var(--cf-text-muted))' }}>{fmtTime(r.started_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Upload + Stats */}
