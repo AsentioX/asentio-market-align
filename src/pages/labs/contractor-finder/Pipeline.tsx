@@ -107,9 +107,38 @@ export default function Pipeline() {
     });
   };
 
+  const loadEmailStats = async () => {
+    const [{ count: withWebsite }, { count: withEmail }, { count: pending }, { count: failed }, { count: noEmail }] =
+      await Promise.all([
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('website', 'is', null).neq('website', ''),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).not('email', 'is', null),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'pending').not('website', 'is', null).neq('website', ''),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'failed'),
+        supabase.from('cf_contractors').select('*', { count: 'exact', head: true }).eq('email_extraction_status', 'no_email_found'),
+      ]);
+    setEmailStats({
+      withWebsite: withWebsite ?? 0,
+      withEmail: withEmail ?? 0,
+      pending: pending ?? 0,
+      failed: failed ?? 0,
+      noEmail: noEmail ?? 0,
+    });
+  };
+
+  const loadExtractionRuns = async () => {
+    const { data } = await supabase
+      .from('cf_extraction_runs')
+      .select('id, status, total_targets, processed, succeeded, failed, emails_found, started_at, finished_at, error_message')
+      .order('started_at', { ascending: false })
+      .limit(5);
+    if (data) setExtractionRuns(data as ExtractionRun[]);
+  };
+
   useEffect(() => {
     loadRuns();
     loadStats();
+    loadEmailStats();
+    loadExtractionRuns();
     supabase.auth.getSession().then(({ data }) => setIsAuthed(!!data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setIsAuthed(!!session));
     return () => sub.subscription.unsubscribe();
