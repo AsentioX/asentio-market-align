@@ -278,7 +278,7 @@ export default function Pipeline() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Data Pipeline & Provenance</h1>
           <p className="text-sm" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-            Layered ingestion: official CSLB licensing source of truth → enrichment (planned) → validation.
+            Layered ingestion: official CSLB licensing source of truth → website email extraction (live) → enrichment & validation (planned).
           </p>
         </div>
         <div
