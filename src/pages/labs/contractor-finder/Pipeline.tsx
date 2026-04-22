@@ -370,6 +370,76 @@ export default function Pipeline() {
         </div>
       </div>
 
+      {/* Stage 2 — Website discovery via Firecrawl Search */}
+      <div className="rounded-xl p-6" style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}>
+        <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Search className="w-4 h-4" style={{ color: 'hsl(var(--cf-accent))' }} />
+              <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'hsl(var(--cf-accent))' }}>
+                Stage 2 · Website Discovery
+              </span>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'hsl(var(--cf-success))', color: 'white' }}>LIVE</span>
+            </div>
+            <h3 className="font-semibold text-base">Find each contractor's official website automatically</h3>
+            <p className="text-xs mt-1 max-w-2xl" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              CSLB doesn't publish websites. We run a focused Firecrawl <code className="px-1 rounded" style={{ background: 'hsl(var(--cf-surface-alt))' }}>/search</code> per contractor (business name + city), filter out directory junk (Yelp, BBB, Houzz, Angi, social, gov), score the rest by name + phone match, and save the best bare domain so Stage 3 can crawl it.
+            </p>
+          </div>
+        </div>
+
+        {/* Discovery stats */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-5">
+          {[
+            { label: 'Missing website', value: emailStats?.missingWebsite ?? 0, color: 'var(--cf-warning)' },
+            { label: 'Website attached', value: emailStats?.withWebsite ?? 0, color: 'var(--cf-primary)' },
+            { label: 'Coverage', value: emailStats ? Math.round(((emailStats.withWebsite) / Math.max(1, emailStats.withWebsite + emailStats.missingWebsite)) * 100) : 0, suffix: '%', color: 'var(--cf-accent)' },
+          ].map((s) => (
+            <div key={s.label} className="rounded-lg p-3" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: 'hsl(var(--cf-text-subtle))' }}>{s.label}</div>
+              <div className="text-xl font-bold tabular-nums" style={{ color: `hsl(${s.color})` }}>
+                {s.value.toLocaleString()}{s.suffix ?? ''}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Search className="w-4 h-4" style={{ color: 'hsl(var(--cf-accent))' }} />
+            <h4 className="font-semibold text-sm">Discover websites for contractors missing one</h4>
+          </div>
+          <p className="text-xs mb-3" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+            ~1 Firecrawl search credit per contractor · ~2–4s each · directory domains automatically rejected.
+          </p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <label className="text-xs font-semibold" style={{ color: 'hsl(var(--cf-text-muted))' }}>Batch size</label>
+            <select
+              value={discoveryLimit}
+              onChange={(e) => setDiscoveryLimit(Number(e.target.value))}
+              disabled={discoveryRunning}
+              className="text-xs px-2 py-1 rounded-md"
+              style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+            >
+              {[10, 25, 50, 100, 200].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <button
+              onClick={runDiscovery}
+              disabled={!isAuthed || discoveryRunning || (emailStats?.missingWebsite ?? 0) === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+              style={{ background: 'hsl(var(--cf-accent))' }}
+            >
+              {discoveryRunning ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Searching {discoveryLimit}…</> : <><Search className="w-3.5 h-3.5" /> Run discovery batch</>}
+            </button>
+            {(emailStats?.missingWebsite ?? 0) === 0 && (emailStats?.withWebsite ?? 0) > 0 && (
+              <span className="text-[11px]" style={{ color: 'hsl(var(--cf-success))' }}>
+                ✓ Every contractor has a website attached.
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Stage 3 — Website email extraction */}
       <div className="rounded-xl p-6" style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}>
         <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
