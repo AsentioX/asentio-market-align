@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail } from 'lucide-react';
+import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCF } from './useCFStore';
 import { useToast } from '@/hooks/use-toast';
@@ -22,6 +22,27 @@ interface Stats {
   byStatus: Record<string, number>;
   byCounty: { county: string; count: number }[];
   lastVerified: string | null;
+}
+
+interface EmailStats {
+  withWebsite: number;
+  withEmail: number;
+  pending: number;
+  failed: number;
+  noEmail: number;
+}
+
+interface ExtractionRun {
+  id: string;
+  status: string;
+  total_targets: number;
+  processed: number;
+  succeeded: number;
+  failed: number;
+  emails_found: number;
+  started_at: string;
+  finished_at: string | null;
+  error_message: string | null;
 }
 
 export default function Pipeline() {
