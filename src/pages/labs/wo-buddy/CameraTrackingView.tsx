@@ -60,16 +60,17 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
     <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black">
       {/* Camera view */}
       <div className="relative aspect-[4/3] bg-black overflow-hidden">
-        {/* Video feed */}
-        {cameraActive ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
-          />
-        ) : (
+        {/* Video feed — always mounted so the ref is stable for getUserMedia */}
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className={`absolute inset-0 w-full h-full object-cover scale-x-[-1] transition-opacity ${
+            cameraActive ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+        {!cameraActive && (
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
             <div className="text-center space-y-2">
               <Camera className="w-10 h-10 text-white/20 mx-auto" />
@@ -79,9 +80,6 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
             </div>
           </div>
         )}
-
-        {/* Hidden video for non-camera case */}
-        {!cameraActive && <video ref={videoRef} className="hidden" autoPlay playsInline muted />}
 
         {/* Skeleton overlay canvas (mirrored to match video) */}
         <canvas
