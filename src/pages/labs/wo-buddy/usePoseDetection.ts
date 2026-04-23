@@ -71,6 +71,7 @@ export function usePoseDetection({ videoRef, canvasRef, enabled, onResult }: Use
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          try { await videoRef.current.play(); } catch { /* autoplay may already be running */ }
           setCameraActive(true);
         }
       } catch {
