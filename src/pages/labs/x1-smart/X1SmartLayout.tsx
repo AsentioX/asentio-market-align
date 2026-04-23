@@ -133,6 +133,7 @@ const X1SmartLayout = () => {
               activeGrad="from-indigo-500 to-violet-600"
             />
           </div>
+          </div>
         </div>
 
         {/* Surface tabs */}
