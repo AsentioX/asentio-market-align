@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Outlet, NavLink, Link } from 'react-router-dom';
-import { LayoutDashboard, Search, Bookmark, Database, HardHat, Sparkles, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Search, Bookmark, Database, HardHat, Sparkles, BookOpen, LogOut } from 'lucide-react';
 import { CFProvider } from './useCFStore';
 import { cfTheme } from './cfTheme';
 import { TradeLegendModal } from './components/TradeLegendModal';
+import { useAuth } from '@/hooks/useAuth';
+import ContractorFinderLogin from './ContractorFinderLogin';
 
 const navItems = [
   { to: '/labs/contractor-finder', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -14,6 +16,28 @@ const navItems = [
 
 export default function ContractorFinderLayout() {
   const [showLegend, setShowLegend] = useState(false);
+  const { user, loading, signOut } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={cfTheme} className="min-h-screen flex items-center justify-center" >
+        <div
+          className="min-h-screen w-full flex items-center justify-center"
+          style={{ background: 'hsl(var(--cf-bg))' }}
+        >
+          <div
+            className="w-8 h-8 border-[3px] rounded-full animate-spin"
+            style={{ borderColor: 'hsl(var(--cf-border))', borderTopColor: 'hsl(var(--cf-primary))' }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <ContractorFinderLogin />;
+  }
+
   return (
     <CFProvider>
       <div
@@ -103,6 +127,18 @@ export default function ContractorFinderLayout() {
                 >
                   ← All Labs
                 </Link>
+                <button
+                  onClick={signOut}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border transition-colors hover:bg-[hsl(var(--cf-surface-alt))]"
+                  style={{
+                    borderColor: 'hsl(var(--cf-border))',
+                    color: 'hsl(var(--cf-text-muted))',
+                  }}
+                  title="Sign out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Sign Out
+                </button>
               </div>
             </div>
           </header>

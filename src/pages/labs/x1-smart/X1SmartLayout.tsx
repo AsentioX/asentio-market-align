@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Activity, Users, Home, Sliders, Sparkles, Building2 } from 'lucide-react';
+import { ArrowLeft, Activity, Users, Home, Sliders, Sparkles, Building2, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import X1SmartLogin from './X1SmartLogin';
 import IntelligenceFeed from './screens/IntelligenceFeed';
 import ResidentialPeople from './screens/residential/ResidentialPeople';
 import ResidentialSpaces from './screens/residential/ResidentialSpaces';
@@ -42,9 +44,22 @@ const APP_META = {
 const X1SmartLayout = () => {
   const [appMode, setAppMode] = useState<AppMode>('aihome');
   const [surface, setSurface] = useState<Surface>('feed');
+  const { user, loading, signOut } = useAuth();
 
   const meta = APP_META[appMode];
   const AppIcon = meta.icon;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#fafaf7] flex items-center justify-center">
+        <div className="w-8 h-8 border-[3px] border-stone-200 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <X1SmartLogin />;
+  }
 
   return (
     <div className="min-h-screen bg-[#fafaf7] text-[#0a0a0a] relative overflow-hidden">
@@ -91,7 +106,16 @@ const X1SmartLayout = () => {
           </div>
 
           {/* App mode toggle (upper right) */}
-          <div className="inline-flex p-1 rounded-2xl bg-stone-900 shadow-lg ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+          <button
+            onClick={signOut}
+            className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100"
+            title="Sign out"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Sign Out
+          </button>
+          <div className="inline-flex p-1 rounded-2xl bg-stone-900 shadow-lg">
             <ModeToggleBtn
               active={appMode === 'aihome'}
               onClick={() => setAppMode('aihome')}
