@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
 import { ChevronDown, MapPin, Navigation, Search, Star, X } from 'lucide-react';
 import { ROW_LOCATIONS, RowLocation } from './locations';
+import type { NearbyLocation } from './useRowLocation';
 
 interface LocationPickerProps {
   location: RowLocation;
   favorites: RowLocation[];
+  nearby: NearbyLocation[];
   isFavorite: boolean;
   gpsStatus: 'idle' | 'requesting' | 'granted' | 'denied' | 'unavailable';
   gpsError: string | null;
@@ -14,7 +16,7 @@ interface LocationPickerProps {
 }
 
 export const LocationPicker = ({
-  location, favorites, isFavorite, gpsStatus, gpsError,
+  location, favorites, nearby, isFavorite, gpsStatus, gpsError,
   onSelect, onToggleFavorite, onUseGPS,
 }: LocationPickerProps) => {
   const [open, setOpen] = useState(false);
@@ -107,6 +109,27 @@ export const LocationPicker = ({
             </div>
 
             <div className="overflow-y-auto max-h-[50vh]">
+              {nearby.length > 0 && !query && (
+                <div className="px-3 pt-3 pb-1">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-300/80 font-semibold flex items-center gap-1.5">
+                    <Navigation className="w-3 h-3" /> Nearby
+                  </div>
+                  <div className="mt-1.5 space-y-0.5">
+                    {nearby.map((loc) => (
+                      <LocationRow
+                        key={`near-${loc.id}`}
+                        loc={loc}
+                        active={loc.id === location.id}
+                        favorite={favorites.some((f) => f.id === loc.id)}
+                        distanceKm={loc.distanceKm}
+                        onSelect={() => { onSelect(loc.id); setOpen(false); }}
+                        onToggleFavorite={() => onToggleFavorite(loc.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {favorites.length > 0 && !query && (
                 <div className="px-3 pt-3 pb-1">
                   <div className="text-[10px] uppercase tracking-[0.18em] text-amber-300/80 font-semibold flex items-center gap-1.5">
@@ -160,11 +183,18 @@ interface LocationRowProps {
   loc: RowLocation;
   active: boolean;
   favorite: boolean;
+  distanceKm?: number;
   onSelect: () => void;
   onToggleFavorite: () => void;
 }
 
-const LocationRow = ({ loc, active, favorite, onSelect, onToggleFavorite }: LocationRowProps) => (
+const formatDistance = (km: number) => {
+  const mi = km * 0.621371;
+  if (mi < 10) return `${mi.toFixed(1)} mi`;
+  return `${Math.round(mi)} mi`;
+};
+
+const LocationRow = ({ loc, active, favorite, distanceKm, onSelect, onToggleFavorite }: LocationRowProps) => (
   <div
     className={`flex items-center gap-2 rounded-lg transition ${
       active ? 'bg-cyan-500/15 border border-cyan-400/30' : 'border border-transparent hover:bg-white/[0.04]'
@@ -173,6 +203,9 @@ const LocationRow = ({ loc, active, favorite, onSelect, onToggleFavorite }: Loca
     <button onClick={onSelect} className="flex-1 flex items-center gap-2 px-2.5 py-2 text-left min-w-0">
       <MapPin className={`w-3.5 h-3.5 shrink-0 ${active ? 'text-cyan-300' : 'text-slate-500'}`} />
       <span className={`text-sm truncate ${active ? 'text-cyan-100 font-medium' : 'text-slate-200'}`}>{loc.name}</span>
+      {typeof distanceKm === 'number' && (
+        <span className="ml-auto text-[11px] tabular-nums text-cyan-300/70 shrink-0">{formatDistance(distanceKm)}</span>
+      )}
     </button>
     <button
       onClick={onToggleFavorite}

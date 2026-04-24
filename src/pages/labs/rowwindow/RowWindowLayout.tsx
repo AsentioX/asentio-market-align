@@ -441,6 +441,7 @@ const PreRowView = ({
       <LocationPicker
         location={locationState.location}
         favorites={locationState.favorites}
+        nearby={locationState.nearby}
         isFavorite={locationState.isFavorite}
         gpsStatus={locationState.gpsStatus}
         gpsError={locationState.gpsError}
