@@ -1,16 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
-import { DEFAULT_LOCATION, findNearestLocation, ROW_LOCATIONS, RowLocation } from './locations';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DEFAULT_LOCATION, findNearestLocation, haversineKm, ROW_LOCATIONS, RowLocation } from './locations';
 
 const STORAGE_KEY = 'rowwindow:location:v1';
+const COORDS_KEY = 'rowwindow:coords:v1';
 
 interface PersistedState {
   selectedId: string;
   favoriteIds: string[];
 }
 
+export interface NearbyLocation extends RowLocation {
+  distanceKm: number;
+}
+
 interface RowLocationState {
   location: RowLocation;
   favorites: RowLocation[];
+  nearby: NearbyLocation[];
   isFavorite: boolean;
   gpsStatus: 'idle' | 'requesting' | 'granted' | 'denied' | 'unavailable';
   gpsError: string | null;
