@@ -421,14 +421,35 @@ interface PreRowViewProps {
   source: 'noaa' | 'mock';
   fetchedAt: number | null;
   fetchError: string | null;
+  locationState: ReturnType<typeof useRowLocation>;
   onLaunch: () => void;
 }
 
 const PreRowView = ({
   assessment, statusMeta, vessel, duration, current, direction, nextTurn, now, wind,
-  vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, onLaunch,
+  vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
+    {/* Location picker */}
+    <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-4">
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-semibold">Rowing Location</div>
+        {locationState.favorites.length > 0 && (
+          <div className="text-[10px] text-amber-300/80">{locationState.favorites.length} saved</div>
+        )}
+      </div>
+      <LocationPicker
+        location={locationState.location}
+        favorites={locationState.favorites}
+        isFavorite={locationState.isFavorite}
+        gpsStatus={locationState.gpsStatus}
+        gpsError={locationState.gpsError}
+        onSelect={locationState.selectLocation}
+        onToggleFavorite={locationState.toggleFavorite}
+        onUseGPS={locationState.useGPS}
+      />
+    </section>
+
     {/* Primary status — traffic light */}
     <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-6 md:p-8">
       <div className="flex flex-col md:flex-row md:items-center gap-6">
