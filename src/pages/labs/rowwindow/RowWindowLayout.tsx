@@ -94,13 +94,16 @@ const RowWindowLayout = () => {
     return () => clearInterval(id);
   }, [tab, sessionState]);
 
-  // Live NOAA fetch — initial load + periodic refresh
+  // Live NOAA fetch — initial load + periodic refresh; refetch when station changes
   useEffect(() => {
     const ac = new AbortController();
     let cancelled = false;
     const load = async () => {
       setLoading(true);
-      const result = await fetchLiveConditions(Date.now(), ac.signal);
+      const result = await fetchLiveConditions(Date.now(), ac.signal, {
+        tideStationId: location.tideStationId,
+        windStationId: location.windStationId,
+      });
       if (cancelled) return;
       setSeries(result.series);
       setWind(result.wind);
@@ -116,7 +119,7 @@ const RowWindowLayout = () => {
       ac.abort();
       clearInterval(id);
     };
-  }, []);
+  }, [location.tideStationId, location.windStationId]);
 
   // Simulated stroke + position telemetry while session is active
   useEffect(() => {
