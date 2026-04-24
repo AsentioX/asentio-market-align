@@ -622,7 +622,7 @@ const PreRowView = ({
       <p className="mt-3 text-[11px] text-slate-500">
         {source === 'noaa' ? (
           <>
-            Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${'9414523'}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-300">NOAA CO-OPS Station 9414523</a> (Redwood City, MLLW datum) · 6-min interval
+            Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${locationState.location.tideStationId}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-300">NOAA CO-OPS Station {locationState.location.tideStationId}</a> ({locationState.location.name}, MLLW datum) · 6-min interval
             {fetchedAt && <> · refreshed {new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</>}
           </>
         ) : (
