@@ -279,7 +279,7 @@ const RowWindowLayout = () => {
               </div>
               <div>
                 <h1 className="text-base font-semibold tracking-tight">RowWindow</h1>
-                <p className="text-[11px] text-slate-400 -mt-0.5">BIAC · Redwood City · NOAA 9414523</p>
+                <p className="text-[11px] text-slate-400 -mt-0.5 truncate max-w-[180px] sm:max-w-none">{location.name} · NOAA {location.tideStationId}</p>
               </div>
             </div>
           </div>
@@ -333,6 +333,7 @@ const RowWindowLayout = () => {
             source={source}
             fetchedAt={fetchedAt}
             fetchError={fetchError}
+            locationState={locationState}
             onLaunch={() => {
               startSession();
               setTab('on');
