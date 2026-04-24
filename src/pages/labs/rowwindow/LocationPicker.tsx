@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
 import { ChevronDown, MapPin, Navigation, Search, Star, X } from 'lucide-react';
 import { ROW_LOCATIONS, RowLocation } from './locations';
+import type { NearbyLocation } from './useRowLocation';
 
 interface LocationPickerProps {
   location: RowLocation;
   favorites: RowLocation[];
+  nearby: NearbyLocation[];
   isFavorite: boolean;
   gpsStatus: 'idle' | 'requesting' | 'granted' | 'denied' | 'unavailable';
   gpsError: string | null;
