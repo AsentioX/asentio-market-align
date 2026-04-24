@@ -125,4 +125,3 @@ export function useRowLocation(): RowLocationState {
 
   return { location, favorites, nearby, isFavorite, gpsStatus, gpsError, selectLocation, toggleFavorite, useGPS };
 }
-}
