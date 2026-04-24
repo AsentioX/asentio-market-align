@@ -40,8 +40,20 @@ const load = (): PersistedState => {
   }
 };
 
+const loadCoords = (): { lat: number; lng: number } | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(COORDS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.lat === 'number' && typeof parsed?.lng === 'number') return parsed;
+  } catch {}
+  return null;
+};
+
 export function useRowLocation(): RowLocationState {
   const [state, setState] = useState<PersistedState>(() => load());
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(() => loadCoords());
   const [gpsStatus, setGpsStatus] = useState<RowLocationState['gpsStatus']>('idle');
   const [gpsError, setGpsError] = useState<string | null>(null);
 
@@ -51,11 +63,26 @@ export function useRowLocation(): RowLocationState {
     } catch {}
   }, [state]);
 
+  useEffect(() => {
+    if (!coords) return;
+    try {
+      localStorage.setItem(COORDS_KEY, JSON.stringify(coords));
+    } catch {}
+  }, [coords]);
+
   const location = ROW_LOCATIONS.find((l) => l.id === state.selectedId) ?? DEFAULT_LOCATION;
   const favorites = state.favoriteIds
     .map((id) => ROW_LOCATIONS.find((l) => l.id === id))
     .filter((l): l is RowLocation => Boolean(l));
   const isFavorite = state.favoriteIds.includes(location.id);
+
+  const nearby = useMemo<NearbyLocation[]>(() => {
+    if (!coords) return [];
+    return ROW_LOCATIONS
+      .map((l) => ({ ...l, distanceKm: haversineKm(coords, l) }))
+      .sort((a, b) => a.distanceKm - b.distanceKm)
+      .slice(0, 5);
+  }, [coords]);
 
   const selectLocation = useCallback((id: string) => {
     setState((p) => ({ ...p, selectedId: id }));
@@ -81,7 +108,10 @@ export function useRowLocation(): RowLocationState {
     setGpsError(null);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const nearest = findNearestLocation(pos.coords.latitude, pos.coords.longitude);
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setCoords({ lat, lng });
+        const nearest = findNearestLocation(lat, lng);
         setState((p) => ({ ...p, selectedId: nearest.id }));
         setGpsStatus('granted');
       },
@@ -93,5 +123,6 @@ export function useRowLocation(): RowLocationState {
     );
   }, []);
 
-  return { location, favorites, isFavorite, gpsStatus, gpsError, selectLocation, toggleFavorite, useGPS };
+  return { location, favorites, nearby, isFavorite, gpsStatus, gpsError, selectLocation, toggleFavorite, useGPS };
+}
 }
