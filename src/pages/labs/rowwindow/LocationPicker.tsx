@@ -109,6 +109,27 @@ export const LocationPicker = ({
             </div>
 
             <div className="overflow-y-auto max-h-[50vh]">
+              {nearby.length > 0 && !query && (
+                <div className="px-3 pt-3 pb-1">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-300/80 font-semibold flex items-center gap-1.5">
+                    <Navigation className="w-3 h-3" /> Nearby
+                  </div>
+                  <div className="mt-1.5 space-y-0.5">
+                    {nearby.map((loc) => (
+                      <LocationRow
+                        key={`near-${loc.id}`}
+                        loc={loc}
+                        active={loc.id === location.id}
+                        favorite={favorites.some((f) => f.id === loc.id)}
+                        distanceKm={loc.distanceKm}
+                        onSelect={() => { onSelect(loc.id); setOpen(false); }}
+                        onToggleFavorite={() => onToggleFavorite(loc.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {favorites.length > 0 && !query && (
                 <div className="px-3 pt-3 pb-1">
                   <div className="text-[10px] uppercase tracking-[0.18em] text-amber-300/80 font-semibold flex items-center gap-1.5">
