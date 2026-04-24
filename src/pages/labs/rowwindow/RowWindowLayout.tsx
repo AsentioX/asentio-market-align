@@ -21,6 +21,8 @@ import {
   getMockWind,
   getNextTurn,
 } from './tideEngine';
+import { useRowLocation } from './useRowLocation';
+import { LocationPicker } from './LocationPicker';
 
 const DURATIONS = [60, 90, 120];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -53,6 +55,10 @@ const RowWindowLayout = () => {
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
   const [tab, setTab] = useState<TabId>('pre');
+
+  // Location: picked, GPS, favorites
+  const locationState = useRowLocation();
+  const { location } = locationState;
 
   // Live data state — seeded with mock so first paint is instant
   const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(Date.now()));
