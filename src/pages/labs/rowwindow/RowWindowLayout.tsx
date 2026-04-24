@@ -21,6 +21,8 @@ import {
   getMockWind,
   getNextTurn,
 } from './tideEngine';
+import { useRowLocation } from './useRowLocation';
+import { LocationPicker } from './LocationPicker';
 
 const DURATIONS = [60, 90, 120];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -53,6 +55,10 @@ const RowWindowLayout = () => {
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
   const [tab, setTab] = useState<TabId>('pre');
+
+  // Location: picked, GPS, favorites
+  const locationState = useRowLocation();
+  const { location } = locationState;
 
   // Live data state — seeded with mock so first paint is instant
   const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(Date.now()));
@@ -88,13 +94,16 @@ const RowWindowLayout = () => {
     return () => clearInterval(id);
   }, [tab, sessionState]);
 
-  // Live NOAA fetch — initial load + periodic refresh
+  // Live NOAA fetch — initial load + periodic refresh; refetch when station changes
   useEffect(() => {
     const ac = new AbortController();
     let cancelled = false;
     const load = async () => {
       setLoading(true);
-      const result = await fetchLiveConditions(Date.now(), ac.signal);
+      const result = await fetchLiveConditions(Date.now(), ac.signal, {
+        tideStationId: location.tideStationId,
+        windStationId: location.windStationId,
+      });
       if (cancelled) return;
       setSeries(result.series);
       setWind(result.wind);
@@ -110,7 +119,7 @@ const RowWindowLayout = () => {
       ac.abort();
       clearInterval(id);
     };
-  }, []);
+  }, [location.tideStationId, location.windStationId]);
 
   // Simulated stroke + position telemetry while session is active
   useEffect(() => {
@@ -270,7 +279,7 @@ const RowWindowLayout = () => {
               </div>
               <div>
                 <h1 className="text-base font-semibold tracking-tight">RowWindow</h1>
-                <p className="text-[11px] text-slate-400 -mt-0.5">BIAC · Redwood City · NOAA 9414523</p>
+                <p className="text-[11px] text-slate-400 -mt-0.5 truncate max-w-[180px] sm:max-w-none">{location.name} · NOAA {location.tideStationId}</p>
               </div>
             </div>
           </div>
@@ -324,6 +333,7 @@ const RowWindowLayout = () => {
             source={source}
             fetchedAt={fetchedAt}
             fetchError={fetchError}
+            locationState={locationState}
             onLaunch={() => {
               startSession();
               setTab('on');
@@ -411,14 +421,35 @@ interface PreRowViewProps {
   source: 'noaa' | 'mock';
   fetchedAt: number | null;
   fetchError: string | null;
+  locationState: ReturnType<typeof useRowLocation>;
   onLaunch: () => void;
 }
 
 const PreRowView = ({
   assessment, statusMeta, vessel, duration, current, direction, nextTurn, now, wind,
-  vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, onLaunch,
+  vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
+    {/* Location picker */}
+    <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-4">
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-semibold">Rowing Location</div>
+        {locationState.favorites.length > 0 && (
+          <div className="text-[10px] text-amber-300/80">{locationState.favorites.length} saved</div>
+        )}
+      </div>
+      <LocationPicker
+        location={locationState.location}
+        favorites={locationState.favorites}
+        isFavorite={locationState.isFavorite}
+        gpsStatus={locationState.gpsStatus}
+        gpsError={locationState.gpsError}
+        onSelect={locationState.selectLocation}
+        onToggleFavorite={locationState.toggleFavorite}
+        onUseGPS={locationState.useGPS}
+      />
+    </section>
+
     {/* Primary status — traffic light */}
     <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-6 md:p-8">
       <div className="flex flex-col md:flex-row md:items-center gap-6">
@@ -591,7 +622,7 @@ const PreRowView = ({
       <p className="mt-3 text-[11px] text-slate-500">
         {source === 'noaa' ? (
           <>
-            Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${'9414523'}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-300">NOAA CO-OPS Station 9414523</a> (Redwood City, MLLW datum) · 6-min interval
+            Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${locationState.location.tideStationId}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-300">NOAA CO-OPS Station {locationState.location.tideStationId}</a> ({locationState.location.name}, MLLW datum) · 6-min interval
             {fetchedAt && <> · refreshed {new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</>}
           </>
         ) : (
