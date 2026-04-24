@@ -16,7 +16,7 @@ interface LocationPickerProps {
 }
 
 export const LocationPicker = ({
-  location, favorites, isFavorite, gpsStatus, gpsError,
+  location, favorites, nearby, isFavorite, gpsStatus, gpsError,
   onSelect, onToggleFavorite, onUseGPS,
 }: LocationPickerProps) => {
   const [open, setOpen] = useState(false);
