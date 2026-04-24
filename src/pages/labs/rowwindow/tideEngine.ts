@@ -187,8 +187,7 @@ export function getMockWind(now = Date.now()): WindReading {
 export const NOAA_STATION_ID = '9414523';
 const NOAA_BASE = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
 
-// Wind station near BIAC — Redwood City has no wind sensor, so use
-// 9414750 (Alameda) as the closest South Bay meteorological station.
+// Default wind station (Alameda) — used when caller omits a station.
 export const NOAA_WIND_STATION_ID = '9414750';
 
 function fmtNoaaDate(d: Date): string {
@@ -216,16 +215,17 @@ export async function fetchNoaaTideSeries(
   hoursBefore = 6,
   hoursAfter = 18,
   signal?: AbortSignal,
+  stationId: string = NOAA_STATION_ID,
 ): Promise<TidePoint[]> {
   const begin = new Date(centerMs - hoursBefore * 3600_000);
   const end = new Date(centerMs + hoursAfter * 3600_000);
   const params = new URLSearchParams({
     product: 'predictions',
-    application: 'RowWindow_BIAC',
+    application: 'RowWindow',
     begin_date: fmtNoaaDate(begin),
     end_date: fmtNoaaDate(end),
     datum: 'MLLW',
-    station: NOAA_STATION_ID,
+    station: stationId,
     time_zone: 'gmt',
     units: 'english',
     interval: '6', // 6-min high-res
@@ -248,12 +248,12 @@ export async function fetchNoaaTideSeries(
  * Fetch latest observed wind from NOAA met station.
  * Returns null if station has no recent data (some stations are tide-only).
  */
-export async function fetchNoaaWind(signal?: AbortSignal): Promise<WindReading | null> {
+export async function fetchNoaaWind(signal?: AbortSignal, stationId: string = NOAA_WIND_STATION_ID): Promise<WindReading | null> {
   const params = new URLSearchParams({
     product: 'wind',
-    application: 'RowWindow_BIAC',
+    application: 'RowWindow',
     date: 'latest',
-    station: NOAA_WIND_STATION_ID,
+    station: stationId,
     time_zone: 'gmt',
     units: 'english', // wind speed in knots
     format: 'json',
@@ -280,11 +280,12 @@ export async function fetchNoaaWind(signal?: AbortSignal): Promise<WindReading |
 export async function fetchLiveConditions(
   centerMs = Date.now(),
   signal?: AbortSignal,
+  stations?: { tideStationId?: string; windStationId?: string },
 ): Promise<{ series: TidePoint[]; wind: WindReading; source: 'noaa' | 'mock'; error?: string }> {
   try {
     const [series, wind] = await Promise.all([
-      fetchNoaaTideSeries(centerMs, 6, 18, signal),
-      fetchNoaaWind(signal).catch(() => null),
+      fetchNoaaTideSeries(centerMs, 6, 18, signal, stations?.tideStationId ?? NOAA_STATION_ID),
+      fetchNoaaWind(signal, stations?.windStationId ?? NOAA_WIND_STATION_ID).catch(() => null),
     ]);
     return {
       series,
