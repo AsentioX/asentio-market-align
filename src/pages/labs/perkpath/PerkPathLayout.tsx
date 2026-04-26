@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon, Sparkles, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Search, X, Wallet, Home, MapPin, MapPinOff, Settings as SettingsIcon, Sparkles, RefreshCw, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
