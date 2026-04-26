@@ -1,6 +1,7 @@
 import { Briefcase, Home, PartyPopper } from 'lucide-react';
 import type { Perk, Pillar } from '@/hooks/usePerkPath';
 import PerkCard from './PerkCard';
+import { categoryImage } from './categoryImage';
 
 const PILLAR_META: Record<Pillar, { label: string; icon: typeof Home; tone: string; bg: string; chip: string }> = {
   work: {
