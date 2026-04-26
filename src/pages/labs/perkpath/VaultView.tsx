@@ -141,7 +141,7 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                           </span>
                         )}
                       </div>
-                      <BrandLogo name={m.name} fallback={m.logo} />
+                      
                     </div>
                     <div>
                       <p className="text-lg font-bold drop-shadow leading-tight">{m.name}</p>
