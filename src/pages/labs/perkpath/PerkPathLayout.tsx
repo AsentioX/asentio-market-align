@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Search, X, Wallet, Home, LogOut } from 'lucide-react';
+import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
@@ -13,6 +13,7 @@ import RenewalSentinel from './RenewalSentinel';
 import SearchResult from './SearchResult';
 import NearbyNow from './NearbyNow';
 import VaultView from './VaultView';
+import SettingsView from './SettingsView';
 import PerkDrawer from './PerkDrawer';
 import type { Membership } from './perkData';
 
@@ -20,7 +21,7 @@ const PerkPathLayout = () => {
   const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
   const { memberships, perks, venues, loading } = usePerkPath();
   const geo = useGeolocation();
-  const [tab, setTab] = useState<'home' | 'vault'>('home');
+  const [tab, setTab] = useState<'home' | 'vault' | 'settings'>('home');
   const [searchValue, setSearchValue] = useState('');
   const [selectedPerk, setSelectedPerk] = useState<Perk | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
