@@ -49,6 +49,10 @@ const AddCardModal = ({ open, onClose, onAdded }: Props) => {
   const handleClose = () => { reset(); onClose(); };
 
   const handleFile = (file: File) => {
+    if (cardType === 'credit') {
+      toast.error('Photos are disabled for credit cards to protect your data');
+      return;
+    }
     if (file.size > 8 * 1024 * 1024) {
       toast.error('Image must be under 8MB');
       return;
