@@ -260,14 +260,11 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                             className="h-10 rounded-xl bg-white border-slate-200 text-sm"
                           />
                         </Field>
-                        <Field label="Tier">
-                          <Input
-                            value={(form.tier as string) ?? ''}
-                            onChange={e => setForm(f => ({ ...f, tier: e.target.value }))}
-                            placeholder="Reserve, Platinum, Gold…"
-                            className="h-10 rounded-xl bg-white border-slate-200 text-sm"
-                          />
-                        </Field>
+                        <EditTierField
+                          name={(form.name as string) ?? ''}
+                          tier={(form.tier as string) ?? ''}
+                          onChange={t => setForm(f => ({ ...f, tier: t }))}
+                        />
                         <Field label="Renewal date">
                           <Input
                             type="date"
