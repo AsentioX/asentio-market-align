@@ -148,9 +148,7 @@ const PerkPathLayout = () => {
                         <p className="text-sm text-slate-500">Memberships will appear here once added.</p>
                       </div>
                     ) : (
-                      <BrowseList perks={perks} memberships={memberships} onPerkTap={handlePerkTap} />
-
-                    )}
+                      <BrowseList perks={perks} memberships={memberships} onPerkTap={handlePerkTap} geo={geo} />
                   </>
                 )}
               </motion.div>
