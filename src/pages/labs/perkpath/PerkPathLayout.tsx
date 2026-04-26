@@ -62,11 +62,13 @@ const PerkPathLayout = () => {
 
   const handlePerkTap = (perk: Perk) => { setSelectedPerk(perk); setDrawerOpen(true); };
 
-  // Adapter: VaultView expects legacy Membership shape
-  const vaultMemberships: Membership[] = memberships.map(m => ({
-    id: m.id, name: m.name, brandColor: m.brand_color,
+  // Adapter: VaultView expects extended card shape
+  const vaultMemberships = memberships.map(m => ({
+    id: m.id, name: m.name, tier: m.tier, brandColor: m.brand_color,
     memberId: m.tier ? `${m.tier} member` : 'Member',
     logo: m.logo,
+    cardImageUrl: m.card_image_url ?? null,
+    cardType: m.card_type ?? null,
   }));
 
   // Adapter for PerkDrawer (legacy Perk shape)
