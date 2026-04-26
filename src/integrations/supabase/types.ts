@@ -2502,6 +2502,45 @@ export type Database = {
         }
         Relationships: []
       }
+      pp_offer_sources: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          kind: Database["public"]["Enums"]["pp_source_kind"]
+          label: string | null
+          last_run_at: string | null
+          membership_slug: string
+          query: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind: Database["public"]["Enums"]["pp_source_kind"]
+          label?: string | null
+          last_run_at?: string | null
+          membership_slug: string
+          query?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["pp_source_kind"]
+          label?: string | null
+          last_run_at?: string | null
+          membership_slug?: string
+          query?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       pp_perk_venues: {
         Row: {
           created_at: string
@@ -2593,6 +2632,130 @@ export type Database = {
             columns: ["membership_id"]
             isOneToOne: false
             referencedRelation: "pp_memberships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pp_scrape_runs: {
+        Row: {
+          error_message: string | null
+          finished_at: string | null
+          id: string
+          offers_found: number
+          perks_created: number
+          sources_failed: number
+          sources_succeeded: number
+          sources_total: number
+          started_at: string
+          status: string
+          triggered_by: string
+          user_id: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          offers_found?: number
+          perks_created?: number
+          sources_failed?: number
+          sources_succeeded?: number
+          sources_total?: number
+          started_at?: string
+          status?: string
+          triggered_by?: string
+          user_id?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          offers_found?: number
+          perks_created?: number
+          sources_failed?: number
+          sources_succeeded?: number
+          sources_total?: number
+          started_at?: string
+          status?: string
+          triggered_by?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      pp_scraped_offers: {
+        Row: {
+          category: string
+          created_at: string
+          fingerprint: string
+          how_to_redeem: string | null
+          id: string
+          membership_id: string | null
+          membership_slug: string
+          perk_id: string | null
+          perk_tags: string[]
+          source_id: string | null
+          source_url: string | null
+          status: Database["public"]["Enums"]["pp_offer_status"]
+          title: string
+          user_id: string
+          value_label: string
+          venue: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          fingerprint: string
+          how_to_redeem?: string | null
+          id?: string
+          membership_id?: string | null
+          membership_slug: string
+          perk_id?: string | null
+          perk_tags?: string[]
+          source_id?: string | null
+          source_url?: string | null
+          status?: Database["public"]["Enums"]["pp_offer_status"]
+          title: string
+          user_id: string
+          value_label?: string
+          venue?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          fingerprint?: string
+          how_to_redeem?: string | null
+          id?: string
+          membership_id?: string | null
+          membership_slug?: string
+          perk_id?: string | null
+          perk_tags?: string[]
+          source_id?: string | null
+          source_url?: string | null
+          status?: Database["public"]["Enums"]["pp_offer_status"]
+          title?: string
+          user_id?: string
+          value_label?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pp_scraped_offers_membership_id_fkey"
+            columns: ["membership_id"]
+            isOneToOne: false
+            referencedRelation: "pp_memberships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pp_scraped_offers_perk_id_fkey"
+            columns: ["perk_id"]
+            isOneToOne: false
+            referencedRelation: "pp_perks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pp_scraped_offers_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "pp_offer_sources"
             referencedColumns: ["id"]
           },
         ]
@@ -4339,6 +4502,7 @@ export type Database = {
       mydj_session_status: "active" | "completed" | "cancelled"
       mydj_strategy_type: "mirror" | "counterbalance" | "hybrid"
       pp_membership_category: "financial" | "lifestyle"
+      pp_offer_status: "new" | "applied" | "skipped" | "duplicate"
       pp_perk_category:
         | "auto"
         | "dining"
@@ -4349,6 +4513,7 @@ export type Database = {
         | "services"
         | "other"
       pp_pillar: "work" | "home" | "play"
+      pp_source_kind: "program_site" | "search_query" | "rss_feed"
       schedule_role: "hacker" | "sponsor" | "press" | "mentor" | "organizer"
     }
     CompositeTypes: {
@@ -4526,6 +4691,7 @@ export const Constants = {
       mydj_session_status: ["active", "completed", "cancelled"],
       mydj_strategy_type: ["mirror", "counterbalance", "hybrid"],
       pp_membership_category: ["financial", "lifestyle"],
+      pp_offer_status: ["new", "applied", "skipped", "duplicate"],
       pp_perk_category: [
         "auto",
         "dining",
@@ -4537,6 +4703,7 @@ export const Constants = {
         "other",
       ],
       pp_pillar: ["work", "home", "play"],
+      pp_source_kind: ["program_site", "search_query", "rss_feed"],
       schedule_role: ["hacker", "sponsor", "press", "mentor", "organizer"],
     },
   },
