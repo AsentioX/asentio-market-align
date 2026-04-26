@@ -22,7 +22,7 @@ const CATEGORY_IMAGES: Record<PerkCategory, string[]> = {
   shopping: [
     'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=375&fit=crop',
     'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=375&fit=crop',
-    'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=375&fit=crop',
+    'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&h=375&fit=crop',
   ],
   health: [
     'https://images.unsplash.com/photo-1576602976047-174e57a47881?w=600&h=375&fit=crop',
