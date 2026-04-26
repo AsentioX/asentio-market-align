@@ -217,14 +217,19 @@ function exerciseReason(exerciseName: string, driver: string, goalNames: string[
 type LegacyGoal = { id?: string; status: string; drivers: string[]; name?: string; title?: string; priority?: string; deadline?: string | null; target_date?: string | null };
 
 function legacyToScored(goals: LegacyGoal[]): ScoredGoal[] {
-  return goals.map(g => ({
-    id: g.id ?? '',
-    title: g.title ?? g.name ?? '',
-    priority: g.priority ?? 'primary',
-    status: g.status,
-    drivers: g.drivers.map(d => ({ driver: d, weight: 5 })),
-    targetDate: g.target_date ?? g.deadline ?? null,
-  }));
+  return goals.map(g => {
+    const p = g.priority;
+    const priority: 'primary' | 'secondary' | 'supporting' =
+      p === 'secondary' || p === 'supporting' ? p : 'primary';
+    return {
+      id: g.id ?? '',
+      title: g.title ?? g.name ?? '',
+      priority,
+      status: g.status,
+      drivers: g.drivers.map(d => ({ driver: d, weight: 5 })),
+      targetDate: g.target_date ?? g.deadline ?? null,
+    };
+  });
 }
 
 export function generatePlanFromGoals(goals: LegacyGoal[]): PlanDay[] {
