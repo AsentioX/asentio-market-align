@@ -149,6 +149,7 @@ const PerkPathLayout = () => {
                       </div>
                     ) : (
                       <BrowseList perks={perks} memberships={memberships} onPerkTap={handlePerkTap} geo={geo} />
+                    )}
                   </>
                 )}
               </motion.div>
