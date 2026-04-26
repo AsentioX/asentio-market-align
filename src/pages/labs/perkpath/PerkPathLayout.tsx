@@ -18,7 +18,7 @@ import VaultView from './VaultView';
 import SettingsView from './SettingsView';
 import PurchaseView from './PurchaseView';
 import PerkDrawer from './PerkDrawer';
-import type { Membership } from './perkData';
+
 
 const PerkPathLayout = () => {
   const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
@@ -62,11 +62,13 @@ const PerkPathLayout = () => {
 
   const handlePerkTap = (perk: Perk) => { setSelectedPerk(perk); setDrawerOpen(true); };
 
-  // Adapter: VaultView expects legacy Membership shape
-  const vaultMemberships: Membership[] = memberships.map(m => ({
-    id: m.id, name: m.name, brandColor: m.brand_color,
+  // Adapter: VaultView expects extended card shape
+  const vaultMemberships = memberships.map(m => ({
+    id: m.id, name: m.name, tier: m.tier, brandColor: m.brand_color,
     memberId: m.tier ? `${m.tier} member` : 'Member',
     logo: m.logo,
+    cardImageUrl: m.card_image_url ?? null,
+    cardType: m.card_type ?? null,
   }));
 
   // Adapter for PerkDrawer (legacy Perk shape)
@@ -174,7 +176,7 @@ const PerkPathLayout = () => {
               </motion.div>
             ) : tab === 'vault' ? (
               <motion.div key="vault" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <VaultView memberships={vaultMemberships} />
+                <VaultView memberships={vaultMemberships} onChanged={refresh} />
               </motion.div>
             ) : (
               <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
