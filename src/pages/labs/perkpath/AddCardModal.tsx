@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Upload, Loader2, CreditCard, Sparkles } from 'lucide-react';
+import { X, Camera, Upload, Loader2, CreditCard, Sparkles, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
@@ -49,6 +49,10 @@ const AddCardModal = ({ open, onClose, onAdded }: Props) => {
   const handleClose = () => { reset(); onClose(); };
 
   const handleFile = (file: File) => {
+    if (cardType === 'credit') {
+      toast.error('Photos are disabled for credit cards to protect your data');
+      return;
+    }
     if (file.size > 8 * 1024 * 1024) {
       toast.error('Image must be under 8MB');
       return;
@@ -130,30 +134,69 @@ const AddCardModal = ({ open, onClose, onAdded }: Props) => {
             {step === 'capture' ? (
               <div className="p-5 space-y-4">
                 <p className="text-sm text-slate-500">
-                  Snap a photo of your card or upload an image. We'll store it securely so you can pull it up at checkout.
+                  Pick the card type. For your safety, we never store credit card numbers — credit cards are added by name only.
                 </p>
 
-                <button
-                  onClick={() => cameraRef.current?.click()}
-                  className="w-full h-32 rounded-2xl bg-emerald-50 border-2 border-dashed border-emerald-300 flex flex-col items-center justify-center gap-2 text-emerald-700 hover:bg-emerald-100 transition-colors"
-                >
-                  <Camera className="w-7 h-7" />
-                  <span className="text-sm font-semibold">Take Photo</span>
-                </button>
+                <div>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">Card Type</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {CARD_TYPES.map(t => (
+                      <button
+                        key={t.value}
+                        onClick={() => setCardType(t.value)}
+                        className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border transition-all ${
+                          cardType === t.value
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span className="text-lg">{t.emoji}</span>
+                        <span className="text-[10px] font-semibold">{t.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="w-full h-24 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:bg-slate-100 transition-colors"
-                >
-                  <Upload className="w-5 h-5" />
-                  <span className="text-sm font-semibold">Upload from Library</span>
-                </button>
+                {cardType === 'credit' ? (
+                  <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 flex gap-3">
+                    <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs text-amber-900 leading-relaxed">
+                      <p className="font-semibold mb-1">Photo upload disabled for credit cards</p>
+                      <p className="text-amber-800">To protect you, we don't store images of credit cards or their numbers. Continue to add it by name and tier only.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="rounded-2xl bg-slate-50 border border-slate-200 p-3 flex gap-2.5">
+                      <ShieldAlert className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        Avoid capturing full account numbers, CVVs, or anything you wouldn't want stored. Only the card front is needed.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => cameraRef.current?.click()}
+                      className="w-full h-32 rounded-2xl bg-emerald-50 border-2 border-dashed border-emerald-300 flex flex-col items-center justify-center gap-2 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                    >
+                      <Camera className="w-7 h-7" />
+                      <span className="text-sm font-semibold">Take Photo</span>
+                    </button>
+
+                    <button
+                      onClick={() => fileRef.current?.click()}
+                      className="w-full h-24 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:bg-slate-100 transition-colors"
+                    >
+                      <Upload className="w-5 h-5" />
+                      <span className="text-sm font-semibold">Upload from Library</span>
+                    </button>
+                  </>
+                )}
 
                 <button
                   onClick={() => setStep('details')}
-                  className="w-full text-center text-xs font-semibold text-slate-400 hover:text-slate-600 py-2"
+                  className="w-full h-11 rounded-2xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors"
                 >
-                  Skip — add manually
+                  Continue {cardType === 'credit' ? '' : '— add manually'}
                 </button>
 
                 <input
