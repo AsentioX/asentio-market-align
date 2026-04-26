@@ -149,9 +149,17 @@ const PerkPathLayout = () => {
                   </>
                 )}
               </motion.div>
-            ) : (
+            ) : tab === 'purchase' ? (
+              <motion.div key="purchase" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                <PurchaseView />
+              </motion.div>
+            ) : tab === 'vault' ? (
               <motion.div key="vault" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
                 <VaultView memberships={vaultMemberships} />
+              </motion.div>
+            ) : (
+              <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                <SettingsView />
               </motion.div>
             )}
           </AnimatePresence>
@@ -162,9 +170,17 @@ const PerkPathLayout = () => {
             <Home className="w-5 h-5" />
             <span className="text-[10px] font-semibold">Hub</span>
           </button>
+          <button onClick={() => setTab('purchase')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'purchase' ? 'text-emerald-600' : 'text-slate-400'}`}>
+            <Sparkles className="w-5 h-5" />
+            <span className="text-[10px] font-semibold">Purchase</span>
+          </button>
           <button onClick={() => setTab('vault')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'vault' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Wallet className="w-5 h-5" />
             <span className="text-[10px] font-semibold">Wallet</span>
+          </button>
+          <button onClick={() => setTab('settings')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'settings' ? 'text-emerald-600' : 'text-slate-400'}`}>
+            <SettingsIcon className="w-5 h-5" />
+            <span className="text-[10px] font-semibold">Settings</span>
           </button>
         </nav>
 
