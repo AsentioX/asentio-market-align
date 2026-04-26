@@ -85,6 +85,31 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
           exit={{ opacity: 0, height: 0 }}
           className="mb-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-4"
         >
+          {/* Memberships */}
+          {memberships.length > 0 && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Membership</p>
+              <div className="flex flex-wrap gap-1.5">
+                {memberships.map(m => {
+                  const active = membershipIds.has(m.id);
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => toggleMembership(m.id)}
+                      className={`flex items-center gap-1.5 px-3 h-8 rounded-full text-[11px] font-bold transition-all ${
+                        active ? 'text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
+                      }`}
+                      style={active ? { backgroundColor: m.brand_color } : undefined}
+                    >
+                      <span>{m.logo}</span>
+                      {m.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Pillar */}
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Hub</p>
@@ -128,28 +153,49 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
             </div>
           </div>
 
-          {/* Memberships */}
-          {memberships.length > 0 && (
+          {/* Location */}
+          {geo && (
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Membership</p>
-              <div className="flex flex-wrap gap-1.5">
-                {memberships.map(m => {
-                  const active = membershipIds.has(m.id);
-                  return (
-                    <button
-                      key={m.id}
-                      onClick={() => toggleMembership(m.id)}
-                      className={`flex items-center gap-1.5 px-3 h-8 rounded-full text-[11px] font-bold transition-all ${
-                        active ? 'text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
-                      }`}
-                      style={active ? { backgroundColor: m.brand_color } : undefined}
-                    >
-                      <span>{m.logo}</span>
-                      {m.name}
-                    </button>
-                  );
-                })}
-              </div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Location</p>
+              {(() => {
+                const on = geo.status === 'granted';
+                const requesting = geo.status === 'requesting';
+                const unavailable = geo.status === 'unavailable';
+                return (
+                  <button
+                    onClick={() => {
+                      if (on) {
+                        geo.clear();
+                        toast.success('Location off');
+                      } else if (!requesting && !unavailable) {
+                        geo.request();
+                      }
+                    }}
+                    disabled={requesting || unavailable}
+                    className={`w-full flex items-center justify-between gap-2 px-3 h-10 rounded-xl text-xs font-bold transition-colors disabled:opacity-50 ${
+                      on
+                        ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                        : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      {requesting ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : on ? (
+                        <MapPin className="w-3.5 h-3.5" />
+                      ) : (
+                        <MapPinOff className="w-3.5 h-3.5" />
+                      )}
+                      {unavailable ? 'Location unavailable' : on ? 'Location on' : 'Use my location'}
+                    </span>
+                    {!unavailable && (
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${on ? 'text-white/80' : 'text-slate-400'}`}>
+                        {on ? 'Tap to turn off' : 'Tap to enable'}
+                      </span>
+                    )}
+                  </button>
+                );
+              })()}
             </div>
           )}
 
