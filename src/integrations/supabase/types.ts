@@ -2445,6 +2445,245 @@ export type Database = {
         }
         Relationships: []
       }
+      pp_memberships: {
+        Row: {
+          brand_color: string
+          category: Database["public"]["Enums"]["pp_membership_category"]
+          created_at: string
+          id: string
+          is_active: boolean
+          logo: string
+          name: string
+          notes: string | null
+          perk_tags: string[]
+          pillar: Database["public"]["Enums"]["pp_pillar"]
+          reciprocal_benefits: boolean
+          renewal_date: string | null
+          slug: string
+          tier: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_color?: string
+          category: Database["public"]["Enums"]["pp_membership_category"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo?: string
+          name: string
+          notes?: string | null
+          perk_tags?: string[]
+          pillar?: Database["public"]["Enums"]["pp_pillar"]
+          reciprocal_benefits?: boolean
+          renewal_date?: string | null
+          slug: string
+          tier?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_color?: string
+          category?: Database["public"]["Enums"]["pp_membership_category"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo?: string
+          name?: string
+          notes?: string | null
+          perk_tags?: string[]
+          pillar?: Database["public"]["Enums"]["pp_pillar"]
+          reciprocal_benefits?: boolean
+          renewal_date?: string | null
+          slug?: string
+          tier?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pp_perk_venues: {
+        Row: {
+          created_at: string
+          id: string
+          perk_id: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          perk_id: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          perk_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pp_perk_venues_perk_id_fkey"
+            columns: ["perk_id"]
+            isOneToOne: false
+            referencedRelation: "pp_perks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pp_perk_venues_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "pp_venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pp_perks: {
+        Row: {
+          category: Database["public"]["Enums"]["pp_perk_category"]
+          created_at: string
+          how_to_redeem: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          membership_id: string
+          perk_tags: string[]
+          sort_order: number
+          title: string
+          updated_at: string
+          user_id: string
+          value_label: string
+          venue: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["pp_perk_category"]
+          created_at?: string
+          how_to_redeem?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          membership_id: string
+          perk_tags?: string[]
+          sort_order?: number
+          title: string
+          updated_at?: string
+          user_id: string
+          value_label: string
+          venue?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["pp_perk_category"]
+          created_at?: string
+          how_to_redeem?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          membership_id?: string
+          perk_tags?: string[]
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+          value_label?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pp_perks_membership_id_fkey"
+            columns: ["membership_id"]
+            isOneToOne: false
+            referencedRelation: "pp_memberships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pp_users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          is_admin: boolean
+          last_active_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_admin?: boolean
+          last_active_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_admin?: boolean
+          last_active_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pp_venues: {
+        Row: {
+          address: string | null
+          brand: string | null
+          category: Database["public"]["Enums"]["pp_perk_category"] | null
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          perk_tags: string[]
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          brand?: string | null
+          category?: Database["public"]["Enums"]["pp_perk_category"] | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          perk_tags?: string[]
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          brand?: string | null
+          category?: Database["public"]["Enums"]["pp_perk_category"] | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          perk_tags?: string[]
+          region?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -4036,7 +4275,12 @@ export type Database = {
       }
     }
     Functions: {
+      is_perkpath_admin: { Args: { _user_id: string }; Returns: boolean }
       is_wobuddy_admin: { Args: { _user_id: string }; Returns: boolean }
+      pp_user_owns_membership: {
+        Args: { _membership_id: string }
+        Returns: boolean
+      }
       wobuddy_user_owns_day: { Args: { _day_id: string }; Returns: boolean }
       wobuddy_user_owns_goal: { Args: { _goal_id: string }; Returns: boolean }
       wobuddy_user_owns_plan: { Args: { _plan_id: string }; Returns: boolean }
@@ -4094,6 +4338,17 @@ export type Database = {
         | "other"
       mydj_session_status: "active" | "completed" | "cancelled"
       mydj_strategy_type: "mirror" | "counterbalance" | "hybrid"
+      pp_membership_category: "financial" | "lifestyle"
+      pp_perk_category:
+        | "auto"
+        | "dining"
+        | "travel"
+        | "shopping"
+        | "health"
+        | "entertainment"
+        | "services"
+        | "other"
+      pp_pillar: "work" | "home" | "play"
       schedule_role: "hacker" | "sponsor" | "press" | "mentor" | "organizer"
     }
     CompositeTypes: {
@@ -4270,6 +4525,18 @@ export const Constants = {
       ],
       mydj_session_status: ["active", "completed", "cancelled"],
       mydj_strategy_type: ["mirror", "counterbalance", "hybrid"],
+      pp_membership_category: ["financial", "lifestyle"],
+      pp_perk_category: [
+        "auto",
+        "dining",
+        "travel",
+        "shopping",
+        "health",
+        "entertainment",
+        "services",
+        "other",
+      ],
+      pp_pillar: ["work", "home", "play"],
       schedule_role: ["hacker", "sponsor", "press", "mentor", "organizer"],
     },
   },
