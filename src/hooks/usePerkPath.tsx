@@ -21,6 +21,8 @@ export interface Membership {
   reciprocal_benefits: boolean;
   notes: string | null;
   is_active: boolean;
+  card_image_url?: string | null;
+  card_type?: string | null;
 }
 
 export interface Perk {
