@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Upload, Loader2, CreditCard, Sparkles, ShieldAlert } from 'lucide-react';
+import { X, Camera, Upload, Loader2, CreditCard, Sparkles, ShieldAlert, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
 import { Input } from '@/components/ui/input';
+import { getSuggestedTiers } from './cardTiers';
 
 interface Props {
   open: boolean;
