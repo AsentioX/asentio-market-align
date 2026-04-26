@@ -134,7 +134,7 @@ const PerkPathLayout = () => {
                         <div className="w-16 h-16 rounded-3xl bg-emerald-50 flex items-center justify-center mb-5">
                           <Wallet className="w-8 h-8 text-emerald-500" />
                         </div>
-                        <h2 className="text-lg font-bold text-slate-900 mb-2">Your Vault is Empty</h2>
+                        <h2 className="text-lg font-bold text-slate-900 mb-2">Your Wallet is Empty</h2>
                         <p className="text-sm text-slate-500">Memberships will appear here once added.</p>
                       </div>
                     ) : (
