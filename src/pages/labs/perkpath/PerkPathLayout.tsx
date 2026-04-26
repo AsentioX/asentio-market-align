@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon, Sparkles, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Search, X, Wallet, Home, MapPin, MapPinOff, Settings as SettingsIcon, Sparkles, RefreshCw, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -21,7 +21,7 @@ import PerkDrawer from './PerkDrawer';
 
 
 const PerkPathLayout = () => {
-  const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
+  const { user, loading: authLoading, perkpathUser } = usePerkPathAuth();
   const { memberships, perks, venues, loading, refresh, updateMembership, deleteMembership } = usePerkPath();
   const geo = useGeolocation();
   const [tab, setTab] = useState<'home' | 'purchase' | 'vault' | 'settings'>('home');
@@ -89,9 +89,38 @@ const PerkPathLayout = () => {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <h1 className="text-lg font-bold tracking-tight text-slate-900">PerkPath</h1>
-            <button onClick={signOut} className="text-slate-400 hover:text-rose-600 transition-colors" title="Sign out">
-              <LogOut className="w-4 h-4" />
-            </button>
+            {(() => {
+              const on = geo.status === 'granted';
+              const requesting = geo.status === 'requesting';
+              return (
+                <button
+                  onClick={() => {
+                    if (on) {
+                      geo.clear();
+                      toast.success('Location off');
+                    } else if (!requesting) {
+                      geo.request();
+                    }
+                  }}
+                  disabled={requesting || geo.status === 'unavailable'}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                    on
+                      ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                  } disabled:opacity-50`}
+                  title={on ? 'Location on — tap to turn off' : 'Tap to enable location'}
+                >
+                  {requesting ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : on ? (
+                    <MapPin className="w-3.5 h-3.5" />
+                  ) : (
+                    <MapPinOff className="w-3.5 h-3.5" />
+                  )}
+                  <span>{on ? 'On' : 'Off'}</span>
+                </button>
+              );
+            })()}
           </div>
           {perkpathUser?.display_name && (
             <p className="text-[11px] text-slate-400 text-center -mt-0.5">Hi, {perkpathUser.display_name}</p>
