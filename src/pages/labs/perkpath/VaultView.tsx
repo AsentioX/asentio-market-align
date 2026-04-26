@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import AddCardModal from './AddCardModal';
 import type { Membership, Perk } from '@/hooks/usePerkPath';
+import { getBrandLogoUrl } from './brandLogo';
 
 interface Props {
   memberships: Membership[];
@@ -15,15 +16,26 @@ interface Props {
 }
 
 const BRAND_COLORS = ['#1F2937', '#1565C0', '#D32F2F', '#1A237E', '#37474F', '#10b981', '#7C3AED', '#F59E0B'];
-const PILLAR_OPTIONS: { value: Membership['pillar']; label: string }[] = [
-  { value: 'work', label: 'Work' },
-  { value: 'home', label: 'Home' },
-  { value: 'play', label: 'Play' },
-];
-const CATEGORY_OPTIONS: { value: Membership['category']; label: string }[] = [
-  { value: 'financial', label: 'Financial' },
-  { value: 'lifestyle', label: 'Lifestyle' },
-];
+
+// Per-card logo loaded-state tracker (so we can fall back to the emoji)
+const BrandLogo = ({ name, fallback }: { name: string; fallback: string }) => {
+  const url = getBrandLogoUrl(name, 128);
+  const [failed, setFailed] = useState(false);
+  if (!url || failed) {
+    return <div className="text-3xl drop-shadow">{fallback}</div>;
+  }
+  return (
+    <div className="w-12 h-12 rounded-xl bg-white/95 shadow-sm flex items-center justify-center overflow-hidden p-1.5">
+      <img
+        src={url}
+        alt={`${name} logo`}
+        className="w-full h-full object-contain"
+        onError={() => setFailed(true)}
+        loading="lazy"
+      />
+    </div>
+  );
+};
 
 const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props) => {
   const [addOpen, setAddOpen] = useState(false);
