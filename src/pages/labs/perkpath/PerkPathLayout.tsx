@@ -13,7 +13,7 @@ import PerkPathLogin from './PerkPathLogin';
 import BrowseList from './BrowseList';
 import RenewalSentinel from './RenewalSentinel';
 import SearchResult from './SearchResult';
-import NearbyNow from './NearbyNow';
+
 import VaultView from './VaultView';
 import SettingsView from './SettingsView';
 import PurchaseView from './PurchaseView';
@@ -165,14 +165,6 @@ const PerkPathLayout = () => {
                 {!searchValue.trim() && (
                   <>
                     <RenewalSentinel memberships={memberships} />
-                    <NearbyNow
-                      coords={geo.coords}
-                      status={geo.status}
-                      perks={perks}
-                      venues={venues}
-                      onRequest={geo.request}
-                      onPerkTap={handlePerkTap}
-                    />
                     {loading ? (
                       <div className="flex flex-col items-center justify-center py-16 gap-3">
                         <div className="w-10 h-10 rounded-full border-3 border-emerald-500 border-t-transparent animate-spin" />
