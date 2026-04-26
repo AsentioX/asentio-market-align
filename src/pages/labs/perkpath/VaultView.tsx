@@ -197,8 +197,6 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                         <div className="grid grid-cols-2 gap-2 text-[11px]">
                           <DetailItem label="Type" value={m.card_type ?? '—'} />
                           <DetailItem label="Tier" value={m.tier ?? '—'} />
-                          <DetailItem label="Category" value={m.category} />
-                          <DetailItem label="Pillar" value={m.pillar} />
                           <DetailItem
                             label="Renewal"
                             value={m.renewal_date ? new Date(m.renewal_date).toLocaleDateString() : '—'}
