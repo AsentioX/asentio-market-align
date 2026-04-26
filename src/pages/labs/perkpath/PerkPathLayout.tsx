@@ -107,8 +107,8 @@ const PerkPathLayout = () => {
             {tab === 'home' ? (
               <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
                 {/* Universal Search */}
-                <div className="px-5 pt-4 pb-2">
-                  <form onSubmit={(e) => e.preventDefault()} className="relative">
+                <div className="px-5 pt-4 pb-2 flex items-center gap-2">
+                  <form onSubmit={(e) => e.preventDefault()} className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
                       value={searchValue}
@@ -122,6 +122,15 @@ const PerkPathLayout = () => {
                       </button>
                     )}
                   </form>
+                  <button
+                    type="button"
+                    onClick={handleScrapeOffers}
+                    disabled={scraping}
+                    title="Scan the web for new offers"
+                    className="h-12 w-12 shrink-0 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-sm hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${scraping ? 'animate-spin' : ''}`} />
+                  </button>
                 </div>
 
                 {searchValue.trim() && (
