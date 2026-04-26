@@ -165,8 +165,8 @@ Deno.serve(async (req) => {
     const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: claims } = await userClient.auth.getClaims(authHeader.replace('Bearer ', ''));
-    if (claims?.claims?.sub) targetUserIds = [claims.claims.sub as string];
+    const { data: userData } = await userClient.auth.getUser();
+    if (userData?.user?.id) targetUserIds = [userData.user.id];
   }
   if (targetUserIds.length === 0) {
     const { data: users } = await supabase.from('pp_memberships').select('user_id').eq('is_active', true);
