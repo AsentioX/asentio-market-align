@@ -40,7 +40,11 @@ export function useGeolocation() {
     );
   };
 
-  return { ...state, request };
+  const clear = () => {
+    setState({ coords: null, status: 'idle', error: null });
+  };
+
+  return { ...state, request, clear };
 }
 
 // Haversine distance in km between two coordinates
