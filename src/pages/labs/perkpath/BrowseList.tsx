@@ -110,28 +110,6 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
             </div>
           )}
 
-          {/* Pillar */}
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Hub</p>
-            <div className="flex gap-2">
-              {PILLAR_OPTIONS.map(({ value, label, icon: Icon }) => {
-                const active = pillars.has(value);
-                return (
-                  <button
-                    key={value}
-                    onClick={() => togglePillar(value)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 h-9 rounded-xl text-xs font-bold transition-all ${
-                      active ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Category */}
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Category</p>
