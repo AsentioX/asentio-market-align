@@ -4,7 +4,7 @@ import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon, S
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
-import { usePerkPath, type Perk, type Pillar } from '@/hooks/usePerkPath';
+import { usePerkPath, type Perk } from '@/hooks/usePerkPath';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { searchPerks } from './searchEngine';
 import PerkPathLogin from './PerkPathLogin';
