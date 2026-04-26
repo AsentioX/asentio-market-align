@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import AddCardModal from './AddCardModal';
 import type { Membership, Perk } from '@/hooks/usePerkPath';
+import { getBrandLogoUrl } from './brandLogo';
 
 interface Props {
   memberships: Membership[];
@@ -15,15 +16,26 @@ interface Props {
 }
 
 const BRAND_COLORS = ['#1F2937', '#1565C0', '#D32F2F', '#1A237E', '#37474F', '#10b981', '#7C3AED', '#F59E0B'];
-const PILLAR_OPTIONS: { value: Membership['pillar']; label: string }[] = [
-  { value: 'work', label: 'Work' },
-  { value: 'home', label: 'Home' },
-  { value: 'play', label: 'Play' },
-];
-const CATEGORY_OPTIONS: { value: Membership['category']; label: string }[] = [
-  { value: 'financial', label: 'Financial' },
-  { value: 'lifestyle', label: 'Lifestyle' },
-];
+
+// Per-card logo loaded-state tracker (so we can fall back to the emoji)
+const BrandLogo = ({ name, fallback }: { name: string; fallback: string }) => {
+  const url = getBrandLogoUrl(name, 128);
+  const [failed, setFailed] = useState(false);
+  if (!url || failed) {
+    return <div className="text-3xl drop-shadow">{fallback}</div>;
+  }
+  return (
+    <div className="w-12 h-12 rounded-xl bg-white/95 shadow-sm flex items-center justify-center overflow-hidden p-1.5">
+      <img
+        src={url}
+        alt={`${name} logo`}
+        className="w-full h-full object-contain"
+        onError={() => setFailed(true)}
+        loading="lazy"
+      />
+    </div>
+  );
+};
 
 const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props) => {
   const [addOpen, setAddOpen] = useState(false);
@@ -41,8 +53,6 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
       name: m.name,
       tier: m.tier ?? '',
       brand_color: m.brand_color,
-      pillar: m.pillar,
-      category: m.category,
       renewal_date: m.renewal_date,
     });
   };
@@ -130,24 +140,18 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                           </span>
                         )}
                       </div>
-                      <div className="text-3xl drop-shadow">{m.logo}</div>
+                      <BrandLogo name={m.name} fallback={m.logo} />
                     </div>
                     <div>
                       <p className="text-lg font-bold drop-shadow leading-tight">{m.name}</p>
                       {m.tier && (
                         <p className="text-xs text-white/90 font-semibold drop-shadow mt-0.5">{m.tier}</p>
                       )}
-                      <div className="flex items-center gap-3 mt-2 text-[10px] text-white/80 font-medium">
-                        <span className="capitalize">{m.category}</span>
-                        <span className="w-1 h-1 rounded-full bg-white/50" />
-                        <span className="capitalize">{m.pillar}</span>
-                        {cardPerks.length > 0 && (
-                          <>
-                            <span className="w-1 h-1 rounded-full bg-white/50" />
-                            <span>{cardPerks.length} perk{cardPerks.length === 1 ? '' : 's'}</span>
-                          </>
-                        )}
-                      </div>
+                      {cardPerks.length > 0 && (
+                        <div className="flex items-center gap-3 mt-2 text-[10px] text-white/80 font-medium">
+                          <span>{cardPerks.length} perk{cardPerks.length === 1 ? '' : 's'}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </button>
@@ -193,8 +197,6 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                         <div className="grid grid-cols-2 gap-2 text-[11px]">
                           <DetailItem label="Type" value={m.card_type ?? '—'} />
                           <DetailItem label="Tier" value={m.tier ?? '—'} />
-                          <DetailItem label="Category" value={m.category} />
-                          <DetailItem label="Pillar" value={m.pillar} />
                           <DetailItem
                             label="Renewal"
                             value={m.renewal_date ? new Date(m.renewal_date).toLocaleDateString() : '—'}
@@ -266,26 +268,6 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                             className="h-10 rounded-xl bg-white border-slate-200 text-sm"
                           />
                         </Field>
-                        <div className="grid grid-cols-2 gap-2">
-                          <Field label="Category">
-                            <select
-                              value={form.category}
-                              onChange={e => setForm(f => ({ ...f, category: e.target.value as Membership['category'] }))}
-                              className="w-full h-10 rounded-xl bg-white border border-slate-200 text-sm px-3 capitalize"
-                            >
-                              {CATEGORY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select>
-                          </Field>
-                          <Field label="Pillar">
-                            <select
-                              value={form.pillar}
-                              onChange={e => setForm(f => ({ ...f, pillar: e.target.value as Membership['pillar'] }))}
-                              className="w-full h-10 rounded-xl bg-white border border-slate-200 text-sm px-3 capitalize"
-                            >
-                              {PILLAR_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select>
-                          </Field>
-                        </div>
                         <Field label="Renewal date">
                           <Input
                             type="date"
