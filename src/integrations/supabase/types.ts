@@ -2448,6 +2448,8 @@ export type Database = {
       pp_memberships: {
         Row: {
           brand_color: string
+          card_image_url: string | null
+          card_type: string
           category: Database["public"]["Enums"]["pp_membership_category"]
           created_at: string
           id: string
@@ -2466,6 +2468,8 @@ export type Database = {
         }
         Insert: {
           brand_color?: string
+          card_image_url?: string | null
+          card_type?: string
           category: Database["public"]["Enums"]["pp_membership_category"]
           created_at?: string
           id?: string
@@ -2484,6 +2488,8 @@ export type Database = {
         }
         Update: {
           brand_color?: string
+          card_image_url?: string | null
+          card_type?: string
           category?: Database["public"]["Enums"]["pp_membership_category"]
           created_at?: string
           id?: string
