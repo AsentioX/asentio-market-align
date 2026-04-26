@@ -106,7 +106,7 @@ const AppContent = () => {
           <Route path="/labs/wo-buddy" element={<WOBuddyLayout />} />
           <Route path="/labs/wo-buddy/admin" element={<WOBuddyAdminDashboard />} />
           <Route path="/labs/my-dj" element={<MyDJLayout />} />
-          <Route path="/labs/perkpath" element={<PerkPathLayout />} />
+          <Route path="/labs/perkpath" element={<PerkPathAuthProvider><PerkPathLayout /></PerkPathAuthProvider>} />
           <Route path="/labs/cpconnect" element={<CPConnectLayout />} />
           <Route path="/labs/tastudio" element={<TAStudioLayout />} />
           <Route path="/labs/rowwindow" element={<RowWindowLayout />} />
