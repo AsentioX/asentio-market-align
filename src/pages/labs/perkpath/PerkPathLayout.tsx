@@ -176,7 +176,7 @@ const PerkPathLayout = () => {
               </motion.div>
             ) : tab === 'vault' ? (
               <motion.div key="vault" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <VaultView memberships={vaultMemberships} />
+                <VaultView memberships={vaultMemberships} onChanged={refresh} />
               </motion.div>
             ) : (
               <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
