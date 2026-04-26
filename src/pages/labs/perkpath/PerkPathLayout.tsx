@@ -18,7 +18,7 @@ import VaultView from './VaultView';
 import SettingsView from './SettingsView';
 import PurchaseView from './PurchaseView';
 import PerkDrawer from './PerkDrawer';
-import type { Membership } from './perkData';
+
 
 const PerkPathLayout = () => {
   const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
