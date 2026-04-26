@@ -53,8 +53,6 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
       name: m.name,
       tier: m.tier ?? '',
       brand_color: m.brand_color,
-      pillar: m.pillar,
-      category: m.category,
       renewal_date: m.renewal_date,
     });
   };
