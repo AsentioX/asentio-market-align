@@ -238,11 +238,11 @@ const GoalsPage = () => {
   const handleCreate = async () => {
     if (!newName || newTarget <= 0 || !currentStateProvided) return;
     await createGoal({
-      name: newName, category: newCategory, metric: newMetric,
+      title: newName,
       target_value: newTarget,
+      target_unit: newMetric,
       current_value: typeof newCurrent === 'number' ? newCurrent : 0,
-      timeframe: newTimeframe || undefined,
-      deadline: newDeadline ? format(newDeadline, 'yyyy-MM-dd') : undefined,
+      target_date: newDeadline ? format(newDeadline, 'yyyy-MM-dd') : undefined,
       drivers: newDrivers,
     });
     setShowCreate(false);
