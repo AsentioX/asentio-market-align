@@ -140,24 +140,18 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                           </span>
                         )}
                       </div>
-                      <div className="text-3xl drop-shadow">{m.logo}</div>
+                      <BrandLogo name={m.name} fallback={m.logo} />
                     </div>
                     <div>
                       <p className="text-lg font-bold drop-shadow leading-tight">{m.name}</p>
                       {m.tier && (
                         <p className="text-xs text-white/90 font-semibold drop-shadow mt-0.5">{m.tier}</p>
                       )}
-                      <div className="flex items-center gap-3 mt-2 text-[10px] text-white/80 font-medium">
-                        <span className="capitalize">{m.category}</span>
-                        <span className="w-1 h-1 rounded-full bg-white/50" />
-                        <span className="capitalize">{m.pillar}</span>
-                        {cardPerks.length > 0 && (
-                          <>
-                            <span className="w-1 h-1 rounded-full bg-white/50" />
-                            <span>{cardPerks.length} perk{cardPerks.length === 1 ? '' : 's'}</span>
-                          </>
-                        )}
-                      </div>
+                      {cardPerks.length > 0 && (
+                        <div className="flex items-center gap-3 mt-2 text-[10px] text-white/80 font-medium">
+                          <span>{cardPerks.length} perk{cardPerks.length === 1 ? '' : 's'}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </button>
