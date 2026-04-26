@@ -203,7 +203,12 @@ Deno.serve(async (req) => {
         .eq('is_active', true);
 
       for (const m of memberships ?? []) {
-        const matching = sourceList.filter((s: any) => s.membership_slug === m.slug);
+        // Membership slugs may carry a unique suffix (e.g. "costco-mog0kkq3").
+        // Match offer sources whose membership_slug is the bare brand prefix.
+        const baseSlug = (m.slug ?? '').split('-')[0];
+        const matching = sourceList.filter(
+          (s: any) => s.membership_slug === m.slug || s.membership_slug === baseSlug,
+        );
         for (const src of matching) {
           sourcesTotal++;
           let raw: string | null = null;
