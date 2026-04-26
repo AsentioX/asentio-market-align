@@ -2675,6 +2675,212 @@ export type Database = {
         }
         Relationships: []
       }
+      wobuddy_exercise_drivers: {
+        Row: {
+          contribution_score: number
+          created_at: string
+          driver: string
+          exercise_library_id: string
+          explanation: string | null
+          id: string
+        }
+        Insert: {
+          contribution_score?: number
+          created_at?: string
+          driver: string
+          exercise_library_id: string
+          explanation?: string | null
+          id?: string
+        }
+        Update: {
+          contribution_score?: number
+          created_at?: string
+          driver?: string
+          exercise_library_id?: string
+          explanation?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_exercise_drivers_exercise_library_id_fkey"
+            columns: ["exercise_library_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_exercise_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_exercise_goal_contributions: {
+        Row: {
+          contribution_score: number
+          contribution_type: string
+          created_at: string
+          exercise_library_id: string
+          explanation: string | null
+          goal_id: string
+          id: string
+        }
+        Insert: {
+          contribution_score?: number
+          contribution_type?: string
+          created_at?: string
+          exercise_library_id: string
+          explanation?: string | null
+          goal_id: string
+          id?: string
+        }
+        Update: {
+          contribution_score?: number
+          contribution_type?: string
+          created_at?: string
+          exercise_library_id?: string
+          explanation?: string | null
+          goal_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_exercise_goal_contributions_exercise_library_id_fkey"
+            columns: ["exercise_library_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_exercise_library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wobuddy_exercise_goal_contributions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_exercise_library: {
+        Row: {
+          category: string
+          created_at: string
+          default_duration_seconds: number | null
+          default_reps: number | null
+          default_sets: number | null
+          description: string | null
+          entry_type: string
+          icon: string | null
+          id: string
+          long_term_benefit: string | null
+          name: string
+          short_term_benefit: string | null
+          slug: string
+          subcategory: string | null
+          type: string
+          why_it_matters: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          default_duration_seconds?: number | null
+          default_reps?: number | null
+          default_sets?: number | null
+          description?: string | null
+          entry_type?: string
+          icon?: string | null
+          id?: string
+          long_term_benefit?: string | null
+          name: string
+          short_term_benefit?: string | null
+          slug: string
+          subcategory?: string | null
+          type: string
+          why_it_matters?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_duration_seconds?: number | null
+          default_reps?: number | null
+          default_sets?: number | null
+          description?: string | null
+          entry_type?: string
+          icon?: string | null
+          id?: string
+          long_term_benefit?: string | null
+          name?: string
+          short_term_benefit?: string | null
+          slug?: string
+          subcategory?: string | null
+          type?: string
+          why_it_matters?: string | null
+        }
+        Relationships: []
+      }
+      wobuddy_exercise_logs: {
+        Row: {
+          created_at: string
+          distance: number | null
+          duration_seconds: number | null
+          exercise_library_id: string | null
+          heart_rate_avg: number | null
+          heart_rate_max: number | null
+          id: string
+          notes: string | null
+          pace: number | null
+          perceived_effort: number | null
+          reps_completed: number | null
+          sets_completed: number | null
+          speed: number | null
+          weight_used: number | null
+          workout_log_id: string
+        }
+        Insert: {
+          created_at?: string
+          distance?: number | null
+          duration_seconds?: number | null
+          exercise_library_id?: string | null
+          heart_rate_avg?: number | null
+          heart_rate_max?: number | null
+          id?: string
+          notes?: string | null
+          pace?: number | null
+          perceived_effort?: number | null
+          reps_completed?: number | null
+          sets_completed?: number | null
+          speed?: number | null
+          weight_used?: number | null
+          workout_log_id: string
+        }
+        Update: {
+          created_at?: string
+          distance?: number | null
+          duration_seconds?: number | null
+          exercise_library_id?: string | null
+          heart_rate_avg?: number | null
+          heart_rate_max?: number | null
+          id?: string
+          notes?: string | null
+          pace?: number | null
+          perceived_effort?: number | null
+          reps_completed?: number | null
+          sets_completed?: number | null
+          speed?: number | null
+          weight_used?: number | null
+          workout_log_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_exercise_logs_exercise_library_id_fkey"
+            columns: ["exercise_library_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_exercise_library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wobuddy_exercise_logs_workout_log_id_fkey"
+            columns: ["workout_log_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_workout_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wobuddy_exercises: {
         Row: {
           confidence: number | null
@@ -2731,80 +2937,62 @@ export type Database = {
           },
         ]
       }
-      wobuddy_goal_checkpoints: {
+      wobuddy_goal_categories: {
         Row: {
           created_at: string
-          goal_id: string
+          description: string | null
+          display_order: number
+          icon: string
           id: string
-          measured_at: string | null
-          measured_value: number | null
-          note: string | null
-          scheduled_for: string
-          sequence_number: number
-          status: string
-          updated_at: string
-          user_id: string
+          name: string
+          slug: string
         }
         Insert: {
           created_at?: string
-          goal_id: string
+          description?: string | null
+          display_order?: number
+          icon?: string
           id?: string
-          measured_at?: string | null
-          measured_value?: number | null
-          note?: string | null
-          scheduled_for: string
-          sequence_number?: number
-          status?: string
-          updated_at?: string
-          user_id: string
+          name: string
+          slug: string
         }
         Update: {
           created_at?: string
-          goal_id?: string
+          description?: string | null
+          display_order?: number
+          icon?: string
           id?: string
-          measured_at?: string | null
-          measured_value?: number | null
-          note?: string | null
-          scheduled_for?: string
-          sequence_number?: number
-          status?: string
-          updated_at?: string
-          user_id?: string
+          name?: string
+          slug?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "wobuddy_goal_checkpoints_goal_id_fkey"
-            columns: ["goal_id"]
-            isOneToOne: false
-            referencedRelation: "wobuddy_goals"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       wobuddy_goal_drivers: {
         Row: {
-          driver_id: string
+          created_at: string
+          driver: string
+          explanation: string | null
           goal_id: string
           id: string
+          weight: number
         }
         Insert: {
-          driver_id: string
+          created_at?: string
+          driver: string
+          explanation?: string | null
           goal_id: string
           id?: string
+          weight?: number
         }
         Update: {
-          driver_id?: string
+          created_at?: string
+          driver?: string
+          explanation?: string | null
           goal_id?: string
           id?: string
+          weight?: number
         }
         Relationships: [
-          {
-            foreignKeyName: "wobuddy_goal_drivers_driver_id_fkey"
-            columns: ["driver_id"]
-            isOneToOne: false
-            referencedRelation: "wobuddy_performance_drivers"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "wobuddy_goal_drivers_goal_id_fkey"
             columns: ["goal_id"]
@@ -2814,50 +3002,111 @@ export type Database = {
           },
         ]
       }
+      wobuddy_goal_progress_logs: {
+        Row: {
+          created_at: string
+          goal_id: string
+          id: string
+          logged_at: string
+          metric_name: string
+          source: string
+          unit: string | null
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          goal_id: string
+          id?: string
+          logged_at?: string
+          metric_name: string
+          source?: string
+          unit?: string | null
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          goal_id?: string
+          id?: string
+          logged_at?: string
+          metric_name?: string
+          source?: string
+          unit?: string | null
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_goal_progress_logs_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wobuddy_goals: {
         Row: {
-          category: string
-          created_at: string | null
+          category_id: string | null
+          created_at: string
           current_value: number | null
-          deadline: string | null
+          description: string | null
           id: string
-          metric: string
-          name: string
-          status: string | null
-          target_value: number
-          timeframe: string | null
-          updated_at: string | null
+          priority: string
+          start_date: string | null
+          start_value: number | null
+          status: string
+          target_date: string | null
+          target_unit: string | null
+          target_value: number | null
+          title: string
+          updated_at: string
           user_id: string
         }
         Insert: {
-          category?: string
-          created_at?: string | null
+          category_id?: string | null
+          created_at?: string
           current_value?: number | null
-          deadline?: string | null
+          description?: string | null
           id?: string
-          metric?: string
-          name: string
-          status?: string | null
-          target_value: number
-          timeframe?: string | null
-          updated_at?: string | null
+          priority?: string
+          start_date?: string | null
+          start_value?: number | null
+          status?: string
+          target_date?: string | null
+          target_unit?: string | null
+          target_value?: number | null
+          title: string
+          updated_at?: string
           user_id: string
         }
         Update: {
-          category?: string
-          created_at?: string | null
+          category_id?: string | null
+          created_at?: string
           current_value?: number | null
-          deadline?: string | null
+          description?: string | null
           id?: string
-          metric?: string
-          name?: string
-          status?: string | null
-          target_value?: number
-          timeframe?: string | null
-          updated_at?: string | null
+          priority?: string
+          start_date?: string | null
+          start_value?: number | null
+          status?: string
+          target_date?: string | null
+          target_unit?: string | null
+          target_value?: number | null
+          title?: string
+          updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_goals_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_goal_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wobuddy_performance_drivers: {
         Row: {
@@ -2987,6 +3236,284 @@ export type Database = {
         }
         Relationships: []
       }
+      wobuddy_training_plan_days: {
+        Row: {
+          created_at: string
+          date: string | null
+          day_of_week: number
+          estimated_duration_minutes: number | null
+          id: string
+          is_rest: boolean
+          rest_reason: string | null
+          training_plan_week_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          day_of_week: number
+          estimated_duration_minutes?: number | null
+          id?: string
+          is_rest?: boolean
+          rest_reason?: string | null
+          training_plan_week_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          day_of_week?: number
+          estimated_duration_minutes?: number | null
+          id?: string
+          is_rest?: boolean
+          rest_reason?: string | null
+          training_plan_week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_training_plan_days_training_plan_week_id_fkey"
+            columns: ["training_plan_week_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_training_plan_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_training_plan_exercises: {
+        Row: {
+          created_at: string
+          distance: number | null
+          duration_seconds: number | null
+          exercise_library_id: string | null
+          exercise_order: number
+          id: string
+          intensity_target: string | null
+          name: string
+          reason: string | null
+          reps: number | null
+          rest_seconds: number | null
+          sets: number | null
+          training_plan_session_id: string
+          type: string
+          weight: number | null
+        }
+        Insert: {
+          created_at?: string
+          distance?: number | null
+          duration_seconds?: number | null
+          exercise_library_id?: string | null
+          exercise_order?: number
+          id?: string
+          intensity_target?: string | null
+          name: string
+          reason?: string | null
+          reps?: number | null
+          rest_seconds?: number | null
+          sets?: number | null
+          training_plan_session_id: string
+          type: string
+          weight?: number | null
+        }
+        Update: {
+          created_at?: string
+          distance?: number | null
+          duration_seconds?: number | null
+          exercise_library_id?: string | null
+          exercise_order?: number
+          id?: string
+          intensity_target?: string | null
+          name?: string
+          reason?: string | null
+          reps?: number | null
+          rest_seconds?: number | null
+          sets?: number | null
+          training_plan_session_id?: string
+          type?: string
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_training_plan_exercises_exercise_library_id_fkey"
+            columns: ["exercise_library_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_exercise_library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wobuddy_training_plan_exercises_training_plan_session_id_fkey"
+            columns: ["training_plan_session_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_training_plan_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_training_plan_session_drivers: {
+        Row: {
+          created_at: string
+          driver: string
+          id: string
+          priority: string
+          reason: string | null
+          training_plan_session_id: string
+        }
+        Insert: {
+          created_at?: string
+          driver: string
+          id?: string
+          priority?: string
+          reason?: string | null
+          training_plan_session_id: string
+        }
+        Update: {
+          created_at?: string
+          driver?: string
+          id?: string
+          priority?: string
+          reason?: string | null
+          training_plan_session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_training_plan_session_dri_training_plan_session_id_fkey"
+            columns: ["training_plan_session_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_training_plan_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_training_plan_sessions: {
+        Row: {
+          created_at: string
+          estimated_duration_minutes: number | null
+          id: string
+          intensity_level: string | null
+          name: string
+          reason: string | null
+          session_order: number
+          training_plan_day_id: string
+          workout_type: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_duration_minutes?: number | null
+          id?: string
+          intensity_level?: string | null
+          name: string
+          reason?: string | null
+          session_order?: number
+          training_plan_day_id: string
+          workout_type: string
+        }
+        Update: {
+          created_at?: string
+          estimated_duration_minutes?: number | null
+          id?: string
+          intensity_level?: string | null
+          name?: string
+          reason?: string | null
+          session_order?: number
+          training_plan_day_id?: string
+          workout_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_training_plan_sessions_training_plan_day_id_fkey"
+            columns: ["training_plan_day_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_training_plan_days"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_training_plan_weeks: {
+        Row: {
+          created_at: string
+          id: string
+          intensity_level: string
+          phase: string
+          reason: string | null
+          training_plan_id: string
+          volume_level: string
+          week_number: number
+          weekly_focus: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intensity_level?: string
+          phase?: string
+          reason?: string | null
+          training_plan_id: string
+          volume_level?: string
+          week_number: number
+          weekly_focus?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intensity_level?: string
+          phase?: string
+          reason?: string | null
+          training_plan_id?: string
+          volume_level?: string
+          week_number?: number
+          weekly_focus?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_training_plan_weeks_training_plan_id_fkey"
+            columns: ["training_plan_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_training_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wobuddy_training_plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_weeks: number
+          end_date: string | null
+          generation_reason: string | null
+          id: string
+          name: string
+          source: string
+          start_date: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_weeks?: number
+          end_date?: string | null
+          generation_reason?: string | null
+          id?: string
+          name?: string
+          source?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_weeks?: number
+          end_date?: string | null
+          generation_reason?: string | null
+          id?: string
+          name?: string
+          source?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       wobuddy_users: {
         Row: {
           avatar_url: string | null
@@ -3055,6 +3582,50 @@ export type Database = {
           weight?: number | null
         }
         Relationships: []
+      }
+      wobuddy_workout_logs: {
+        Row: {
+          completed_at: string
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          perceived_effort: number | null
+          status: string
+          training_plan_day_id: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          perceived_effort?: number | null
+          status?: string
+          training_plan_day_id?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          perceived_effort?: number | null
+          status?: string
+          training_plan_day_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wobuddy_workout_logs_training_plan_day_id_fkey"
+            columns: ["training_plan_day_id"]
+            isOneToOne: false
+            referencedRelation: "wobuddy_training_plan_days"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wobuddy_workout_plans: {
         Row: {
@@ -3466,6 +4037,18 @@ export type Database = {
     }
     Functions: {
       is_wobuddy_admin: { Args: { _user_id: string }; Returns: boolean }
+      wobuddy_user_owns_day: { Args: { _day_id: string }; Returns: boolean }
+      wobuddy_user_owns_goal: { Args: { _goal_id: string }; Returns: boolean }
+      wobuddy_user_owns_plan: { Args: { _plan_id: string }; Returns: boolean }
+      wobuddy_user_owns_session: {
+        Args: { _session_id: string }
+        Returns: boolean
+      }
+      wobuddy_user_owns_week: { Args: { _week_id: string }; Returns: boolean }
+      wobuddy_user_owns_workout_log: {
+        Args: { _log_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       gov_phase: "visioning" | "drafting" | "community-review" | "finalized"
