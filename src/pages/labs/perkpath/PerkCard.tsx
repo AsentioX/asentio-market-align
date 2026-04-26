@@ -9,7 +9,19 @@ interface Props {
 const PerkCard = ({ perk, onTap }: Props) => (
   <button onClick={onTap} className="w-full text-left rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow active:scale-[0.98] transition-transform">
     <div className="relative h-40 overflow-hidden">
-      <img src={perk.image} alt={perk.title} className="w-full h-full object-cover" loading="lazy" />
+      <img
+        src={perk.image}
+        alt={perk.title}
+        className="w-full h-full object-cover bg-slate-100"
+        loading="lazy"
+        onError={(e) => {
+          const img = e.currentTarget;
+          if (!img.dataset.fallback) {
+            img.dataset.fallback = '1';
+            img.src = 'https://images.unsplash.com/photo-1556742111-a301076d9d18?w=600&h=375&fit=crop';
+          }
+        }}
+      />
       <div className="absolute top-3 left-3">
         <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: perk.brandColor }}>
           {perk.membershipName}

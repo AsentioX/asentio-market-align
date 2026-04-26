@@ -4,6 +4,7 @@ import { SlidersHorizontal, X, Briefcase, Home, PartyPopper, Tag, MapPin, MapPin
 import { toast } from 'sonner';
 import type { Perk, Pillar, PerkCategory, Membership } from '@/hooks/usePerkPath';
 import PerkCard from './PerkCard';
+import { categoryImage } from './categoryImage';
 
 type SortKey = 'recent' | 'az' | 'membership';
 
@@ -232,7 +233,7 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
                 title: perk.title,
                 value: perk.value_label,
                 category: (['auto', 'dining', 'travel', 'shopping', 'health'].includes(perk.category) ? perk.category : 'shopping') as 'auto' | 'dining' | 'travel' | 'shopping' | 'health',
-                image: perk.image_url || `https://images.unsplash.com/photo-1554224155-1696413565d3?w=400&h=250&fit=crop`,
+                image: perk.image_url || categoryImage(perk.category, perk.title, perk.venue),
                 distance: '—',
                 venue: perk.venue ?? '',
                 howToRedeem: perk.how_to_redeem ?? '',

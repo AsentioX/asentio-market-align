@@ -1,6 +1,7 @@
 import { Briefcase, Home, PartyPopper } from 'lucide-react';
 import type { Perk, Pillar } from '@/hooks/usePerkPath';
 import PerkCard from './PerkCard';
+import { categoryImage } from './categoryImage';
 
 const PILLAR_META: Record<Pillar, { label: string; icon: typeof Home; tone: string; bg: string; chip: string }> = {
   work: {
@@ -63,7 +64,7 @@ const PillarSection = ({ pillar, perks, onPerkTap }: Props) => {
                 title: perk.title,
                 value: perk.value_label,
                 category: (perk.category === 'auto' || perk.category === 'dining' || perk.category === 'travel' || perk.category === 'shopping' || perk.category === 'health' ? perk.category : 'shopping') as 'auto' | 'dining' | 'travel' | 'shopping' | 'health',
-                image: perk.image_url || `https://images.unsplash.com/photo-1554224155-1696413565d3?w=400&h=250&fit=crop`,
+                image: perk.image_url || categoryImage(perk.category, perk.title, perk.venue),
                 distance: '—',
                 venue: perk.venue ?? '',
                 howToRedeem: perk.how_to_redeem ?? '',
