@@ -4,6 +4,7 @@ import { SlidersHorizontal, X, Briefcase, Home, PartyPopper, Tag, MapPin, MapPin
 import { toast } from 'sonner';
 import type { Perk, Pillar, PerkCategory, Membership } from '@/hooks/usePerkPath';
 import PerkCard from './PerkCard';
+import { categoryImage } from './categoryImage';
 
 type SortKey = 'recent' | 'az' | 'membership';
 
