@@ -1,15 +1,23 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { SlidersHorizontal, X, Briefcase, Home, PartyPopper, Tag } from 'lucide-react';
+import { SlidersHorizontal, X, Briefcase, Home, PartyPopper, Tag, MapPin, MapPinOff, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Perk, Pillar, PerkCategory, Membership } from '@/hooks/usePerkPath';
 import PerkCard from './PerkCard';
 
 type SortKey = 'recent' | 'az' | 'membership';
 
+interface GeoLike {
+  status: 'idle' | 'requesting' | 'granted' | 'denied' | 'unavailable';
+  request: () => void;
+  clear: () => void;
+}
+
 interface Props {
   perks: Perk[];
   memberships: Membership[];
   onPerkTap: (perk: Perk) => void;
+  geo?: GeoLike;
 }
 
 const PILLAR_OPTIONS: { value: Pillar; label: string; icon: typeof Home; tone: string }[] = [
@@ -20,7 +28,7 @@ const PILLAR_OPTIONS: { value: Pillar; label: string; icon: typeof Home; tone: s
 
 const CATEGORY_OPTIONS: PerkCategory[] = ['auto', 'dining', 'travel', 'shopping', 'health', 'entertainment', 'services', 'other'];
 
-const BrowseList = ({ perks, memberships, onPerkTap }: Props) => {
+const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
   const [showFilters, setShowFilters] = useState(false);
   const [pillars, setPillars] = useState<Set<Pillar>>(new Set());
   const [categories, setCategories] = useState<Set<PerkCategory>>(new Set());
