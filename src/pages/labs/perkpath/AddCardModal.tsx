@@ -253,15 +253,8 @@ const AddCardModal = ({ open, onClose, onAdded }: Props) => {
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">Tier <span className="text-slate-400 font-normal normal-case tracking-normal">(optional)</span></label>
-                  <Input
-                    value={tier}
-                    onChange={e => setTier(e.target.value)}
-                    placeholder="Reserve, Platinum, Gold…"
-                    className="h-11 rounded-xl bg-slate-50 border-slate-200"
-                  />
-                </div>
+                <TierPicker name={name} tier={tier} onChange={setTier} />
+
 
                 <div>
                   <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">Card Color</label>
