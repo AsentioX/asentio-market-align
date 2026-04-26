@@ -140,11 +140,8 @@ const PerkPathLayout = () => {
                         <p className="text-sm text-slate-500">Memberships will appear here once added.</p>
                       </div>
                     ) : (
-                      <>
-                        <PillarSection pillar="work" perks={perksByPillar.work} onPerkTap={handlePerkTap} />
-                        <PillarSection pillar="home" perks={perksByPillar.home} onPerkTap={handlePerkTap} />
-                        <PillarSection pillar="play" perks={perksByPillar.play} onPerkTap={handlePerkTap} />
-                      </>
+                      <BrowseList perks={perks} memberships={memberships} onPerkTap={handlePerkTap} />
+
                     )}
                   </>
                 )}
