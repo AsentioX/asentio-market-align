@@ -28,14 +28,6 @@ const PerkPathLayout = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const searchResult = useMemo(() => searchValue.trim() ? searchPerks(perks, searchValue) : null, [perks, searchValue]);
-  const perksByPillar = useMemo(() => {
-    const groups: Record<Pillar, Perk[]> = { work: [], home: [], play: [] };
-    perks.forEach(p => {
-      const pillar = p.membership?.pillar ?? 'home';
-      groups[pillar].push(p);
-    });
-    return groups;
-  }, [perks]);
 
   if (authLoading) {
     return (
