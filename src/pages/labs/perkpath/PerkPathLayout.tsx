@@ -134,7 +134,7 @@ const PerkPathLayout = () => {
                         <div className="w-16 h-16 rounded-3xl bg-emerald-50 flex items-center justify-center mb-5">
                           <Wallet className="w-8 h-8 text-emerald-500" />
                         </div>
-                        <h2 className="text-lg font-bold text-slate-900 mb-2">Your Vault is Empty</h2>
+                        <h2 className="text-lg font-bold text-slate-900 mb-2">Your Wallet is Empty</h2>
                         <p className="text-sm text-slate-500">Memberships will appear here once added.</p>
                       </div>
                     ) : (
@@ -162,7 +162,7 @@ const PerkPathLayout = () => {
           </button>
           <button onClick={() => setTab('vault')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'vault' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Wallet className="w-5 h-5" />
-            <span className="text-[10px] font-semibold">Vault</span>
+            <span className="text-[10px] font-semibold">Wallet</span>
           </button>
         </nav>
 
