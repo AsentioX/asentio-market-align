@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import AddCardModal from './AddCardModal';
 import type { Membership, Perk } from '@/hooks/usePerkPath';
 import { getBrandLogoUrl } from './brandLogo';
+import { getSuggestedTiers } from './cardTiers';
 
 interface Props {
   memberships: Membership[];
