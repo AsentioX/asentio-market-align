@@ -21,7 +21,7 @@ import PerkDrawer from './PerkDrawer';
 
 
 const PerkPathLayout = () => {
-  const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
+  const { user, loading: authLoading, perkpathUser } = usePerkPathAuth();
   const { memberships, perks, venues, loading, refresh, updateMembership, deleteMembership } = usePerkPath();
   const geo = useGeolocation();
   const [tab, setTab] = useState<'home' | 'purchase' | 'vault' | 'settings'>('home');
