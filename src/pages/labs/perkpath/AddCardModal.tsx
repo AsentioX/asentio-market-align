@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Upload, Loader2, CreditCard, Sparkles, ShieldAlert } from 'lucide-react';
+import { X, Camera, Upload, Loader2, CreditCard, Sparkles, ShieldAlert, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
 import { Input } from '@/components/ui/input';
+import { getSuggestedTiers } from './cardTiers';
 
 interface Props {
   open: boolean;
@@ -252,15 +253,8 @@ const AddCardModal = ({ open, onClose, onAdded }: Props) => {
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">Tier <span className="text-slate-400 font-normal normal-case tracking-normal">(optional)</span></label>
-                  <Input
-                    value={tier}
-                    onChange={e => setTier(e.target.value)}
-                    placeholder="Reserve, Platinum, Gold…"
-                    className="h-11 rounded-xl bg-slate-50 border-slate-200"
-                  />
-                </div>
+                <TierPicker name={name} tier={tier} onChange={setTier} />
+
 
                 <div>
                   <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">Card Color</label>
@@ -293,4 +287,89 @@ const AddCardModal = ({ open, onClose, onAdded }: Props) => {
   );
 };
 
+interface TierPickerProps {
+  name: string;
+  tier: string;
+  onChange: (t: string) => void;
+}
+
+const TierPicker = ({ name, tier, onChange }: TierPickerProps) => {
+  const suggestions = useMemo(() => getSuggestedTiers(name), [name]);
+  const [showCustom, setShowCustom] = useState(false);
+
+  const isCustom = !!tier && suggestions ? !suggestions.includes(tier) : !!tier;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          Tier <span className="text-slate-400 font-normal normal-case tracking-normal">(optional)</span>
+        </label>
+        {suggestions && (
+          <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+            <Sparkles className="w-3 h-3" /> {suggestions.length} levels found
+          </span>
+        )}
+      </div>
+
+      {suggestions && !showCustom ? (
+        <>
+          <div className="flex flex-wrap gap-1.5">
+            {suggestions.map(t => {
+              const active = tier === t;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => onChange(active ? '' : t)}
+                  className={`text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1 ${
+                    active
+                      ? 'bg-emerald-500 text-white border-emerald-500'
+                      : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50'
+                  }`}
+                >
+                  {active && <Check className="w-3 h-3" />}
+                  {t}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => setShowCustom(true)}
+              className="text-[11px] font-semibold px-3 py-1.5 rounded-full border border-dashed border-slate-300 text-slate-500 hover:bg-slate-50"
+            >
+              Other…
+            </button>
+          </div>
+          {isCustom && (
+            <p className="text-[10px] text-slate-500 mt-2">Custom tier: <span className="font-semibold text-slate-700">{tier}</span></p>
+          )}
+        </>
+      ) : (
+        <>
+          <Input
+            value={tier}
+            onChange={e => onChange(e.target.value)}
+            placeholder={suggestions ? 'Type your exact tier…' : 'Reserve, Platinum, Gold…'}
+            className="h-11 rounded-xl bg-slate-50 border-slate-200"
+          />
+          {suggestions && (
+            <button
+              type="button"
+              onClick={() => { setShowCustom(false); onChange(''); }}
+              className="text-[11px] text-emerald-600 font-semibold mt-2"
+            >
+              ← Back to suggestions
+            </button>
+          )}
+          {!suggestions && name.trim().length >= 2 && (
+            <p className="text-[10px] text-slate-400 mt-1.5">No tier suggestions for this card — enter manually.</p>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
 export default AddCardModal;
+

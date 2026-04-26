@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import AddCardModal from './AddCardModal';
 import type { Membership, Perk } from '@/hooks/usePerkPath';
 import { getBrandLogoUrl } from './brandLogo';
+import { getSuggestedTiers } from './cardTiers';
 
 interface Props {
   memberships: Membership[];
@@ -260,14 +261,11 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                             className="h-10 rounded-xl bg-white border-slate-200 text-sm"
                           />
                         </Field>
-                        <Field label="Tier">
-                          <Input
-                            value={(form.tier as string) ?? ''}
-                            onChange={e => setForm(f => ({ ...f, tier: e.target.value }))}
-                            placeholder="Reserve, Platinum, Gold…"
-                            className="h-10 rounded-xl bg-white border-slate-200 text-sm"
-                          />
-                        </Field>
+                        <EditTierField
+                          name={(form.name as string) ?? ''}
+                          tier={(form.tier as string) ?? ''}
+                          onChange={t => setForm(f => ({ ...f, tier: t }))}
+                        />
                         <Field label="Renewal date">
                           <Input
                             type="date"
@@ -378,4 +376,70 @@ const DetailItem = ({ label, value, icon }: { label: string; value: string; icon
   </div>
 );
 
+const EditTierField = ({ name, tier, onChange }: { name: string; tier: string; onChange: (t: string) => void }) => {
+  const suggestions = getSuggestedTiers(name);
+  const [showCustom, setShowCustom] = useState(false);
+
+  if (!suggestions || showCustom) {
+    return (
+      <Field label="Tier">
+        <Input
+          value={tier}
+          onChange={e => onChange(e.target.value)}
+          placeholder={suggestions ? 'Type your exact tier…' : 'Reserve, Platinum, Gold…'}
+          className="h-10 rounded-xl bg-white border-slate-200 text-sm"
+        />
+        {suggestions && (
+          <button
+            type="button"
+            onClick={() => setShowCustom(false)}
+            className="text-[10px] text-emerald-600 font-semibold mt-1.5"
+          >
+            ← Back to suggestions
+          </button>
+        )}
+      </Field>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier</label>
+        <span className="text-[9px] text-emerald-600 font-semibold flex items-center gap-1">
+          <Sparkles className="w-2.5 h-2.5" /> {suggestions.length} levels
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {suggestions.map(t => {
+          const active = tier === t;
+          return (
+            <button
+              key={t}
+              type="button"
+              onClick={() => onChange(active ? '' : t)}
+              className={`text-[10px] font-semibold px-2.5 py-1.5 rounded-full border transition-all flex items-center gap-1 ${
+                active
+                  ? 'bg-emerald-500 text-white border-emerald-500'
+                  : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50'
+              }`}
+            >
+              {active && <Check className="w-2.5 h-2.5" />}
+              {t}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setShowCustom(true)}
+          className="text-[10px] font-semibold px-2.5 py-1.5 rounded-full border border-dashed border-slate-300 text-slate-500 hover:bg-slate-50"
+        >
+          Other…
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default VaultView;
+
