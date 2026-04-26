@@ -35,7 +35,8 @@ export interface Goal {
   start_value: number;
   start_date: string | null;
   target_date: string | null;
-  drivers: GoalDriver[];
+  drivers: string[];                  // legacy: array of driver names; UI consumes this
+  driverDetails: GoalDriver[];        // new: full per-driver weight + explanation
   created_at: string;
   // Legacy aliases (read-only; kept so old components keep rendering)
   name: string;
@@ -142,7 +143,7 @@ export function useWOBuddyGoals() {
 
     const mapped: Goal[] = goalsData.map(g => {
       const cat = g.category_id ? categoryMap.get(g.category_id) : undefined;
-      const drivers = driversByGoal.get(g.id) || [];
+      const driverDetails = driversByGoal.get(g.id) || [];
       return {
         id: g.id,
         title: g.title,
@@ -156,7 +157,8 @@ export function useWOBuddyGoals() {
         start_value: Number(g.start_value ?? 0),
         start_date: g.start_date,
         target_date: g.target_date,
-        drivers,
+        drivers: driverDetails.map(d => d.driver),
+        driverDetails,
         created_at: g.created_at,
         // Legacy aliases
         name: g.title,
@@ -184,7 +186,7 @@ export function useWOBuddyGoals() {
     start_value?: number;
     start_date?: string;
     target_date?: string;
-    drivers: Array<{ driver: string; weight?: number; explanation?: string }>;
+    drivers: Array<{ driver: string; weight?: number; explanation?: string } | string>;
   }) => {
     if (!user) return null;
 
@@ -213,12 +215,15 @@ export function useWOBuddyGoals() {
     }
 
     if (goal.drivers.length > 0) {
-      const rows = goal.drivers.map(d => ({
-        goal_id: newGoal.id,
-        driver: d.driver,
-        weight: d.weight ?? 5,
-        explanation: d.explanation ?? null,
-      }));
+      const rows = goal.drivers.map(d => {
+        const obj = typeof d === 'string' ? { driver: d } : d;
+        return {
+          goal_id: newGoal.id,
+          driver: obj.driver,
+          weight: obj.weight ?? 5,
+          explanation: obj.explanation ?? null,
+        };
+      });
       await supabase.from('wobuddy_goal_drivers').insert(rows);
     }
 

@@ -354,7 +354,7 @@ type PhaseTemplate = { phase: string; intensity: PlanWeek['intensityLevel']; vol
 function pickPeriodization(weeks: number): PhaseTemplate[] {
   // Heuristic phase distribution. Always end with a deload or test week if >= 4 weeks.
   if (weeks <= 3) {
-    return Array.from({ length: weeks }, () => ({ phase: 'Foundation', intensity: 'medium' as const, volume: 'medium' as const, focus: 'Build a balanced base.' }));
+    return Array.from({ length: weeks }, (): PhaseTemplate => ({ phase: 'Foundation', intensity: 'medium', volume: 'medium', focus: 'Build a balanced base.' }));
   }
   if (weeks === 4) return [
     { phase: 'Foundation', intensity: 'medium', volume: 'medium', focus: 'Build movement quality and base volume.' },
