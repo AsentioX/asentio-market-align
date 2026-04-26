@@ -41,7 +41,7 @@ const CATEGORY_IMAGES: Record<PerkCategory, string[]> = {
   ],
   other: [
     'https://images.unsplash.com/photo-1556742111-a301076d9d18?w=600&h=375&fit=crop',
-    'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=600&h=375&fit=crop',
+    'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=600&h=375&fit=crop',
   ],
 };
 
