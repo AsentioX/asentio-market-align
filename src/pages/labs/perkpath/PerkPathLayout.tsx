@@ -165,7 +165,7 @@ const PerkPathLayout = () => {
         <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/95 backdrop-blur-lg border-t border-slate-100 flex z-40">
           <button onClick={() => setTab('home')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'home' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Home className="w-5 h-5" />
-            <span className="text-[10px] font-semibold">Hub</span>
+            <span className="text-[10px] font-semibold">Discover</span>
           </button>
           <button onClick={() => setTab('purchase')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'purchase' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Sparkles className="w-5 h-5" />
