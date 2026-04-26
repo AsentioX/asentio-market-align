@@ -268,26 +268,6 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                             className="h-10 rounded-xl bg-white border-slate-200 text-sm"
                           />
                         </Field>
-                        <div className="grid grid-cols-2 gap-2">
-                          <Field label="Category">
-                            <select
-                              value={form.category}
-                              onChange={e => setForm(f => ({ ...f, category: e.target.value as Membership['category'] }))}
-                              className="w-full h-10 rounded-xl bg-white border border-slate-200 text-sm px-3 capitalize"
-                            >
-                              {CATEGORY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select>
-                          </Field>
-                          <Field label="Pillar">
-                            <select
-                              value={form.pillar}
-                              onChange={e => setForm(f => ({ ...f, pillar: e.target.value as Membership['pillar'] }))}
-                              className="w-full h-10 rounded-xl bg-white border border-slate-200 text-sm px-3 capitalize"
-                            >
-                              {PILLAR_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select>
-                          </Field>
-                        </div>
                         <Field label="Renewal date">
                           <Input
                             type="date"
