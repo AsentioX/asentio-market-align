@@ -214,7 +214,7 @@ function exerciseReason(exerciseName: string, driver: string, goalNames: string[
 // Backwards-compatible API: weekly plan from raw goals
 // (kept so existing UI keeps working)
 // ─────────────────────────────────────────────
-type LegacyGoal = { id?: string; status: string; drivers: string[]; name?: string; title?: string; priority?: 'primary'|'secondary'|'supporting'; deadline?: string | null; target_date?: string | null };
+type LegacyGoal = { id?: string; status: string; drivers: string[]; name?: string; title?: string; priority?: string; deadline?: string | null; target_date?: string | null };
 
 function legacyToScored(goals: LegacyGoal[]): ScoredGoal[] {
   return goals.map(g => ({
