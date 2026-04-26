@@ -22,14 +22,33 @@ import type { Membership } from './perkData';
 
 const PerkPathLayout = () => {
   const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
-  const { memberships, perks, venues, loading } = usePerkPath();
+  const { memberships, perks, venues, loading, refresh } = usePerkPath();
   const geo = useGeolocation();
   const [tab, setTab] = useState<'home' | 'purchase' | 'vault' | 'settings'>('home');
   const [searchValue, setSearchValue] = useState('');
   const [selectedPerk, setSelectedPerk] = useState<Perk | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scraping, setScraping] = useState(false);
 
   const searchResult = useMemo(() => searchValue.trim() ? searchPerks(perks, searchValue) : null, [perks, searchValue]);
+
+  const handleScrapeOffers = async () => {
+    setScraping(true);
+    const t = toast.loading('Scanning for new offers…');
+    try {
+      const { data, error } = await supabase.functions.invoke('pp-scrape-offers', {
+        body: { triggered_by: 'manual' },
+      });
+      if (error) throw error;
+      const created = (data as { perks_created?: number })?.perks_created ?? 0;
+      toast.success(created > 0 ? `Added ${created} new perk${created === 1 ? '' : 's'}` : 'No new offers found', { id: t });
+      await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Scrape failed', { id: t });
+    } finally {
+      setScraping(false);
+    }
+  };
 
   if (authLoading) {
     return (
