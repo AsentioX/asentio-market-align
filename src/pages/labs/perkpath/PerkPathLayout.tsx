@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon } from 'lucide-react';
+import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
@@ -14,6 +14,7 @@ import SearchResult from './SearchResult';
 import NearbyNow from './NearbyNow';
 import VaultView from './VaultView';
 import SettingsView from './SettingsView';
+import PurchaseView from './PurchaseView';
 import PerkDrawer from './PerkDrawer';
 import type { Membership } from './perkData';
 
@@ -21,7 +22,7 @@ const PerkPathLayout = () => {
   const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
   const { memberships, perks, venues, loading } = usePerkPath();
   const geo = useGeolocation();
-  const [tab, setTab] = useState<'home' | 'vault' | 'settings'>('home');
+  const [tab, setTab] = useState<'home' | 'purchase' | 'vault' | 'settings'>('home');
   const [searchValue, setSearchValue] = useState('');
   const [selectedPerk, setSelectedPerk] = useState<Perk | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -148,6 +149,10 @@ const PerkPathLayout = () => {
                   </>
                 )}
               </motion.div>
+            ) : tab === 'purchase' ? (
+              <motion.div key="purchase" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                <PurchaseView />
+              </motion.div>
             ) : tab === 'vault' ? (
               <motion.div key="vault" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
                 <VaultView memberships={vaultMemberships} />
@@ -164,6 +169,10 @@ const PerkPathLayout = () => {
           <button onClick={() => setTab('home')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'home' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Home className="w-5 h-5" />
             <span className="text-[10px] font-semibold">Hub</span>
+          </button>
+          <button onClick={() => setTab('purchase')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'purchase' ? 'text-emerald-600' : 'text-slate-400'}`}>
+            <Sparkles className="w-5 h-5" />
+            <span className="text-[10px] font-semibold">Purchase</span>
           </button>
           <button onClick={() => setTab('vault')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'vault' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Wallet className="w-5 h-5" />

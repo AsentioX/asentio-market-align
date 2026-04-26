@@ -41,8 +41,6 @@ const SettingsView = () => {
       return;
     }
     setDeleting(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setDeleting(false); toast.error('Not signed in'); return; }
     const { error } = await supabase.functions.invoke('pp-delete-account');
     if (error) {
       setDeleting(false);
@@ -60,7 +58,6 @@ const SettingsView = () => {
         <p className="text-sm text-slate-500 mt-1">Manage your account details.</p>
       </div>
 
-      {/* Profile */}
       <section className="rounded-3xl border border-slate-100 bg-white shadow-sm p-5 space-y-4">
         <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Profile</h3>
         <div>
@@ -110,7 +107,6 @@ const SettingsView = () => {
         </div>
       </section>
 
-      {/* Session */}
       <section className="rounded-3xl border border-slate-100 bg-white shadow-sm p-5">
         <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3">Session</h3>
         <button
@@ -121,7 +117,6 @@ const SettingsView = () => {
         </button>
       </section>
 
-      {/* Danger zone */}
       <section className="rounded-3xl border border-rose-200 bg-rose-50/50 p-5 space-y-3">
         <div className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-rose-600" />

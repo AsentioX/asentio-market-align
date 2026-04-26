@@ -1,4 +1,4 @@
-// Deletes the authenticated PerkPath user (auth + pp_ rows via cascade)
+// Deletes the authenticated PerkPath user (auth + pp_ rows)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -22,7 +22,6 @@ Deno.serve(async (req) => {
     const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
     const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify caller
     const userClient = createClient(SUPABASE_URL, ANON, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -33,10 +32,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Admin client cleans up data + deletes auth user
     const admin = createClient(SUPABASE_URL, SERVICE);
-
-    // Best-effort: cascade should handle pp_ tables, but be explicit
     await admin.from("pp_perks").delete().eq("user_id", user.id);
     await admin.from("pp_memberships").delete().eq("user_id", user.id);
     await admin.from("pp_users").delete().eq("user_id", user.id);
