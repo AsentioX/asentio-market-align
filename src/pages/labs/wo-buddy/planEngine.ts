@@ -367,14 +367,14 @@ function pickPeriodization(weeks: number): PhaseTemplate[] {
     { phase: 'Intensify', intensity: 'high', volume: 'medium', focus: 'Raise intensity, lower volume slightly.' },
     { phase: 'Deload', intensity: 'deload', volume: 'low', focus: 'Recover and consolidate gains.' },
   ];
-  if (weeks <= 6) return [
+  if (weeks <= 6) return ([
     { phase: 'Foundation', intensity: 'medium', volume: 'medium', focus: 'Build movement quality and base volume.' },
     { phase: 'Build', intensity: 'medium', volume: 'high', focus: 'Progressive overload.' },
     { phase: 'Build', intensity: 'medium', volume: 'high', focus: 'Continue progressive overload.' },
     { phase: 'Intensify', intensity: 'high', volume: 'medium', focus: 'Higher intensity, sport-specific work.' },
     { phase: 'Peak', intensity: 'high', volume: 'low', focus: 'Specificity and sharpening.' },
     { phase: 'Test', intensity: 'high', volume: 'low', focus: 'Goal-specific test or attempt.' },
-  ].slice(0, weeks);
+  ] as PhaseTemplate[]).slice(0, weeks);
   // 7-12+
   const result: PhaseTemplate[] = [];
   result.push({ phase: 'Foundation', intensity: 'medium', volume: 'medium', focus: 'Establish movement quality and base.' });
