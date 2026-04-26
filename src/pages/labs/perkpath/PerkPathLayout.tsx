@@ -4,11 +4,11 @@ import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon, S
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
-import { usePerkPath, type Perk, type Pillar } from '@/hooks/usePerkPath';
+import { usePerkPath, type Perk } from '@/hooks/usePerkPath';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { searchPerks } from './searchEngine';
 import PerkPathLogin from './PerkPathLogin';
-import PillarSection from './PillarSection';
+import BrowseList from './BrowseList';
 import RenewalSentinel from './RenewalSentinel';
 import SearchResult from './SearchResult';
 import NearbyNow from './NearbyNow';
@@ -28,14 +28,6 @@ const PerkPathLayout = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const searchResult = useMemo(() => searchValue.trim() ? searchPerks(perks, searchValue) : null, [perks, searchValue]);
-  const perksByPillar = useMemo(() => {
-    const groups: Record<Pillar, Perk[]> = { work: [], home: [], play: [] };
-    perks.forEach(p => {
-      const pillar = p.membership?.pillar ?? 'home';
-      groups[pillar].push(p);
-    });
-    return groups;
-  }, [perks]);
 
   if (authLoading) {
     return (
@@ -140,11 +132,8 @@ const PerkPathLayout = () => {
                         <p className="text-sm text-slate-500">Memberships will appear here once added.</p>
                       </div>
                     ) : (
-                      <>
-                        <PillarSection pillar="work" perks={perksByPillar.work} onPerkTap={handlePerkTap} />
-                        <PillarSection pillar="home" perks={perksByPillar.home} onPerkTap={handlePerkTap} />
-                        <PillarSection pillar="play" perks={perksByPillar.play} onPerkTap={handlePerkTap} />
-                      </>
+                      <BrowseList perks={perks} memberships={memberships} onPerkTap={handlePerkTap} />
+
                     )}
                   </>
                 )}
@@ -168,7 +157,7 @@ const PerkPathLayout = () => {
         <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/95 backdrop-blur-lg border-t border-slate-100 flex z-40">
           <button onClick={() => setTab('home')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'home' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Home className="w-5 h-5" />
-            <span className="text-[10px] font-semibold">Hub</span>
+            <span className="text-[10px] font-semibold">Discover</span>
           </button>
           <button onClick={() => setTab('purchase')} className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${tab === 'purchase' ? 'text-emerald-600' : 'text-slate-400'}`}>
             <Sparkles className="w-5 h-5" />
