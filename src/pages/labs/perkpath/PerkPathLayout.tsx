@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon, Sparkles } from 'lucide-react';
+import { ArrowLeft, Search, X, Wallet, Home, LogOut, Settings as SettingsIcon, Sparkles, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { usePerkPathAuth } from '@/hooks/usePerkPathAuth';
 import { usePerkPath, type Perk } from '@/hooks/usePerkPath';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -20,14 +22,33 @@ import type { Membership } from './perkData';
 
 const PerkPathLayout = () => {
   const { user, loading: authLoading, signOut, perkpathUser } = usePerkPathAuth();
-  const { memberships, perks, venues, loading } = usePerkPath();
+  const { memberships, perks, venues, loading, refresh } = usePerkPath();
   const geo = useGeolocation();
   const [tab, setTab] = useState<'home' | 'purchase' | 'vault' | 'settings'>('home');
   const [searchValue, setSearchValue] = useState('');
   const [selectedPerk, setSelectedPerk] = useState<Perk | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scraping, setScraping] = useState(false);
 
   const searchResult = useMemo(() => searchValue.trim() ? searchPerks(perks, searchValue) : null, [perks, searchValue]);
+
+  const handleScrapeOffers = async () => {
+    setScraping(true);
+    const t = toast.loading('Scanning for new offers…');
+    try {
+      const { data, error } = await supabase.functions.invoke('pp-scrape-offers', {
+        body: { triggered_by: 'manual' },
+      });
+      if (error) throw error;
+      const created = (data as { perks_created?: number })?.perks_created ?? 0;
+      toast.success(created > 0 ? `Added ${created} new perk${created === 1 ? '' : 's'}` : 'No new offers found', { id: t });
+      await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Scrape failed', { id: t });
+    } finally {
+      setScraping(false);
+    }
+  };
 
   if (authLoading) {
     return (
@@ -86,8 +107,8 @@ const PerkPathLayout = () => {
             {tab === 'home' ? (
               <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
                 {/* Universal Search */}
-                <div className="px-5 pt-4 pb-2">
-                  <form onSubmit={(e) => e.preventDefault()} className="relative">
+                <div className="px-5 pt-4 pb-2 flex items-center gap-2">
+                  <form onSubmit={(e) => e.preventDefault()} className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
                       value={searchValue}
@@ -101,6 +122,15 @@ const PerkPathLayout = () => {
                       </button>
                     )}
                   </form>
+                  <button
+                    type="button"
+                    onClick={handleScrapeOffers}
+                    disabled={scraping}
+                    title="Scan the web for new offers"
+                    className="h-12 w-12 shrink-0 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-sm hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${scraping ? 'animate-spin' : ''}`} />
+                  </button>
                 </div>
 
                 {searchValue.trim() && (
