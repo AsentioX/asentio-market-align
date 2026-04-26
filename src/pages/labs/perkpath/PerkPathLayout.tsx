@@ -8,7 +8,7 @@ import { usePerkPath, type Perk, type Pillar } from '@/hooks/usePerkPath';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { searchPerks } from './searchEngine';
 import PerkPathLogin from './PerkPathLogin';
-import PillarSection from './PillarSection';
+import BrowseList from './BrowseList';
 import RenewalSentinel from './RenewalSentinel';
 import SearchResult from './SearchResult';
 import NearbyNow from './NearbyNow';
