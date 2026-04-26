@@ -214,17 +214,22 @@ function exerciseReason(exerciseName: string, driver: string, goalNames: string[
 // Backwards-compatible API: weekly plan from raw goals
 // (kept so existing UI keeps working)
 // ─────────────────────────────────────────────
-type LegacyGoal = { id?: string; status: string; drivers: string[]; name?: string; title?: string; priority?: 'primary'|'secondary'|'supporting'; deadline?: string | null; target_date?: string | null };
+type LegacyGoal = { id?: string; status: string; drivers: string[]; name?: string; title?: string; priority?: string; deadline?: string | null; target_date?: string | null };
 
 function legacyToScored(goals: LegacyGoal[]): ScoredGoal[] {
-  return goals.map(g => ({
-    id: g.id ?? '',
-    title: g.title ?? g.name ?? '',
-    priority: g.priority ?? 'primary',
-    status: g.status,
-    drivers: g.drivers.map(d => ({ driver: d, weight: 5 })),
-    targetDate: g.target_date ?? g.deadline ?? null,
-  }));
+  return goals.map(g => {
+    const p = g.priority;
+    const priority: 'primary' | 'secondary' | 'supporting' =
+      p === 'secondary' || p === 'supporting' ? p : 'primary';
+    return {
+      id: g.id ?? '',
+      title: g.title ?? g.name ?? '',
+      priority,
+      status: g.status,
+      drivers: g.drivers.map(d => ({ driver: d, weight: 5 })),
+      targetDate: g.target_date ?? g.deadline ?? null,
+    };
+  });
 }
 
 export function generatePlanFromGoals(goals: LegacyGoal[]): PlanDay[] {
@@ -362,14 +367,14 @@ function pickPeriodization(weeks: number): PhaseTemplate[] {
     { phase: 'Intensify', intensity: 'high', volume: 'medium', focus: 'Raise intensity, lower volume slightly.' },
     { phase: 'Deload', intensity: 'deload', volume: 'low', focus: 'Recover and consolidate gains.' },
   ];
-  if (weeks <= 6) return [
+  if (weeks <= 6) return ([
     { phase: 'Foundation', intensity: 'medium', volume: 'medium', focus: 'Build movement quality and base volume.' },
     { phase: 'Build', intensity: 'medium', volume: 'high', focus: 'Progressive overload.' },
     { phase: 'Build', intensity: 'medium', volume: 'high', focus: 'Continue progressive overload.' },
     { phase: 'Intensify', intensity: 'high', volume: 'medium', focus: 'Higher intensity, sport-specific work.' },
     { phase: 'Peak', intensity: 'high', volume: 'low', focus: 'Specificity and sharpening.' },
     { phase: 'Test', intensity: 'high', volume: 'low', focus: 'Goal-specific test or attempt.' },
-  ].slice(0, weeks);
+  ] as PhaseTemplate[]).slice(0, weeks);
   // 7-12+
   const result: PhaseTemplate[] = [];
   result.push({ phase: 'Foundation', intensity: 'medium', volume: 'medium', focus: 'Establish movement quality and base.' });
