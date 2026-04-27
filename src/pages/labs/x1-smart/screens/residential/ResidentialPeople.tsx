@@ -155,10 +155,11 @@ const BehaviorStat = ({ label, value, alert }: { label: string; value: string; a
   </div>
 );
 
-const PersonDrawer = ({ person, onClose }: { person: ResPerson; onClose: () => void }) => {
+const PersonDrawer = ({ person, onClose, onViewCamera }: { person: ResPerson; onClose: () => void; onViewCamera: () => void }) => {
   const pres = PRESENCE_META[person.presence];
   const trust = TRUST_META[person.trust];
   const TrustIcon = trust.icon;
+  const isLive = person.presence === 'home' || person.presence === 'approaching';
   return (
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-stone-900/30 backdrop-blur-sm z-40" onClick={onClose} />
@@ -169,7 +170,17 @@ const PersonDrawer = ({ person, onClose }: { person: ResPerson; onClose: () => v
       >
         <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-black/[0.06] px-5 py-3 flex items-center justify-between">
           <span className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold">Identity profile</span>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center text-stone-500"><X className="w-4 h-4" /></button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onViewCamera}
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1.5 rounded-lg bg-stone-900 text-white hover:bg-stone-800 transition-colors"
+              title={isLive ? 'View live camera' : 'View recorded clips'}
+            >
+              <Video className="w-3.5 h-3.5" />
+              {isLive ? 'Live' : 'Recorded'}
+            </button>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center text-stone-500"><X className="w-4 h-4" /></button>
+          </div>
         </div>
 
         <div className="p-5 space-y-6">
