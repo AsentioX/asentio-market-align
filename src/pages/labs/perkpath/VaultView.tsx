@@ -294,9 +294,21 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                               />
                             ))}
                           </div>
-                        </Field>
+                       </Field>
 
-                        <div className="flex gap-2 pt-1">
+                       {(form.category === 'financial' || form.card_type === 'credit') && (
+                         <RewardsEditor
+                           name={(form.name as string) ?? m.name}
+                           tier={(form.tier as string) ?? m.tier ?? ''}
+                           rewardRates={(form.reward_rates as RewardRates) ?? {}}
+                           baseRate={form.base_rate ?? 1}
+                           pointsValueCents={form.points_value_cents ?? 1}
+                           rewardsCurrency={(form.rewards_currency as RewardsCurrency) ?? 'cashback'}
+                           onChange={patch => setForm(f => ({ ...f, ...patch }))}
+                         />
+                       )}
+
+                       <div className="flex gap-2 pt-1">
                           <button
                             onClick={cancelEdit}
                             disabled={busy}
