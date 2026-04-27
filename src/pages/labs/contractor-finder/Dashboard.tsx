@@ -80,8 +80,8 @@ export default function Dashboard() {
       {/* Top stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard icon={Users} label="Total Contractors" value={stats.total.toLocaleString()} sub="Across CA" accent="var(--cf-primary)" />
-        <StatCard icon={MapPin} label="States Covered" value={String(stats.byState.length)} sub={stats.byState[0]?.[0] ?? '—'} accent="var(--cf-accent)" />
-        <StatCard icon={Building2} label="Trade Categories" value={String(stats.byType.length)} sub={stats.byType[0]?.[0] ?? '—'} accent="var(--cf-purple)" />
+        <StatCard icon={MapPin} label="States Covered" value={String(stats.states.length)} sub={stats.states[0]?.[0] ?? '—'} accent="var(--cf-accent)" />
+        <StatCard icon={Building2} label="Trade Categories" value={String(stats.trades.length)} sub={stats.trades[0]?.[0] ?? '—'} accent="var(--cf-purple)" />
         <StatCard icon={Bookmark} label="Saved Segments" value={String(segments.length)} sub="Reusable lists" accent="var(--cf-success)" />
       </div>
 
@@ -115,8 +115,8 @@ export default function Dashboard() {
             <h3 className="font-semibold">Contractors by Trade</h3>
           </div>
           <div className="space-y-3">
-            {stats.byType.map(([type, count]) => {
-              const max = stats.byType[0][1];
+            {stats.trades.map(([type, count]) => {
+              const max = stats.trades[0][1];
               const pct = (count / max) * 100;
               return (
                 <div key={type} className="flex items-center gap-3">
