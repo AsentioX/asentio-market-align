@@ -298,6 +298,14 @@ export const COM_SPACES: ComSpace[] = [
       { time: '1h ago', action: 'Maria Lopez entered' },
     ],
     suggestedActions: ['Switch to Closed at 7pm (12 on-site)'],
+    adaptiveState: {
+      current: 'business-hours',
+      label: 'Business hours',
+      confidence: 0.96,
+      enteredAt: '8:00am',
+      reason: '12 employees on-site · scheduled hours · all systems normal',
+      next: { state: 'Closing routine', etaMin: 350, reason: 'Auto-secure target 7:00pm' },
+    },
   },
   {
     id: 'warehouse',
@@ -319,6 +327,13 @@ export const COM_SPACES: ComSpace[] = [
       { time: '12m ago', action: 'Maria Lopez badge scan' },
     ],
     suggestedActions: ['Lock all doors + notify security', 'Review back-entry footage'],
+    adaptiveState: {
+      current: 'incident-response',
+      label: 'Incident response',
+      confidence: 0.91,
+      enteredAt: '2 min ago',
+      reason: 'After-hours back-entry trigger · no badge match',
+    },
   },
   {
     id: 'retail',
@@ -340,6 +355,14 @@ export const COM_SPACES: ComSpace[] = [
       { time: '2h ago', action: 'Alarm disarmed' },
     ],
     suggestedActions: ['Stage closing routine 7:50pm'],
+    adaptiveState: {
+      current: 'business-hours',
+      label: 'Business hours',
+      confidence: 0.93,
+      enteredAt: '10:00am',
+      reason: '4 staff on floor · normal traffic',
+      next: { state: 'Closing routine', etaMin: 590, reason: 'Closes at 8pm' },
+    },
   },
 ];
 
