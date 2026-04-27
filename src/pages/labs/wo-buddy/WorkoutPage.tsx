@@ -6,6 +6,7 @@ import { shareContent, buildWorkoutShareText } from './shareUtils';
 import CameraTrackingView from './CameraTrackingView';
 import ExerciseWidget, { TrackedExercise } from './ExerciseWidget';
 import WhyThisMatters from './WhyThisMatters';
+import AddExerciseWizard from './AddExerciseWizard';
 import { useWOBuddyWorkouts } from '@/hooks/useWOBuddy';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
 import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCategoryConfig } from './goalMappings';
