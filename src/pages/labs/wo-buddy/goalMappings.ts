@@ -87,20 +87,25 @@ export function getActivityInsight(activityName: string, goalNames: string[], dr
   };
 }
 
-// Generate smart coaching insights from goals and recent activity
+// Generate smart coaching insights from goals and recent activity.
+// DB statuses: 'active' | 'paused' | 'completed' | 'archived'.
+// "On track" / "at risk" are derived from progress %, not stored as statuses.
 export function generateInsights(goals: Array<{ name: string; category: string; status: string; current_value: number; target_value: number }>) {
   const insights: string[] = [];
 
-  const onTrack = goals.filter(g => g.status === 'on_track').length;
-  const atRisk = goals.filter(g => g.status === 'at_risk').length;
-  const achieved = goals.filter(g => g.status === 'achieved').length;
+  const completed = goals.filter(g => g.status === 'completed').length;
+  const active = goals.filter(g => g.status === 'active');
+  const pctFor = (g: { current_value: number; target_value: number }) =>
+    g.target_value > 0 ? (g.current_value / g.target_value) * 100 : 0;
+  const onTrack = active.filter(g => pctFor(g) >= 60 && pctFor(g) < 100).length;
+  const atRisk = active.filter(g => pctFor(g) < 40).length;
 
-  if (achieved > 0) insights.push(`🎉 You've achieved ${achieved} goal${achieved > 1 ? 's' : ''}! Keep the momentum going.`);
-  if (atRisk > 0) insights.push(`⚠️ ${atRisk} goal${atRisk > 1 ? 's are' : ' is'} at risk. Consider increasing training frequency.`);
+  if (completed > 0) insights.push(`🎉 You've completed ${completed} goal${completed > 1 ? 's' : ''}! Keep the momentum going.`);
+  if (atRisk > 0) insights.push(`⚠️ ${atRisk} goal${atRisk > 1 ? 's are' : ' is'} behind pace. Consider increasing training frequency.`);
   if (onTrack > 0) insights.push(`✅ ${onTrack} goal${onTrack > 1 ? 's are' : ' is'} on track. Your consistency is paying off.`);
 
-  goals.forEach(g => {
-    const pct = g.target_value > 0 ? Math.round((g.current_value / g.target_value) * 100) : 0;
+  active.forEach(g => {
+    const pct = Math.round(pctFor(g));
     if (pct >= 75 && pct < 100) insights.push(`📊 You're ${pct}% toward "${g.name}" — almost there!`);
   });
 
@@ -111,9 +116,10 @@ export function generateInsights(goals: Array<{ name: string; category: string; 
 
 export function getGoalStatusColor(status: string) {
   switch (status) {
-    case 'on_track': return { text: 'text-emerald-400', bg: 'bg-emerald-500/15', label: 'On Track' };
-    case 'at_risk': return { text: 'text-amber-400', bg: 'bg-amber-500/15', label: 'At Risk' };
-    case 'achieved': return { text: 'text-blue-400', bg: 'bg-blue-500/15', label: 'Achieved' };
+    case 'active': return { text: 'text-emerald-400', bg: 'bg-emerald-500/15', label: 'Active' };
+    case 'paused': return { text: 'text-amber-400', bg: 'bg-amber-500/15', label: 'Paused' };
+    case 'completed': return { text: 'text-blue-400', bg: 'bg-blue-500/15', label: 'Completed' };
+    case 'archived': return { text: 'text-white/40', bg: 'bg-white/5', label: 'Archived' };
     default: return { text: 'text-white/40', bg: 'bg-white/5', label: status };
   }
 }

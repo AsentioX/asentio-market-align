@@ -440,18 +440,10 @@ const WorkoutPage = () => {
         const newStatus = newVal >= g.target_value ? 'completed' : 'active';
         updateGoal(g.id, { current_value: newVal, status: newStatus });
       });
-    } else if (action === 'dismissed') {
-      const session = todayPlan!.sessions[sessionIdx];
-      const drivers = ACTIVITY_DRIVER_MAP[session.exercises[exIdx].name] || session.focusDrivers;
-      const impactedGoals = goals.filter(g =>
-        g.status === 'on_track' && g.drivers.some(d => drivers.includes(d))
-      );
-      impactedGoals.forEach(g => {
-        if (g.current_value < g.target_value * 0.7) {
-          updateGoal(g.id, { status: 'at_risk' });
-        }
-      });
     }
+    // Note: dismissing exercises no longer flips goal statuses to fake values
+    // ('on_track'/'at_risk' aren't real DB statuses). Status changes happen
+    // only when target_value is actually met → 'completed'.
   };
 
   const handleSubmit = async () => {

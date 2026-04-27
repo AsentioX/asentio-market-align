@@ -564,7 +564,8 @@ const GoalsPage = () => {
                         <input type="number" defaultValue={goal.current_value}
                           onBlur={e => {
                             const val = Number(e.target.value);
-                            const newStatus = val >= goal.target_value ? 'achieved' : val >= goal.target_value * 0.6 ? 'on_track' : 'at_risk';
+                            // DB statuses: active | paused | completed | archived
+                            const newStatus = val >= goal.target_value ? 'completed' : 'active';
                             updateGoal(goal.id, { current_value: val, status: newStatus });
                           }}
                           className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
