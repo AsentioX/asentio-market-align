@@ -532,29 +532,13 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             );
           })}
         </div>
-        {/* Mini trend bars */}
+        {/* Trend placeholder — we don't yet track historical body composition */}
         <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
           <div className="flex items-center justify-between text-[10px] text-white/30 mb-2">
             <span>Weight trend</span>
-            <span>{mockBodyTrend[0].date} → {bodyLatest.date}</span>
+            <span>Coming soon</span>
           </div>
-          <div className="flex items-end gap-1 h-12">
-            {mockBodyTrend.map((p, i) => {
-              const minW = Math.min(...mockBodyTrend.map(t => t.weight));
-              const maxW = Math.max(...mockBodyTrend.map(t => t.weight));
-              const range = maxW - minW || 1;
-              const pct = ((p.weight - minW) / range) * 100;
-              return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className="w-full rounded-t-md bg-gradient-to-t from-blue-500/40 to-blue-400/20 transition-all"
-                    style={{ height: `${20 + pct * 0.8}%` }}
-                  />
-                  <span className="text-[8px] text-white/30">{p.date}</span>
-                </div>
-              );
-            })}
-          </div>
+          <p className="text-xs text-white/40">Update your weight in Settings to start tracking body composition over time.</p>
         </div>
       </div>
         </div>
