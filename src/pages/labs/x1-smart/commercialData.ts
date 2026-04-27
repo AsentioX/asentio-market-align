@@ -6,6 +6,11 @@ export type ComSpaceMode = 'open' | 'closed' | 'after-hours' | 'maintenance' | '
 export type ComSpaceState = 'active' | 'secure' | 'alert';
 export type ComEventKind = 'identity' | 'security' | 'insight' | 'suggestion' | 'action' | 'anomaly';
 export type ComEventPriority = 'critical' | 'high' | 'normal' | 'low';
+export type ComActor = 'ai' | 'user' | 'system';
+export type ComTrust = 'trusted' | 'familiar' | 'unknown' | 'suspicious';
+export type ComAdaptiveState =
+  | 'business-hours' | 'after-hours-secure' | 'closing-routine'
+  | 'vendor-window' | 'maintenance' | 'incident-response';
 
 export interface ComFeedEvent {
   id: string;
@@ -20,6 +25,11 @@ export interface ComFeedEvent {
   reasoning?: string[];
   suggestedAction?: { label: string; impact: string };
   resolved?: boolean;
+  // Decision-Engine extensions
+  actor?: ComActor;
+  whyItMatters?: string;
+  pendingAction?: { label: string; countdownSec: number };
+  quickActions?: { label: string; intent: 'view' | 'lock' | 'ignore' | 'approve' }[];
 }
 
 export interface ComPerson {
@@ -38,6 +48,24 @@ export interface ComPerson {
   recentEvents: { time: string; action: string; zone?: string }[];
   badge?: string;
   expiresAt?: string;
+  // Trust + Intent extensions
+  trust: ComTrust;
+  intent?: string;
+  intentConfidence?: number;
+  visitFrequency?: string;
+  typicalTimes?: string;
+  anomalies?: string[];
+  whyXiActed?: { time: string; action: string; reason: string }[];
+  linkedAutomations?: { id: string; label: string }[];
+}
+
+export interface ComAdaptiveStateMeta {
+  current: ComAdaptiveState;
+  label: string;
+  confidence: number;
+  enteredAt: string;
+  reason: string;
+  next?: { state: string; etaMin: number; reason: string };
 }
 
 export interface ComSpace {
@@ -53,6 +81,32 @@ export interface ComSpace {
   activePolicies: string[];
   liveActivity: { time: string; action: string }[];
   suggestedActions: string[];
+  adaptiveState?: ComAdaptiveStateMeta;
+  stateTimeline?: { state: string; from: string; to: string }[];
+}
+
+// Outcome-based goals (commercial)
+export interface ComGoal {
+  id: string;
+  title: string;
+  description: string;
+  icon: 'shield' | 'sun' | 'leaf' | 'sparkles';
+  basedOn: string;
+  generatedRules: {
+    label: string;
+    confidence: number;
+    reasoning: string;
+    impact: ('security' | 'energy' | 'convenience')[];
+    enabled: boolean;
+  }[];
+}
+
+export interface ComInsight {
+  id: string;
+  headline: string;
+  detail: string;
+  trend: 'up' | 'down' | 'flat';
+  metric: string;
 }
 
 export type ComRuleCategory = 'security' | 'environment';
