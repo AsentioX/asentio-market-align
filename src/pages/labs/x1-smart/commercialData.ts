@@ -556,3 +556,64 @@ export const COM_FEED: ComFeedEvent[] = [
     resolved: true,
   },
 ];
+
+export const COM_GOALS: ComGoal[] = [
+  {
+    id: 'cg-secure-sites',
+    title: 'Keep all sites secure after hours',
+    description: 'Lock down on time, watch for unauthorized entries, escalate fast.',
+    icon: 'shield',
+    basedOn: '30 nights of closing behavior',
+    generatedRules: [
+      { label: 'Auto-secure all sites at 8:00pm', confidence: 0.93, reasoning: 'Sites consistently close 7:55–8:10pm', impact: ['security'], enabled: false },
+      { label: 'Lock perimeter on after-hours motion + no badge', confidence: 0.96, reasoning: 'Pattern matches incident response protocol', impact: ['security'], enabled: true },
+      { label: 'Notify on-call within 30s of critical alert', confidence: 0.98, reasoning: 'Response time SLA', impact: ['security'], enabled: true },
+    ],
+  },
+  {
+    id: 'cg-energy',
+    title: 'Cut HVAC + lighting waste',
+    description: 'Match energy use to actual occupancy without comfort complaints.',
+    icon: 'leaf',
+    basedOn: '4 weeks of zone occupancy data',
+    generatedRules: [
+      { label: 'Reduce HVAC in zones < 25% occupied for 30 min', confidence: 0.86, reasoning: 'Conf A wasted 12 hrs/week last month', impact: ['energy'], enabled: false },
+      { label: 'Release conf room booking after 15 min idle', confidence: 0.82, reasoning: 'Recovers ~8 hrs/week of bookings', impact: ['energy', 'convenience'], enabled: false },
+    ],
+  },
+  {
+    id: 'cg-vendor',
+    title: 'Smooth vendor & visitor flow',
+    description: 'Pre-stage access, escort visitors, auto-expire credentials.',
+    icon: 'sparkles',
+    basedOn: '60 vendor visits this quarter',
+    generatedRules: [
+      { label: 'Pre-stage escorted access on vendor approach', confidence: 0.91, reasoning: 'Saves ~3 min per visit', impact: ['convenience'], enabled: true },
+      { label: 'Auto-expire visitor badges at scheduled end', confidence: 0.99, reasoning: 'Compliance + zero manual cleanup', impact: ['security'], enabled: true },
+    ],
+  },
+];
+
+export const COM_INSIGHTS: ComInsight[] = [
+  {
+    id: 'ci-1',
+    headline: 'Warehouse back-entry incidents up 2× this week',
+    detail: 'Two unbadged triggers in 7 days vs zero baseline. Recommend camera review.',
+    trend: 'up',
+    metric: '2×',
+  },
+  {
+    id: 'ci-2',
+    headline: 'Conference A is booked 3× more than used',
+    detail: '18 hrs booked, 6 hrs occupied. HVAC ran the full 18.',
+    trend: 'up',
+    metric: '3:1',
+  },
+  {
+    id: 'ci-3',
+    headline: 'HVAC spend down 22% across all sites',
+    detail: 'Adaptive policies + occupancy-aware ramping. No comfort complaints.',
+    trend: 'down',
+    metric: '−22%',
+  },
+];
