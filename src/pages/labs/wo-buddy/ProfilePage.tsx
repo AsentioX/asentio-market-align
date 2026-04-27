@@ -15,6 +15,11 @@ import {
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
   const { user, wobuddyUser, signOut, refreshWOBuddyUser } = useWOBuddyAuth();
+  const { workoutCount } = useWOBuddyStats();
+  const memberSince = wobuddyUser?.created_at
+    ? new Date(wobuddyUser.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    : '—';
+  const level = Math.max(1, Math.floor(workoutCount / 10) + 1);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingName, setEditingName] = useState(false);
