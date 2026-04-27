@@ -98,6 +98,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const insights = generateInsights(goals);
   const { wobuddyUser } = useWOBuddyAuth();
   const { weather } = useLocalWeather();
+  const { profile } = useWOBuddyProfile();
+  const { overviews, exerciseStats, weeklyMinutes, todayScore } = useWOBuddyStats();
 
   // Sun countdown timer
   const [sunCountdown, setSunCountdown] = useState('');
