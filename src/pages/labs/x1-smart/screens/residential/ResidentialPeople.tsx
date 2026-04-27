@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Smartphone, Shield, Activity, X, Clock, Zap, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, AlertTriangle, Workflow } from 'lucide-react';
+import { ChevronRight, Smartphone, Shield, Activity, X, Clock, Zap, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, AlertTriangle, Workflow, Video } from 'lucide-react';
 import { RES_PEOPLE, type ResPerson, type ResPresence, type ResTrust } from '../../residentialData';
 import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
+import CameraModal from '../CameraModal';
 
 const PRESENCE_META: Record<ResPresence, { label: string; dot: string; text: string; soft: string }> = {
   home: { label: 'Home', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
@@ -32,6 +33,7 @@ const TRUST_META: Record<ResTrust, { label: string; cls: string; icon: any }> = 
 
 const ResidentialPeople = () => {
   const [selected, setSelected] = useState<ResPerson | null>(null);
+  const [cameraFor, setCameraFor] = useState<ResPerson | null>(null);
 
   return (
     <div className="space-y-6">
