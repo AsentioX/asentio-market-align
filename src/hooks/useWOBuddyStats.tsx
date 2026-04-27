@@ -26,6 +26,18 @@ export interface ExerciseStat {
 
 export interface BodyTrendPoint { date: string; weight: number; bodyFat: number; muscleMass: number; }
 
+export interface PersonalRecord {
+  exerciseName: string;
+  type: 'strength' | 'cardio' | 'bodyweight';
+  icon: string;
+  /** Human-readable PR value, e.g. "225 lbs", "12.4 km", "120 reps" */
+  value: string;
+  /** Short label for the metric, e.g. "Max Weight", "Longest Distance", "Most Reps" */
+  label: string;
+  /** ISO date string when the PR was set */
+  achievedAt: string;
+}
+
 const KM_TO_MI = 0.621371;
 
 const ICON_BY_NAME: Record<string, string> = {
