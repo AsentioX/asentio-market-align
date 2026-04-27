@@ -140,6 +140,43 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
         </div>
       </div>
 
+      {/* Pinned insights */}
+      {insights.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {insights.slice(0, 2).map((ins) => {
+            const Trend = ins.trend === 'down' ? TrendingDown : TrendingUp;
+            const trendCls = ins.trend === 'up'
+              ? 'text-amber-700 bg-amber-50 border-amber-200'
+              : 'text-emerald-700 bg-emerald-50 border-emerald-200';
+            return (
+              <motion.div
+                key={ins.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative rounded-2xl bg-white border border-violet-100 p-4 overflow-hidden shadow-sm"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-violet-200/40 to-fuchsia-100/30 rounded-full blur-2xl -translate-y-10 translate-x-8" />
+                <div className="relative flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-md shrink-0">
+                    <Sparkles className="w-4 h-4 text-white" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] uppercase tracking-wider font-bold text-violet-700">Insight</span>
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${trendCls}`}>
+                        <Trend className="w-2.5 h-2.5" /> {ins.metric}
+                      </span>
+                    </div>
+                    <h3 className="text-[14px] font-semibold text-stone-900 mt-1 leading-snug">{ins.headline}</h3>
+                    <p className="text-[12px] text-stone-600 mt-1 leading-relaxed">{ins.detail}</p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Category Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CategoryTab)} className="w-full">
         <TabsList className="w-full bg-stone-100/80 p-1 h-auto flex">
