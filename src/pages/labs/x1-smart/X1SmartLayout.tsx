@@ -83,7 +83,7 @@ const X1SmartLayoutInner = () => {
       />
 
       {/* Top bar */}
-      <header className="relative z-10 border-b border-black/[0.06] backdrop-blur-xl bg-white/60 sticky top-0">
+      <header className="relative z-30 border-b border-black/[0.06] backdrop-blur-xl bg-white/60 sticky top-0">
         <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-4">
             <Link to="/labs" className="flex items-center gap-1.5 text-stone-500 hover:text-stone-900 text-sm transition-colors">
@@ -239,8 +239,8 @@ const AutonomyChip = ({ level, onChange }: { level: AutonomyLevel; onChange: (l:
       </button>
       {open && (
         <>
-          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-black/[0.08] shadow-xl z-40 p-2">
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white border border-black/[0.08] shadow-2xl z-50 p-2 overflow-hidden">
             {AUTONOMY_LEVELS.map((l) => (
               <button
                 key={l.value}
@@ -250,7 +250,7 @@ const AutonomyChip = ({ level, onChange }: { level: AutonomyLevel; onChange: (l:
                 }`}
               >
                 <div className={`text-[13px] font-bold ${l.value === level ? 'text-violet-700' : 'text-stone-900'}`}>{l.label}</div>
-                <div className="text-[11px] text-stone-500 mt-0.5">{l.description}</div>
+                <div className="text-[11px] text-stone-500 mt-0.5 leading-snug">{l.description}</div>
               </button>
             ))}
           </div>
