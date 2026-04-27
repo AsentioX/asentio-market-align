@@ -57,6 +57,12 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
       tier: m.tier ?? '',
       brand_color: m.brand_color,
       renewal_date: m.renewal_date,
+      reward_rates: m.reward_rates ?? {},
+      base_rate: m.base_rate ?? 1,
+      points_value_cents: m.points_value_cents ?? 1,
+      rewards_currency: m.rewards_currency ?? 'cashback',
+      card_type: m.card_type ?? null,
+      category: m.category,
     });
   };
 
