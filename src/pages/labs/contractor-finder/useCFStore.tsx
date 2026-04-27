@@ -134,11 +134,14 @@ export function CFProvider({ children }: { children: ReactNode }) {
       let list = state.contractors;
       if (f.query) {
         const q = f.query.toLowerCase();
+        const qDigits = q.replace(/\D/g, '');
         list = list.filter(
           (c) =>
             c.company_name.toLowerCase().includes(q) ||
             c.contractor_type.toLowerCase().includes(q) ||
             c.city.toLowerCase().includes(q) ||
+            (c.license_number ?? '').toLowerCase().includes(q) ||
+            (qDigits.length > 0 && (c.license_number ?? '').replace(/\D/g, '').includes(qDigits)) ||
             c.specialties.some((s) => s.toLowerCase().includes(q)) ||
             c.tags.some((t) => t.toLowerCase().includes(q))
         );

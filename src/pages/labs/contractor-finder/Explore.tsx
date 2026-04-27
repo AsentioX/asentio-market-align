@@ -215,7 +215,7 @@ export default function Explore() {
                 <input
                   value={filters.query ?? ''}
                   onChange={(e) => setFilters({ ...filters, query: e.target.value })}
-                  placeholder="Company, city, tag…"
+                  placeholder="Company, license #, city, tag…"
                   className="w-full text-sm pl-8 pr-2 py-2 rounded-md outline-none focus:border-[hsl(var(--cf-primary))]"
                   style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px solid hsl(var(--cf-border))' }}
                 />
