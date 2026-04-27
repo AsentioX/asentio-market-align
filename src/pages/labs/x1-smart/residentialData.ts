@@ -5,6 +5,11 @@ export type ResHomeMode = 'home' | 'away' | 'night' | 'vacation';
 export type ResSpaceState = 'active' | 'secure' | 'alert';
 export type ResEventKind = 'identity' | 'security' | 'insight' | 'suggestion' | 'action' | 'anomaly';
 export type ResEventPriority = 'critical' | 'high' | 'normal' | 'low';
+export type ResActor = 'ai' | 'user' | 'system';
+export type ResTrust = 'trusted' | 'familiar' | 'unknown' | 'suspicious';
+export type ResAdaptiveState =
+  | 'morning-ramp' | 'daytime-quiet' | 'evening-winddown' | 'quiet-night'
+  | 'hosting-guests' | 'away-secure' | 'away-expecting-delivery' | 'vacation-secure';
 
 export interface ResFeedEvent {
   id: string;
@@ -19,6 +24,11 @@ export interface ResFeedEvent {
   reasoning?: string[];
   suggestedAction?: { label: string; impact: string };
   resolved?: boolean;
+  // Decision-Engine extensions
+  actor?: ResActor;
+  whyItMatters?: string;
+  pendingAction?: { label: string; countdownSec: number };
+  quickActions?: { label: string; intent: 'view' | 'lock' | 'ignore' | 'approve' }[];
 }
 
 export interface ResPerson {
@@ -31,11 +41,29 @@ export interface ResPerson {
   lastSeen: string;
   lastLocation: string;
   permissions: string[];
-  accessWindow?: string; // for guests/vendors
-  triggers: string[]; // automation triggers tied to this person
+  accessWindow?: string;
+  triggers: string[];
   recentActivity: { time: string; action: string }[];
   patterns: string[];
   devices: string[];
+  // Trust + Intent extensions
+  trust: ResTrust;
+  intent?: string;
+  intentConfidence?: number;
+  visitFrequency?: string;
+  typicalTimes?: string;
+  anomalies?: string[];
+  whyXiActed?: { time: string; action: string; reason: string }[];
+  linkedAutomations?: { id: string; label: string }[];
+}
+
+export interface ResAdaptiveStateMeta {
+  current: ResAdaptiveState;
+  label: string;
+  confidence: number;
+  enteredAt: string;
+  reason: string;
+  next?: { state: string; etaMin: number; reason: string };
 }
 
 export interface ResSpace {
@@ -49,6 +77,34 @@ export interface ResSpace {
   rooms: { name: string; activity: 'active' | 'idle'; sensors: number }[];
   activeAutomations: string[];
   suggestedActions: string[];
+  // Adaptive-state extension
+  adaptiveState?: ResAdaptiveStateMeta;
+  stateTimeline?: { state: string; from: string; to: string }[];
+}
+
+// Outcome-based goals
+export interface ResGoal {
+  id: string;
+  title: string;
+  description: string;
+  icon: 'shield' | 'sun' | 'leaf' | 'sparkles';
+  basedOn: string; // "23 nights of behavior"
+  generatedRules: {
+    label: string;
+    confidence: number;
+    reasoning: string;
+    impact: ('security' | 'energy' | 'convenience')[];
+    enabled: boolean;
+  }[];
+}
+
+// Memory / timeline insights
+export interface ResInsight {
+  id: string;
+  headline: string;
+  detail: string;
+  trend: 'up' | 'down' | 'flat';
+  metric: string; // "+40%"
 }
 
 export type ResRuleCategory = 'atmosphere' | 'security' | 'environment' | 'resident' | 'guest';
@@ -86,6 +142,18 @@ export const RES_PEOPLE: ResPerson[] = [
     ],
     patterns: ['Home by 6:45pm on weekdays', 'Locks doors at 10pm', 'Coffee scene at 7am'],
     devices: ['iPhone 17 Pro', 'Apple Watch Ultra', 'Tesla Model Y'],
+    trust: 'trusted',
+    intent: 'Settling in for the evening',
+    intentConfidence: 0.94,
+    visitFrequency: 'Daily',
+    typicalTimes: 'Home 6:45pm · leaves 8:15am',
+    whyXiActed: [
+      { time: '2m ago', action: 'Unlocked front door automatically', reason: 'Face match 99% · expected arrival window' },
+    ],
+    linkedAutomations: [
+      { id: 'r-res-1', label: 'Welcome Jon home' },
+      { id: 'r-sec-3', label: 'Auto-lock at 10pm (suggested)' },
+    ],
   },
   {
     id: 'sarah',
@@ -104,6 +172,12 @@ export const RES_PEOPLE: ResPerson[] = [
     ],
     patterns: ['Returns ~6pm', 'Yoga scene Tue/Thu 7am'],
     devices: ['iPhone 16', 'Apple Watch S10'],
+    trust: 'trusted',
+    intent: 'Likely arriving home',
+    intentConfidence: 0.92,
+    visitFrequency: 'Daily',
+    typicalTimes: 'Home ~6pm · leaves 8:30am',
+    linkedAutomations: [{ id: 'r-res-2', label: 'Sarah arrival prep' }],
   },
   {
     id: 'maya',
@@ -123,6 +197,12 @@ export const RES_PEOPLE: ResPerson[] = [
     ],
     patterns: ['First-time guest'],
     devices: ['Temporary code #4471'],
+    trust: 'familiar',
+    intent: 'Awaiting check-in Friday',
+    intentConfidence: 0.78,
+    visitFrequency: 'First visit',
+    typicalTimes: 'Access window: Fri 3pm → Sun 11am',
+    linkedAutomations: [{ id: 'r-gst-1', label: 'Guest check-in handoff' }],
   },
   {
     id: 'fedex',
@@ -142,6 +222,12 @@ export const RES_PEOPLE: ResPerson[] = [
     ],
     patterns: ['Recurring weekday deliveries'],
     devices: ['Vendor profile #DLV-FDX'],
+    trust: 'familiar',
+    intent: 'Likely delivering package',
+    intentConfidence: 0.96,
+    visitFrequency: '3× this week',
+    typicalTimes: 'Mon–Fri, 11am–3pm',
+    linkedAutomations: [{ id: 'r-gst-2', label: 'FedEx porch drop' }],
   },
   {
     id: 'unknown',
@@ -160,6 +246,17 @@ export const RES_PEOPLE: ResPerson[] = [
     ],
     patterns: ['First sighting — flagged for review'],
     devices: ['No paired devices'],
+    trust: 'suspicious',
+    intent: 'Unclear — no knock or interaction',
+    intentConfidence: 0.42,
+    visitFrequency: 'First sighting',
+    typicalTimes: 'Outside expected delivery windows',
+    anomalies: ['First nighttime visit', 'Lingered 47s without knocking', 'Avoided the front camera'],
+    whyXiActed: [
+      { time: '3m ago', action: 'Saved 30s clip to watchlist', reason: 'Dwell time exceeded 30s threshold' },
+      { time: '3m ago', action: 'Pinged Jon\'s phone with alert', reason: 'No identity match · no expected appointment' },
+    ],
+    linkedAutomations: [{ id: 'r-sec-1', label: 'Stranger danger' }],
   },
 ];
 
@@ -182,6 +279,19 @@ export const RES_SPACES: ResSpace[] = [
     ],
     activeAutomations: ['Evening scene · 7:42pm', 'Sarah arrival prep · ETA 2min'],
     suggestedActions: ['Switch to Night mode at 10pm', 'Lock back door (open 4m)'],
+    adaptiveState: {
+      current: 'evening-winddown',
+      label: 'Evening wind-down',
+      confidence: 0.87,
+      enteredAt: '7:12pm',
+      reason: 'Sunset + Jon home + TV on',
+      next: { state: 'Quiet night', etaMin: 168, reason: 'You usually retire by 10:30pm' },
+    },
+    stateTimeline: [
+      { state: 'Away · secure', from: '8:15a', to: '6:42p' },
+      { state: 'Welcoming', from: '6:42p', to: '7:12p' },
+      { state: 'Evening wind-down', from: '7:12p', to: 'now' },
+    ],
   },
   {
     id: 'vacation',
@@ -198,6 +308,14 @@ export const RES_SPACES: ResSpace[] = [
     ],
     activeAutomations: ['Lights randomized', 'Eco HVAC', 'Heightened alerts'],
     suggestedActions: ['Pre-arrival warm-up Sat 2pm'],
+    adaptiveState: {
+      current: 'vacation-secure',
+      label: 'Vacation · secure',
+      confidence: 0.96,
+      enteredAt: '6 days ago',
+      reason: 'No one present + calendar shows Aspen trip Sat',
+      next: { state: 'Pre-arrival warm-up', etaMin: 1440, reason: 'Trip starts Saturday 2pm' },
+    },
   },
   {
     id: 'rental',
@@ -214,6 +332,14 @@ export const RES_SPACES: ResSpace[] = [
     ],
     activeAutomations: ['Awaiting guest check-in Fri 3pm'],
     suggestedActions: ['Send Maya welcome code 1hr before arrival'],
+    adaptiveState: {
+      current: 'away-expecting-delivery',
+      label: 'Away · expecting guest',
+      confidence: 0.91,
+      enteredAt: '6 days ago',
+      reason: 'No presence + Maya check-in scheduled Fri 3pm',
+      next: { state: 'Hosting guests', etaMin: 2700, reason: 'Maya arrives Friday' },
+    },
   },
 ];
 
@@ -361,6 +487,28 @@ export const RES_RULES: ResRule[] = [
 
 export const RES_FEED: ResFeedEvent[] = [
   {
+    id: 'r-e0',
+    kind: 'action',
+    priority: 'critical',
+    title: 'Locking back door — open 4 minutes',
+    detail: 'Back door has been open since 7:38pm. No motion in the area for 90 seconds.',
+    spaceId: 'primary',
+    timestamp: 'Now',
+    confidence: 0.92,
+    actor: 'ai',
+    whyItMatters: 'An open door at night is your top security risk — and you almost always lock it manually within 5 min.',
+    reasoning: [
+      'Door open 4m 12s — well past your 2 min average',
+      'No motion in 90s · likely forgotten',
+      'You are home (presence verified) and have locked it manually 23/30 nights',
+    ],
+    pendingAction: { label: 'Lock back door', countdownSec: 30 },
+    quickActions: [
+      { label: 'View camera', intent: 'view' },
+      { label: 'Lock now', intent: 'lock' },
+    ],
+  },
+  {
     id: 'r-e1',
     kind: 'identity',
     priority: 'normal',
@@ -370,6 +518,8 @@ export const RES_FEED: ResFeedEvent[] = [
     personId: 'jon',
     timestamp: '2 min ago',
     confidence: 0.99,
+    actor: 'ai',
+    whyItMatters: 'Your evening routine is starting on time — nothing to do.',
     resolved: true,
   },
   {
@@ -382,12 +532,19 @@ export const RES_FEED: ResFeedEvent[] = [
     personId: 'unknown',
     timestamp: '8 min ago',
     confidence: 0.78,
+    actor: 'ai',
+    whyItMatters: 'Loitering at a back door without a knock is a strong burglary precursor.',
     reasoning: [
       'Face not in identity library',
       'Dwell time exceeded 30s threshold',
       'No expected delivery or appointment',
     ],
     suggestedAction: { label: 'Add to watchlist + save clip', impact: 'Future sightings auto-flagged' },
+    quickActions: [
+      { label: 'View camera', intent: 'view' },
+      { label: 'Lock all doors', intent: 'lock' },
+      { label: 'Label person', intent: 'ignore' },
+    ],
   },
   {
     id: 'r-e3',
@@ -399,6 +556,8 @@ export const RES_FEED: ResFeedEvent[] = [
     personId: 'sarah',
     timestamp: '3 min ago',
     confidence: 0.97,
+    actor: 'ai',
+    whyItMatters: 'Sarah\'s arrival prep is staged — no input needed.',
   },
   {
     id: 'r-e4',
@@ -409,6 +568,8 @@ export const RES_FEED: ResFeedEvent[] = [
     spaceId: 'primary',
     timestamp: '12 min ago',
     confidence: 0.88,
+    actor: 'ai',
+    whyItMatters: 'Forgetting once leaves the house unlocked all night — this routine eliminates the risk.',
     reasoning: [
       'Pattern detected over 30-day window',
       '23/30 nights between 9:55–10:10pm',
@@ -426,6 +587,7 @@ export const RES_FEED: ResFeedEvent[] = [
     personId: 'fedex',
     timestamp: '34 min ago',
     confidence: 0.96,
+    actor: 'ai',
     resolved: true,
   },
   {
@@ -437,6 +599,7 @@ export const RES_FEED: ResFeedEvent[] = [
     spaceId: 'primary',
     timestamp: '1 hr ago',
     confidence: 0.82,
+    actor: 'system',
   },
   {
     id: 'r-e7',
@@ -447,6 +610,8 @@ export const RES_FEED: ResFeedEvent[] = [
     spaceId: 'rental',
     timestamp: '2 hr ago',
     confidence: 0.94,
+    actor: 'ai',
+    whyItMatters: 'Vacation mode randomizes lights and heightens alerts — recommended before guest arrival.',
     suggestedAction: { label: 'Enable vacation mode', impact: 'Lights randomized, alerts heightened, eco HVAC' },
   },
   {
@@ -458,6 +623,71 @@ export const RES_FEED: ResFeedEvent[] = [
     spaceId: 'vacation',
     timestamp: '4 hr ago',
     confidence: 0.9,
+    actor: 'ai',
     resolved: true,
   },
 ];
+
+export const RES_GOALS: ResGoal[] = [
+  {
+    id: 'g-secure-night',
+    title: 'Keep my home secure at night',
+    description: 'Lock down, watch for strangers, and alert me only when it matters.',
+    icon: 'shield',
+    basedOn: '23 nights of behavior',
+    generatedRules: [
+      { label: 'Lock all doors at 10:00pm', confidence: 0.92, reasoning: 'You\'ve done this manually 23/30 nights', impact: ['security'], enabled: true },
+      { label: 'Arm cameras when last person leaves', confidence: 0.88, reasoning: 'Matches your "Away" pattern 28/30 days', impact: ['security'], enabled: true },
+      { label: 'Alert on unknown faces after dark', confidence: 0.95, reasoning: 'Zero false positives in last 14 nights', impact: ['security'], enabled: false },
+    ],
+  },
+  {
+    id: 'g-smooth-mornings',
+    title: 'Make mornings smooth',
+    description: 'Coffee scene, news, and the right lights — without me lifting a finger.',
+    icon: 'sun',
+    basedOn: '30 weekday mornings',
+    generatedRules: [
+      { label: 'Coffee scene at 7:00am weekdays', confidence: 0.91, reasoning: 'Triggered manually 27/30 weekdays at 6:55–7:05am', impact: ['convenience'], enabled: true },
+      { label: 'Raise blinds at sunrise', confidence: 0.83, reasoning: 'Done by Jon within 10 min of sunrise', impact: ['convenience'], enabled: false },
+      { label: 'Brief news on kitchen speaker', confidence: 0.79, reasoning: 'Spotify "Daily" played 22/30 mornings', impact: ['convenience'], enabled: false },
+    ],
+  },
+  {
+    id: 'g-energy',
+    title: 'Optimize energy usage',
+    description: 'Cut HVAC and lighting waste without making the house uncomfortable.',
+    icon: 'leaf',
+    basedOn: '4 weeks of HVAC + sensor data',
+    generatedRules: [
+      { label: 'Eco HVAC when home is empty > 20 min', confidence: 0.94, reasoning: 'Already saving 18% — extending threshold saves another 6%', impact: ['energy'], enabled: true },
+      { label: 'Pre-cool before forecast heatwaves', confidence: 0.79, reasoning: 'Off-peak rates + thermal mass model', impact: ['energy'], enabled: false },
+      { label: 'Daylight-harvest dimming in living room', confidence: 0.86, reasoning: 'South-facing — sensors confirm 60% lux on sunny days', impact: ['energy', 'convenience'], enabled: true },
+    ],
+  },
+];
+
+export const RES_INSIGHTS: ResInsight[] = [
+  {
+    id: 'ri-1',
+    headline: 'Back-door activity is up 40% this week',
+    detail: 'Mostly between 8–11pm. Two unrecognized faces. I\'m watching for a pattern.',
+    trend: 'up',
+    metric: '+40%',
+  },
+  {
+    id: 'ri-2',
+    headline: 'You\'ve been arriving home 35 min later than usual',
+    detail: 'Average arrival shifted from 6:45pm to 7:20pm over the last 7 days.',
+    trend: 'up',
+    metric: '+35m',
+  },
+  {
+    id: 'ri-3',
+    headline: 'No false alarms triggered this month',
+    detail: 'Recognition accuracy hit 99.2% — best month since installation.',
+    trend: 'down',
+    metric: '0',
+  },
+];
+

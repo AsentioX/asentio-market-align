@@ -6,6 +6,11 @@ export type ComSpaceMode = 'open' | 'closed' | 'after-hours' | 'maintenance' | '
 export type ComSpaceState = 'active' | 'secure' | 'alert';
 export type ComEventKind = 'identity' | 'security' | 'insight' | 'suggestion' | 'action' | 'anomaly';
 export type ComEventPriority = 'critical' | 'high' | 'normal' | 'low';
+export type ComActor = 'ai' | 'user' | 'system';
+export type ComTrust = 'trusted' | 'familiar' | 'unknown' | 'suspicious';
+export type ComAdaptiveState =
+  | 'business-hours' | 'after-hours-secure' | 'closing-routine'
+  | 'vendor-window' | 'maintenance' | 'incident-response';
 
 export interface ComFeedEvent {
   id: string;
@@ -20,6 +25,11 @@ export interface ComFeedEvent {
   reasoning?: string[];
   suggestedAction?: { label: string; impact: string };
   resolved?: boolean;
+  // Decision-Engine extensions
+  actor?: ComActor;
+  whyItMatters?: string;
+  pendingAction?: { label: string; countdownSec: number };
+  quickActions?: { label: string; intent: 'view' | 'lock' | 'ignore' | 'approve' }[];
 }
 
 export interface ComPerson {
@@ -38,6 +48,24 @@ export interface ComPerson {
   recentEvents: { time: string; action: string; zone?: string }[];
   badge?: string;
   expiresAt?: string;
+  // Trust + Intent extensions
+  trust: ComTrust;
+  intent?: string;
+  intentConfidence?: number;
+  visitFrequency?: string;
+  typicalTimes?: string;
+  anomalies?: string[];
+  whyXiActed?: { time: string; action: string; reason: string }[];
+  linkedAutomations?: { id: string; label: string }[];
+}
+
+export interface ComAdaptiveStateMeta {
+  current: ComAdaptiveState;
+  label: string;
+  confidence: number;
+  enteredAt: string;
+  reason: string;
+  next?: { state: string; etaMin: number; reason: string };
 }
 
 export interface ComSpace {
@@ -53,6 +81,32 @@ export interface ComSpace {
   activePolicies: string[];
   liveActivity: { time: string; action: string }[];
   suggestedActions: string[];
+  adaptiveState?: ComAdaptiveStateMeta;
+  stateTimeline?: { state: string; from: string; to: string }[];
+}
+
+// Outcome-based goals (commercial)
+export interface ComGoal {
+  id: string;
+  title: string;
+  description: string;
+  icon: 'shield' | 'sun' | 'leaf' | 'sparkles';
+  basedOn: string;
+  generatedRules: {
+    label: string;
+    confidence: number;
+    reasoning: string;
+    impact: ('security' | 'energy' | 'convenience')[];
+    enabled: boolean;
+  }[];
+}
+
+export interface ComInsight {
+  id: string;
+  headline: string;
+  detail: string;
+  trend: 'up' | 'down' | 'flat';
+  metric: string;
 }
 
 export type ComRuleCategory = 'security' | 'environment';
@@ -88,6 +142,11 @@ export const COM_PEOPLE: ComPerson[] = [
       { time: '1h ago', action: 'Entered Office HQ', zone: 'Office HQ' },
       { time: '8:02a', action: 'Clocked in', zone: 'Office HQ' },
     ],
+    trust: 'trusted',
+    intent: 'Operations rounds — Warehouse to Office',
+    intentConfidence: 0.93,
+    visitFrequency: 'Daily',
+    typicalTimes: 'Mon–Fri, 8a–6p',
   },
   {
     id: 'james',
@@ -107,6 +166,11 @@ export const COM_PEOPLE: ComPerson[] = [
       { time: '2h ago', action: 'Opened retail location', zone: 'Retail' },
       { time: '9:58a', action: 'Disarmed alarm', zone: 'Retail' },
     ],
+    trust: 'trusted',
+    intent: 'Working the retail floor',
+    intentConfidence: 0.97,
+    visitFrequency: '5× weekly',
+    typicalTimes: 'Tue–Sat, 10a–7p',
   },
   {
     id: 'cleaning',
@@ -127,6 +191,11 @@ export const COM_PEOPLE: ComPerson[] = [
       { time: 'Yesterday 10:42p', action: 'Exited Office HQ', zone: 'Office HQ' },
       { time: 'Yesterday 8:01p', action: 'Entered Office HQ via vendor entry', zone: 'Office HQ' },
     ],
+    trust: 'familiar',
+    intent: 'Off-site until next shift',
+    intentConfidence: 0.88,
+    visitFrequency: '3 nights/week',
+    typicalTimes: 'Mon/Wed/Fri 8p–11p',
   },
   {
     id: 'hvac',
@@ -147,6 +216,11 @@ export const COM_PEOPLE: ComPerson[] = [
       { time: '3m ago', action: 'Approaching Warehouse — appointment matches' },
       { time: '2 days ago', action: 'Background check verified' },
     ],
+    trust: 'familiar',
+    intent: 'HVAC service call — Mechanical room',
+    intentConfidence: 0.91,
+    visitFrequency: 'First on-site visit',
+    typicalTimes: 'Today only · 2p–4p',
   },
   {
     id: 'visitor',
@@ -167,6 +241,11 @@ export const COM_PEOPLE: ComPerson[] = [
       { time: '20m ago', action: 'Checked in at reception' },
       { time: '21m ago', action: 'Pre-registered by Maria Lopez' },
     ],
+    trust: 'familiar',
+    intent: 'Investor meeting — Conference A',
+    intentConfidence: 0.94,
+    visitFrequency: 'First visit',
+    typicalTimes: 'Today · 11a–12:30p',
   },
   {
     id: 'unauthorized',
@@ -184,6 +263,15 @@ export const COM_PEOPLE: ComPerson[] = [
     recentEvents: [
       { time: '2m ago', action: 'Door triggered after hours · no badge scan' },
       { time: '3m ago', action: 'Loitered near back entry 47s' },
+    ],
+    trust: 'suspicious',
+    intent: 'Unclear — testing entry without scan',
+    intentConfidence: 0.38,
+    visitFrequency: 'First sighting',
+    anomalies: ['After-hours triggering', 'No badge present', 'Avoided front camera'],
+    whyXiActed: [
+      { time: '2m ago', action: 'Locked perimeter doors', reason: 'Unauthorized entry pattern + after-hours window' },
+      { time: '2m ago', action: 'Notified on-call security', reason: 'Critical priority threshold met' },
     ],
   },
 ];
@@ -210,6 +298,14 @@ export const COM_SPACES: ComSpace[] = [
       { time: '1h ago', action: 'Maria Lopez entered' },
     ],
     suggestedActions: ['Switch to Closed at 7pm (12 on-site)'],
+    adaptiveState: {
+      current: 'business-hours',
+      label: 'Business hours',
+      confidence: 0.96,
+      enteredAt: '8:00am',
+      reason: '12 employees on-site · scheduled hours · all systems normal',
+      next: { state: 'Closing routine', etaMin: 350, reason: 'Auto-secure target 7:00pm' },
+    },
   },
   {
     id: 'warehouse',
@@ -231,6 +327,13 @@ export const COM_SPACES: ComSpace[] = [
       { time: '12m ago', action: 'Maria Lopez badge scan' },
     ],
     suggestedActions: ['Lock all doors + notify security', 'Review back-entry footage'],
+    adaptiveState: {
+      current: 'incident-response',
+      label: 'Incident response',
+      confidence: 0.91,
+      enteredAt: '2 min ago',
+      reason: 'After-hours back-entry trigger · no badge match',
+    },
   },
   {
     id: 'retail',
@@ -252,6 +355,14 @@ export const COM_SPACES: ComSpace[] = [
       { time: '2h ago', action: 'Alarm disarmed' },
     ],
     suggestedActions: ['Stage closing routine 7:50pm'],
+    adaptiveState: {
+      current: 'business-hours',
+      label: 'Business hours',
+      confidence: 0.93,
+      enteredAt: '10:00am',
+      reason: '4 staff on floor · normal traffic',
+      next: { state: 'Closing routine', etaMin: 590, reason: 'Closes at 8pm' },
+    },
   },
 ];
 
@@ -443,5 +554,66 @@ export const COM_FEED: ComFeedEvent[] = [
     timestamp: '2 hr ago',
     confidence: 0.99,
     resolved: true,
+  },
+];
+
+export const COM_GOALS: ComGoal[] = [
+  {
+    id: 'cg-secure-sites',
+    title: 'Keep all sites secure after hours',
+    description: 'Lock down on time, watch for unauthorized entries, escalate fast.',
+    icon: 'shield',
+    basedOn: '30 nights of closing behavior',
+    generatedRules: [
+      { label: 'Auto-secure all sites at 8:00pm', confidence: 0.93, reasoning: 'Sites consistently close 7:55–8:10pm', impact: ['security'], enabled: false },
+      { label: 'Lock perimeter on after-hours motion + no badge', confidence: 0.96, reasoning: 'Pattern matches incident response protocol', impact: ['security'], enabled: true },
+      { label: 'Notify on-call within 30s of critical alert', confidence: 0.98, reasoning: 'Response time SLA', impact: ['security'], enabled: true },
+    ],
+  },
+  {
+    id: 'cg-energy',
+    title: 'Cut HVAC + lighting waste',
+    description: 'Match energy use to actual occupancy without comfort complaints.',
+    icon: 'leaf',
+    basedOn: '4 weeks of zone occupancy data',
+    generatedRules: [
+      { label: 'Reduce HVAC in zones < 25% occupied for 30 min', confidence: 0.86, reasoning: 'Conf A wasted 12 hrs/week last month', impact: ['energy'], enabled: false },
+      { label: 'Release conf room booking after 15 min idle', confidence: 0.82, reasoning: 'Recovers ~8 hrs/week of bookings', impact: ['energy', 'convenience'], enabled: false },
+    ],
+  },
+  {
+    id: 'cg-vendor',
+    title: 'Smooth vendor & visitor flow',
+    description: 'Pre-stage access, escort visitors, auto-expire credentials.',
+    icon: 'sparkles',
+    basedOn: '60 vendor visits this quarter',
+    generatedRules: [
+      { label: 'Pre-stage escorted access on vendor approach', confidence: 0.91, reasoning: 'Saves ~3 min per visit', impact: ['convenience'], enabled: true },
+      { label: 'Auto-expire visitor badges at scheduled end', confidence: 0.99, reasoning: 'Compliance + zero manual cleanup', impact: ['security'], enabled: true },
+    ],
+  },
+];
+
+export const COM_INSIGHTS: ComInsight[] = [
+  {
+    id: 'ci-1',
+    headline: 'Warehouse back-entry incidents up 2× this week',
+    detail: 'Two unbadged triggers in 7 days vs zero baseline. Recommend camera review.',
+    trend: 'up',
+    metric: '2×',
+  },
+  {
+    id: 'ci-2',
+    headline: 'Conference A is booked 3× more than used',
+    detail: '18 hrs booked, 6 hrs occupied. HVAC ran the full 18.',
+    trend: 'up',
+    metric: '3:1',
+  },
+  {
+    id: 'ci-3',
+    headline: 'HVAC spend down 22% across all sites',
+    detail: 'Adaptive policies + occupancy-aware ramping. No comfort complaints.',
+    trend: 'down',
+    metric: '−22%',
   },
 ];
