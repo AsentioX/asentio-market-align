@@ -1334,6 +1334,28 @@ const WorkoutPage = () => {
                 </div>
               )}
 
+              {/* No plan empty state — still allow logging a freeform workout */}
+              {!hasSessions && !todayPlan?.isRest && (
+                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 text-center space-y-3">
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                    <CalendarDays className="w-4 h-4 text-white/40" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">No plan for today</p>
+                    <p className="text-[11px] text-white/40 mt-1 max-w-xs mx-auto">
+                      Add a goal to generate a training plan, or log a freeform workout below.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setWorkoutPath('new')}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/15 p-3 transition-all"
+                  >
+                    <Plus className="w-4 h-4 text-emerald-400" />
+                    <span className="text-sm font-medium text-emerald-300">Add Exercise</span>
+                  </button>
+                </div>
+              )}
+
               {/* Start Workout */}
               <button
                 onClick={handleStartWorkout}
