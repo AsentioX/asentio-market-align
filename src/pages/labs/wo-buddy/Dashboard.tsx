@@ -141,17 +141,17 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     if (h < 17) return 'Good afternoon';
     return 'Good evening';
   })();
-  const displayName = wobuddyUser?.display_name || mockUser.name;
+  const displayName = wobuddyUser?.display_name || profile.displayName || 'Athlete';
 
   // Compute all-time totals per category
   const categoryValues = useMemo(() => {
-    const totalMiles = mockExerciseStats.filter(e => e.type === 'cardio').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
-    const totalVolume = mockExerciseStats.filter(e => e.type === 'strength').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
-    const pushups = mockExerciseStats.find(e => e.name === 'Push-ups')?.allTime.value || 0;
-    const squats = mockExerciseStats.find(e => e.name === 'Squats')?.allTime.value || 0;
-    const situps = mockExerciseStats.find(e => e.name === 'Sit-ups')?.allTime.value || 0;
+    const totalMiles = exerciseStats.filter(e => e.type === 'cardio').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
+    const totalVolume = exerciseStats.filter(e => e.type === 'strength').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
+    const pushups = exerciseStats.find(e => e.name === 'Push-ups' || e.name === 'Push-Ups')?.allTime.value || 0;
+    const squats = exerciseStats.find(e => e.name === 'Squats' || e.name === 'Squat')?.allTime.value || 0;
+    const situps = exerciseStats.find(e => e.name === 'Sit-ups' || e.name === 'Sit-Ups')?.allTime.value || 0;
     return { distance: totalMiles, volume: totalVolume, pushups: typeof pushups === 'number' ? pushups : 0, squats: typeof squats === 'number' ? squats : 0, situps: typeof situps === 'number' ? situps : 0 };
-  }, []);
+  }, [exerciseStats]);
 
   // Gather all unlocked milestones across categories
   const allUnlocked = useMemo(() => {
