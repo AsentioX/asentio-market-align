@@ -1875,7 +1875,7 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
   const { goals } = useWOBuddyGoals();
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
 
-  const activeGoals = goals.filter(g => g.status !== 'achieved');
+  const activeGoals = goals.filter(g => g.status === 'active');
   const selectedGoal = activeGoals.find(g => g.id === selectedGoalId) || activeGoals[0] || null;
 
   const burndownData = useMemo(() => {
