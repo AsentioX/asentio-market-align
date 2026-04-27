@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { usePerkPathAuth } from './usePerkPathAuth';
+import { getRewardProfile } from '@/pages/labs/perkpath/cardRewards';
 
 export type PerkCategory = 'auto' | 'dining' | 'travel' | 'shopping' | 'health' | 'entertainment' | 'services' | 'other';
 export type Pillar = 'work' | 'home' | 'play';
@@ -85,6 +86,46 @@ export function usePerkPath() {
   }, [user]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  // Auto-seed reward rates for any financial card that matches our catalog
+  // and hasn't been seeded yet. Runs once per membership; user edits win.
+  const seededIdsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!user || memberships.length === 0) return;
+    const candidates = memberships.filter(m =>
+      m.category === 'financial' &&
+      !m.rewards_seeded_at &&
+      !seededIdsRef.current.has(m.id)
+    );
+    if (candidates.length === 0) return;
+
+    const updates = candidates
+      .map(m => {
+        const profile = getRewardProfile(m.name, m.tier);
+        if (!profile) return null;
+        seededIdsRef.current.add(m.id);
+        return {
+          id: m.id,
+          patch: {
+            reward_rates: profile.rewardRates,
+            base_rate: profile.baseRate,
+            points_value_cents: profile.pointsValueCents,
+            rewards_currency: profile.currency,
+            rewards_seeded_at: new Date().toISOString(),
+          } as Partial<Membership>,
+        };
+      })
+      .filter((u): u is { id: string; patch: Partial<Membership> } => u !== null);
+
+    if (updates.length === 0) return;
+
+    (async () => {
+      await Promise.all(updates.map(u =>
+        supabase.from('pp_memberships').update(u.patch).eq('id', u.id).eq('user_id', user.id)
+      ));
+      await fetchAll();
+    })();
+  }, [memberships, user, fetchAll]);
 
   // Joined perks with membership lookup
   const enrichedPerks = useMemo(() => {
