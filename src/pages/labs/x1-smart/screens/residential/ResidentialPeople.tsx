@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Smartphone, Shield, Activity, X, Clock, Zap, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, AlertTriangle, Workflow } from 'lucide-react';
+import { ChevronRight, Smartphone, Shield, Activity, X, Clock, Zap, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, AlertTriangle, Workflow, Video } from 'lucide-react';
 import { RES_PEOPLE, type ResPerson, type ResPresence, type ResTrust } from '../../residentialData';
 import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
+import CameraModal from '../CameraModal';
 
 const PRESENCE_META: Record<ResPresence, { label: string; dot: string; text: string; soft: string }> = {
   home: { label: 'Home', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
@@ -32,6 +33,7 @@ const TRUST_META: Record<ResTrust, { label: string; cls: string; icon: any }> = 
 
 const ResidentialPeople = () => {
   const [selected, setSelected] = useState<ResPerson | null>(null);
+  const [cameraFor, setCameraFor] = useState<ResPerson | null>(null);
 
   return (
     <div className="space-y-6">
@@ -100,15 +102,48 @@ const ResidentialPeople = () => {
                 <BehaviorStat label="Anomalies" value={`${p.anomalies?.length ?? 0}`} alert={(p.anomalies?.length ?? 0) > 0} />
               </div>
 
-              <ChevronRight className="absolute bottom-3 right-3 w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors" />
+              {/* Card actions */}
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => { e.stopPropagation(); setCameraFor(p); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setCameraFor(p); } }}
+                  className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border transition-colors cursor-pointer ${
+                    p.presence === 'home' || p.presence === 'approaching'
+                      ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                  }`}
+                >
+                  <Video className="w-3 h-3" />
+                  {p.presence === 'home' || p.presence === 'approaching' ? 'View live' : 'View recorded'}
+                </span>
+                <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors" />
+              </div>
             </button>
           );
         })}
       </div>
 
       <AnimatePresence>
-        {selected && <PersonDrawer person={selected} onClose={() => setSelected(null)} />}
+        {selected && (
+          <PersonDrawer
+            person={selected}
+            onClose={() => setSelected(null)}
+            onViewCamera={() => setCameraFor(selected)}
+          />
+        )}
       </AnimatePresence>
+
+      <CameraModal
+        open={!!cameraFor}
+        onClose={() => setCameraFor(null)}
+        personName={cameraFor?.name ?? ''}
+        personInitials={cameraFor?.initials ?? ''}
+        location={cameraFor?.lastLocation ?? 'Unknown'}
+        isLive={cameraFor?.presence === 'home' || cameraFor?.presence === 'approaching'}
+        headshot={cameraFor ? PERSON_HEADSHOTS[cameraFor.id] : undefined}
+      />
     </div>
   );
 };
@@ -120,10 +155,11 @@ const BehaviorStat = ({ label, value, alert }: { label: string; value: string; a
   </div>
 );
 
-const PersonDrawer = ({ person, onClose }: { person: ResPerson; onClose: () => void }) => {
+const PersonDrawer = ({ person, onClose, onViewCamera }: { person: ResPerson; onClose: () => void; onViewCamera: () => void }) => {
   const pres = PRESENCE_META[person.presence];
   const trust = TRUST_META[person.trust];
   const TrustIcon = trust.icon;
+  const isLive = person.presence === 'home' || person.presence === 'approaching';
   return (
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-stone-900/30 backdrop-blur-sm z-40" onClick={onClose} />
@@ -134,7 +170,17 @@ const PersonDrawer = ({ person, onClose }: { person: ResPerson; onClose: () => v
       >
         <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-black/[0.06] px-5 py-3 flex items-center justify-between">
           <span className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold">Identity profile</span>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center text-stone-500"><X className="w-4 h-4" /></button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onViewCamera}
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1.5 rounded-lg bg-stone-900 text-white hover:bg-stone-800 transition-colors"
+              title={isLive ? 'View live camera' : 'View recorded clips'}
+            >
+              <Video className="w-3.5 h-3.5" />
+              {isLive ? 'Live' : 'Recorded'}
+            </button>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center text-stone-500"><X className="w-4 h-4" /></button>
+          </div>
         </div>
 
         <div className="p-5 space-y-6">

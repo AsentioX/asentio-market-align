@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Shield, Activity, X, Clock, Briefcase, MapPin, AlertTriangle, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, Workflow } from 'lucide-react';
+import { ChevronRight, Shield, Activity, X, Clock, Briefcase, MapPin, AlertTriangle, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, Workflow, Video } from 'lucide-react';
 import { COM_PEOPLE, type ComPerson, type ComRole, type ComRisk, type ComTrust } from '../../commercialData';
 import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
+import CameraModal from '../CameraModal';
 
 const PRESENCE_META = {
   'on-site': { label: 'On-site', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
@@ -38,6 +39,7 @@ const RISK_FILTERS: ('all' | ComRisk)[] = ['all', 'low', 'medium', 'high'];
 
 const CommercialPeople = () => {
   const [selected, setSelected] = useState<ComPerson | null>(null);
+  const [cameraFor, setCameraFor] = useState<ComPerson | null>(null);
   const [roleFilter, setRoleFilter] = useState<'all' | ComRole>('all');
   const [riskFilter, setRiskFilter] = useState<'all' | ComRisk>('all');
 
@@ -120,15 +122,48 @@ const CommercialPeople = () => {
                 <BehaviorStat label="Typical" value={p.typicalTimes ?? '—'} />
                 <BehaviorStat label="Anomalies" value={`${p.anomalies?.length ?? 0}`} alert={(p.anomalies?.length ?? 0) > 0} />
               </div>
-              <ChevronRight className="absolute bottom-3 right-3 w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors" />
+              {/* Card actions */}
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => { e.stopPropagation(); setCameraFor(p); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setCameraFor(p); } }}
+                  className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border transition-colors cursor-pointer ${
+                    p.presence === 'on-site' || p.presence === 'approaching' || p.presence === 'unauthorized'
+                      ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                  }`}
+                >
+                  <Video className="w-3 h-3" />
+                  {p.presence === 'on-site' || p.presence === 'approaching' || p.presence === 'unauthorized' ? 'View live' : 'View recorded'}
+                </span>
+                <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors" />
+              </div>
             </button>
           );
         })}
       </div>
 
       <AnimatePresence>
-        {selected && <PersonDrawer person={selected} onClose={() => setSelected(null)} />}
+        {selected && (
+          <PersonDrawer
+            person={selected}
+            onClose={() => setSelected(null)}
+            onViewCamera={() => setCameraFor(selected)}
+          />
+        )}
       </AnimatePresence>
+
+      <CameraModal
+        open={!!cameraFor}
+        onClose={() => setCameraFor(null)}
+        personName={cameraFor?.name ?? ''}
+        personInitials={cameraFor?.initials ?? ''}
+        location={cameraFor?.realTimeLocation ?? 'Unknown zone'}
+        isLive={cameraFor?.presence === 'on-site' || cameraFor?.presence === 'approaching' || cameraFor?.presence === 'unauthorized'}
+        headshot={cameraFor ? PERSON_HEADSHOTS[cameraFor.id] : undefined}
+      />
     </div>
   );
 };
@@ -161,10 +196,11 @@ const FilterRow = ({ label, icon: Icon, options, value, onChange, renderLabel }:
   </div>
 );
 
-const PersonDrawer = ({ person, onClose }: { person: ComPerson; onClose: () => void }) => {
+const PersonDrawer = ({ person, onClose, onViewCamera }: { person: ComPerson; onClose: () => void; onViewCamera: () => void }) => {
   const pres = PRESENCE_META[person.presence];
   const trust = TRUST_META[person.trust];
   const TrustIcon = trust.icon;
+  const isLive = person.presence === 'on-site' || person.presence === 'approaching' || person.presence === 'unauthorized';
   return (
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-stone-900/30 backdrop-blur-sm z-40" onClick={onClose} />
@@ -175,7 +211,17 @@ const PersonDrawer = ({ person, onClose }: { person: ComPerson; onClose: () => v
       >
         <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-black/[0.06] px-5 py-3 flex items-center justify-between">
           <span className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold">Workforce profile</span>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center text-stone-500"><X className="w-4 h-4" /></button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onViewCamera}
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1.5 rounded-lg bg-stone-900 text-white hover:bg-stone-800 transition-colors"
+              title={isLive ? 'View live camera' : 'View recorded clips'}
+            >
+              <Video className="w-3.5 h-3.5" />
+              {isLive ? 'Live' : 'Recorded'}
+            </button>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center text-stone-500"><X className="w-4 h-4" /></button>
+          </div>
         </div>
 
         <div className="p-5 space-y-6">
