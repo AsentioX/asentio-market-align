@@ -36,6 +36,31 @@ export interface PersonalRecord {
   label: string;
   /** ISO date string when the PR was set */
   achievedAt: string;
+  /** Numeric improvement over previous best of the same exercise (same units as `value`). */
+  delta?: number;
+  /** True if delta represents an improvement (higher for strength/bw, longer for cardio). */
+  improving?: boolean;
+}
+
+export interface ExerciseTrendPoint {
+  week: string;          // e.g. "W1"
+  weekStart: string;     // ISO date
+  value: number;         // metric value (lbs / mi / reps)
+}
+
+export interface ExerciseTrendMeta {
+  name: string;
+  type: 'strength' | 'cardio' | 'bodyweight';
+  icon: string;
+  unit: string;          // "lbs" | "mi" | "reps"
+  metricLabel: string;   // "Max Weight" | "Distance" | "Max Reps"
+}
+
+export interface ConsistencyStats {
+  currentStreak: number;
+  longestStreak: number;
+  thisMonth: number;
+  avgPerWeek: number;
 }
 
 const KM_TO_MI = 0.621371;
