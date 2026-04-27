@@ -162,6 +162,22 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
     );
   }
 
+  // ── Add Exercise Wizard (full custom-exercise builder) ──
+  if (showWizard) {
+    return (
+      <AddExerciseWizard
+        goals={goals.map(g => ({ id: g.id, name: g.name, status: g.status }))}
+        onBack={() => setShowWizard(false)}
+        onSave={(ex) => {
+          toast.success(`${ex.name} added`, {
+            description: 'Available next time you build a workout.',
+          });
+          setShowWizard(false);
+        }}
+      />
+    );
+  }
+
   // ── Library List ──
   return (
     <div className="space-y-4">
@@ -171,10 +187,17 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
             <ArrowLeft className="w-4 h-4" />
           </button>
         )}
-        <div>
+        <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-white">Exercise Library</h2>
           <p className="text-xs text-white/40">{EXERCISE_LIBRARY.length} exercises across {categories.length} categories</p>
         </div>
+        <button
+          onClick={() => setShowWizard(true)}
+          className="flex items-center gap-1.5 px-3 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold hover:bg-emerald-500/20 transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>New</span>
+        </button>
       </div>
 
       {/* Search */}
