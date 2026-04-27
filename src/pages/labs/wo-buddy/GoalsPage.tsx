@@ -13,7 +13,7 @@ import {
   getGoalStatusColor, getCategoryConfig, generateInsights,
   generateTrainingPhases, getCurrentPhaseIndex,
 } from './goalMappings';
-import { generatePlanFromGoals, getTodayIndex, DAY_SHORT, type PlanDay } from './planEngine';
+import { generatePlanFromGoals, generateMultiWeekFromGoals, getTodayIndex, DAY_SHORT, type PlanDay, type MultiWeekPlan } from './planEngine';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
