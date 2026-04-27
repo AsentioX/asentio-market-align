@@ -254,7 +254,11 @@ function legacyToScored(goals: LegacyGoal[]): ScoredGoal[] {
 }
 
 export function generatePlanFromGoals(goals: LegacyGoal[]): PlanDay[] {
-  return generateWeekFromScores(computeDriverScores(legacyToScored(goals)), 'medium', 'medium');
+  // No active goals → no auto-generated plan. The UI shows an empty state
+  // and the user can still log a freeform workout.
+  const activeGoals = goals.filter(g => isActiveGoal(g.status));
+  if (activeGoals.length === 0) return [];
+  return generateWeekFromScores(computeDriverScores(legacyToScored(activeGoals)), 'medium', 'medium');
 }
 
 // Convenience wrapper so UI can build a multi-week plan from the same legacy goal shape.
