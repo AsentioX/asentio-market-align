@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Wallet, Plus, Pencil, Trash2, ChevronDown, X, Check, Loader2, Sparkles, Calendar, Tag } from 'lucide-react';
+import { Wallet, Plus, Pencil, Trash2, ChevronDown, X, Check, Loader2, Sparkles, Calendar, Tag, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import AddCardModal from './AddCardModal';
-import type { Membership, Perk } from '@/hooks/usePerkPath';
+import type { Membership, Perk, RewardRates, RewardsCurrency } from '@/hooks/usePerkPath';
 import { getBrandLogoUrl } from './brandLogo';
 import { getSuggestedTiers } from './cardTiers';
+import RewardsEditor from './RewardsEditor';
+import { effectiveReturnPct } from './cardRewards';
 
 interface Props {
   memberships: Membership[];
