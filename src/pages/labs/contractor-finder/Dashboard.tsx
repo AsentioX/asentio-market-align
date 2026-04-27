@@ -46,31 +46,7 @@ function QualityBar({ label, pct, color }: { label: string; pct: number; color: 
 
 export default function Dashboard() {
   const { contractors, segments } = useCF();
-
-  const stats = useMemo(() => {
-    const total = contractors.length;
-    const byState: Record<string, number> = {};
-    const byType: Record<string, number> = {};
-    contractors.forEach((c) => {
-      byState[c.state] = (byState[c.state] ?? 0) + 1;
-      byType[c.contractor_type] = (byType[c.contractor_type] ?? 0) + 1;
-    });
-    const verifiedLicense = contractors.filter((c) => c.license_status === 'Active').length;
-    const withWebsite = contractors.filter((c) => !!c.website).length;
-    const withEmail = contractors.filter((c) => !!c.email).length;
-    const withPhone = contractors.filter((c) => !!c.phone).length;
-    const recent = contractors.filter((c) => Date.now() - new Date(c.last_verified_date).getTime() < 14 * 86400000).length;
-    return {
-      total,
-      byState: Object.entries(byState).sort((a, b) => b[1] - a[1]),
-      byType: Object.entries(byType).sort((a, b) => b[1] - a[1]),
-      verifiedLicensePct: Math.round((verifiedLicense / total) * 100),
-      websitePct: Math.round((withWebsite / total) * 100),
-      emailPct: Math.round((withEmail / total) * 100),
-      phonePct: Math.round((withPhone / total) * 100),
-      recentPct: Math.round((recent / total) * 100),
-    };
-  }, [contractors]);
+  const stats = useDashboardStats();
 
   const recentlyAdded = [...contractors]
     .sort((a, b) => new Date(b.last_verified_date).getTime() - new Date(a.last_verified_date).getTime())
