@@ -78,7 +78,7 @@ export function usePerkPath() {
       supabase.from('pp_perks').select('*').eq('user_id', user.id).eq('is_active', true).order('sort_order'),
       supabase.from('pp_venues').select('*'),
     ]);
-    if (mRes.data) setMemberships(mRes.data as Membership[]);
+    if (mRes.data) setMemberships(mRes.data as unknown as Membership[]);
     if (pRes.data) setPerks(pRes.data as Perk[]);
     if (vRes.data) setVenues(vRes.data as Venue[]);
     setLoading(false);
