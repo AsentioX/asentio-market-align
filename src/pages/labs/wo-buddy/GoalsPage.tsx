@@ -230,8 +230,10 @@ const GoalsPage = () => {
   const insights = generateInsights(goals);
   const metricUnit = METRICS.find(m => m.id === newMetric)?.unit || '';
   const plan = useMemo(() => generatePlanFromGoals(goals), [goals]);
+  const multiWeekPlan = useMemo(() => generateMultiWeekFromGoals(goals), [goals]);
   const todayIndex = getTodayIndex();
-  const activeGoals = goals.filter(g => g.status !== 'achieved');
+  // DB statuses are 'active' | 'paused' | 'completed' | 'archived' — only 'active' goals drive plans.
+  const activeGoals = goals.filter(g => g.status === 'active');
 
   const currentStateProvided = typeof newCurrent === 'number' && newCurrent >= 0;
 
