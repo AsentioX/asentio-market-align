@@ -83,7 +83,7 @@ const X1SmartLayoutInner = () => {
       />
 
       {/* Top bar */}
-      <header className="relative z-10 border-b border-black/[0.06] backdrop-blur-xl bg-white/60 sticky top-0">
+      <header className="relative z-30 border-b border-black/[0.06] backdrop-blur-xl bg-white/60 sticky top-0">
         <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-4">
             <Link to="/labs" className="flex items-center gap-1.5 text-stone-500 hover:text-stone-900 text-sm transition-colors">
