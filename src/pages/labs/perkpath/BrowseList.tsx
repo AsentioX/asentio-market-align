@@ -49,17 +49,36 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
 
   const activeCount = pillars.size + categories.size + membershipIds.size + (sortBy !== 'recent' ? 1 : 0);
 
+  // Apply pillar + membership filters first; category counts are computed
+  // against this base so users can see which categories are *available*
+  // for the current pillar/membership selection. Toggling a category then
+  // narrows further.
+  const baseFiltered = useMemo(() => perks.filter(p => {
+    if (pillars.size && !pillars.has(p.membership?.pillar ?? 'home')) return false;
+    if (membershipIds.size && !membershipIds.has(p.membership_id)) return false;
+    return true;
+  }), [perks, pillars, membershipIds]);
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<PerkCategory, number>();
+    for (const p of baseFiltered) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+    return counts;
+  }, [baseFiltered]);
+
+  const visibleCategories = useMemo(
+    () => CATEGORY_OPTIONS.filter(c => (categoryCounts.get(c) ?? 0) > 0),
+    [categoryCounts],
+  );
+
   const filtered = useMemo(() => {
-    let list = perks.filter(p => {
-      if (pillars.size && !pillars.has(p.membership?.pillar ?? 'home')) return false;
+    let list = baseFiltered.filter(p => {
       if (categories.size && !categories.has(p.category)) return false;
-      if (membershipIds.size && !membershipIds.has(p.membership_id)) return false;
       return true;
     });
     if (sortBy === 'az') list = [...list].sort((a, b) => a.title.localeCompare(b.title));
     else if (sortBy === 'membership') list = [...list].sort((a, b) => (a.membership?.name ?? '').localeCompare(b.membership?.name ?? ''));
     return list;
-  }, [perks, pillars, categories, membershipIds, sortBy]);
+  }, [baseFiltered, categories, sortBy]);
 
   return (
     <section className="px-5 pt-4 pb-2">
@@ -111,26 +130,37 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
             </div>
           )}
 
-          {/* Category */}
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Category</p>
-            <div className="flex flex-wrap gap-1.5">
-              {CATEGORY_OPTIONS.map(c => {
-                const active = categories.has(c);
-                return (
-                  <button
-                    key={c}
-                    onClick={() => toggleCategory(c)}
-                    className={`px-3 h-8 rounded-full text-[11px] font-bold capitalize transition-all ${
-                      active ? 'bg-emerald-500 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    {c}
-                  </button>
-                );
-              })}
+          {/* Category — only shows categories present in the visible perks.
+              Selected = solid emerald; available = soft emerald highlight. */}
+          {visibleCategories.length > 0 && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                Category <span className="text-slate-400">· {visibleCategories.length} in view</span>
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {visibleCategories.map(c => {
+                  const active = categories.has(c);
+                  const count = categoryCounts.get(c) ?? 0;
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => toggleCategory(c)}
+                      className={`flex items-center gap-1.5 px-3 h-8 rounded-full text-[11px] font-bold capitalize transition-all ${
+                        active
+                          ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/30 ring-2 ring-emerald-200'
+                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                      }`}
+                    >
+                      {c}
+                      <span className={`text-[10px] font-bold px-1.5 py-px rounded-full ${
+                        active ? 'bg-white/25 text-white' : 'bg-white text-emerald-700'
+                      }`}>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Location */}
           {geo && (
