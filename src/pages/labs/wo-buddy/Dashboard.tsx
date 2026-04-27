@@ -487,7 +487,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Exercise Totals — {periodLabel}</h3>
         <div className="space-y-2">
-          {mockExerciseStats.map((ex) => {
+          {exerciseStats.length === 0 && (
+            <p className="text-xs text-white/40 text-center py-6">No exercises logged yet. Start a workout to see your totals here.</p>
+          )}
+          {exerciseStats.map((ex) => {
             const stat = period === 'all' ? ex.allTime : period === 'month' ? ex.month : ex.week;
             return (
               <div key={ex.name} className="flex items-center gap-3 bg-gradient-to-r from-white/[0.05] to-white/[0.02] rounded-2xl p-3.5 border border-white/[0.06]">
