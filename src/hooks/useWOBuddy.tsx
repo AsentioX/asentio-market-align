@@ -1,12 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  mockUser, mockWorkouts, mockCompetitions, mockLeaderboard,
-  mockAchievements, mockProgressData, mockWeeklyTrend,
-  type Workout, type Competition, type LeaderboardEntry, type Achievement,
-  calculateScore,
-} from '@/pages/labs/wo-buddy/mockData';
 
 export interface WOBuddyProfile {
   height: number;
@@ -25,44 +19,53 @@ export interface WOBuddyProfile {
   backgroundUrl: string | null;
 }
 
-const defaultProfile: WOBuddyProfile = {
-  height: mockUser.height,
-  weight: mockUser.weight,
-  goalWeight: mockUser.goalWeight,
-  birthdate: '1998-01-15',
-  gender: mockUser.gender,
-  ethnicity: 'Asian',
-  bodyFat: mockUser.bodyFat,
-  restingHR: mockUser.restingHR,
-  displayName: mockUser.name,
-  avatarInitials: mockUser.avatar,
-  dailyGoal: mockUser.dailyGoal,
-  weeklyGoal: mockUser.weeklyGoal,
+export interface Workout {
+  id: string;
+  type: 'strength' | 'cardio' | 'bodyweight';
+  exercise: string;
+  score: number;
+  date: string;
+  details: Record<string, any>;
+}
+
+const emptyProfile: WOBuddyProfile = {
+  height: 0,
+  weight: 0,
+  goalWeight: 0,
+  birthdate: '',
+  gender: '',
+  ethnicity: '',
+  bodyFat: 0,
+  restingHR: 0,
+  displayName: '',
+  avatarInitials: '',
+  dailyGoal: 500,
+  weeklyGoal: 5,
   avatarUrl: null,
   backgroundUrl: null,
 };
 
 export function useWOBuddyProfile() {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<WOBuddyProfile>(defaultProfile);
+  const [profile, setProfile] = useState<WOBuddyProfile>(emptyProfile);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) { setProfile(defaultProfile); setLoading(false); return; }
-    
+    if (!user) { setProfile(emptyProfile); setLoading(false); return; }
+
     const fetch = async () => {
       const { data } = await supabase
         .from('wobuddy_profiles')
         .select('*')
         .eq('user_id', user.id)
         .single();
-      
+
       if (data) {
         setProfile({
           height: Number(data.height_cm) || 0,
           weight: Number(data.weight_kg) || 0,
           goalWeight: Number(data.goal_weight_kg) || 0,
-          birthdate: data.birthdate || '1998-01-15',
+          birthdate: data.birthdate || '',
           gender: data.gender || '',
           ethnicity: data.ethnicity || '',
           bodyFat: Number(data.body_fat_pct) || 0,
@@ -116,11 +119,11 @@ export function useWOBuddyProfile() {
 
 export function useWOBuddyWorkouts() {
   const { user } = useAuth();
-  const [workouts, setWorkouts] = useState<Workout[]>(mockWorkouts);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) { setWorkouts(mockWorkouts); setLoading(false); return; }
+    if (!user) { setWorkouts([]); setLoading(false); return; }
 
     const fetch = async () => {
       const { data } = await supabase
@@ -164,6 +167,8 @@ export function useWOBuddyWorkouts() {
             } as any,
           };
         }));
+      } else {
+        setWorkouts([]);
       }
       setLoading(false);
     };
@@ -209,7 +214,6 @@ export function useWOBuddyWorkouts() {
 
   const deleteWorkout = useCallback(async (workoutId: string) => {
     if (!user) return;
-    // Optimistic update
     setWorkouts(prev => prev.filter(w => w.id !== workoutId));
     await supabase.from('wobuddy_exercises').delete().eq('workout_id', workoutId);
     await supabase.from('wobuddy_workouts').delete().eq('id', workoutId).eq('user_id', user.id);
@@ -226,6 +230,3 @@ export function useWOBuddyWorkouts() {
 
   return { workouts, saveWorkout, deleteWorkout, deleteWorkoutsByDate, loading, isAuthenticated: !!user };
 }
-
-// Re-export mock data for non-DB parts (leaderboard, progress charts)
-export { mockUser, mockCompetitions, mockLeaderboard, mockAchievements, mockProgressData, mockWeeklyTrend, calculateScore };

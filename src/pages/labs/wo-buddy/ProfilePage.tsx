@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon, Trash2 } from 'lucide-react';
-import { mockUser } from './mockData';
+import { useWOBuddyStats } from '@/hooks/useWOBuddyStats';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +15,11 @@ import {
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
   const { user, wobuddyUser, signOut, refreshWOBuddyUser } = useWOBuddyAuth();
+  const { workoutCount } = useWOBuddyStats();
+  const memberSince = wobuddyUser?.created_at
+    ? new Date(wobuddyUser.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    : '—';
+  const level = Math.max(1, Math.floor(workoutCount / 10) + 1);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingName, setEditingName] = useState(false);
@@ -40,7 +45,8 @@ const ProfilePage = () => {
     setEditingProfile(false);
   };
 
-  const displayName = wobuddyUser?.display_name || mockUser.name;
+  const displayName = wobuddyUser?.display_name || user?.email?.split('@')[0] || 'Athlete';
+  const avatarFallback = profile.avatarInitials || (displayName.slice(0, 2).toUpperCase());
 
   const startEditingName = () => {
     setNameDraft(displayName);
@@ -167,7 +173,7 @@ const ProfilePage = () => {
                   </div>
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center text-3xl font-bold shadow-xl shadow-emerald-500/20 border-2 border-emerald-400/30">
-                    {mockUser.avatar}
+                    {avatarFallback}
                   </div>
                 )}
                 <button
@@ -202,10 +208,10 @@ const ProfilePage = () => {
                     <Pencil className="w-3 h-3 inline ml-1.5 opacity-0 group-hover/name:opacity-60 transition-opacity" />
                   </h2>
                 )}
-                <p className="text-xs text-white/40">Member since {mockUser.memberSince}</p>
+                <p className="text-xs text-white/40">Member since {memberSince}</p>
                 <div className="flex items-center justify-center gap-2 mt-1.5">
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {mockUser.level}</span>
-                  <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full font-medium border border-amber-500/20">🔥 {mockUser.weeklyStreak}w streak</span>
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {level}</span>
+                  <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full font-medium border border-amber-500/20">🏋️ {workoutCount} workouts</span>
                 </div>
               </div>
             </div>
