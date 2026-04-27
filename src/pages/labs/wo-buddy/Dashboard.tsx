@@ -98,6 +98,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const insights = generateInsights(goals);
   const { wobuddyUser } = useWOBuddyAuth();
   const { weather } = useLocalWeather();
+  const { profile } = useWOBuddyProfile();
+  const { overviews, exerciseStats, weeklyMinutes, todayScore } = useWOBuddyStats();
 
   // Sun countdown timer
   const [sunCountdown, setSunCountdown] = useState('');
@@ -139,17 +141,17 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     if (h < 17) return 'Good afternoon';
     return 'Good evening';
   })();
-  const displayName = wobuddyUser?.display_name || mockUser.name;
+  const displayName = wobuddyUser?.display_name || profile.displayName || 'Athlete';
 
   // Compute all-time totals per category
   const categoryValues = useMemo(() => {
-    const totalMiles = mockExerciseStats.filter(e => e.type === 'cardio').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
-    const totalVolume = mockExerciseStats.filter(e => e.type === 'strength').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
-    const pushups = mockExerciseStats.find(e => e.name === 'Push-ups')?.allTime.value || 0;
-    const squats = mockExerciseStats.find(e => e.name === 'Squats')?.allTime.value || 0;
-    const situps = mockExerciseStats.find(e => e.name === 'Sit-ups')?.allTime.value || 0;
+    const totalMiles = exerciseStats.filter(e => e.type === 'cardio').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
+    const totalVolume = exerciseStats.filter(e => e.type === 'strength').reduce((s, e) => s + (typeof e.allTime.value === 'number' ? e.allTime.value : 0), 0);
+    const pushups = exerciseStats.find(e => e.name === 'Push-ups' || e.name === 'Push-Ups')?.allTime.value || 0;
+    const squats = exerciseStats.find(e => e.name === 'Squats' || e.name === 'Squat')?.allTime.value || 0;
+    const situps = exerciseStats.find(e => e.name === 'Sit-ups' || e.name === 'Sit-Ups')?.allTime.value || 0;
     return { distance: totalMiles, volume: totalVolume, pushups: typeof pushups === 'number' ? pushups : 0, squats: typeof squats === 'number' ? squats : 0, situps: typeof situps === 'number' ? situps : 0 };
-  }, []);
+  }, [exerciseStats]);
 
   // Gather all unlocked milestones across categories
   const allUnlocked = useMemo(() => {
@@ -178,13 +180,12 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     if (allUnlocked.length <= 1) return;
     setMilestoneIdx(prev => (prev - 1 + allUnlocked.length) % allUnlocked.length);
   }, [allUnlocked.length]);
-  const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
+  const overview = overviews[period];
   const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
-  const bodyLatest = mockBodyTrend[mockBodyTrend.length - 1];
-  const bodyPrev = mockBodyTrend[mockBodyTrend.length - 2];
-  const weightDelta = bodyLatest.weight - bodyPrev.weight;
-  const fatDelta = bodyLatest.bodyFat - bodyPrev.bodyFat;
-  const muscleDelta = bodyLatest.muscleMass - bodyPrev.muscleMass;
+  const bodyLatest = { weight: profile.weight, bodyFat: profile.bodyFat, muscleMass: 0 };
+  const weightDelta = 0;
+  const fatDelta = 0;
+  const muscleDelta = 0;
 
   return (
     <div className="space-y-6">
@@ -385,14 +386,16 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
         <div className="flex items-end gap-2 mb-4" style={{ height: 80 }}>
           {(() => {
-            const dailyMins = [52, 38, 0, 45, 72, 55, 0];
+            // weeklyMinutes is Sun..Sat (0..6); reorder to Mon..Sun for display
+            const reorder = [1, 2, 3, 4, 5, 6, 0];
+            const dailyMins = reorder.map(i => weeklyMinutes[i] || 0);
             const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            const todayIdx = mockUser.weeklyProgress;
+            const todayDow = new Date().getDay(); // 0=Sun..6=Sat
+            const todayIdx = reorder.indexOf(todayDow);
             const maxMin = Math.max(...dailyMins, 1);
             return dayLabels.map((day, i) => {
               const mins = dailyMins[i];
               const isToday = i === todayIdx;
-              const isPast = i < todayIdx;
               const hasData = mins > 0;
               const barH = hasData ? Math.max(12, (mins / maxMin) * 64) : 0;
               return (
@@ -423,15 +426,15 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <Target className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</span>
           </div>
-          <span className="text-xs text-white/30">{mockUser.dailyProgress} / {mockUser.dailyGoal} pts</span>
+          <span className="text-xs text-white/30">{todayScore} / {profile.dailyGoal} pts</span>
         </div>
         <div className="h-3 bg-white/5 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all shadow-[0_0_12px_rgba(52,211,153,0.4)]"
-            style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
+            style={{ width: `${Math.min((todayScore / Math.max(profile.dailyGoal, 1)) * 100, 100)}%` }}
           />
         </div>
-        <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
+        <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{Math.max(profile.dailyGoal - todayScore, 0)} pts to go</p>
       </div>
 
       <ProgressAnalytics />
@@ -484,7 +487,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Exercise Totals — {periodLabel}</h3>
         <div className="space-y-2">
-          {mockExerciseStats.map((ex) => {
+          {exerciseStats.length === 0 && (
+            <p className="text-xs text-white/40 text-center py-6">No exercises logged yet. Start a workout to see your totals here.</p>
+          )}
+          {exerciseStats.map((ex) => {
             const stat = period === 'all' ? ex.allTime : period === 'month' ? ex.month : ex.week;
             return (
               <div key={ex.name} className="flex items-center gap-3 bg-gradient-to-r from-white/[0.05] to-white/[0.02] rounded-2xl p-3.5 border border-white/[0.06]">
@@ -526,29 +532,13 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             );
           })}
         </div>
-        {/* Mini trend bars */}
+        {/* Trend placeholder — we don't yet track historical body composition */}
         <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
           <div className="flex items-center justify-between text-[10px] text-white/30 mb-2">
             <span>Weight trend</span>
-            <span>{mockBodyTrend[0].date} → {bodyLatest.date}</span>
+            <span>Coming soon</span>
           </div>
-          <div className="flex items-end gap-1 h-12">
-            {mockBodyTrend.map((p, i) => {
-              const minW = Math.min(...mockBodyTrend.map(t => t.weight));
-              const maxW = Math.max(...mockBodyTrend.map(t => t.weight));
-              const range = maxW - minW || 1;
-              const pct = ((p.weight - minW) / range) * 100;
-              return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className="w-full rounded-t-md bg-gradient-to-t from-blue-500/40 to-blue-400/20 transition-all"
-                    style={{ height: `${20 + pct * 0.8}%` }}
-                  />
-                  <span className="text-[8px] text-white/30">{p.date}</span>
-                </div>
-              );
-            })}
-          </div>
+          <p className="text-xs text-white/40">Update your weight in Settings to start tracking body composition over time.</p>
         </div>
       </div>
         </div>
