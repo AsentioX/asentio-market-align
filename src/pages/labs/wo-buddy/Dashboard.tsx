@@ -354,7 +354,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <span className="text-sm font-semibold text-white">Goal Progress</span>
           </div>
           <div className="space-y-2">
-            {goals.filter(g => g.status !== 'achieved').map(g => {
+            {goals.filter(g => g.status === 'active').map(g => {
               const pct = g.target_value > 0 ? Math.min(100, Math.round(((g.current_value ?? 0) / g.target_value) * 100)) : 0;
               return (
                 <div key={g.id} className="bg-white/[0.03] rounded-xl border border-white/[0.06] p-3">
