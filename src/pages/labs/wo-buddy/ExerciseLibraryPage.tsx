@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react';
-import { Search, Filter, ChevronRight, Lightbulb, X, Target, ArrowLeft } from 'lucide-react';
+import { Search, Filter, ChevronRight, Lightbulb, X, Target, ArrowLeft, Plus, Sparkles } from 'lucide-react';
 import { EXERCISE_LIBRARY, CATEGORY_CONFIG, type ExerciseCategory, type ExerciseDefinition } from './exerciseLibrary';
 import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
+import AddExerciseWizard from './AddExerciseWizard';
+import { toast } from 'sonner';
 
 interface ExerciseLibraryPageProps {
   onSelectExercise?: (exercise: ExerciseDefinition) => void;
@@ -12,6 +14,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<ExerciseCategory | 'all'>('all');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseDefinition | null>(null);
+  const [showWizard, setShowWizard] = useState(false);
   const { goals } = useWOBuddyGoals();
 
   const categories = Object.entries(CATEGORY_CONFIG) as [ExerciseCategory, typeof CATEGORY_CONFIG[ExerciseCategory]][];
