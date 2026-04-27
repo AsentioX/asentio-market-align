@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Shield, Activity, X, Clock, Briefcase, MapPin, AlertTriangle, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, Workflow } from 'lucide-react';
+import { ChevronRight, Shield, Activity, X, Clock, Briefcase, MapPin, AlertTriangle, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, Workflow, Video } from 'lucide-react';
 import { COM_PEOPLE, type ComPerson, type ComRole, type ComRisk, type ComTrust } from '../../commercialData';
 import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
+import CameraModal from '../CameraModal';
 
 const PRESENCE_META = {
   'on-site': { label: 'On-site', dot: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
@@ -38,6 +39,7 @@ const RISK_FILTERS: ('all' | ComRisk)[] = ['all', 'low', 'medium', 'high'];
 
 const CommercialPeople = () => {
   const [selected, setSelected] = useState<ComPerson | null>(null);
+  const [cameraFor, setCameraFor] = useState<ComPerson | null>(null);
   const [roleFilter, setRoleFilter] = useState<'all' | ComRole>('all');
   const [riskFilter, setRiskFilter] = useState<'all' | ComRisk>('all');
 
