@@ -1,34 +1,59 @@
 import type { Perk } from '@/hooks/usePerkPath';
 
-// Score how well a perk matches a search query.
-// Higher = better. Returns null if it doesn't match at all.
+// Word-boundary matcher. Returns the strongest match kind for `needle` in `hay`,
+// or null if it doesn't match at a word boundary.
+//   'exact'        — entire string equals needle
+//   'word-exact'   — needle equals a whole word in hay
+//   'word-prefix'  — needle is a prefix of a word in hay (e.g. "her" matches "Hertz")
+// We deliberately do NOT match arbitrary substrings inside words (so "hr" no
+// longer matches "through" or "Hollywood").
+type MatchKind = 'exact' | 'word-exact' | 'word-prefix' | null;
+function matchKind(hay: string, needle: string): MatchKind {
+  if (!hay || !needle) return null;
+  if (hay === needle) return 'exact';
+  // Split on anything that isn't a letter or digit so "McCormick & Schmick's" tokenizes cleanly.
+  const tokens = hay.split(/[^a-z0-9]+/i).filter(Boolean);
+  let best: MatchKind = null;
+  for (const tok of tokens) {
+    const t = tok.toLowerCase();
+    if (t === needle) return 'word-exact';
+    if (t.startsWith(needle)) best = best ?? 'word-prefix';
+  }
+  return best;
+}
+
+const KIND_MULTIPLIER: Record<Exclude<MatchKind, null>, number> = {
+  'exact': 4,
+  'word-exact': 3,
+  'word-prefix': 1.5,
+};
+
+// Score how well a perk matches a search query. Higher = better. Null = no match.
 function scoreMatch(perk: Perk, q: string): number | null {
   const needle = q.toLowerCase().trim();
-  if (!needle) return null;
+  if (!needle || needle.length < 2) return null;
 
+  // Drop how_to_redeem from the haystack — it's noisy prose ("buy through…",
+  // "register at…") that produced confusing brand-name matches.
   const haystacks: Array<{ text: string; weight: number }> = [
-    { text: perk.venue ?? '', weight: 5 },
+    { text: perk.venue ?? '', weight: 6 },
     { text: perk.title, weight: 4 },
     { text: perk.membership?.name ?? '', weight: 3 },
-    { text: perk.category, weight: 2 },
     { text: perk.perk_tags.join(' '), weight: 3 },
     { text: perk.membership?.perk_tags.join(' ') ?? '', weight: 2 },
-    { text: perk.how_to_redeem ?? '', weight: 1 },
+    { text: perk.category, weight: 2 },
   ];
 
   let score = 0;
   let matched = false;
   for (const h of haystacks) {
-    const hay = h.text.toLowerCase();
-    if (!hay) continue;
-    if (hay === needle) { score += h.weight * 3; matched = true; }
-    else if (hay.startsWith(needle)) { score += h.weight * 2; matched = true; }
-    else if (hay.includes(needle)) { score += h.weight; matched = true; }
+    const kind = matchKind(h.text.toLowerCase(), needle);
+    if (!kind) continue;
+    matched = true;
+    score += h.weight * KIND_MULTIPLIER[kind];
   }
 
-  // Bonus for financial perks (raw value is usually higher)
   if (matched && perk.membership?.category === 'financial') score += 1;
-
   return matched ? score : null;
 }
 
