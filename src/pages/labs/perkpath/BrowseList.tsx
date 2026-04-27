@@ -130,26 +130,37 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
             </div>
           )}
 
-          {/* Category */}
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Category</p>
-            <div className="flex flex-wrap gap-1.5">
-              {CATEGORY_OPTIONS.map(c => {
-                const active = categories.has(c);
-                return (
-                  <button
-                    key={c}
-                    onClick={() => toggleCategory(c)}
-                    className={`px-3 h-8 rounded-full text-[11px] font-bold capitalize transition-all ${
-                      active ? 'bg-emerald-500 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    {c}
-                  </button>
-                );
-              })}
+          {/* Category — only shows categories present in the visible perks.
+              Selected = solid emerald; available = soft emerald highlight. */}
+          {visibleCategories.length > 0 && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                Category <span className="text-slate-400">· {visibleCategories.length} in view</span>
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {visibleCategories.map(c => {
+                  const active = categories.has(c);
+                  const count = categoryCounts.get(c) ?? 0;
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => toggleCategory(c)}
+                      className={`flex items-center gap-1.5 px-3 h-8 rounded-full text-[11px] font-bold capitalize transition-all ${
+                        active
+                          ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/30 ring-2 ring-emerald-200'
+                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                      }`}
+                    >
+                      {c}
+                      <span className={`text-[10px] font-bold px-1.5 py-px rounded-full ${
+                        active ? 'bg-white/25 text-white' : 'bg-white text-emerald-700'
+                      }`}>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Location */}
           {geo && (
