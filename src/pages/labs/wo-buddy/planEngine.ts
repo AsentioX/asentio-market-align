@@ -422,9 +422,9 @@ export function generateMultiWeekPlan(goals: ScoredGoal[], opts?: { startDate?: 
   const start = opts?.startDate ?? new Date();
   const scores = computeDriverScores(goals);
 
-  // Determine total weeks from earliest target date
+  // Determine total weeks from earliest target date among ACTIVE goals
   const dated = goals
-    .filter(g => g.targetDate && (g.status === 'active' || g.status === 'on_track' || g.status === 'at_risk'))
+    .filter(g => g.targetDate && isActiveGoal(g.status))
     .map(g => new Date(g.targetDate as string))
     .sort((a, b) => a.getTime() - b.getTime());
   const earliestTarget = dated[0];
@@ -435,7 +435,7 @@ export function generateMultiWeekPlan(goals: ScoredGoal[], opts?: { startDate?: 
 
   const phaseTemplates = pickPeriodization(totalWeeks);
   const topGoalNames = goals
-    .filter(g => g.status !== 'completed' && g.status !== 'archived' && g.priority === 'primary')
+    .filter(g => isActiveGoal(g.status) && g.priority === 'primary')
     .map(g => g.title)
     .filter(Boolean);
 
