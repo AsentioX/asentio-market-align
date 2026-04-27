@@ -386,14 +386,16 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
         <div className="flex items-end gap-2 mb-4" style={{ height: 80 }}>
           {(() => {
-            const dailyMins = [52, 38, 0, 45, 72, 55, 0];
+            // weeklyMinutes is Sun..Sat (0..6); reorder to Mon..Sun for display
+            const reorder = [1, 2, 3, 4, 5, 6, 0];
+            const dailyMins = reorder.map(i => weeklyMinutes[i] || 0);
             const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            const todayIdx = mockUser.weeklyProgress;
+            const todayDow = new Date().getDay(); // 0=Sun..6=Sat
+            const todayIdx = reorder.indexOf(todayDow);
             const maxMin = Math.max(...dailyMins, 1);
             return dayLabels.map((day, i) => {
               const mins = dailyMins[i];
               const isToday = i === todayIdx;
-              const isPast = i < todayIdx;
               const hasData = mins > 0;
               const barH = hasData ? Math.max(12, (mins / maxMin) * 64) : 0;
               return (
@@ -424,15 +426,15 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <Target className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</span>
           </div>
-          <span className="text-xs text-white/30">{mockUser.dailyProgress} / {mockUser.dailyGoal} pts</span>
+          <span className="text-xs text-white/30">{todayScore} / {profile.dailyGoal} pts</span>
         </div>
         <div className="h-3 bg-white/5 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all shadow-[0_0_12px_rgba(52,211,153,0.4)]"
-            style={{ width: `${Math.min((mockUser.dailyProgress / mockUser.dailyGoal) * 100, 100)}%` }}
+            style={{ width: `${Math.min((todayScore / Math.max(profile.dailyGoal, 1)) * 100, 100)}%` }}
           />
         </div>
-        <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{mockUser.dailyGoal - mockUser.dailyProgress} pts to go</p>
+        <p className="text-[10px] text-emerald-400/70 mt-1.5 text-right">{Math.max(profile.dailyGoal - todayScore, 0)} pts to go</p>
       </div>
 
       <ProgressAnalytics />
