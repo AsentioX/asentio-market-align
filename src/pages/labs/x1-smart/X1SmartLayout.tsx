@@ -239,8 +239,8 @@ const AutonomyChip = ({ level, onChange }: { level: AutonomyLevel; onChange: (l:
       </button>
       {open && (
         <>
-          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-black/[0.08] shadow-xl z-40 p-2">
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white border border-black/[0.08] shadow-2xl z-50 p-2 overflow-hidden">
             {AUTONOMY_LEVELS.map((l) => (
               <button
                 key={l.value}
@@ -250,7 +250,7 @@ const AutonomyChip = ({ level, onChange }: { level: AutonomyLevel; onChange: (l:
                 }`}
               >
                 <div className={`text-[13px] font-bold ${l.value === level ? 'text-violet-700' : 'text-stone-900'}`}>{l.label}</div>
-                <div className="text-[11px] text-stone-500 mt-0.5">{l.description}</div>
+                <div className="text-[11px] text-stone-500 mt-0.5 leading-snug">{l.description}</div>
               </button>
             ))}
           </div>
