@@ -173,7 +173,7 @@ const ProfilePage = () => {
                   </div>
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center text-3xl font-bold shadow-xl shadow-emerald-500/20 border-2 border-emerald-400/30">
-                    {mockUser.avatar}
+                    {avatarFallback}
                   </div>
                 )}
                 <button
