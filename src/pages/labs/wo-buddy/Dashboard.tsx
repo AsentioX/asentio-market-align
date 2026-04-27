@@ -180,13 +180,12 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     if (allUnlocked.length <= 1) return;
     setMilestoneIdx(prev => (prev - 1 + allUnlocked.length) % allUnlocked.length);
   }, [allUnlocked.length]);
-  const overview = period === 'all' ? mockAllTimeOverview : period === 'month' ? mockMonthlyOverview : mockWeeklyOverview;
+  const overview = overviews[period];
   const periodLabel = period === 'all' ? 'All Time' : period === 'month' ? 'This Month' : 'This Week';
-  const bodyLatest = mockBodyTrend[mockBodyTrend.length - 1];
-  const bodyPrev = mockBodyTrend[mockBodyTrend.length - 2];
-  const weightDelta = bodyLatest.weight - bodyPrev.weight;
-  const fatDelta = bodyLatest.bodyFat - bodyPrev.bodyFat;
-  const muscleDelta = bodyLatest.muscleMass - bodyPrev.muscleMass;
+  const bodyLatest = { weight: profile.weight, bodyFat: profile.bodyFat, muscleMass: 0 };
+  const weightDelta = 0;
+  const fatDelta = 0;
+  const muscleDelta = 0;
 
   return (
     <div className="space-y-6">
