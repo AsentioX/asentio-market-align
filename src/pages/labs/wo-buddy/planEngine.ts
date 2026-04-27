@@ -162,8 +162,14 @@ export interface DriverScore {
   goalNames: string[];
 }
 
+// Real goal statuses from the DB are: 'active' | 'paused' | 'completed' | 'archived'.
+// Only 'active' goals should drive training plan generation.
+function isActiveGoal(status: string): boolean {
+  return status === 'active';
+}
+
 export function computeDriverScores(goals: ScoredGoal[]): DriverScore[] {
-  const active = goals.filter(g => g.status === 'active' || g.status === 'on_track' || g.status === 'at_risk');
+  const active = goals.filter(g => isActiveGoal(g.status));
   const map: Record<string, { score: number; goalNames: Set<string> }> = {};
 
   for (const g of active) {
@@ -214,19 +220,34 @@ function exerciseReason(exerciseName: string, driver: string, goalNames: string[
 // Backwards-compatible API: weekly plan from raw goals
 // (kept so existing UI keeps working)
 // ─────────────────────────────────────────────
-type LegacyGoal = { id?: string; status: string; drivers: string[]; name?: string; title?: string; priority?: string; deadline?: string | null; target_date?: string | null };
+type LegacyGoal = {
+  id?: string;
+  status: string;
+  drivers: string[];
+  driverDetails?: Array<{ driver: string; weight: number; explanation?: string | null }>;
+  name?: string;
+  title?: string;
+  priority?: string;
+  deadline?: string | null;
+  target_date?: string | null;
+};
 
 function legacyToScored(goals: LegacyGoal[]): ScoredGoal[] {
   return goals.map(g => {
     const p = g.priority;
     const priority: 'primary' | 'secondary' | 'supporting' =
       p === 'secondary' || p === 'supporting' ? p : 'primary';
+    // Prefer per-driver weights from driverDetails when present (real DB data),
+    // fall back to a neutral weight of 5 only when only legacy strings are provided.
+    const drivers = g.driverDetails && g.driverDetails.length > 0
+      ? g.driverDetails.map(d => ({ driver: d.driver, weight: d.weight ?? 5 }))
+      : g.drivers.map(d => ({ driver: d, weight: 5 }));
     return {
       id: g.id ?? '',
       title: g.title ?? g.name ?? '',
       priority,
       status: g.status,
-      drivers: g.drivers.map(d => ({ driver: d, weight: 5 })),
+      drivers,
       targetDate: g.target_date ?? g.deadline ?? null,
     };
   });
@@ -234,6 +255,14 @@ function legacyToScored(goals: LegacyGoal[]): ScoredGoal[] {
 
 export function generatePlanFromGoals(goals: LegacyGoal[]): PlanDay[] {
   return generateWeekFromScores(computeDriverScores(legacyToScored(goals)), 'medium', 'medium');
+}
+
+// Convenience wrapper so UI can build a multi-week plan from the same legacy goal shape.
+export function generateMultiWeekFromGoals(
+  goals: LegacyGoal[],
+  opts?: { startDate?: Date; defaultWeeks?: number },
+): MultiWeekPlan {
+  return generateMultiWeekPlan(legacyToScored(goals), opts);
 }
 
 // ─────────────────────────────────────────────
