@@ -642,113 +642,183 @@ const GoalsPage = () => {
             <TrainingPlanView goals={goals} activeGoals={activeGoals} plan={plan} onSwitchToWeekly={() => setView('plan')} />
           ) : (
             <div className="space-y-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-white">This Week's Plan</h2>
-              <p className="text-xs text-white/40 mt-0.5">Your schedule for the current week</p>
-            </div>
-            <button onClick={savePlan} disabled={!user || saving}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 text-xs font-medium hover:bg-emerald-500/25 transition-colors disabled:opacity-40">
-              {saved ? '✓ Saved' : saving ? 'Saving…' : 'Save Plan'}
-            </button>
-          </div>
+          {(() => {
+            const safeWeekIdx = Math.min(selectedWeekIdx, multiWeekPlan.weeks.length - 1);
+            const currentWeek = multiWeekPlan.weeks[safeWeekIdx];
+            const weekDays = currentWeek?.days ?? plan;
+            const isCurrentWeek = safeWeekIdx === 0;
+            const phaseColors: Record<string, string> = {
+              Foundation: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/15',
+              Build: 'text-blue-400 bg-blue-500/10 border-blue-500/15',
+              Intensify: 'text-amber-400 bg-amber-500/10 border-amber-500/15',
+              Peak: 'text-purple-400 bg-purple-500/10 border-purple-500/15',
+              Test: 'text-rose-400 bg-rose-500/10 border-rose-500/15',
+              Deload: 'text-slate-300 bg-white/[0.04] border-white/[0.08]',
+            };
+            const phaseClass = phaseColors[currentWeek?.phase ?? 'Foundation'] ?? phaseColors.Foundation;
+            return (
+              <>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-bold text-white">
+                      {isCurrentWeek ? "This Week's Plan" : `Week ${currentWeek?.weekNumber ?? safeWeekIdx + 1} Plan`}
+                    </h2>
+                    <p className="text-xs text-white/40 mt-0.5">
+                      {multiWeekPlan.totalWeeks}-week periodized plan · {multiWeekPlan.generationReason.split('.')[0]}.
+                    </p>
+                  </div>
+                  <button onClick={savePlan} disabled={!user || saving || !isCurrentWeek}
+                    title={isCurrentWeek ? 'Save this week to your plan' : 'Switch to Week 1 to save'}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 text-xs font-medium hover:bg-emerald-500/25 transition-colors disabled:opacity-40">
+                    {saved ? '✓ Saved' : saving ? 'Saving…' : 'Save Plan'}
+                  </button>
+                </div>
 
-          <div className="flex gap-2">
-            <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-              <p className="text-lg font-bold text-white">{plan.filter(p => !p.isRest).length}</p>
-              <p className="text-[10px] text-white/40">Training</p>
-            </div>
-            <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-              <p className="text-lg font-bold text-white">{plan.filter(p => p.isRest).length}</p>
-              <p className="text-[10px] text-white/40">Rest</p>
-            </div>
-            <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-              <p className="text-lg font-bold text-emerald-400">{activeGoals.length}</p>
-              <p className="text-[10px] text-white/40">Active Goals</p>
-            </div>
-          </div>
+                {/* Multi-week selector */}
+                {multiWeekPlan.weeks.length > 1 && (
+                  <div className="-mx-1 overflow-x-auto">
+                    <div className="flex gap-1.5 px-1 pb-1">
+                      {multiWeekPlan.weeks.map((w, i) => {
+                        const isSel = i === safeWeekIdx;
+                        return (
+                          <button key={i} onClick={() => setSelectedWeekIdx(i)}
+                            className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg border text-[10px] font-medium transition-all ${
+                              isSel
+                                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                                : 'bg-white/[0.02] border-white/[0.06] text-white/50 hover:bg-white/[0.06]'
+                            }`}>
+                            <div className="font-mono">Wk {w.weekNumber}</div>
+                            <div className="text-[9px] opacity-70 mt-0.5">{w.phase}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
-          {activeGoals.length > 0 && (
-            <div className="rounded-xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border border-emerald-500/10 p-3">
-              <div className="flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs font-medium text-white/80">Plan optimized for:</p>
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    {activeGoals.slice(0, 3).map(g => (
-                      <span key={g.id} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/60">{g.name}</span>
-                    ))}
+                {/* Phase context for the selected week */}
+                {currentWeek && (
+                  <div className={`rounded-xl border ${phaseClass} p-3`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-90">{currentWeek.phase} Phase</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/10 text-white/60 font-mono uppercase">
+                        {currentWeek.intensityLevel} intensity · {currentWeek.volumeLevel} volume
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-white/70">{currentWeek.weeklyFocus}</p>
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
+                    <p className="text-lg font-bold text-white">{weekDays.filter(p => !p.isRest).length}</p>
+                    <p className="text-[10px] text-white/40">Training</p>
+                  </div>
+                  <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
+                    <p className="text-lg font-bold text-white">{weekDays.filter(p => p.isRest).length}</p>
+                    <p className="text-[10px] text-white/40">Rest</p>
+                  </div>
+                  <div className="flex-1 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3 text-center">
+                    <p className="text-lg font-bold text-emerald-400">{activeGoals.length}</p>
+                    <p className="text-[10px] text-white/40">Active Goals</p>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
 
-          <div className="space-y-2">
-            {plan.map((day) => {
-              const primarySession = day.sessions[0];
-              const config = WORKOUT_TYPE_CONFIG[primarySession?.workoutType || 'rest'] || WORKOUT_TYPE_CONFIG.rest;
-              const isToday = day.dayOfWeek === todayIndex;
-              const isDayExpanded = expandedDay === day.dayOfWeek;
-
-              return (
-                <button key={day.dayOfWeek}
-                  onClick={() => setExpandedDay(isDayExpanded ? null : day.dayOfWeek)}
-                  className={`w-full text-left rounded-xl border transition-all ${
-                    isToday ? 'bg-emerald-500/[0.07] border-emerald-500/20' : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
-                  }`}>
-                  <div className="flex items-center gap-3 p-3">
-                    <div className={`w-9 h-9 rounded-lg ${config.bg} flex items-center justify-center shrink-0`}>
-                      <span className={config.color}>{config.icon}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-white">{DAY_SHORT[day.dayOfWeek]}</span>
-                        {isToday && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">TODAY</span>}
-                        {day.sessions.length > 1 && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">{day.sessions.length} sessions</span>}
+                {activeGoals.length > 0 && (
+                  <div className="rounded-xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border border-emerald-500/10 p-3">
+                    <div className="flex items-start gap-2">
+                      <Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs font-medium text-white/80">Plan optimized for:</p>
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {activeGoals.slice(0, 3).map(g => (
+                            <span key={g.id} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/60">{g.name}</span>
+                          ))}
+                        </div>
                       </div>
-                      <p className="text-[11px] text-white/40 capitalize mt-0.5">
-                        {day.isRest ? (day.restReason || 'Rest day') : day.sessions.map(s => s.label).join(' + ')}
-                      </p>
-                    </div>
-                    <div className="text-white/20">
-                      {isDayExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </div>
                   </div>
-                  {isDayExpanded && (
-                    <div className="px-3 pb-3 border-t border-white/[0.04] pt-2 space-y-3">
-                      {day.sessions.map((session, si) => (
-                        <div key={si}>
-                          {day.sessions.length > 1 && (
-                            <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mb-1.5">{session.label}</p>
-                          )}
-                          {session.reason && (
-                            <p className="text-[11px] text-emerald-400/80 flex items-center gap-1 mb-1.5"><Sparkles className="w-3 h-3" />{session.reason}</p>
-                          )}
-                          {session.exercises.length > 0 ? (
-                            <div className="space-y-1.5">
-                              {session.exercises.map((ex, i) => (
-                                <div key={i} className="flex items-center justify-between bg-white/[0.03] rounded-lg px-2.5 py-2">
-                                  <span className="text-xs text-white/70">{ex.name}</span>
-                                  <span className="text-[10px] text-white/40">{ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}</span>
-                                </div>
-                              ))}
+                )}
+
+                <div className="space-y-2">
+                  {weekDays.map((day) => {
+                    const primarySession = day.sessions[0];
+                    const config = WORKOUT_TYPE_CONFIG[primarySession?.workoutType || 'rest'] || WORKOUT_TYPE_CONFIG.rest;
+                    const isToday = isCurrentWeek && day.dayOfWeek === todayIndex;
+                    const isDayExpanded = expandedDay === day.dayOfWeek;
+                    const dayDrivers = Array.from(new Set(day.sessions.flatMap(s => s.focusDrivers)));
+                    const dayGoalNames = Array.from(new Set(
+                      activeGoals
+                        .filter(g => g.drivers.some(d => dayDrivers.includes(d)))
+                        .map(g => g.name)
+                    ));
+
+                    return (
+                      <button key={day.dayOfWeek}
+                        onClick={() => setExpandedDay(isDayExpanded ? null : day.dayOfWeek)}
+                        className={`w-full text-left rounded-xl border transition-all ${
+                          isToday ? 'bg-emerald-500/[0.07] border-emerald-500/20' : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
+                        }`}>
+                        <div className="flex items-center gap-3 p-3">
+                          <div className={`w-9 h-9 rounded-lg ${config.bg} flex items-center justify-center shrink-0`}>
+                            <span className={config.color}>{config.icon}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-medium text-white">{DAY_SHORT[day.dayOfWeek]}</span>
+                              {isToday && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">TODAY</span>}
+                              {day.sessions.length > 1 && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">{day.sessions.length} sessions</span>}
                             </div>
-                          ) : (
-                            <p className="text-[11px] text-white/30 italic">No exercises — enjoy the rest!</p>
-                          )}
+                            <p className="text-[11px] text-white/40 capitalize mt-0.5 truncate">
+                              {day.isRest ? (day.restReason || 'Rest day') : day.sessions.map(s => s.label).join(' + ')}
+                            </p>
+                            {!day.isRest && dayGoalNames.length > 0 && (
+                              <p className="text-[10px] text-emerald-400/70 mt-0.5 truncate">
+                                → {dayGoalNames.slice(0, 2).join(', ')}{dayGoalNames.length > 2 ? ` +${dayGoalNames.length - 2}` : ''}
+                              </p>
+                            )}
+                          </div>
+                          <div className="text-white/20">
+                            {isDayExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </div>
                         </div>
-                      ))}
-                      {day.isRest && day.sessions.length === 0 && (
-                        <p className="text-[11px] text-white/30 italic">No exercises — enjoy the rest!</p>
-                      )}
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+                        {isDayExpanded && (
+                          <div className="px-3 pb-3 border-t border-white/[0.04] pt-2 space-y-3">
+                            {day.sessions.map((session, si) => (
+                              <div key={si}>
+                                {day.sessions.length > 1 && (
+                                  <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mb-1.5">{session.label}</p>
+                                )}
+                                {session.reason && (
+                                  <p className="text-[11px] text-emerald-400/80 flex items-start gap-1 mb-1.5"><Sparkles className="w-3 h-3 mt-0.5 shrink-0" /><span>{session.reason}</span></p>
+                                )}
+                                {session.exercises.length > 0 ? (
+                                  <div className="space-y-1.5">
+                                    {session.exercises.map((ex, i) => (
+                                      <div key={i} className="flex items-center justify-between bg-white/[0.03] rounded-lg px-2.5 py-2">
+                                        <span className="text-xs text-white/70">{ex.name}</span>
+                                        <span className="text-[10px] text-white/40">{ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className="text-[11px] text-white/30 italic">No exercises — enjoy the rest!</p>
+                                )}
+                              </div>
+                            ))}
+                            {day.isRest && day.sessions.length === 0 && (
+                              <p className="text-[11px] text-white/30 italic">No exercises — enjoy the rest!</p>
+                            )}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            );
+          })()}
             </div>
-          </div>
           )}
         </div>
       </div>
