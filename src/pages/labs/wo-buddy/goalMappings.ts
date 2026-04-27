@@ -190,7 +190,9 @@ const PHASE_TEMPLATES: Record<string, Array<{ name: string; icon: string; color:
  * then distributes phases across that window.
  */
 export function generateTrainingPhases(goals: GoalInput[]): { phases: TrainingPhase[]; totalWeeks: number; weeksRemaining: number; deadlineDate: Date | null } {
-  const activeGoals = goals.filter(g => g.status !== 'achieved');
+  // Real DB statuses are 'active' | 'paused' | 'completed' | 'archived'.
+  // Only goals you're currently pursuing should shape the periodized plan.
+  const activeGoals = goals.filter(g => g.status === 'active');
 
   if (activeGoals.length === 0) {
     return {
