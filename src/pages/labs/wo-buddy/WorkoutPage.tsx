@@ -430,12 +430,14 @@ const WorkoutPage = () => {
       const ex = session.exercises[exIdx];
       const drivers = ACTIVITY_DRIVER_MAP[ex.name] || session.focusDrivers;
       const impactedGoals = goals.filter(g =>
-        g.status !== 'achieved' && g.drivers.some(d => drivers.includes(d))
+        g.status === 'active' && g.drivers.some(d => drivers.includes(d))
       );
       impactedGoals.forEach(g => {
         const increment = Math.max(1, Math.round(g.target_value * 0.02));
         const newVal = Math.min(g.current_value + increment, g.target_value);
-        const newStatus = newVal >= g.target_value ? 'achieved' : newVal >= g.target_value * 0.6 ? 'on_track' : 'at_risk';
+        // DB statuses are 'active' | 'paused' | 'completed' | 'archived'.
+        // Mark as completed only when target is reached; otherwise keep active.
+        const newStatus = newVal >= g.target_value ? 'completed' : 'active';
         updateGoal(g.id, { current_value: newVal, status: newStatus });
       });
     } else if (action === 'dismissed') {
