@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useMemo } from 'react';
 import { useCF } from './useCFStore';
+import { useDashboardStats } from './useDashboardStats';
 import { Users, MapPin, Building2, Mail, Globe, Phone, Award, ShieldCheck, TrendingUp, Bookmark, ArrowRight, Sparkles, Activity } from 'lucide-react';
 import { ConfidenceMeter, LicenseStatusBadge, relativeTime } from './components/Atoms';
 import { tradeLabel } from './tradeLabels';
