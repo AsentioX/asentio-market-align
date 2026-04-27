@@ -36,6 +36,31 @@ export interface PersonalRecord {
   label: string;
   /** ISO date string when the PR was set */
   achievedAt: string;
+  /** Numeric improvement over previous best of the same exercise (same units as `value`). */
+  delta?: number;
+  /** True if delta represents an improvement (higher for strength/bw, longer for cardio). */
+  improving?: boolean;
+}
+
+export interface ExerciseTrendPoint {
+  week: string;          // e.g. "W1"
+  weekStart: string;     // ISO date
+  value: number;         // metric value (lbs / mi / reps)
+}
+
+export interface ExerciseTrendMeta {
+  name: string;
+  type: 'strength' | 'cardio' | 'bodyweight';
+  icon: string;
+  unit: string;          // "lbs" | "mi" | "reps"
+  metricLabel: string;   // "Max Weight" | "Distance" | "Max Reps"
+}
+
+export interface ConsistencyStats {
+  currentStreak: number;
+  longestStreak: number;
+  thisMonth: number;
+  avgPerWeek: number;
 }
 
 const KM_TO_MI = 0.621371;
@@ -302,37 +327,161 @@ export function useWOBuddyStats() {
 
   /** One personal record per tracked exercise (best single-set value + date). */
   const personalRecords = useMemo<PersonalRecord[]>(() => {
-    const best = new Map<string, { ex: RawExercise; metric: number }>();
+    // Group exercises per name, sorted oldest -> newest, so we can compute previous best.
+    const byName = new Map<string, RawExercise[]>();
     for (const e of exercises) {
-      let metric = 0;
-      if (e.type === 'strength') metric = Number(e.weight_lbs) || 0;
-      else if (e.type === 'cardio') metric = (Number(e.distance_km) || 0) * KM_TO_MI;
-      else metric = (e.reps || 0); // bodyweight: max single-set reps
-      if (metric <= 0) continue;
-      const cur = best.get(e.name);
-      if (!cur || metric > cur.metric) best.set(e.name, { ex: e, metric });
+      const arr = byName.get(e.name) ?? [];
+      arr.push(e);
+      byName.set(e.name, arr);
     }
+
+    const metricFor = (e: RawExercise): number => {
+      if (e.type === 'strength') return Number(e.weight_lbs) || 0;
+      if (e.type === 'cardio') return (Number(e.distance_km) || 0) * KM_TO_MI;
+      return e.reps || 0;
+    };
+
     const records: PersonalRecord[] = [];
-    best.forEach(({ ex, metric }, name) => {
-      const type = ex.type as PersonalRecord['type'];
-      const value = type === 'strength' ? `${Math.round(metric)} lbs`
-        : type === 'cardio' ? `${(Math.round(metric * 10) / 10)} mi`
-        : `${Math.round(metric)} reps`;
+    byName.forEach((list, name) => {
+      const sorted = [...list].sort((a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      );
+      let bestSoFar = 0;
+      let prevBest = 0;
+      let prEx: RawExercise | null = null;
+      for (const e of sorted) {
+        const m = metricFor(e);
+        if (m <= 0) continue;
+        if (m > bestSoFar) {
+          prevBest = bestSoFar;
+          bestSoFar = m;
+          prEx = e;
+        }
+      }
+      if (!prEx || bestSoFar <= 0) return;
+      const type = prEx.type as PersonalRecord['type'];
+      const value = type === 'strength' ? `${Math.round(bestSoFar)} lbs`
+        : type === 'cardio' ? `${(Math.round(bestSoFar * 10) / 10)} mi`
+        : `${Math.round(bestSoFar)} reps`;
       const label = type === 'strength' ? 'Max Weight'
         : type === 'cardio' ? 'Longest Distance'
         : 'Most Reps';
+      const delta = prevBest > 0 ? bestSoFar - prevBest : undefined;
       records.push({
         exerciseName: name,
         type,
-        icon: pickIcon(name, ex.type),
+        icon: pickIcon(name, prEx.type),
         value,
         label,
-        achievedAt: ex.timestamp,
+        achievedAt: prEx.timestamp,
+        delta,
+        improving: delta !== undefined ? delta > 0 : undefined,
       });
     });
-    // Sort by most-impressive-feeling first: strength weight desc, then cardio dist, then reps
     return records.sort((a, b) => new Date(b.achievedAt).getTime() - new Date(a.achievedAt).getTime());
   }, [exercises]);
+
+  /** Per-exercise weekly trend (last up-to-8 weeks where the exercise has data). */
+  const exerciseTrends = useMemo<{ meta: ExerciseTrendMeta; points: ExerciseTrendPoint[] }[]>(() => {
+    const byName = new Map<string, RawExercise[]>();
+    for (const e of exercises) {
+      const arr = byName.get(e.name) ?? [];
+      arr.push(e);
+      byName.set(e.name, arr);
+    }
+
+    const result: { meta: ExerciseTrendMeta; points: ExerciseTrendPoint[] }[] = [];
+    byName.forEach((list, name) => {
+      const type = list[0].type as ExerciseTrendMeta['type'];
+      // Bucket by ISO Sunday-week start.
+      const buckets = new Map<string, RawExercise[]>();
+      for (const e of list) {
+        const d = new Date(e.timestamp);
+        const w = new Date(d);
+        w.setHours(0, 0, 0, 0);
+        w.setDate(w.getDate() - w.getDay());
+        const key = w.toISOString().slice(0, 10);
+        const arr = buckets.get(key) ?? [];
+        arr.push(e);
+        buckets.set(key, arr);
+      }
+      const ordered = [...buckets.entries()].sort((a, b) => a[0].localeCompare(b[0])).slice(-8);
+      const points: ExerciseTrendPoint[] = ordered.map(([weekStart, exs], i) => {
+        let value = 0;
+        if (type === 'strength') value = Math.max(...exs.map(x => Number(x.weight_lbs) || 0));
+        else if (type === 'cardio') value = exs.reduce((s, x) => s + (Number(x.distance_km) || 0) * KM_TO_MI, 0);
+        else value = Math.max(...exs.map(x => x.reps || 0));
+        return {
+          week: `W${i + 1}`,
+          weekStart,
+          value: type === 'cardio' ? Math.round(value * 10) / 10 : Math.round(value),
+        };
+      });
+      const unit = type === 'cardio' ? 'mi' : type === 'strength' ? 'lbs' : 'reps';
+      const metricLabel = type === 'cardio' ? 'Distance' : type === 'strength' ? 'Max Weight' : 'Max Reps';
+      result.push({
+        meta: { name, type, icon: pickIcon(name, type), unit, metricLabel },
+        points,
+      });
+    });
+    // Prefer trends with more data points
+    return result
+      .filter(r => r.points.length >= 2)
+      .sort((a, b) => b.points.length - a.points.length);
+  }, [exercises]);
+
+  /** Streaks + monthly volume. */
+  const consistency = useMemo<ConsistencyStats>(() => {
+    if (workouts.length === 0) {
+      return { currentStreak: 0, longestStreak: 0, thisMonth: 0, avgPerWeek: 0 };
+    }
+    // Set of unique YYYY-MM-DD strings (local-ish using UTC slice for stability).
+    const dayKey = (d: Date) => {
+      const x = new Date(d);
+      x.setHours(0, 0, 0, 0);
+      return x.toISOString().slice(0, 10);
+    };
+    const days = new Set<string>();
+    for (const w of workouts) {
+      days.add(dayKey(new Date(w.completed_at || w.created_at)));
+    }
+    const sortedDays = [...days].sort();
+
+    // Longest streak
+    let longest = 1;
+    let run = 1;
+    for (let i = 1; i < sortedDays.length; i++) {
+      const prev = new Date(sortedDays[i - 1]);
+      const cur = new Date(sortedDays[i]);
+      const diffDays = Math.round((cur.getTime() - prev.getTime()) / 86400000);
+      if (diffDays === 1) { run++; longest = Math.max(longest, run); }
+      else run = 1;
+    }
+
+    // Current streak (counting back from today / yesterday)
+    let current = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let cursor = new Date(today);
+    if (!days.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1); // allow break for today
+    while (days.has(dayKey(cursor))) {
+      current++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    // This month
+    const moStart = startOfMonth();
+    const thisMonth = workouts.filter(w =>
+      new Date(w.completed_at || w.created_at) >= moStart
+    ).length;
+
+    // Avg per week: total workouts / weeks since first workout
+    const first = new Date(sortedDays[0]);
+    const weeks = Math.max(1, (today.getTime() - first.getTime()) / (7 * 86400000));
+    const avgPerWeek = Math.round((workouts.length / weeks) * 10) / 10;
+
+    return { currentStreak: current, longestStreak: longest, thisMonth, avgPerWeek };
+  }, [workouts]);
 
   return {
     loading,
@@ -340,6 +489,8 @@ export function useWOBuddyStats() {
     overviews,
     exerciseStats,
     personalRecords,
+    exerciseTrends,
+    consistency,
     weeklyMinutes,
     weeklyTrend,
     dailyBreakdown,
