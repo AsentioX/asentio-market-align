@@ -17,7 +17,6 @@ import SearchResult from './SearchResult';
 import VaultView from './VaultView';
 import SettingsView from './SettingsView';
 import PurchaseView from './PurchaseView';
-import PerkDrawer from './PerkDrawer';
 
 
 const PerkPathLayout = () => {
@@ -26,8 +25,6 @@ const PerkPathLayout = () => {
   const geo = useGeolocation();
   const [tab, setTab] = useState<'home' | 'purchase' | 'vault' | 'settings'>('home');
   const [searchValue, setSearchValue] = useState('');
-  const [selectedPerk, setSelectedPerk] = useState<Perk | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [scraping, setScraping] = useState(false);
 
   const searchResult = useMemo(() => searchValue.trim() ? searchPerks(perks, searchValue) : null, [perks, searchValue]);
@@ -60,25 +57,8 @@ const PerkPathLayout = () => {
 
   if (!user) return <PerkPathLogin />;
 
-  const handlePerkTap = (perk: Perk) => { setSelectedPerk(perk); setDrawerOpen(true); };
-
-
-
-
-  // Adapter for PerkDrawer (legacy Perk shape)
-  const drawerPerk = selectedPerk ? {
-    id: selectedPerk.id,
-    membershipId: selectedPerk.membership_id,
-    membershipName: selectedPerk.membership?.name ?? '',
-    brandColor: selectedPerk.membership?.brand_color ?? '#10b981',
-    title: selectedPerk.title,
-    value: selectedPerk.value_label,
-    category: 'shopping' as const,
-    image: selectedPerk.image_url ?? '',
-    distance: '—',
-    venue: selectedPerk.venue ?? '',
-    howToRedeem: selectedPerk.how_to_redeem ?? '',
-  } : null;
+  // Card flip handles details inline; tap is a no-op at the layout level.
+  const handlePerkTap = (_perk: Perk) => {};
 
   return (
     <div className="min-h-screen bg-white flex justify-center">
@@ -194,7 +174,6 @@ const PerkPathLayout = () => {
           </button>
         </nav>
 
-        <PerkDrawer perk={drawerPerk} open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       </div>
     </div>
   );
