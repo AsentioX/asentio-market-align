@@ -1,22 +1,35 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, ChevronDown, Check, X, Sparkles, ShieldAlert, UserCheck, Lightbulb, Zap, Eye, TrendingUp, Activity, LayoutGrid, Shield, Zap as ZapIcon, Users } from 'lucide-react';
+import {
+  Brain, ChevronDown, Check, X, Sparkles, ShieldAlert, UserCheck, Lightbulb, Zap, Eye,
+  TrendingUp, Activity, LayoutGrid, Shield, Zap as ZapIcon, Users,
+  User as UserIcon, Cpu, Clock as ClockIcon
+} from 'lucide-react';
 import { RES_FEED, type ResFeedEvent, type ResEventKind } from '../residentialData';
 import { COM_FEED, type ComFeedEvent, type ComEventKind } from '../commercialData';
 import { PRIORITY_STYLES } from '../x1Theme';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { HERO_VOICE, HERO_VOICE_COMMERCIAL, ACTION_VOICE, type SystemMood } from '../systemVoice';
+import { useAutonomy } from '../AutonomyContext';
 
 type AnyEventKind = ResEventKind | ComEventKind;
 type AnyEvent = ResFeedEvent | ComFeedEvent;
+type Actor = 'ai' | 'user' | 'system';
 
 const KIND_META: Record<AnyEventKind, { icon: any; label: string; gradient: string }> = {
-  identity: { icon: UserCheck, label: 'Identity', gradient: 'from-emerald-400 to-teal-500' },
-  security: { icon: ShieldAlert, label: 'Security', gradient: 'from-amber-400 to-orange-500' },
-  insight: { icon: Lightbulb, label: 'Insight', gradient: 'from-cyan-400 to-blue-500' },
-  suggestion: { icon: Sparkles, label: 'Suggestion', gradient: 'from-violet-400 to-fuchsia-500' },
-  action: { icon: Zap, label: 'Auto-action', gradient: 'from-indigo-400 to-violet-500' },
-  anomaly: { icon: Eye, label: 'Anomaly', gradient: 'from-rose-400 to-red-500' },
+  identity:   { icon: UserCheck,   label: 'Identity',    gradient: 'from-emerald-400 to-teal-500' },
+  security:   { icon: ShieldAlert, label: 'Security',    gradient: 'from-amber-400 to-orange-500' },
+  insight:    { icon: Lightbulb,   label: 'Insight',     gradient: 'from-cyan-400 to-blue-500' },
+  suggestion: { icon: Sparkles,    label: 'Suggestion',  gradient: 'from-violet-400 to-fuchsia-500' },
+  action:     { icon: Zap,         label: 'Auto-action', gradient: 'from-indigo-400 to-violet-500' },
+  anomaly:    { icon: Eye,         label: 'Anomaly',     gradient: 'from-rose-400 to-red-500' },
+};
+
+const ACTOR_META: Record<Actor, { label: string; cls: string; icon: any }> = {
+  ai:     { label: 'AI',      cls: 'bg-violet-50 text-violet-700 border-violet-200',  icon: Cpu },
+  user:   { label: 'You',     cls: 'bg-indigo-50 text-indigo-700 border-indigo-200',  icon: UserIcon },
+  system: { label: 'Passive', cls: 'bg-stone-100 text-stone-600 border-stone-200',     icon: Eye },
 };
 
 type CategoryTab = 'all' | 'security' | 'identity' | 'automation';
@@ -37,6 +50,7 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
   const [expanded, setExpanded] = useState<string | null>(events[0]?.id ?? null);
   const [resolved, setResolved] = useState<Record<string, 'approved' | 'dismissed'>>({});
   const [activeTab, setActiveTab] = useState<CategoryTab>('all');
+  const { level } = useAutonomy();
 
   const filteredEvents = useMemo(() => {
     if (activeTab === 'all') return events;
@@ -46,11 +60,26 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
     return events;
   }, [activeTab, events]);
 
+  // Compute system mood from any visible critical/high events
+  const mood: SystemMood = useMemo(() => {
+    if (events.some((e) => e.priority === 'critical' && !resolved[e.id])) return 'urgent';
+    if (events.some((e) => e.priority === 'high' && !resolved[e.id])) return 'watch';
+    return 'calm';
+  }, [events, resolved]);
+  const voice = appMode === 'aihome' ? HERO_VOICE[mood] : HERO_VOICE_COMMERCIAL[mood];
+
   const handle = (id: string, action: 'approved' | 'dismissed', label: string) => {
     setResolved((r) => ({ ...r, [id]: action }));
     toast.success(action === 'approved' ? `Approved · ${label}` : 'Dismissed', {
       description: action === 'approved' ? 'System will learn from this confirmation.' : "X1 won't suggest this again.",
     });
+  };
+
+  const onPendingComplete = (label: string) => {
+    toast.success(ACTION_VOICE.executed(label));
+  };
+  const onPendingCancel = (label: string) => {
+    toast(ACTION_VOICE.confirmCancelled(label));
   };
 
   const hero = appMode === 'aihome'
@@ -88,6 +117,17 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
             <div className="text-[11px] uppercase tracking-[0.18em] text-violet-600 font-semibold mb-1.5">{hero.eyebrow}</div>
             <h1 className="text-[26px] leading-[1.15] font-semibold tracking-tight text-stone-900">{hero.greeting}</h1>
             <p className="text-sm text-stone-600 mt-3 leading-relaxed">{hero.sub}</p>
+
+            {/* System voice line */}
+            <div className={`mt-3 inline-flex items-center gap-2 text-[12.5px] font-medium ${voice.tone}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${
+                mood === 'urgent' ? 'bg-rose-500 animate-pulse' :
+                mood === 'watch' ? 'bg-amber-500' : 'bg-emerald-500'
+              }`} />
+              <em className="not-italic">"{voice.line}"</em>
+              <span className="text-stone-400">·</span>
+              <span className="text-[11px] text-stone-500 font-normal">Autonomy: {level}</span>
+            </div>
           </div>
         </div>
 
@@ -126,7 +166,7 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
       {/* Live feed header with count */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold">Live feed</h2>
+          <h2 className="text-xs uppercase tracking-[0.18em] text-stone-500 font-semibold">Decision engine</h2>
           <span className="text-[11px] text-stone-400 bg-stone-100 rounded-full px-2 py-0.5">
             {filteredEvents.length}
           </span>
@@ -153,6 +193,10 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
             const p = PRIORITY_STYLES[event.priority];
             const kind = KIND_META[event.kind];
             const KindIcon = kind.icon;
+            const actor = (event.actor ?? 'system') as Actor;
+            const actorMeta = ACTOR_META[actor];
+            const ActorIcon = actorMeta.icon;
+            const isCritical = event.priority === 'critical';
 
             return (
               <motion.article
@@ -162,9 +206,14 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
                 animate={{ opacity: 1 }}
                 className={`relative rounded-2xl bg-white border overflow-hidden transition-all shadow-sm ${
                   isExpanded ? 'border-black/12 shadow-md' : 'border-black/[0.06] hover:border-black/12 hover:shadow-md'
-                } ${status === 'approved' ? 'opacity-60' : ''}`}
+                } ${status === 'approved' ? 'opacity-60' : ''} ${isCritical ? 'ring-1 ring-rose-200/60' : ''}`}
               >
-                <div className={`absolute left-0 top-0 bottom-0 w-1 ${p.dot}`} />
+                {/* Urgency rail */}
+                <div className={`absolute left-0 top-0 bottom-0 ${isCritical ? 'w-1.5' : 'w-1'} ${p.dot}`}>
+                  {isCritical && (
+                    <span className="absolute inset-0 bg-rose-400 animate-pulse opacity-60" />
+                  )}
+                </div>
 
                 <button
                   onClick={() => setExpanded(isExpanded ? null : event.id)}
@@ -179,6 +228,10 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
                       <span className={`text-[10px] uppercase tracking-wider font-bold ${p.text}`}>
                         {kind.label}
                       </span>
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${actorMeta.cls}`}>
+                        <ActorIcon className="w-2.5 h-2.5" />
+                        {actorMeta.label}
+                      </span>
                       <span className="text-[11px] text-stone-300">·</span>
                       <span className="text-[11px] text-stone-500">{event.timestamp}</span>
                       {event.confidence !== undefined && (
@@ -192,10 +245,16 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
                       )}
                     </div>
                     <h3 className="text-[15px] font-semibold text-stone-900 mt-1 leading-snug">{event.title}</h3>
+                    {event.whyItMatters && (
+                      <p className="text-[12.5px] text-violet-700 mt-1 leading-relaxed">
+                        <span className="font-semibold">Why it matters · </span>
+                        {event.whyItMatters}
+                      </p>
+                    )}
                     <p className="text-[13px] text-stone-600 mt-1 leading-relaxed">{event.detail}</p>
                   </div>
 
-                  {(event.reasoning || event.suggestedAction) && (
+                  {(event.reasoning || event.suggestedAction || event.pendingAction || event.quickActions) && (
                     <ChevronDown
                       className={`w-4 h-4 text-stone-400 flex-shrink-0 mt-1 transition-transform ${
                         isExpanded ? 'rotate-180' : ''
@@ -204,8 +263,23 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
                   )}
                 </button>
 
+                {/* Pending action countdown — always visible (not behind expand) for urgency */}
+                {event.pendingAction && !status && (
+                  <div className="px-5 pb-4">
+                    <PendingActionBar
+                      label={event.pendingAction.label}
+                      seconds={event.pendingAction.countdownSec}
+                      onComplete={() => onPendingComplete(event.pendingAction!.label)}
+                      onCancel={() => {
+                        onPendingCancel(event.pendingAction!.label);
+                        setResolved((r) => ({ ...r, [event.id]: 'dismissed' }));
+                      }}
+                    />
+                  </div>
+                )}
+
                 <AnimatePresence>
-                  {isExpanded && (event.reasoning || event.suggestedAction) && (
+                  {isExpanded && (event.reasoning || event.suggestedAction || event.quickActions) && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
@@ -228,6 +302,23 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
                                 </li>
                               ))}
                             </ul>
+                          </div>
+                        )}
+
+                        {event.quickActions && event.quickActions.length > 0 && !status && (
+                          <div className="flex flex-wrap gap-2">
+                            {event.quickActions.map((qa) => (
+                              <button
+                                key={qa.label}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toast.success(`${qa.label}`, { description: 'Quick action sent.' });
+                                }}
+                                className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 transition-colors"
+                              >
+                                {qa.label}
+                              </button>
+                            ))}
                           </div>
                         )}
 
@@ -276,6 +367,59 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
           })}
         </motion.div>
       </AnimatePresence>
+    </div>
+  );
+};
+
+const PendingActionBar = ({
+  label, seconds, onComplete, onCancel,
+}: { label: string; seconds: number; onComplete: () => void; onCancel: () => void }) => {
+  const [remaining, setRemaining] = useState(seconds);
+  const [cancelled, setCancelled] = useState(false);
+  const completedRef = useRef(false);
+
+  useEffect(() => {
+    if (cancelled) return;
+    if (remaining <= 0) {
+      if (!completedRef.current) {
+        completedRef.current = true;
+        onComplete();
+      }
+      return;
+    }
+    const t = setTimeout(() => setRemaining((r) => r - 1), 1000);
+    return () => clearTimeout(t);
+  }, [remaining, cancelled, onComplete]);
+
+  if (cancelled) return null;
+  if (remaining <= 0) {
+    return (
+      <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-2 text-[12px] font-semibold text-emerald-700 inline-flex items-center gap-1.5">
+        <Check className="w-3.5 h-3.5" /> {label} · done
+      </div>
+    );
+  }
+  const pct = ((seconds - remaining) / seconds) * 100;
+  return (
+    <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="text-[12.5px] text-amber-900 font-semibold inline-flex items-center gap-1.5">
+          <ClockIcon className="w-3.5 h-3.5" />
+          {label} in {remaining}s
+        </div>
+        <button
+          onClick={() => { setCancelled(true); onCancel(); }}
+          className="text-[11px] font-bold uppercase tracking-wider text-amber-800 hover:text-amber-950 px-2 py-1 rounded-lg hover:bg-amber-100 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+      <div className="mt-2 h-1.5 rounded-full bg-amber-100 overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
     </div>
   );
 };

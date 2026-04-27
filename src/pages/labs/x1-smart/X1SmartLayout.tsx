@@ -1,25 +1,28 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Activity, Users, Home, Sliders, Sparkles, Building2, LogOut } from 'lucide-react';
+import { ArrowLeft, Activity, Users, Home, Sliders, Sparkles, Building2, LogOut, Clock, Brain } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import X1SmartLogin from './X1SmartLogin';
 import IntelligenceFeed from './screens/IntelligenceFeed';
+import TimelineMemory from './screens/TimelineMemory';
 import ResidentialPeople from './screens/residential/ResidentialPeople';
 import ResidentialSpaces from './screens/residential/ResidentialSpaces';
 import ResidentialAutonomy from './screens/residential/ResidentialAutonomy';
 import CommercialPeople from './screens/commercial/CommercialPeople';
 import CommercialSpaces from './screens/commercial/CommercialSpaces';
 import CommercialAutonomy from './screens/commercial/CommercialAutonomy';
+import { AutonomyProvider, useAutonomy, AUTONOMY_LEVELS, type AutonomyLevel } from './AutonomyContext';
 
 type AppMode = 'aihome' | 'aispaces';
-type Surface = 'feed' | 'people' | 'spaces' | 'autonomy';
+type Surface = 'feed' | 'people' | 'spaces' | 'autonomy' | 'timeline';
 
 const TABS: { key: Surface; label: string; icon: any }[] = [
   { key: 'feed', label: 'Intelligence', icon: Activity },
   { key: 'people', label: 'People', icon: Users },
   { key: 'spaces', label: 'Spaces', icon: Home },
   { key: 'autonomy', label: 'Autonomy', icon: Sliders },
+  { key: 'timeline', label: 'Timeline', icon: Clock },
 ];
 
 const APP_META = {
@@ -41,10 +44,11 @@ const APP_META = {
   },
 } as const;
 
-const X1SmartLayout = () => {
+const X1SmartLayoutInner = () => {
   const [appMode, setAppMode] = useState<AppMode>('aihome');
   const [surface, setSurface] = useState<Surface>('feed');
   const { user, loading, signOut } = useAuth();
+  const { level, setLevel } = useAutonomy();
 
   const meta = APP_META[appMode];
   const AppIcon = meta.icon;
@@ -107,32 +111,33 @@ const X1SmartLayout = () => {
 
           {/* App mode toggle (upper right) */}
           <div className="ml-auto flex items-center gap-3">
-          <button
-            onClick={signOut}
-            className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100"
-            title="Sign out"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            Sign Out
-          </button>
-          <div className="inline-flex p-1 rounded-2xl bg-stone-900 shadow-lg">
-            <ModeToggleBtn
-              active={appMode === 'aihome'}
-              onClick={() => setAppMode('aihome')}
-              icon={Home}
-              label="X1 AiHome"
-              sublabel="Residential"
-              activeGrad="from-emerald-500 to-cyan-500"
-            />
-            <ModeToggleBtn
-              active={appMode === 'aispaces'}
-              onClick={() => setAppMode('aispaces')}
-              icon={Building2}
-              label="X1 AiSpaces"
-              sublabel="Commercial"
-              activeGrad="from-indigo-500 to-violet-600"
-            />
-          </div>
+            <AutonomyChip level={level} onChange={setLevel} />
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100"
+              title="Sign out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Sign Out
+            </button>
+            <div className="inline-flex p-1 rounded-2xl bg-stone-900 shadow-lg">
+              <ModeToggleBtn
+                active={appMode === 'aihome'}
+                onClick={() => setAppMode('aihome')}
+                icon={Home}
+                label="X1 AiHome"
+                sublabel="Residential"
+                activeGrad="from-emerald-500 to-cyan-500"
+              />
+              <ModeToggleBtn
+                active={appMode === 'aispaces'}
+                onClick={() => setAppMode('aispaces')}
+                icon={Building2}
+                label="X1 AiSpaces"
+                sublabel="Commercial"
+                activeGrad="from-indigo-500 to-violet-600"
+              />
+            </div>
           </div>
         </div>
 
@@ -180,12 +185,19 @@ const X1SmartLayout = () => {
             {surface === 'people' && (appMode === 'aihome' ? <ResidentialPeople /> : <CommercialPeople />)}
             {surface === 'spaces' && (appMode === 'aihome' ? <ResidentialSpaces /> : <CommercialSpaces />)}
             {surface === 'autonomy' && (appMode === 'aihome' ? <ResidentialAutonomy /> : <CommercialAutonomy />)}
+            {surface === 'timeline' && <TimelineMemory appMode={appMode} />}
           </motion.div>
         </AnimatePresence>
       </main>
     </div>
   );
 };
+
+const X1SmartLayout = () => (
+  <AutonomyProvider>
+    <X1SmartLayoutInner />
+  </AutonomyProvider>
+);
 
 const ModeToggleBtn = ({ active, onClick, icon: Icon, label, sublabel, activeGrad }: {
   active: boolean; onClick: () => void; icon: any; label: string; sublabel: string; activeGrad: string;
@@ -210,5 +222,42 @@ const ModeToggleBtn = ({ active, onClick, icon: Icon, label, sublabel, activeGra
     </div>
   </button>
 );
+
+const AutonomyChip = ({ level, onChange }: { level: AutonomyLevel; onChange: (l: AutonomyLevel) => void }) => {
+  const [open, setOpen] = useState(false);
+  const current = AUTONOMY_LEVELS.find((l) => l.value === level)!;
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 transition-colors"
+        title="Autonomy level"
+      >
+        <Brain className="w-3.5 h-3.5" />
+        <span className="uppercase tracking-wider text-[10px] text-violet-500">Autonomy</span>
+        <span>{current.label}</span>
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-black/[0.08] shadow-xl z-40 p-2">
+            {AUTONOMY_LEVELS.map((l) => (
+              <button
+                key={l.value}
+                onClick={() => { onChange(l.value); setOpen(false); }}
+                className={`w-full text-left px-3 py-2.5 rounded-xl transition-colors ${
+                  l.value === level ? 'bg-violet-50' : 'hover:bg-stone-50'
+                }`}
+              >
+                <div className={`text-[13px] font-bold ${l.value === level ? 'text-violet-700' : 'text-stone-900'}`}>{l.label}</div>
+                <div className="text-[11px] text-stone-500 mt-0.5">{l.description}</div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 export default X1SmartLayout;
