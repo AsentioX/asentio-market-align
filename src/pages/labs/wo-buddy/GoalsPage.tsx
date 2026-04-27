@@ -834,6 +834,7 @@ const GoalsPage = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* Exercise Library Dialog */}
       <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
