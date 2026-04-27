@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Sparkles, Power, Brain, Sun, Shield, Thermometer, Home as HomeIcon, UserPlus, Leaf, Target, Zap } from 'lucide-react';
+import { Plus, Sparkles, Power, Brain, Sun, Shield, Thermometer, Home as HomeIcon, UserPlus, Leaf, Target, Zap, ChevronDown } from 'lucide-react';
 import { RES_RULES, RES_GOALS, type ResRule, type ResRuleCategory, type ResGoal } from '../../residentialData';
 import { toast } from 'sonner';
 import { useAutonomy, AUTONOMY_LEVELS } from '../../AutonomyContext';
@@ -26,7 +26,9 @@ const ResidentialAutonomy = () => {
   const [rules, setRules] = useState<ResRule[]>(RES_RULES);
   const [goals, setGoals] = useState<ResGoal[]>(RES_GOALS);
   const [view, setView] = useState<'goals' | 'rules'>('goals');
+  const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
   const { level, setLevel } = useAutonomy();
+  const toggleGoal = (id: string) => setExpandedGoals((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const toggle = (id: string) => {
     setRules((rs) => rs.map((r) => (r.id === id ? { ...r, active: !r.active } : r)));
@@ -76,9 +78,14 @@ const ResidentialAutonomy = () => {
           {goals.map((g) => {
             const Icon = GOAL_ICON[g.icon];
             const enabled = g.generatedRules.filter((r) => r.enabled).length;
+            const isOpen = expandedGoals.has(g.id);
             return (
               <motion.div key={g.id} layout className="rounded-3xl border border-black/[0.06] bg-white shadow-sm overflow-hidden">
-                <div className="p-5 border-b border-black/[0.06] flex items-start gap-3">
+                <button
+                  type="button"
+                  onClick={() => toggleGoal(g.id)}
+                  className={`w-full text-left p-5 flex items-start gap-3 hover:bg-stone-50/60 transition-colors ${isOpen ? 'border-b border-black/[0.06]' : ''}`}
+                >
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-md shrink-0">
                     <Icon className="w-5 h-5 text-white" strokeWidth={2} />
                   </div>
@@ -90,39 +97,42 @@ const ResidentialAutonomy = () => {
                       <span className="font-semibold text-violet-700">{enabled} of {g.generatedRules.length}</span> generated rules active · Based on {g.basedOn}
                     </div>
                   </div>
-                </div>
-                <div className="p-5 space-y-2">
-                  {g.generatedRules.map((rule, i) => (
-                    <div key={i} className={`rounded-xl border p-3 transition-all ${rule.enabled ? 'border-violet-200 bg-violet-50/40' : 'border-stone-200 bg-white opacity-70'}`}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[14px] font-semibold text-stone-900">{rule.label}</div>
-                          <div className="text-[12px] text-stone-600 mt-1 leading-snug">{rule.reasoning}</div>
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {rule.impact.map((imp) => (
-                              <span key={imp} className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${IMPACT_META[imp].cls}`}>
-                                {IMPACT_META[imp].label}
-                              </span>
-                            ))}
+                  <ChevronDown className={`w-5 h-5 text-stone-400 shrink-0 mt-1 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isOpen && (
+                  <div className="p-5 space-y-2">
+                    {g.generatedRules.map((rule, i) => (
+                      <div key={i} className={`rounded-xl border p-3 transition-all ${rule.enabled ? 'border-violet-200 bg-violet-50/40' : 'border-stone-200 bg-white opacity-70'}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[14px] font-semibold text-stone-900">{rule.label}</div>
+                            <div className="text-[12px] text-stone-600 mt-1 leading-snug">{rule.reasoning}</div>
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {rule.impact.map((imp) => (
+                                <span key={imp} className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${IMPACT_META[imp].cls}`}>
+                                  {IMPACT_META[imp].label}
+                                </span>
+                              ))}
+                            </div>
                           </div>
+                          <button
+                            onClick={() => toggleGeneratedRule(g.id, i)}
+                            className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${rule.enabled ? 'bg-violet-600' : 'bg-stone-300'}`}
+                          >
+                            <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${rule.enabled ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => toggleGeneratedRule(g.id, i)}
-                          className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${rule.enabled ? 'bg-violet-600' : 'bg-stone-300'}`}
-                        >
-                          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${rule.enabled ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                        </button>
-                      </div>
-                      {/* Confidence bar */}
-                      <div className="mt-3 flex items-center gap-2">
-                        <div className="flex-1 h-1.5 rounded-full bg-stone-100 overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500" style={{ width: `${rule.confidence * 100}%` }} />
+                        {/* Confidence bar */}
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="flex-1 h-1.5 rounded-full bg-stone-100 overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500" style={{ width: `${rule.confidence * 100}%` }} />
+                          </div>
+                          <span className="text-[11px] font-bold text-violet-700">{Math.round(rule.confidence * 100)}%</span>
                         </div>
-                        <span className="text-[11px] font-bold text-violet-700">{Math.round(rule.confidence * 100)}%</span>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             );
           })}
