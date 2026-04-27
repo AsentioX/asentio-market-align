@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon, Trash2 } from 'lucide-react';
-import { mockUser } from './mockData';
+import { useWOBuddyStats } from '@/hooks/useWOBuddyStats';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 import { supabase } from '@/integrations/supabase/client';
