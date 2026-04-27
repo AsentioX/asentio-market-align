@@ -2,11 +2,11 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Brain, ChevronDown, Check, X, Sparkles, ShieldAlert, UserCheck, Lightbulb, Zap, Eye,
-  TrendingUp, Activity, LayoutGrid, Shield, Zap as ZapIcon, Users,
+  TrendingUp, TrendingDown, Activity, LayoutGrid, Shield, Zap as ZapIcon, Users,
   User as UserIcon, Cpu, Clock as ClockIcon
 } from 'lucide-react';
-import { RES_FEED, type ResFeedEvent, type ResEventKind } from '../residentialData';
-import { COM_FEED, type ComFeedEvent, type ComEventKind } from '../commercialData';
+import { RES_FEED, RES_INSIGHTS, type ResFeedEvent, type ResEventKind } from '../residentialData';
+import { COM_FEED, COM_INSIGHTS, type ComFeedEvent, type ComEventKind } from '../commercialData';
 import { PRIORITY_STYLES } from '../x1Theme';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -47,6 +47,7 @@ interface IntelligenceFeedProps {
 
 const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
   const events: AnyEvent[] = appMode === 'aihome' ? RES_FEED : COM_FEED;
+  const insights = appMode === 'aihome' ? RES_INSIGHTS : COM_INSIGHTS;
   const [expanded, setExpanded] = useState<string | null>(events[0]?.id ?? null);
   const [resolved, setResolved] = useState<Record<string, 'approved' | 'dismissed'>>({});
   const [activeTab, setActiveTab] = useState<CategoryTab>('all');
