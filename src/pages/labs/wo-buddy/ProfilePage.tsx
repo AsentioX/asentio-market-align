@@ -208,10 +208,10 @@ const ProfilePage = () => {
                     <Pencil className="w-3 h-3 inline ml-1.5 opacity-0 group-hover/name:opacity-60 transition-opacity" />
                   </h2>
                 )}
-                <p className="text-xs text-white/40">Member since {mockUser.memberSince}</p>
+                <p className="text-xs text-white/40">Member since {memberSince}</p>
                 <div className="flex items-center justify-center gap-2 mt-1.5">
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {mockUser.level}</span>
-                  <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full font-medium border border-amber-500/20">🔥 {mockUser.weeklyStreak}w streak</span>
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {level}</span>
+                  <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full font-medium border border-amber-500/20">🏋️ {workoutCount} workouts</span>
                 </div>
               </div>
             </div>
