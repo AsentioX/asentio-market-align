@@ -300,11 +300,46 @@ export function useWOBuddyStats() {
     }, 0);
   }, [workouts]);
 
+  /** One personal record per tracked exercise (best single-set value + date). */
+  const personalRecords = useMemo<PersonalRecord[]>(() => {
+    const best = new Map<string, { ex: RawExercise; metric: number }>();
+    for (const e of exercises) {
+      let metric = 0;
+      if (e.type === 'strength') metric = Number(e.weight_lbs) || 0;
+      else if (e.type === 'cardio') metric = (Number(e.distance_km) || 0) * KM_TO_MI;
+      else metric = (e.reps || 0); // bodyweight: max single-set reps
+      if (metric <= 0) continue;
+      const cur = best.get(e.name);
+      if (!cur || metric > cur.metric) best.set(e.name, { ex: e, metric });
+    }
+    const records: PersonalRecord[] = [];
+    best.forEach(({ ex, metric }, name) => {
+      const type = ex.type as PersonalRecord['type'];
+      const value = type === 'strength' ? `${Math.round(metric)} lbs`
+        : type === 'cardio' ? `${(Math.round(metric * 10) / 10)} mi`
+        : `${Math.round(metric)} reps`;
+      const label = type === 'strength' ? 'Max Weight'
+        : type === 'cardio' ? 'Longest Distance'
+        : 'Most Reps';
+      records.push({
+        exerciseName: name,
+        type,
+        icon: pickIcon(name, ex.type),
+        value,
+        label,
+        achievedAt: ex.timestamp,
+      });
+    });
+    // Sort by most-impressive-feeling first: strength weight desc, then cardio dist, then reps
+    return records.sort((a, b) => new Date(b.achievedAt).getTime() - new Date(a.achievedAt).getTime());
+  }, [exercises]);
+
   return {
     loading,
     isAuthenticated: !!user,
     overviews,
     exerciseStats,
+    personalRecords,
     weeklyMinutes,
     weeklyTrend,
     dailyBreakdown,
