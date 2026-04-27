@@ -5,6 +5,11 @@ export type ResHomeMode = 'home' | 'away' | 'night' | 'vacation';
 export type ResSpaceState = 'active' | 'secure' | 'alert';
 export type ResEventKind = 'identity' | 'security' | 'insight' | 'suggestion' | 'action' | 'anomaly';
 export type ResEventPriority = 'critical' | 'high' | 'normal' | 'low';
+export type ResActor = 'ai' | 'user' | 'system';
+export type ResTrust = 'trusted' | 'familiar' | 'unknown' | 'suspicious';
+export type ResAdaptiveState =
+  | 'morning-ramp' | 'daytime-quiet' | 'evening-winddown' | 'quiet-night'
+  | 'hosting-guests' | 'away-secure' | 'away-expecting-delivery' | 'vacation-secure';
 
 export interface ResFeedEvent {
   id: string;
@@ -19,6 +24,11 @@ export interface ResFeedEvent {
   reasoning?: string[];
   suggestedAction?: { label: string; impact: string };
   resolved?: boolean;
+  // Decision-Engine extensions
+  actor?: ResActor;
+  whyItMatters?: string;
+  pendingAction?: { label: string; countdownSec: number };
+  quickActions?: { label: string; intent: 'view' | 'lock' | 'ignore' | 'approve' }[];
 }
 
 export interface ResPerson {
@@ -31,11 +41,29 @@ export interface ResPerson {
   lastSeen: string;
   lastLocation: string;
   permissions: string[];
-  accessWindow?: string; // for guests/vendors
-  triggers: string[]; // automation triggers tied to this person
+  accessWindow?: string;
+  triggers: string[];
   recentActivity: { time: string; action: string }[];
   patterns: string[];
   devices: string[];
+  // Trust + Intent extensions
+  trust: ResTrust;
+  intent?: string;
+  intentConfidence?: number;
+  visitFrequency?: string;
+  typicalTimes?: string;
+  anomalies?: string[];
+  whyXiActed?: { time: string; action: string; reason: string }[];
+  linkedAutomations?: { id: string; label: string }[];
+}
+
+export interface ResAdaptiveStateMeta {
+  current: ResAdaptiveState;
+  label: string;
+  confidence: number;
+  enteredAt: string;
+  reason: string;
+  next?: { state: string; etaMin: number; reason: string };
 }
 
 export interface ResSpace {
@@ -49,6 +77,34 @@ export interface ResSpace {
   rooms: { name: string; activity: 'active' | 'idle'; sensors: number }[];
   activeAutomations: string[];
   suggestedActions: string[];
+  // Adaptive-state extension
+  adaptiveState?: ResAdaptiveStateMeta;
+  stateTimeline?: { state: string; from: string; to: string }[];
+}
+
+// Outcome-based goals
+export interface ResGoal {
+  id: string;
+  title: string;
+  description: string;
+  icon: 'shield' | 'sun' | 'leaf' | 'sparkles';
+  basedOn: string; // "23 nights of behavior"
+  generatedRules: {
+    label: string;
+    confidence: number;
+    reasoning: string;
+    impact: ('security' | 'energy' | 'convenience')[];
+    enabled: boolean;
+  }[];
+}
+
+// Memory / timeline insights
+export interface ResInsight {
+  id: string;
+  headline: string;
+  detail: string;
+  trend: 'up' | 'down' | 'flat';
+  metric: string; // "+40%"
 }
 
 export type ResRuleCategory = 'atmosphere' | 'security' | 'environment' | 'resident' | 'guest';
