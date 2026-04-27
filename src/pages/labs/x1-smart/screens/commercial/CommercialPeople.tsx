@@ -122,15 +122,48 @@ const CommercialPeople = () => {
                 <BehaviorStat label="Typical" value={p.typicalTimes ?? '—'} />
                 <BehaviorStat label="Anomalies" value={`${p.anomalies?.length ?? 0}`} alert={(p.anomalies?.length ?? 0) > 0} />
               </div>
-              <ChevronRight className="absolute bottom-3 right-3 w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors" />
+              {/* Card actions */}
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => { e.stopPropagation(); setCameraFor(p); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setCameraFor(p); } }}
+                  className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border transition-colors cursor-pointer ${
+                    p.presence === 'on-site' || p.presence === 'approaching' || p.presence === 'unauthorized'
+                      ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                  }`}
+                >
+                  <Video className="w-3 h-3" />
+                  {p.presence === 'on-site' || p.presence === 'approaching' || p.presence === 'unauthorized' ? 'View live' : 'View recorded'}
+                </span>
+                <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors" />
+              </div>
             </button>
           );
         })}
       </div>
 
       <AnimatePresence>
-        {selected && <PersonDrawer person={selected} onClose={() => setSelected(null)} />}
+        {selected && (
+          <PersonDrawer
+            person={selected}
+            onClose={() => setSelected(null)}
+            onViewCamera={() => setCameraFor(selected)}
+          />
+        )}
       </AnimatePresence>
+
+      <CameraModal
+        open={!!cameraFor}
+        onClose={() => setCameraFor(null)}
+        personName={cameraFor?.name ?? ''}
+        personInitials={cameraFor?.initials ?? ''}
+        location={cameraFor?.realTimeLocation ?? 'Unknown zone'}
+        isLive={cameraFor?.presence === 'on-site' || cameraFor?.presence === 'approaching' || cameraFor?.presence === 'unauthorized'}
+        headshot={cameraFor ? PERSON_HEADSHOTS[cameraFor.id] : undefined}
+      />
     </div>
   );
 };
