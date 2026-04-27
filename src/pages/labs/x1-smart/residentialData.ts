@@ -279,6 +279,19 @@ export const RES_SPACES: ResSpace[] = [
     ],
     activeAutomations: ['Evening scene · 7:42pm', 'Sarah arrival prep · ETA 2min'],
     suggestedActions: ['Switch to Night mode at 10pm', 'Lock back door (open 4m)'],
+    adaptiveState: {
+      current: 'evening-winddown',
+      label: 'Evening wind-down',
+      confidence: 0.87,
+      enteredAt: '7:12pm',
+      reason: 'Sunset + Jon home + TV on',
+      next: { state: 'Quiet night', etaMin: 168, reason: 'You usually retire by 10:30pm' },
+    },
+    stateTimeline: [
+      { state: 'Away · secure', from: '8:15a', to: '6:42p' },
+      { state: 'Welcoming', from: '6:42p', to: '7:12p' },
+      { state: 'Evening wind-down', from: '7:12p', to: 'now' },
+    ],
   },
   {
     id: 'vacation',
@@ -295,6 +308,14 @@ export const RES_SPACES: ResSpace[] = [
     ],
     activeAutomations: ['Lights randomized', 'Eco HVAC', 'Heightened alerts'],
     suggestedActions: ['Pre-arrival warm-up Sat 2pm'],
+    adaptiveState: {
+      current: 'vacation-secure',
+      label: 'Vacation · secure',
+      confidence: 0.96,
+      enteredAt: '6 days ago',
+      reason: 'No one present + calendar shows Aspen trip Sat',
+      next: { state: 'Pre-arrival warm-up', etaMin: 1440, reason: 'Trip starts Saturday 2pm' },
+    },
   },
   {
     id: 'rental',
@@ -311,6 +332,14 @@ export const RES_SPACES: ResSpace[] = [
     ],
     activeAutomations: ['Awaiting guest check-in Fri 3pm'],
     suggestedActions: ['Send Maya welcome code 1hr before arrival'],
+    adaptiveState: {
+      current: 'away-expecting-delivery',
+      label: 'Away · expecting guest',
+      confidence: 0.91,
+      enteredAt: '6 days ago',
+      reason: 'No presence + Maya check-in scheduled Fri 3pm',
+      next: { state: 'Hosting guests', etaMin: 2700, reason: 'Maya arrives Friday' },
+    },
   },
 ];
 
