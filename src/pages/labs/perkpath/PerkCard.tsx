@@ -77,31 +77,50 @@ const PerkCard = ({ perk, onTap }: Props) => {
           }}
           aria-hidden={!flipped}
         >
-          <div className="px-5 pt-5 pb-3">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: perk.brandColor }}>
+          {/* Header strip */}
+          <div className="px-5 pt-5 pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <span
+                className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white tracking-wide"
+                style={{ backgroundColor: perk.brandColor }}
+              >
                 {perk.membershipName}
               </span>
-              <span className="flex items-center gap-1 text-[11px] text-slate-400">
+              <span className="flex items-center gap-1 text-[11px] font-medium text-slate-400">
                 <MapPin className="w-3 h-3" />
                 {perk.distance === '—' ? 'Nationwide' : `${perk.distance} away`}
               </span>
             </div>
-            <h3 className="text-base font-bold text-slate-900 leading-snug">{perk.title}</h3>
-            <p className="text-xs text-slate-500 mt-0.5">{perk.venue}</p>
+            <h3 className="text-[15px] font-bold text-slate-900 leading-snug line-clamp-2">{perk.title}</h3>
+            {perk.venue && (
+              <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">{perk.venue}</p>
+            )}
           </div>
-          <div className="px-5 flex-1 space-y-3 overflow-y-auto">
-            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
-              {perk.value}
+
+          {/* Body */}
+          <div className="px-5 py-4 flex-1 overflow-y-auto">
+            {/* Value banner */}
+            <div className="rounded-2xl bg-emerald-50 border border-emerald-100 px-4 py-3 mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700/70 mb-0.5">
+                Your benefit
+              </p>
+              <p className="text-sm font-extrabold text-emerald-700 leading-tight">{perk.value}</p>
             </div>
+
             {perk.howToRedeem && (
               <div>
-                <h4 className="text-[10px] font-bold text-slate-900 uppercase tracking-wider mb-1">How to Redeem</h4>
-                <p className="text-xs text-slate-600 leading-relaxed">{perk.howToRedeem}</p>
+                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                  How to Redeem
+                </h4>
+                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-line">
+                  {perk.howToRedeem}
+                </p>
               </div>
             )}
           </div>
-          <div className="p-4 grid grid-cols-[1fr_auto] gap-2">
+
+          {/* Footer actions */}
+          <div className="p-4 border-t border-slate-100 grid grid-cols-[1fr_auto] gap-2 bg-slate-50/50">
             <button
               onClick={() => toast.success('Member ID shown to cashier ✓')}
               className="h-11 rounded-2xl bg-slate-900 text-white font-semibold text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
@@ -112,7 +131,7 @@ const PerkCard = ({ perk, onTap }: Props) => {
             <button
               onClick={() => setFlipped(false)}
               aria-label="Flip card back"
-              className="h-11 w-11 rounded-2xl bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center transition-colors"
+              className="h-11 w-11 rounded-2xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
