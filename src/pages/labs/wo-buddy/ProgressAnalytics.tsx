@@ -1,63 +1,63 @@
-import { useState, useMemo } from 'react';
-import { TrendingUp, Award, ArrowUpRight, Zap, Calendar, Target, Flame, Activity, ChevronRight } from 'lucide-react';
-import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import { useWOBuddyGoals } from '@/hooks/useWOBuddyGoals';
-
-// ── Mock trend data (would come from DB in production) ──
-const squatVolumeData = [
-  { week: 'W1', volume: 4800 }, { week: 'W2', volume: 5200 }, { week: 'W3', volume: 5600 },
-  { week: 'W4', volume: 4900 }, { week: 'W5', volume: 6200 }, { week: 'W6', volume: 6750 },
-];
-const runningPaceData = [
-  { week: 'W1', pace: 9.2 }, { week: 'W2', pace: 8.9 }, { week: 'W3', pace: 8.7 },
-  { week: 'W4', pace: 8.5 }, { week: 'W5', pace: 8.3 }, { week: 'W6', pace: 8.1 },
-];
-const rowingSplitData = [
-  { week: 'W1', split: 2.15 }, { week: 'W2', split: 2.1 }, { week: 'W3', split: 2.05 },
-  { week: 'W4', split: 2.08 }, { week: 'W5', split: 1.98 }, { week: 'W6', split: 1.95 },
-];
-const pushUpProgression = [
-  { week: 'W1', max: 28 }, { week: 'W2', max: 30 }, { week: 'W3', max: 32 },
-  { week: 'W4', max: 35 }, { week: 'W5', max: 38 }, { week: 'W6', max: 42 },
-];
-const weeklyFrequency = [
-  { day: 'Mon', sessions: 1, minutes: 52 },
-  { day: 'Tue', sessions: 1, minutes: 38 },
-  { day: 'Wed', sessions: 0, minutes: 0 },
-  { day: 'Thu', sessions: 1, minutes: 45 },
-  { day: 'Fri', sessions: 2, minutes: 72 },
-  { day: 'Sat', sessions: 1, minutes: 55 },
-  { day: 'Sun', sessions: 0, minutes: 0 },
-];
-
-const personalBests = [
-  { label: 'Squat', value: '225 lbs', icon: '🦵', trend: '+15 lbs', improving: true },
-  { label: 'Bench Press', value: '185 lbs', icon: '🏋️', trend: '+10 lbs', improving: true },
-  { label: 'Mile Time', value: '7:12', icon: '🏃', trend: '-0:18', improving: true },
-  { label: '2K Row', value: '7:42', icon: '🚣', trend: '-0:08', improving: true },
-  { label: 'Push-Ups', value: '42', icon: '💪', trend: '+6 reps', improving: true },
-  { label: 'Deadlift', value: '275 lbs', icon: '⬆️', trend: '+20 lbs', improving: true },
-];
-
-const consistencyData = { currentStreak: 12, longestStreak: 18, thisMonth: 22, avgPerWeek: 5.1 };
-
-type ChartView = 'volume' | 'pace' | 'rowing' | 'pushups';
+import { useState, useMemo, useEffect } from 'react';
+import {
+  TrendingUp, Award, Flame, Dumbbell, Footprints, Activity, Trophy,
+} from 'lucide-react';
+import {
+  ResponsiveContainer, AreaChart, Area, BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip,
+} from 'recharts';
+import { useWOBuddyStats, type PersonalRecord, type ExerciseTrendMeta } from '@/hooks/useWOBuddyStats';
 
 const chartTooltipStyle = {
   contentStyle: { background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 },
   labelStyle: { color: 'rgba(255,255,255,0.5)' },
 };
 
-const ProgressAnalytics = () => {
-  const [chartView, setChartView] = useState<ChartView>('volume');
-  const { goals } = useWOBuddyGoals();
+const PR_PALETTE = [
+  { color: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/15', iconColor: 'text-blue-300' },
+  { color: 'from-orange-500/15 to-orange-600/5', border: 'border-orange-500/15', iconColor: 'text-orange-300' },
+  { color: 'from-purple-500/15 to-purple-600/5', border: 'border-purple-500/15', iconColor: 'text-purple-300' },
+  { color: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/15', iconColor: 'text-amber-300' },
+  { color: 'from-emerald-500/15 to-emerald-600/5', border: 'border-emerald-500/15', iconColor: 'text-emerald-300' },
+  { color: 'from-pink-500/15 to-pink-600/5', border: 'border-pink-500/15', iconColor: 'text-pink-300' },
+];
 
-  const charts: { id: ChartView; label: string; icon: string }[] = [
-    { id: 'volume', label: 'Squat Volume', icon: '🦵' },
-    { id: 'pace', label: 'Run Pace', icon: '🏃' },
-    { id: 'rowing', label: 'Row Split', icon: '🚣' },
-    { id: 'pushups', label: 'Push-Ups', icon: '💪' },
-  ];
+function TypeIcon({ type, className }: { type: PersonalRecord['type']; className?: string }) {
+  if (type === 'cardio') return <Footprints className={className} />;
+  if (type === 'strength') return <Dumbbell className={className} />;
+  return <Activity className={className} />;
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatDelta(pr: PersonalRecord): string | null {
+  if (pr.delta === undefined || pr.delta <= 0) return null;
+  if (pr.type === 'strength') return `+${Math.round(pr.delta)} lbs`;
+  if (pr.type === 'cardio') return `+${(Math.round(pr.delta * 10) / 10)} mi`;
+  return `+${Math.round(pr.delta)} reps`;
+}
+
+const ProgressAnalytics = () => {
+  const { exerciseTrends, personalRecords, consistency, loading } = useWOBuddyStats();
+  const [chartName, setChartName] = useState<string | null>(null);
+
+  // Default to first available trend whenever the list changes.
+  useEffect(() => {
+    if (exerciseTrends.length === 0) {
+      if (chartName !== null) setChartName(null);
+      return;
+    }
+    if (!chartName || !exerciseTrends.find(t => t.meta.name === chartName)) {
+      setChartName(exerciseTrends[0].meta.name);
+    }
+  }, [exerciseTrends, chartName]);
+
+  const activeTrend = useMemo(
+    () => exerciseTrends.find(t => t.meta.name === chartName) ?? null,
+    [exerciseTrends, chartName],
+  );
 
   return (
     <div className="space-y-5">
@@ -67,22 +67,24 @@ const ProgressAnalytics = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[10px] text-white/40 uppercase tracking-wider">Current Streak</p>
-            <p className="text-3xl font-bold mt-0.5">{consistencyData.currentStreak} <span className="text-base text-white/40">days</span></p>
+            <p className="text-3xl font-bold mt-0.5">
+              {consistency.currentStreak} <span className="text-base text-white/40">days</span>
+            </p>
           </div>
           <Flame className="w-8 h-8 text-emerald-400/60" />
         </div>
         <div className="flex gap-4 mt-3">
           <div>
             <p className="text-[10px] text-white/30">Longest</p>
-            <p className="text-sm font-semibold text-white/70">{consistencyData.longestStreak}d</p>
+            <p className="text-sm font-semibold text-white/70">{consistency.longestStreak}d</p>
           </div>
           <div>
             <p className="text-[10px] text-white/30">This Month</p>
-            <p className="text-sm font-semibold text-white/70">{consistencyData.thisMonth} sessions</p>
+            <p className="text-sm font-semibold text-white/70">{consistency.thisMonth} sessions</p>
           </div>
           <div>
             <p className="text-[10px] text-white/30">Avg/Week</p>
-            <p className="text-sm font-semibold text-white/70">{consistencyData.avgPerWeek}</p>
+            <p className="text-sm font-semibold text-white/70">{consistency.avgPerWeek}</p>
           </div>
         </div>
       </div>
@@ -94,64 +96,39 @@ const ProgressAnalytics = () => {
           <span className="text-sm font-semibold text-white">Performance Trends</span>
         </div>
 
-        {/* Chart selector */}
-        <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
-          {charts.map(c => (
-            <button
-              key={c.id}
-              onClick={() => setChartView(c.id)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
-                chartView === c.id
-                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  : 'bg-white/5 text-white/40 border border-white/5'
-              }`}
-            >
-              {c.icon} {c.label}
-            </button>
-          ))}
-        </div>
+        {exerciseTrends.length === 0 ? (
+          <div className="py-10 text-center">
+            <TrendingUp className="w-8 h-8 text-white/15 mx-auto mb-2" />
+            <p className="text-xs text-white/40">
+              {loading ? 'Loading…' : 'Log workouts across at least two weeks to see trends.'}
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Selector – one pill per real exercise */}
+            <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
+              {exerciseTrends.map(t => {
+                const isActive = chartName === t.meta.name;
+                return (
+                  <button
+                    key={t.meta.name}
+                    onClick={() => setChartName(t.meta.name)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
+                      isActive
+                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                        : 'bg-white/5 text-white/40 border border-white/5'
+                    }`}
+                  >
+                    <TypeIcon type={t.meta.type} className="w-3 h-3" />
+                    {t.meta.name}
+                  </button>
+                );
+              })}
+            </div>
 
-        <ResponsiveContainer width="100%" height={200}>
-          {chartView === 'volume' ? (
-            <AreaChart data={squatVolumeData}>
-              <defs>
-                <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <Tooltip {...chartTooltipStyle} />
-              <Area type="monotone" dataKey="volume" stroke="#3b82f6" strokeWidth={2} fill="url(#volGrad)" dot={{ r: 3, fill: '#3b82f6' }} />
-            </AreaChart>
-          ) : chartView === 'pace' ? (
-            <LineChart data={runningPaceData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} domain={['dataMin - 0.5', 'dataMax + 0.5']} reversed />
-              <Tooltip {...chartTooltipStyle} formatter={(v: number) => [`${v.toFixed(1)} min/mi`, 'Pace']} />
-              <Line type="monotone" dataKey="pace" stroke="#f97316" strokeWidth={2} dot={{ r: 3, fill: '#f97316' }} />
-            </LineChart>
-          ) : chartView === 'rowing' ? (
-            <LineChart data={rowingSplitData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} domain={['dataMin - 0.1', 'dataMax + 0.1']} reversed />
-              <Tooltip {...chartTooltipStyle} formatter={(v: number) => [`${v.toFixed(2)} min/500m`, 'Split']} />
-              <Line type="monotone" dataKey="split" stroke="#06b6d4" strokeWidth={2} dot={{ r: 3, fill: '#06b6d4' }} />
-            </LineChart>
-          ) : (
-            <BarChart data={pushUpProgression}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <Tooltip {...chartTooltipStyle} />
-              <Bar dataKey="max" fill="#a855f7" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          )}
-        </ResponsiveContainer>
+            {activeTrend && <TrendChart meta={activeTrend.meta} points={activeTrend.points} />}
+          </>
+        )}
       </div>
 
       {/* Personal Bests */}
@@ -160,20 +137,90 @@ const ProgressAnalytics = () => {
           <Award className="w-4 h-4 text-amber-400" />
           <span className="text-sm font-semibold text-white">Personal Bests</span>
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          {personalBests.map(pb => (
-            <div key={pb.label} className="bg-white/[0.03] rounded-xl border border-white/[0.06] p-3 text-center">
-              <span className="text-lg">{pb.icon}</span>
-              <p className="text-sm font-bold text-white mt-1">{pb.value}</p>
-              <p className="text-[10px] text-white/30 mt-0.5">{pb.label}</p>
-              <span className={`text-[10px] font-medium ${pb.improving ? 'text-emerald-400' : 'text-red-400'}`}>{pb.trend}</span>
-            </div>
-          ))}
-        </div>
+
+        {loading ? (
+          <p className="text-xs text-white/40">Loading…</p>
+        ) : personalRecords.length === 0 ? (
+          <div className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-6 text-center">
+            <Trophy className="w-8 h-8 text-white/15 mx-auto mb-2" />
+            <p className="text-xs text-white/40">Log a workout to set your first personal best.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            {personalRecords.map((pb, i) => {
+              const palette = PR_PALETTE[i % PR_PALETTE.length];
+              const trendText = formatDelta(pb);
+              return (
+                <div
+                  key={`${pb.exerciseName}-${pb.achievedAt}`}
+                  className={`bg-gradient-to-br ${palette.color} rounded-xl border ${palette.border} p-3 text-center`}
+                >
+                  <TypeIcon type={pb.type} className={`w-5 h-5 mx-auto ${palette.iconColor}`} />
+                  <p className="text-sm font-bold text-white mt-1.5 leading-tight">{pb.value}</p>
+                  <p className="text-[10px] text-white/60 mt-0.5 truncate">{pb.exerciseName}</p>
+                  <p className="text-[9px] text-white/30 mt-0.5">{formatDate(pb.achievedAt)}</p>
+                  {trendText && (
+                    <span className="inline-block mt-1 text-[10px] font-medium text-emerald-400">
+                      {trendText}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
     </div>
   );
 };
+
+function TrendChart({ meta, points }: { meta: ExerciseTrendMeta; points: { week: string; value: number }[] }) {
+  const tooltipFormatter = (v: number): [string, string] => [`${v} ${meta.unit}`, meta.metricLabel];
+
+  if (meta.type === 'cardio') {
+    return (
+      <ResponsiveContainer width="100%" height={200}>
+        <LineChart data={points}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+          <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <Tooltip {...chartTooltipStyle} formatter={tooltipFormatter} />
+          <Line type="monotone" dataKey="value" stroke="#f97316" strokeWidth={2} dot={{ r: 3, fill: '#f97316' }} />
+        </LineChart>
+      </ResponsiveContainer>
+    );
+  }
+  if (meta.type === 'strength') {
+    return (
+      <ResponsiveContainer width="100%" height={200}>
+        <AreaChart data={points}>
+          <defs>
+            <linearGradient id="strengthGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+          <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <Tooltip {...chartTooltipStyle} formatter={tooltipFormatter} />
+          <Area type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} fill="url(#strengthGrad)" dot={{ r: 3, fill: '#3b82f6' }} />
+        </AreaChart>
+      </ResponsiveContainer>
+    );
+  }
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <BarChart data={points}>
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+        <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+        <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+        <Tooltip {...chartTooltipStyle} formatter={tooltipFormatter} />
+        <Bar dataKey="value" fill="#a855f7" radius={[6, 6, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
 
 export default ProgressAnalytics;
