@@ -45,7 +45,8 @@ const ProfilePage = () => {
     setEditingProfile(false);
   };
 
-  const displayName = wobuddyUser?.display_name || mockUser.name;
+  const displayName = wobuddyUser?.display_name || user?.email?.split('@')[0] || 'Athlete';
+  const avatarFallback = profile.avatarInitials || (displayName.slice(0, 2).toUpperCase());
 
   const startEditingName = () => {
     setNameDraft(displayName);
