@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useMemo } from 'react';
 import { useCF } from './useCFStore';
+import { useDashboardStats } from './useDashboardStats';
 import { Users, MapPin, Building2, Mail, Globe, Phone, Award, ShieldCheck, TrendingUp, Bookmark, ArrowRight, Sparkles, Activity } from 'lucide-react';
 import { ConfidenceMeter, LicenseStatusBadge, relativeTime } from './components/Atoms';
 import { tradeLabel } from './tradeLabels';
@@ -46,31 +46,7 @@ function QualityBar({ label, pct, color }: { label: string; pct: number; color: 
 
 export default function Dashboard() {
   const { contractors, segments } = useCF();
-
-  const stats = useMemo(() => {
-    const total = contractors.length;
-    const byState: Record<string, number> = {};
-    const byType: Record<string, number> = {};
-    contractors.forEach((c) => {
-      byState[c.state] = (byState[c.state] ?? 0) + 1;
-      byType[c.contractor_type] = (byType[c.contractor_type] ?? 0) + 1;
-    });
-    const verifiedLicense = contractors.filter((c) => c.license_status === 'Active').length;
-    const withWebsite = contractors.filter((c) => !!c.website).length;
-    const withEmail = contractors.filter((c) => !!c.email).length;
-    const withPhone = contractors.filter((c) => !!c.phone).length;
-    const recent = contractors.filter((c) => Date.now() - new Date(c.last_verified_date).getTime() < 14 * 86400000).length;
-    return {
-      total,
-      byState: Object.entries(byState).sort((a, b) => b[1] - a[1]),
-      byType: Object.entries(byType).sort((a, b) => b[1] - a[1]),
-      verifiedLicensePct: Math.round((verifiedLicense / total) * 100),
-      websitePct: Math.round((withWebsite / total) * 100),
-      emailPct: Math.round((withEmail / total) * 100),
-      phonePct: Math.round((withPhone / total) * 100),
-      recentPct: Math.round((recent / total) * 100),
-    };
-  }, [contractors]);
+  const stats = useDashboardStats();
 
   const recentlyAdded = [...contractors]
     .sort((a, b) => new Date(b.last_verified_date).getTime() - new Date(a.last_verified_date).getTime())
@@ -104,8 +80,8 @@ export default function Dashboard() {
       {/* Top stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard icon={Users} label="Total Contractors" value={stats.total.toLocaleString()} sub="Across CA" accent="var(--cf-primary)" />
-        <StatCard icon={MapPin} label="States Covered" value={String(stats.byState.length)} sub={stats.byState[0]?.[0] ?? '—'} accent="var(--cf-accent)" />
-        <StatCard icon={Building2} label="Trade Categories" value={String(stats.byType.length)} sub={stats.byType[0]?.[0] ?? '—'} accent="var(--cf-purple)" />
+        <StatCard icon={MapPin} label="States Covered" value={String(stats.states.length)} sub={stats.states[0]?.[0] ?? '—'} accent="var(--cf-accent)" />
+        <StatCard icon={Building2} label="Trade Categories" value={String(stats.trades.length)} sub={stats.trades[0]?.[0] ?? '—'} accent="var(--cf-purple)" />
         <StatCard icon={Bookmark} label="Saved Segments" value={String(segments.length)} sub="Reusable lists" accent="var(--cf-success)" />
       </div>
 
@@ -139,8 +115,8 @@ export default function Dashboard() {
             <h3 className="font-semibold">Contractors by Trade</h3>
           </div>
           <div className="space-y-3">
-            {stats.byType.map(([type, count]) => {
-              const max = stats.byType[0][1];
+            {stats.trades.map(([type, count]) => {
+              const max = stats.trades[0][1];
               const pct = (count / max) * 100;
               return (
                 <div key={type} className="flex items-center gap-3">
