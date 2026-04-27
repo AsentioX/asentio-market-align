@@ -62,31 +62,6 @@ const CommercialAutonomy = () => {
         <p className="text-[17px] text-stone-700 leading-snug">Set the <span className="text-stone-900 font-semibold">operational outcomes</span> — X1 generates and tunes the policies.</p>
       </div>
 
-      {/* Autonomy level selector */}
-      <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 via-indigo-50 to-white p-4 shadow-sm">
-        <div className="flex items-center gap-2 mb-3">
-          <Brain className="w-4 h-4 text-violet-700" />
-          <div className="text-[10px] uppercase tracking-[0.18em] text-violet-700 font-bold">Autonomy level</div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          {AUTONOMY_LEVELS.map((l) => {
-            const active = l.value === level;
-            return (
-              <button
-                key={l.value}
-                onClick={() => { setLevel(l.value); toast.success(`Autonomy → ${l.label}`); }}
-                className={`text-left rounded-xl border-2 p-3 transition-all ${
-                  active ? 'border-violet-500 bg-white ring-2 ring-violet-200' : 'border-stone-200 bg-white/60 hover:border-stone-400'
-                }`}
-              >
-                <div className={`text-sm font-bold ${active ? 'text-violet-700' : 'text-stone-700'}`}>{l.label}</div>
-                <div className="text-[11px] text-stone-500 mt-0.5 leading-snug">{l.description}</div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       <div className="inline-flex p-1 rounded-xl bg-stone-100 border border-stone-200">
         <ViewBtn active={view === 'goals'} onClick={() => setView('goals')} icon={Target} label="Goals" />
         <ViewBtn active={view === 'rules'} onClick={() => setView('rules')} icon={Zap} label="All policies" />
