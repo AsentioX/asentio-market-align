@@ -613,6 +613,17 @@ const GoalsPage = () => {
       </div>
 
       {/* =================== TRAINING / WEEKLY PLAN =================== */}
+      {activeGoals.length === 0 ? (
+        <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-8 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/[0.04] border border-white/[0.06] mb-3">
+            <Target className="w-5 h-5 text-white/40" />
+          </div>
+          <h2 className="text-base font-semibold text-white mb-1">No training plan yet</h2>
+          <p className="text-xs text-white/50 max-w-xs mx-auto">
+            Add an active goal above and we'll generate a personalized training plan and weekly schedule for you.
+          </p>
+        </div>
+      ) : (
       <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.04] to-white/[0.01] overflow-hidden">
         {/* Tabs */}
         <div className="flex border-b border-white/[0.06]">
@@ -823,6 +834,7 @@ const GoalsPage = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* Exercise Library Dialog */}
       <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
