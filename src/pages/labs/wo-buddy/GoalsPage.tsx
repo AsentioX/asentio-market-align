@@ -214,6 +214,7 @@ const GoalsPage = () => {
   const [showLibrary, setShowLibrary] = useState(false);
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
+  const [selectedWeekIdx, setSelectedWeekIdx] = useState(0);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
