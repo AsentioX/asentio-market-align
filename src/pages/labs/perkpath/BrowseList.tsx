@@ -49,17 +49,36 @@ const BrowseList = ({ perks, memberships, onPerkTap, geo }: Props) => {
 
   const activeCount = pillars.size + categories.size + membershipIds.size + (sortBy !== 'recent' ? 1 : 0);
 
+  // Apply pillar + membership filters first; category counts are computed
+  // against this base so users can see which categories are *available*
+  // for the current pillar/membership selection. Toggling a category then
+  // narrows further.
+  const baseFiltered = useMemo(() => perks.filter(p => {
+    if (pillars.size && !pillars.has(p.membership?.pillar ?? 'home')) return false;
+    if (membershipIds.size && !membershipIds.has(p.membership_id)) return false;
+    return true;
+  }), [perks, pillars, membershipIds]);
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<PerkCategory, number>();
+    for (const p of baseFiltered) counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+    return counts;
+  }, [baseFiltered]);
+
+  const visibleCategories = useMemo(
+    () => CATEGORY_OPTIONS.filter(c => (categoryCounts.get(c) ?? 0) > 0),
+    [categoryCounts],
+  );
+
   const filtered = useMemo(() => {
-    let list = perks.filter(p => {
-      if (pillars.size && !pillars.has(p.membership?.pillar ?? 'home')) return false;
+    let list = baseFiltered.filter(p => {
       if (categories.size && !categories.has(p.category)) return false;
-      if (membershipIds.size && !membershipIds.has(p.membership_id)) return false;
       return true;
     });
     if (sortBy === 'az') list = [...list].sort((a, b) => a.title.localeCompare(b.title));
     else if (sortBy === 'membership') list = [...list].sort((a, b) => (a.membership?.name ?? '').localeCompare(b.membership?.name ?? ''));
     return list;
-  }, [perks, pillars, categories, membershipIds, sortBy]);
+  }, [baseFiltered, categories, sortBy]);
 
   return (
     <section className="px-5 pt-4 pb-2">
