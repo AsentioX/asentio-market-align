@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Sparkles, ShoppingBag, DollarSign, MapPin, TrendingUp, Trophy, Check } from 'lucide-react';
+import { Sparkles, ShoppingBag, DollarSign, MapPin, TrendingUp, Trophy, Check, CreditCard } from 'lucide-react';
 import { usePerkPath, type PerkCategory } from '@/hooks/usePerkPath';
 import { rankPurchaseOptions } from './purchaseEngine';
+import { rankCardsForPurchase, findPrimaryTravelCard } from './cardRewardsEngine';
 
 const CATEGORIES: Array<{ key: PerkCategory | 'any'; label: string; emoji: string }> = [
   { key: 'any',          label: 'Any',          emoji: '✨' },

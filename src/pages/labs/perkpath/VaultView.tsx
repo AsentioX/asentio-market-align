@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Wallet, Plus, Pencil, Trash2, ChevronDown, X, Check, Loader2, Sparkles, Calendar, Tag } from 'lucide-react';
+import { Wallet, Plus, Pencil, Trash2, ChevronDown, X, Check, Loader2, Sparkles, Calendar, Tag, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import AddCardModal from './AddCardModal';
-import type { Membership, Perk } from '@/hooks/usePerkPath';
+import type { Membership, Perk, RewardRates, RewardsCurrency } from '@/hooks/usePerkPath';
 import { getBrandLogoUrl } from './brandLogo';
 import { getSuggestedTiers } from './cardTiers';
+import RewardsEditor from './RewardsEditor';
+import { effectiveReturnPct } from './cardRewards';
 
 interface Props {
   memberships: Membership[];
@@ -55,6 +57,12 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
       tier: m.tier ?? '',
       brand_color: m.brand_color,
       renewal_date: m.renewal_date,
+      reward_rates: m.reward_rates ?? {},
+      base_rate: m.base_rate ?? 1,
+      points_value_cents: m.points_value_cents ?? 1,
+      rewards_currency: m.rewards_currency ?? 'cashback',
+      card_type: m.card_type ?? null,
+      category: m.category,
     });
   };
 
@@ -286,9 +294,21 @@ const VaultView = ({ memberships, perks, onChanged, onUpdate, onDelete }: Props)
                               />
                             ))}
                           </div>
-                        </Field>
+                       </Field>
 
-                        <div className="flex gap-2 pt-1">
+                       {(form.category === 'financial' || form.card_type === 'credit') && (
+                         <RewardsEditor
+                           name={(form.name as string) ?? m.name}
+                           tier={(form.tier as string) ?? m.tier ?? ''}
+                           rewardRates={(form.reward_rates as RewardRates) ?? {}}
+                           baseRate={form.base_rate ?? 1}
+                           pointsValueCents={form.points_value_cents ?? 1}
+                           rewardsCurrency={(form.rewards_currency as RewardsCurrency) ?? 'cashback'}
+                           onChange={patch => setForm(f => ({ ...f, ...patch }))}
+                         />
+                       )}
+
+                       <div className="flex gap-2 pt-1">
                           <button
                             onClick={cancelEdit}
                             disabled={busy}

@@ -2447,6 +2447,7 @@ export type Database = {
       }
       pp_memberships: {
         Row: {
+          base_rate: number
           brand_color: string
           card_image_url: string | null
           card_type: string
@@ -2459,14 +2460,19 @@ export type Database = {
           notes: string | null
           perk_tags: string[]
           pillar: Database["public"]["Enums"]["pp_pillar"]
+          points_value_cents: number
           reciprocal_benefits: boolean
           renewal_date: string | null
+          reward_rates: Json
+          rewards_currency: string
+          rewards_seeded_at: string | null
           slug: string
           tier: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          base_rate?: number
           brand_color?: string
           card_image_url?: string | null
           card_type?: string
@@ -2479,14 +2485,19 @@ export type Database = {
           notes?: string | null
           perk_tags?: string[]
           pillar?: Database["public"]["Enums"]["pp_pillar"]
+          points_value_cents?: number
           reciprocal_benefits?: boolean
           renewal_date?: string | null
+          reward_rates?: Json
+          rewards_currency?: string
+          rewards_seeded_at?: string | null
           slug: string
           tier?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          base_rate?: number
           brand_color?: string
           card_image_url?: string | null
           card_type?: string
@@ -2499,8 +2510,12 @@ export type Database = {
           notes?: string | null
           perk_tags?: string[]
           pillar?: Database["public"]["Enums"]["pp_pillar"]
+          points_value_cents?: number
           reciprocal_benefits?: boolean
           renewal_date?: string | null
+          reward_rates?: Json
+          rewards_currency?: string
+          rewards_seeded_at?: string | null
           slug?: string
           tier?: string | null
           updated_at?: string

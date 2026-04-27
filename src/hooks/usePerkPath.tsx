@@ -6,6 +6,9 @@ export type PerkCategory = 'auto' | 'dining' | 'travel' | 'shopping' | 'health' 
 export type Pillar = 'work' | 'home' | 'play';
 export type MembershipCategory = 'financial' | 'lifestyle';
 
+export type RewardsCurrency = 'cashback' | 'points';
+export type RewardRates = Partial<Record<PerkCategory, number>>;
+
 export interface Membership {
   id: string;
   user_id: string;
@@ -23,6 +26,12 @@ export interface Membership {
   is_active: boolean;
   card_image_url?: string | null;
   card_type?: string | null;
+  // Card rewards (financial cards only). Defaults to base 1x cashback.
+  reward_rates?: RewardRates;
+  base_rate?: number;
+  points_value_cents?: number;
+  rewards_currency?: RewardsCurrency;
+  rewards_seeded_at?: string | null;
 }
 
 export interface Perk {
@@ -69,7 +78,7 @@ export function usePerkPath() {
       supabase.from('pp_perks').select('*').eq('user_id', user.id).eq('is_active', true).order('sort_order'),
       supabase.from('pp_venues').select('*'),
     ]);
-    if (mRes.data) setMemberships(mRes.data as Membership[]);
+    if (mRes.data) setMemberships(mRes.data as unknown as Membership[]);
     if (pRes.data) setPerks(pRes.data as Perk[]);
     if (vRes.data) setVenues(vRes.data as Venue[]);
     setLoading(false);
