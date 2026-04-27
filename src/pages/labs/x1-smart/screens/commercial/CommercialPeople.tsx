@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Shield, Activity, X, Clock, Briefcase, MapPin, AlertTriangle, Filter } from 'lucide-react';
-import { COM_PEOPLE, type ComPerson, type ComRole, type ComRisk } from '../../commercialData';
+import { ChevronRight, Shield, Activity, X, Clock, Briefcase, MapPin, AlertTriangle, Sparkles, Brain, ShieldCheck, ShieldQuestion, ShieldAlert, Workflow } from 'lucide-react';
+import { COM_PEOPLE, type ComPerson, type ComRole, type ComRisk, type ComTrust } from '../../commercialData';
 import { PERSON_HEADSHOTS } from '../../peopleHeadshots';
 
 const PRESENCE_META = {
@@ -24,6 +24,13 @@ const RISK_META: Record<ComRisk, { label: string; cls: string }> = {
   low: { label: 'Low risk', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   medium: { label: 'Med risk', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
   high: { label: 'High risk', cls: 'bg-rose-50 text-rose-700 border-rose-200' },
+};
+
+const TRUST_META: Record<ComTrust, { label: string; cls: string; icon: any }> = {
+  trusted:    { label: 'Trusted',    cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: ShieldCheck },
+  familiar:   { label: 'Familiar',   cls: 'bg-indigo-50 text-indigo-700 border-indigo-200',    icon: Shield },
+  unknown:    { label: 'Unknown',    cls: 'bg-amber-50 text-amber-700 border-amber-200',       icon: ShieldQuestion },
+  suspicious: { label: 'Suspicious', cls: 'bg-rose-50 text-rose-700 border-rose-200',           icon: ShieldAlert },
 };
 
 const ROLE_FILTERS: ('all' | ComRole)[] = ['all', 'employee', 'contractor', 'vendor', 'visitor'];
@@ -58,39 +65,62 @@ const CommercialPeople = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {filtered.map((p) => {
           const pres = PRESENCE_META[p.presence];
+          const trust = TRUST_META[p.trust];
+          const TrustIcon = trust.icon;
           return (
             <button
               key={p.id}
               onClick={() => setSelected(p)}
-              className={`group text-left rounded-2xl border bg-white hover:shadow-md p-4 transition-all flex items-start gap-4 shadow-sm ${
+              className={`group relative text-left rounded-2xl border bg-white hover:shadow-md p-4 transition-all shadow-sm ${
                 p.presence === 'unauthorized' ? 'border-rose-300 hover:border-rose-500' : 'border-black/[0.06] hover:border-black/12'
               }`}
             >
-              <div className="relative flex-shrink-0">
-                {PERSON_HEADSHOTS[p.id] ? (
-                  <img src={PERSON_HEADSHOTS[p.id]} alt={p.name} loading="lazy" className="w-12 h-12 rounded-xl object-cover shadow-md" width={48} height={48} />
-                ) : (
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${p.avatarColor} flex items-center justify-center font-bold text-white text-base shadow-md`}>
-                    {p.initials}
+              <span className={`absolute top-3 right-3 inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${trust.cls}`}>
+                <TrustIcon className="w-2.5 h-2.5" />
+                {trust.label}
+              </span>
+              <div className="flex items-start gap-4 pr-20">
+                <div className="relative flex-shrink-0">
+                  {PERSON_HEADSHOTS[p.id] ? (
+                    <img src={PERSON_HEADSHOTS[p.id]} alt={p.name} loading="lazy" className="w-12 h-12 rounded-xl object-cover shadow-md" width={48} height={48} />
+                  ) : (
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${p.avatarColor} flex items-center justify-center font-bold text-white text-base shadow-md`}>
+                      {p.initials}
+                    </div>
+                  )}
+                  <span className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full ${pres.dot} ring-[3px] ring-white`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="font-semibold text-stone-900 truncate">{p.name}</span>
+                    <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${ROLE_BADGE[p.role]}`}>{ROLE_LABEL[p.role]}</span>
                   </div>
-                )}
-                <span className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full ${pres.dot} ring-[3px] ring-white`} />
+                  <div className="text-[12px] text-stone-600 mt-0.5 truncate">{p.title}</div>
+                  {p.intent && (
+                    <div className="flex items-center gap-1.5 mt-1 text-[12px] text-violet-700">
+                      <Sparkles className="w-3 h-3" />
+                      <span className="font-medium truncate">{p.intent}</span>
+                      {p.intentConfidence !== undefined && (
+                        <span className="text-stone-400">· {Math.round(p.intentConfidence * 100)}%</span>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${pres.soft} ${pres.text}`}>{pres.label}</span>
+                    <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${RISK_META[p.risk].cls}`}>{RISK_META[p.risk].label}</span>
+                  </div>
+                  <div className="flex items-center gap-1 mt-1.5 text-[11px] text-stone-500">
+                    <MapPin className="w-3 h-3" /><span className="truncate">{p.realTimeLocation}</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="font-semibold text-stone-900 truncate">{p.name}</span>
-                  <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${ROLE_BADGE[p.role]}`}>{ROLE_LABEL[p.role]}</span>
-                </div>
-                <div className="text-[12px] text-stone-600 mt-0.5 truncate">{p.title}</div>
-                <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${pres.soft} ${pres.text}`}>{pres.label}</span>
-                  <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${RISK_META[p.risk].cls}`}>{RISK_META[p.risk].label}</span>
-                </div>
-                <div className="flex items-center gap-1 mt-1.5 text-[11px] text-stone-500">
-                  <MapPin className="w-3 h-3" /><span className="truncate">{p.realTimeLocation}</span>
-                </div>
+              {/* Behavior strip */}
+              <div className="mt-3 grid grid-cols-3 gap-1.5 text-[10px]">
+                <BehaviorStat label="Visits" value={p.visitFrequency ?? '—'} />
+                <BehaviorStat label="Typical" value={p.typicalTimes ?? '—'} />
+                <BehaviorStat label="Anomalies" value={`${p.anomalies?.length ?? 0}`} alert={(p.anomalies?.length ?? 0) > 0} />
               </div>
-              <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors flex-shrink-0 mt-1" />
+              <ChevronRight className="absolute bottom-3 right-3 w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors" />
             </button>
           );
         })}
@@ -102,6 +132,13 @@ const CommercialPeople = () => {
     </div>
   );
 };
+
+const BehaviorStat = ({ label, value, alert }: { label: string; value: string; alert?: boolean }) => (
+  <div className={`rounded-lg border px-2 py-1.5 ${alert ? 'border-amber-200 bg-amber-50' : 'border-stone-200 bg-stone-50/60'}`}>
+    <div className={`uppercase tracking-wider font-bold ${alert ? 'text-amber-700' : 'text-stone-500'}`}>{label}</div>
+    <div className={`text-[11px] mt-0.5 leading-snug font-semibold truncate ${alert ? 'text-amber-900' : 'text-stone-800'}`}>{value}</div>
+  </div>
+);
 
 const FilterRow = ({ label, icon: Icon, options, value, onChange, renderLabel }: { label: string; icon: any; options: readonly string[]; value: string; onChange: (v: string) => void; renderLabel: (v: string) => string }) => (
   <div className="flex items-center gap-2 flex-wrap">
@@ -126,6 +163,8 @@ const FilterRow = ({ label, icon: Icon, options, value, onChange, renderLabel }:
 
 const PersonDrawer = ({ person, onClose }: { person: ComPerson; onClose: () => void }) => {
   const pres = PRESENCE_META[person.presence];
+  const trust = TRUST_META[person.trust];
+  const TrustIcon = trust.icon;
   return (
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-stone-900/30 backdrop-blur-sm z-40" onClick={onClose} />
@@ -159,6 +198,27 @@ const PersonDrawer = ({ person, onClose }: { person: ComPerson; onClose: () => v
             </div>
           </div>
 
+          {/* Trust + intent */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className={`rounded-2xl border p-3 ${trust.cls}`}>
+              <div className="text-[10px] uppercase tracking-wider font-bold opacity-80 inline-flex items-center gap-1">
+                <TrustIcon className="w-3 h-3" /> Trust
+              </div>
+              <div className="text-sm font-bold mt-0.5">{trust.label}</div>
+            </div>
+            {person.intent && (
+              <div className="rounded-2xl border border-violet-200 bg-violet-50 p-3">
+                <div className="text-[10px] uppercase tracking-wider font-bold text-violet-700 inline-flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" /> Intent
+                  {person.intentConfidence !== undefined && (
+                    <span className="text-violet-500 font-normal">{Math.round(person.intentConfidence * 100)}%</span>
+                  )}
+                </div>
+                <div className="text-sm text-violet-900 font-semibold mt-0.5 leading-snug">{person.intent}</div>
+              </div>
+            )}
+          </div>
+
           {/* Access summary */}
           <div className="grid grid-cols-2 gap-2">
             <SummaryCell label="Access level" value={person.accessLevel} />
@@ -175,6 +235,43 @@ const PersonDrawer = ({ person, onClose }: { person: ComPerson; onClose: () => v
                 <div className="text-sm text-stone-900 font-semibold">{person.expiresAt}</div>
               </div>
             </div>
+          )}
+
+          {person.anomalies && person.anomalies.length > 0 && (
+            <Section icon={AlertTriangle} title="Anomalies X1 noticed" tint="text-amber-700">
+              <ul className="space-y-1.5">
+                {person.anomalies.map((a, i) => (
+                  <li key={i} className="text-sm text-amber-900 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 leading-snug">{a}</li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
+          {person.whyXiActed && person.whyXiActed.length > 0 && (
+            <Section icon={Brain} title="Why X1 acted" tint="text-violet-700">
+              <ul className="space-y-2">
+                {person.whyXiActed.map((w, i) => (
+                  <li key={i} className="rounded-xl bg-white border border-violet-100 px-3 py-2.5">
+                    <div className="text-[11px] text-stone-500 font-medium">{w.time}</div>
+                    <div className="text-sm text-stone-900 font-semibold mt-0.5">{w.action}</div>
+                    <div className="text-[12px] text-violet-700 mt-1 leading-snug">{w.reason}</div>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
+          {person.linkedAutomations && person.linkedAutomations.length > 0 && (
+            <Section icon={Workflow} title="Linked policies">
+              <ul className="space-y-1.5">
+                {person.linkedAutomations.map((a) => (
+                  <li key={a.id} className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-800 font-medium flex items-center justify-between">
+                    <span>{a.label}</span>
+                    <ChevronRight className="w-4 h-4 text-stone-400" />
+                  </li>
+                ))}
+              </ul>
+            </Section>
           )}
 
           <Section icon={Shield} title="Authorized zones">
@@ -215,9 +312,9 @@ const SummaryCell = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
-const Section = ({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) => (
+const Section = ({ icon: Icon, title, tint, children }: { icon: any; title: string; tint?: string; children: React.ReactNode }) => (
   <div>
-    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500 font-bold mb-3"><Icon className="w-3 h-3" /><span>{title}</span></div>
+    <div className={`flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-bold mb-3 ${tint ?? 'text-stone-500'}`}><Icon className="w-3 h-3" /><span>{title}</span></div>
     {children}
   </div>
 );
