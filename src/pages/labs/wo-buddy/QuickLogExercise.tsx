@@ -102,43 +102,6 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
         <p className="text-xs text-white/40 mt-0.5">Just the essentials — name it and add a number.</p>
       </div>
 
-      {/* Quick presets */}
-      <div>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">
-          Quick presets
-        </span>
-        <div className="grid grid-cols-2 gap-1.5 mt-2">
-          {QUICK_PRESETS.map(p => (
-            <button
-              key={p.label}
-              onClick={() => applyPreset(p)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-left transition-all"
-            >
-              <span className="text-base">{p.emoji}</span>
-              <span className="text-xs text-white/70 font-medium truncate">{p.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="h-px bg-white/[0.06]" />
-
-      {/* Name */}
-      <div>
-        <label className="text-[10px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">
-          What did you do?
-        </label>
-        <input
-          type="text"
-          value={state.name}
-          onChange={e => update({ name: e.target.value })}
-          placeholder="e.g. Row, Push Ups, Squats"
-          maxLength={60}
-          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-emerald-500/40"
-          autoFocus
-        />
-      </div>
-
       {/* Type */}
       <div>
         <label className="text-[10px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">
@@ -162,11 +125,35 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
         </div>
       </div>
 
-      {/* Numbers (type-specific) */}
+      {/* Name */}
       <div>
         <label className="text-[10px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">
-          How much?
+          What did you do?
         </label>
+        <div className="relative">
+          <input
+            type="text"
+            value={state.name}
+            onChange={e => update({ name: e.target.value })}
+            placeholder="e.g. Row, Push Ups, Squats"
+            maxLength={60}
+            className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-3 pr-11 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-emerald-500/40"
+            autoFocus
+          />
+          <button
+            type="button"
+            onClick={() => setPresetsOpen(true)}
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 flex items-center justify-center text-emerald-300 transition-colors"
+            aria-label="Quick presets"
+            title="Quick presets"
+          >
+            <Sparkles className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Numbers (type-specific) */}
+      <div>
         <div className="grid grid-cols-2 gap-2">
           {showSetsReps && (
             <>
@@ -224,20 +211,42 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
         </div>
       </div>
 
-      {/* Note */}
-      <div>
-        <label className="text-[10px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">
-          Note (optional)
-        </label>
-        <input
-          type="text"
-          value={state.note ?? ''}
-          onChange={e => update({ note: e.target.value })}
-          placeholder="e.g. felt strong, easy pace"
-          maxLength={120}
-          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-emerald-500/40"
-        />
-      </div>
+      {/* Quick Presets Modal */}
+      {presetsOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={() => setPresetsOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-neutral-900 border border-white/10 rounded-2xl p-4 shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-white">Quick presets</h3>
+              <button
+                onClick={() => setPresetsOpen(false)}
+                className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-white/40 mb-3">Pick one to fill in the form.</p>
+            <div className="grid grid-cols-2 gap-1.5">
+              {QUICK_PRESETS.map(p => (
+                <button
+                  key={p.label}
+                  onClick={() => applyPreset(p)}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-left transition-all"
+                >
+                  <span className="text-base">{p.emoji}</span>
+                  <span className="text-xs text-white/80 font-medium truncate">{p.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Summary preview */}
       {(state.name.trim() || summary) && (
