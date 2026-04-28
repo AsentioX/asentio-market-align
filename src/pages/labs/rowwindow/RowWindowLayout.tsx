@@ -673,11 +673,13 @@ interface OnWaterViewProps {
   onStart: () => void;
   onPauseResume: () => void;
   onEnd: () => void;
+  sensors: ReturnType<typeof useRowSensors>;
 }
 
 const OnWaterView = ({
   sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg,
   laneOffsetMeters, heartRate, wind, tide, direction, onStart, onPauseResume, onEnd,
+  sensors,
 }: OnWaterViewProps) => {
   const headingError = ((headingDeg - targetHeadingDeg + 540) % 360) - 180;
   const speedMs = (spm / 26) * 4.2;
