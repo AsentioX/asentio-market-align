@@ -144,6 +144,14 @@ const labApps: LabApp[] = [
     tags: ['Hardware', 'Smart Home', 'Plants'],
     link: '/labs/verdant',
   },
+  {
+    name: 'Care Kits',
+    description: 'Personalized safety kits for aging parents living independently. Take a 2-minute quiz, get a tailored plan — privacy-first, no cameras.',
+    icon: <ShieldCheck className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Eldercare', 'Health', 'Family'],
+    link: '/labs/carekits',
+  },
 ];
 
 const statusColors: Record<string, string> = {
