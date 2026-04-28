@@ -1402,7 +1402,7 @@ const WorkoutPage = () => {
                   </div>
 
                   {/* Add Exercise + Start Workout — inside the plan card */}
-                  <div className="px-3 pb-3 space-y-2">
+                  <div className="px-3 pb-3 grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setWorkoutPath('new')}
                       className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3 transition-all"
