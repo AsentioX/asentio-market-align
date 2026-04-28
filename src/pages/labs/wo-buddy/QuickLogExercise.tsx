@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ArrowLeft, Check, Dumbbell, Wind, Accessibility, Activity, Hash, Weight, Timer, MapPin } from 'lucide-react';
+import { ArrowLeft, Check, Dumbbell, Wind, Accessibility, Activity, Hash, Weight, Timer, MapPin, Sparkles, X } from 'lucide-react';
 import type { PlanExercise } from './planEngine';
 
 type QuickType = 'cardio' | 'strength' | 'bodyweight' | 'flexibility';
