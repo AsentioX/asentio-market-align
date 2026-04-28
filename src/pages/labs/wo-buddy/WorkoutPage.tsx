@@ -337,6 +337,25 @@ const WorkoutPage = () => {
 
   const handlePauseWorkout = () => setWorkoutPaused(!workoutPaused);
 
+  // Log Workout: mark all plan exercises as completed and submit immediately
+  // (no live-tracking session). Used when the user already did the workout.
+  const handleLogWorkout = async () => {
+    if (todayPlan) {
+      const next: Record<string, ExerciseAction> = { ...exerciseActions };
+      todayPlan.sessions.forEach((session, si) => {
+        session.exercises.forEach((_ex, ei) => {
+          next[`${si}-${ei}`] = 'completed';
+        });
+      });
+      setExerciseActions(next);
+      // Wait one tick so handleSubmit reads the updated map
+      await new Promise(r => setTimeout(r, 0));
+    }
+    // Stamp a session start so duration isn't NaN
+    if (!sessionStartTime) setSessionStartTime(new Date());
+    await handleSubmit();
+  };
+
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
     if (cameraTracking) {
