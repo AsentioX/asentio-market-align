@@ -129,6 +129,7 @@ const AppContent = () => {
           </Route>
           <Route path="/labs/x1-smart" element={<X1SmartLayout />} />
           <Route path="/labs/verdant" element={<VerdantLanding />} />
+          <Route path="/labs/carekits" element={<CareKitsLayout />} />
           <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
             <Route index element={<CFDashboard />} />
             <Route path="explore" element={<CFExplore />} />
