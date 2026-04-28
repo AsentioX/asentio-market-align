@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 type View = 'log' | 'history';
-type WorkoutPath = 'choose' | 'plan' | 'new';
+type WorkoutPath = 'choose' | 'plan' | 'new' | 'logging';
 type ExerciseAction = 'pending' | 'completed' | 'dismissed' | 'deferred';
 
 // Derive exercise lists from the library
