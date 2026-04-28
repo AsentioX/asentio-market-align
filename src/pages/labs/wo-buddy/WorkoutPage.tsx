@@ -1501,24 +1501,17 @@ const WorkoutPage = () => {
 
               {/* Log Workout + Import Workout — side-by-side */}
               <div className="grid grid-cols-2 gap-2">
-                {hasSessions ? (
-                  <button
-                    onClick={handleLogWorkout}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
-                    title="Log this workout as already completed"
-                  >
-                    <Check className="w-5 h-5" />
-                    <span>Log Workout</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setWorkoutPath('new')}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span>Log Workout</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => {
+                    setLoggingAddedNames([]);
+                    setWorkoutPath('logging');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  title="Log a completed workout — add exercises one by one, then tap Finished"
+                >
+                  {hasSessions ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                  <span>Log Workout</span>
+                </button>
                 <button
                   onClick={() => toast.info('Connect Strava, Apple Health, or Garmin to import workouts.', { description: 'Coming soon — no third-party connection set up yet.' })}
                   className="w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white/80 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
