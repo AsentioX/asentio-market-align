@@ -337,6 +337,22 @@ const WorkoutPage = () => {
 
   const handlePauseWorkout = () => setWorkoutPaused(!workoutPaused);
 
+  // Log Workout: mark all plan exercises as completed and submit immediately
+  // (no live-tracking session). Used when the user already did the workout.
+  const handleLogWorkout = async () => {
+    const overrides: Record<string, ExerciseAction> = { ...exerciseActions };
+    if (todayPlan) {
+      todayPlan.sessions.forEach((session, si) => {
+        session.exercises.forEach((_ex, ei) => {
+          overrides[`${si}-${ei}`] = 'completed';
+        });
+      });
+      setExerciseActions(overrides);
+    }
+    if (!sessionStartTime) setSessionStartTime(new Date());
+    await handleSubmit(overrides);
+  };
+
   const [heartRate, setHeartRate] = useState(72);
   useEffect(() => {
     if (cameraTracking) {
@@ -476,7 +492,8 @@ const WorkoutPage = () => {
     // only when target_value is actually met → 'completed'.
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (actionOverrides?: Record<string, ExerciseAction>) => {
+    const effectiveActions = actionOverrides ?? exerciseActions;
     // 1) Collect plan exercises the user marked as completed (with manual overrides)
     const planExercises: CompletedWorkoutDetail['exercises'] = [];
     const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number }> = [];
@@ -484,7 +501,7 @@ const WorkoutPage = () => {
       todayPlan.sessions.forEach((session, si) => {
         session.exercises.forEach((ex, ei) => {
           const key = `${si}-${ei}`;
-          if (exerciseActions[key] === 'completed') {
+          if (effectiveActions[key] === 'completed') {
             const r = manualReps[key] || ex.reps || 0;
             const s = manualSets[key] || ex.sets || 1;
             const w = manualWeight[key] || 0;
@@ -1298,7 +1315,7 @@ const WorkoutPage = () => {
 
         {/* Finish Workout */}
         <button
-          onClick={handleSubmit}
+          onClick={() => handleSubmit()}
           className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-red-500/20"
         >
           <Check className="w-5 h-5" />
@@ -1428,14 +1445,34 @@ const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* Start Workout */}
-              <button
-                onClick={handleStartWorkout}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
-              >
-                <Play className="w-5 h-5" />
-                <span>Start Workout</span>
-              </button>
+              {/* Start / Log Workout */}
+              {hasSessions ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleStartWorkout}
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+                  >
+                    <Play className="w-5 h-5" />
+                    <span>Start Workout</span>
+                  </button>
+                  <button
+                    onClick={handleLogWorkout}
+                    className="flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                    title="Log this workout as already completed"
+                  >
+                    <Check className="w-5 h-5" />
+                    <span>Log Workout</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setWorkoutPath('new')}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Log Workout — Add Exercises</span>
+                </button>
+              )}
 
               {/* Past Workouts */}
               <PastWorkoutsList
