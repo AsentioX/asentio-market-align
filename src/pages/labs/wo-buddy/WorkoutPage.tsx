@@ -625,6 +625,7 @@ const WorkoutPage = () => {
     setSubmitted(false);
     setScore(0);
     setCompletedExerciseNames([]);
+    setCompletedFocusDrivers([]);
     setReps(10);
     setBwReps(20);
     setTrackedExercises([]);
