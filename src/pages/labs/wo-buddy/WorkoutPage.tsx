@@ -461,6 +461,10 @@ const WorkoutPage = () => {
       const drivers = ACTIVITY_DRIVER_MAP[name] || [];
       drivers.forEach(d => activatedDrivers.add(d));
     });
+    // Post-submit: include focusDrivers from sessions the user actually completed.
+    if (submitted) {
+      completedFocusDrivers.forEach(d => activatedDrivers.add(d));
+    }
     const impactedGoals = goals.filter(g => g.drivers.some(d => activatedDrivers.has(d)));
     return { drivers: Array.from(activatedDrivers), goals: impactedGoals };
   };
