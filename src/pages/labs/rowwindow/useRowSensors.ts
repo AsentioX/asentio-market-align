@@ -19,6 +19,33 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // the consuming component can fall back to its existing simulation.
 // =============================================================================
 
+// Minimal Web Bluetooth typings (the DOM lib does not ship these by default).
+type BluetoothServiceUUID = string | number;
+interface BluetoothRemoteGATTCharacteristic extends EventTarget {
+  value?: DataView;
+  startNotifications(): Promise<BluetoothRemoteGATTCharacteristic>;
+  stopNotifications(): Promise<BluetoothRemoteGATTCharacteristic>;
+}
+interface BluetoothRemoteGATTService {
+  getCharacteristic(c: BluetoothServiceUUID): Promise<BluetoothRemoteGATTCharacteristic>;
+}
+interface BluetoothRemoteGATTServer {
+  connected: boolean;
+  connect(): Promise<BluetoothRemoteGATTServer>;
+  disconnect(): void;
+  getPrimaryService(s: BluetoothServiceUUID): Promise<BluetoothRemoteGATTService>;
+}
+interface BluetoothDevice extends EventTarget {
+  name?: string;
+  gatt?: BluetoothRemoteGATTServer;
+}
+interface Bluetooth {
+  requestDevice(opts: {
+    filters?: Array<{ services?: BluetoothServiceUUID[] }>;
+    optionalServices?: BluetoothServiceUUID[];
+  }): Promise<BluetoothDevice>;
+}
+
 export type SensorStatus = 'idle' | 'requesting' | 'live' | 'denied' | 'unavailable' | 'error';
 
 export interface RowSensorState {
