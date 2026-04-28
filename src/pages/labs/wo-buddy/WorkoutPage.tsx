@@ -494,9 +494,21 @@ const WorkoutPage = () => {
 
   const handleSubmit = async (actionOverrides?: Record<string, ExerciseAction>) => {
     const effectiveActions = actionOverrides ?? exerciseActions;
+    // Parse "15 min · 1.5 mi" style duration strings into minutes + miles.
+    const parseDurationStr = (d?: string): { minutes: number; miles: number } => {
+      if (!d) return { minutes: 0, miles: 0 };
+      const minMatch = d.match(/(\d+(?:\.\d+)?)\s*min/i);
+      const secMatch = d.match(/(\d+(?:\.\d+)?)\s*sec/i);
+      const miMatch = d.match(/(\d+(?:\.\d+)?)\s*mi\b/i);
+      const kmMatch = d.match(/(\d+(?:\.\d+)?)\s*km\b/i);
+      const minutes = minMatch ? parseFloat(minMatch[1]) : (secMatch ? parseFloat(secMatch[1]) / 60 : 0);
+      const miles = miMatch ? parseFloat(miMatch[1]) : (kmMatch ? parseFloat(kmMatch[1]) * 0.621371 : 0);
+      return { minutes, miles };
+    };
+
     // 1) Collect plan exercises the user marked as completed (with manual overrides)
     const planExercises: CompletedWorkoutDetail['exercises'] = [];
-    const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number }> = [];
+    const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number; minutes: number; miles: number }> = [];
     if (todayPlan) {
       todayPlan.sessions.forEach((session, si) => {
         session.exercises.forEach((ex, ei) => {
@@ -505,13 +517,14 @@ const WorkoutPage = () => {
             const r = manualReps[key] || ex.reps || 0;
             const s = manualSets[key] || ex.sets || 1;
             const w = manualWeight[key] || 0;
+            const { minutes, miles } = parseDurationStr(ex.duration);
             planExercises.push({
               name: ex.name, type: ex.type,
               reps: r, sets: s,
               weight: w || undefined,
               duration: ex.duration,
             });
-            planScoreItems.push({ type: ex.type, reps: r, sets: s, weight: w });
+            planScoreItems.push({ type: ex.type, reps: r, sets: s, weight: w, minutes, miles });
           }
         });
       });
@@ -528,7 +541,23 @@ const WorkoutPage = () => {
       });
     });
     planScoreItems.forEach(p => {
-      totalScore += calculateScore(p.type as Mode, { reps: p.reps, sets: p.sets, weight: p.weight });
+      // Map flexibility → bodyweight-style scoring (effort over time).
+      const scoringType: Mode =
+        p.type === 'cardio' ? 'cardio'
+        : p.type === 'strength' ? 'strength'
+        : 'bodyweight';
+      if (scoringType === 'cardio') {
+        // calculateScore('cardio', { distance, time }) where distance is km, time is minutes.
+        const distanceKm = p.miles > 0 ? p.miles * 1.60934 : 0;
+        // Fallback: if no distance, give a small score from minutes alone.
+        totalScore += calculateScore('cardio', { distance: distanceKm, time: p.minutes });
+      } else if (scoringType === 'strength') {
+        totalScore += calculateScore('strength', { reps: p.reps, sets: p.sets, weight: p.weight });
+      } else {
+        // bodyweight / flexibility: reps × sets, or duration as proxy reps if no reps.
+        const effectiveReps = (p.reps * p.sets) || Math.round(p.minutes * 5);
+        totalScore += calculateScore('bodyweight', { reps: effectiveReps });
+      }
     });
 
     // 3) Snapshot of completed exercise names → drives Drivers Activated + Goal Impact
