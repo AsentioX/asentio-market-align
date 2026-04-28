@@ -38,11 +38,13 @@ interface Props {
 
 const QuickLogExercise = ({ onBack, onSave }: Props) => {
   const [state, setState] = useState<State>({ name: '', type: 'cardio', duration: 15 });
+  const [presetsOpen, setPresetsOpen] = useState(false);
 
   const update = (patch: Partial<State>) => setState(prev => ({ ...prev, ...patch }));
 
   const applyPreset = (preset: typeof QUICK_PRESETS[number]) => {
     setState({ name: '', type: preset.type, ...preset.build() } as State);
+    setPresetsOpen(false);
   };
 
   const showSetsReps = state.type === 'strength' || state.type === 'bodyweight';
