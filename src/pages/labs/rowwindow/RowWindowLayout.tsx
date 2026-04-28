@@ -88,6 +88,19 @@ const RowWindowLayout = () => {
   const maxSpmRef = useRef<number>(0);
   const maxLaneOffsetRef = useRef<number>(0);
 
+  // Real device sensors (compass, GPS, BLE heart-rate). Fall back to sim values
+  // when a sensor is unavailable / not yet authorized.
+  const sensors = useRowSensors({ tracking: sessionState === 'active' });
+  const liveHeading = sensors.headingStatus === 'live' && sensors.headingDeg !== null
+    ? sensors.headingDeg
+    : headingDeg;
+  const liveDistance = sensors.positionStatus === 'live' && sensors.distanceMeters > 0
+    ? sensors.distanceMeters
+    : distanceMeters;
+  const liveHeartRate = sensors.heartRateStatus === 'live' && sensors.heartRate !== null
+    ? sensors.heartRate
+    : heartRate;
+
   // Tick every second when on water tab so timers/instruments feel live
   useEffect(() => {
     const fastTab = tab === 'on' && sessionState === 'active';
