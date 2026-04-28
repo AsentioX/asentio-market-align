@@ -1542,6 +1542,74 @@ const WorkoutPage = () => {
               }}
             />
           )}
+
+          {/* ===== LOG WORKOUT (multi-add) PATH ===== */}
+          {workoutPath === 'logging' && (
+            <div className="space-y-3">
+              {/* Sticky header: count + Finished */}
+              <div className="sticky top-0 z-10 -mx-1 px-1 py-2 bg-background/80 backdrop-blur rounded-2xl">
+                <div className="flex items-center justify-between gap-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 p-3">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] uppercase tracking-widest text-blue-200/70">Logging Workout</span>
+                    <span className="text-sm font-semibold text-white">
+                      {loggingAddedNames.length === 0
+                        ? 'No exercises added yet'
+                        : `${loggingAddedNames.length} exercise${loggingAddedNames.length === 1 ? '' : 's'} added`}
+                    </span>
+                    {loggingAddedNames.length > 0 && (
+                      <span className="text-[11px] text-white/50 mt-0.5 line-clamp-1">
+                        {loggingAddedNames.join(' · ')}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => {
+                        setLoggingAddedNames([]);
+                        setWorkoutPath('choose');
+                      }}
+                      className="px-3 py-2 rounded-xl text-xs font-medium text-white/60 hover:text-white/90 hover:bg-white/5 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (loggingAddedNames.length === 0 && !hasSessions) {
+                          toast.info('Add at least one exercise before finishing.');
+                          return;
+                        }
+                        const names = loggingAddedNames;
+                        setLoggingAddedNames([]);
+                        setWorkoutPath('choose');
+                        await handleLogWorkout();
+                        if (names.length > 0) {
+                          toast.success(`Logged ${names.length} exercise${names.length === 1 ? '' : 's'}`);
+                        }
+                      }}
+                      disabled={loggingAddedNames.length === 0 && !hasSessions}
+                      className="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-500 hover:bg-blue-400 text-white disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5"
+                    >
+                      <Check className="w-4 h-4" />
+                      Finished
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <QuickLogExercise
+                onBack={() => {
+                  setLoggingAddedNames([]);
+                  setWorkoutPath('choose');
+                }}
+                onSave={(newEx) => {
+                  addPlanExercise(newEx);
+                  setLoggingAddedNames(prev => [...prev, newEx.name]);
+                  toast.success(`Added ${newEx.name}`);
+                  // Stay in logging mode so the user can add another exercise.
+                }}
+              />
+            </div>
+          )}
     </div>
   );
 };
