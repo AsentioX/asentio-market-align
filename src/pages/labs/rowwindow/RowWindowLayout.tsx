@@ -655,8 +655,110 @@ const PreRowView = ({
 );
 
 // ============================================================
+// SENSORS: real device status + connect actions
+// ============================================================
+
+const statusDot = (s: SensorStatus) => {
+  if (s === 'live') return 'bg-emerald-400';
+  if (s === 'requesting') return 'bg-amber-400 animate-pulse';
+  if (s === 'denied' || s === 'error') return 'bg-rose-400';
+  if (s === 'unavailable') return 'bg-slate-600';
+  return 'bg-slate-500';
+};
+const statusLabel = (s: SensorStatus, fallback = 'Idle') => {
+  if (s === 'live') return 'Live';
+  if (s === 'requesting') return 'Connecting…';
+  if (s === 'denied') return 'Denied';
+  if (s === 'unavailable') return 'Unsupported';
+  if (s === 'error') return 'Error';
+  return fallback;
+};
+
+const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }) => {
+  const showCompassBtn = sensors.headingStatus !== 'live' && sensors.headingStatus !== 'unavailable';
+  const showPosBtn = sensors.positionStatus !== 'live' && sensors.positionStatus !== 'unavailable';
+  const showHrBtn = sensors.heartRateStatus !== 'live';
+  return (
+    <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Sensors</div>
+        <div className="flex flex-wrap items-center gap-3 text-xs">
+          <div className="inline-flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${statusDot(sensors.headingStatus)}`} />
+            <Compass className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-slate-300">Compass</span>
+            <span className="text-slate-500">{statusLabel(sensors.headingStatus)}</span>
+          </div>
+          <div className="inline-flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${statusDot(sensors.positionStatus)}`} />
+            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-slate-300">GPS</span>
+            <span className="text-slate-500">
+              {statusLabel(sensors.positionStatus)}
+              {sensors.positionStatus === 'live' && sensors.positionAccuracy
+                ? ` · ±${Math.round(sensors.positionAccuracy)}m`
+                : ''}
+            </span>
+          </div>
+          <div className="inline-flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${statusDot(sensors.heartRateStatus)}`} />
+            <Heart className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-slate-300">Heart rate</span>
+            <span className="text-slate-500">
+              {sensors.heartRateStatus === 'live' && sensors.heartRateDeviceName
+                ? sensors.heartRateDeviceName
+                : statusLabel(sensors.heartRateStatus, 'Not connected')}
+            </span>
+          </div>
+        </div>
+      </div>
+      {(showCompassBtn || showPosBtn || showHrBtn) && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {showCompassBtn && (
+            <button
+              onClick={sensors.requestCompass}
+              className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs inline-flex items-center gap-1.5 transition"
+            >
+              <Compass className="w-3.5 h-3.5" /> Enable compass
+            </button>
+          )}
+          {showPosBtn && (
+            <button
+              onClick={sensors.requestPosition}
+              className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs inline-flex items-center gap-1.5 transition"
+            >
+              <MapPin className="w-3.5 h-3.5" /> Enable GPS
+            </button>
+          )}
+          {showHrBtn && (
+            <button
+              onClick={sensors.connectHeartRate}
+              className="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-200 border border-rose-500/30 text-xs inline-flex items-center gap-1.5 transition"
+            >
+              <Heart className="w-3.5 h-3.5" /> Pair heart-rate monitor
+            </button>
+          )}
+          {sensors.heartRateStatus === 'live' && (
+            <button
+              onClick={sensors.disconnectHeartRate}
+              className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-xs inline-flex items-center gap-1.5 transition"
+            >
+              Disconnect HR
+            </button>
+          )}
+        </div>
+      )}
+      <p className="mt-3 text-[11px] text-slate-500 leading-relaxed">
+        Compass &amp; GPS need device permission (iOS asks on tap). Heart rate uses Web Bluetooth and works on Chrome/Edge with most BLE chest straps and watches. When a sensor is unavailable, the instrument falls back to a simulated reading so the demo still works.
+      </p>
+    </section>
+  );
+};
+
+// ============================================================
 // ON WATER: live instrument panel
 // ============================================================
+
 
 interface OnWaterViewProps {
   sessionState: 'idle' | 'active' | 'paused';
