@@ -86,17 +86,31 @@ const VerdantLanding = () => {
 
       {/* Why Now */}
       <section id="why" className="bg-neutral-50 py-24 md:py-32 border-y border-neutral-100">
-        <div className="max-w-4xl mx-auto px-6">
-          <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">Why now</p>
-          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-8 leading-[1.1]">
-            Why keeping plants alive is still so hard.
-          </h2>
-          <div className="space-y-6 text-lg text-neutral-600 leading-relaxed max-w-3xl">
-            <p>More people than ever are bringing plants into their homes. But plant care hasn't evolved — it still relies on guesswork.</p>
-            <p>Overwatering and underwatering are the <span className="text-neutral-900 font-medium">#1 reasons plants die</span>. Smart home tech has transformed everything from lights to locks. Plant care got left behind.</p>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">Why now</p>
+              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-8 leading-[1.1]">
+                Why keeping plants alive is still so hard.
+              </h2>
+              <div className="space-y-6 text-lg text-neutral-600 leading-relaxed">
+                <p>More people than ever are bringing plants into their homes. But plant care hasn't evolved — it still relies on guesswork.</p>
+                <p>Overwatering and underwatering are the <span className="text-neutral-900 font-medium">#1 reasons plants die</span>. Smart home tech has transformed everything from lights to locks. Plant care got left behind.</p>
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                src={lifestyleWindow}
+                alt="Sunlit windowsill with thriving potted houseplants"
+                loading="lazy"
+                width={1280}
+                height={896}
+                className="rounded-[2rem] shadow-xl shadow-neutral-900/10 w-full object-cover aspect-[4/3]"
+              />
+            </div>
           </div>
 
-          <div className="mt-12 grid md:grid-cols-3 gap-4">
+          <div className="mt-16 grid md:grid-cols-3 gap-4">
             {[
               "Most people don't know when to water",
               "Timers don't adapt to real conditions",
