@@ -64,6 +64,9 @@ const WorkoutPage = () => {
   // session. Used by the post-workout summary so Drivers Activated and Goal Impact
   // reflect ONLY what the user really did (not whatever is currently in the form).
   const [completedExerciseNames, setCompletedExerciseNames] = useState<string[]>([]);
+  // Snapshot of session focusDrivers for sessions where the user completed at least one exercise.
+  // Acts as fallback for Drivers Activated when an exercise name isn't in ACTIVITY_DRIVER_MAP.
+  const [completedFocusDrivers, setCompletedFocusDrivers] = useState<string[]>([]);
   const [completedWorkouts, setCompletedWorkouts] = useState<CompletedWorkoutDetail[]>([]);
 
   // Workout timer
