@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Droplets, Brain, Check, Sparkles, Plane, Salad, Clock, ArrowLeft } from 'lucide-react';
 import heroImg from './assets/hero.jpg';
 import leavesPattern from './assets/leaves-pattern.png';
+import lifestyleWindow from './assets/lifestyle-window.jpg';
+import setupHand from './assets/setup-hand.jpg';
+import herbsOverhead from './assets/herbs-overhead.jpg';
+import lifestylePerson from './assets/lifestyle-person.jpg';
 
 const VerdantLanding = () => {
   const [email, setEmail] = useState('');
