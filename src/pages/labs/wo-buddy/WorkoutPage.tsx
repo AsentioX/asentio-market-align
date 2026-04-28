@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 type View = 'log' | 'history';
-type WorkoutPath = 'choose' | 'plan' | 'new';
+type WorkoutPath = 'choose' | 'plan' | 'new' | 'logging';
 type ExerciseAction = 'pending' | 'completed' | 'dismissed' | 'deferred';
 
 // Derive exercise lists from the library
@@ -58,6 +58,8 @@ const WorkoutPage = () => {
   const [view, setView] = useState<View>('log');
   const [mode, setMode] = useState<Mode>('strength');
   const [workoutPath, setWorkoutPath] = useState<WorkoutPath>('choose');
+  // Exercises added during the current "Log Workout" session (names, for display).
+  const [loggingAddedNames, setLoggingAddedNames] = useState<string[]>([]);
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
@@ -1499,24 +1501,17 @@ const WorkoutPage = () => {
 
               {/* Log Workout + Import Workout — side-by-side */}
               <div className="grid grid-cols-2 gap-2">
-                {hasSessions ? (
-                  <button
-                    onClick={handleLogWorkout}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
-                    title="Log this workout as already completed"
-                  >
-                    <Check className="w-5 h-5" />
-                    <span>Log Workout</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setWorkoutPath('new')}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span>Log Workout</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => {
+                    setLoggingAddedNames([]);
+                    setWorkoutPath('logging');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  title="Log a completed workout — add exercises one by one, then tap Finished"
+                >
+                  {hasSessions ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                  <span>Log Workout</span>
+                </button>
                 <button
                   onClick={() => toast.info('Connect Strava, Apple Health, or Garmin to import workouts.', { description: 'Coming soon — no third-party connection set up yet.' })}
                   className="w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white/80 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
@@ -1546,6 +1541,74 @@ const WorkoutPage = () => {
                 setWorkoutPath('choose');
               }}
             />
+          )}
+
+          {/* ===== LOG WORKOUT (multi-add) PATH ===== */}
+          {workoutPath === 'logging' && (
+            <div className="space-y-3">
+              {/* Sticky header: count + Finished */}
+              <div className="sticky top-0 z-10 -mx-1 px-1 py-2 bg-background/80 backdrop-blur rounded-2xl">
+                <div className="flex items-center justify-between gap-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 p-3">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] uppercase tracking-widest text-blue-200/70">Logging Workout</span>
+                    <span className="text-sm font-semibold text-white">
+                      {loggingAddedNames.length === 0
+                        ? 'No exercises added yet'
+                        : `${loggingAddedNames.length} exercise${loggingAddedNames.length === 1 ? '' : 's'} added`}
+                    </span>
+                    {loggingAddedNames.length > 0 && (
+                      <span className="text-[11px] text-white/50 mt-0.5 line-clamp-1">
+                        {loggingAddedNames.join(' · ')}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => {
+                        setLoggingAddedNames([]);
+                        setWorkoutPath('choose');
+                      }}
+                      className="px-3 py-2 rounded-xl text-xs font-medium text-white/60 hover:text-white/90 hover:bg-white/5 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (loggingAddedNames.length === 0 && !hasSessions) {
+                          toast.info('Add at least one exercise before finishing.');
+                          return;
+                        }
+                        const names = loggingAddedNames;
+                        setLoggingAddedNames([]);
+                        setWorkoutPath('choose');
+                        await handleLogWorkout();
+                        if (names.length > 0) {
+                          toast.success(`Logged ${names.length} exercise${names.length === 1 ? '' : 's'}`);
+                        }
+                      }}
+                      disabled={loggingAddedNames.length === 0 && !hasSessions}
+                      className="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-500 hover:bg-blue-400 text-white disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5"
+                    >
+                      <Check className="w-4 h-4" />
+                      Finished
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <QuickLogExercise
+                onBack={() => {
+                  setLoggingAddedNames([]);
+                  setWorkoutPath('choose');
+                }}
+                onSave={(newEx) => {
+                  addPlanExercise(newEx);
+                  setLoggingAddedNames(prev => [...prev, newEx.name]);
+                  toast.success(`Added ${newEx.name}`);
+                  // Stay in logging mode so the user can add another exercise.
+                }}
+              />
+            </div>
           )}
     </div>
   );
