@@ -563,6 +563,7 @@ const WorkoutPage = () => {
   const handleReset = () => {
     setSubmitted(false);
     setScore(0);
+    setCompletedExerciseNames([]);
     setReps(10);
     setBwReps(20);
     setTrackedExercises([]);
