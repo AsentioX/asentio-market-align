@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -143,6 +143,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Hardware', 'Smart Home', 'Plants'],
     link: '/labs/verdant',
+  },
+  {
+    name: 'Care Kits',
+    description: 'Personalized safety kits for aging parents living independently. Take a 2-minute quiz, get a tailored plan — privacy-first, no cameras.',
+    icon: <ShieldCheck className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Eldercare', 'Health', 'Family'],
+    link: '/labs/carekits',
   },
 ];
 
