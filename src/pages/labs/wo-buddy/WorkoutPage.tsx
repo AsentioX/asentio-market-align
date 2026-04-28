@@ -578,6 +578,7 @@ const WorkoutPage = () => {
     trackedExercises.forEach(ex => completedNames.add(ex.name));
     planExercises.forEach(ex => completedNames.add(ex.name));
     setCompletedExerciseNames(Array.from(completedNames));
+    setCompletedFocusDrivers(Array.from(sessionFocusDrivers));
 
     setScore(totalScore);
     setSubmitted(true);
