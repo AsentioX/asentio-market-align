@@ -60,6 +60,10 @@ const WorkoutPage = () => {
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  // Snapshot of exercise names that were actually completed in the just-finished
+  // session. Used by the post-workout summary so Drivers Activated and Goal Impact
+  // reflect ONLY what the user really did (not whatever is currently in the form).
+  const [completedExerciseNames, setCompletedExerciseNames] = useState<string[]>([]);
   const [completedWorkouts, setCompletedWorkouts] = useState<CompletedWorkoutDetail[]>([]);
 
   // Workout timer
@@ -419,6 +423,9 @@ const WorkoutPage = () => {
   };
 
   const getSessionExerciseNames = (): string[] => {
+    // Pre-submit: best-effort preview that includes the form's current exercise.
+    // Post-submit: use the snapshot of what was actually completed.
+    if (submitted) return completedExerciseNames;
     const names = new Set<string>();
     trackedExercises.forEach(ex => names.add(ex.name));
     if (mode === 'strength') names.add(exercise);
@@ -469,15 +476,48 @@ const WorkoutPage = () => {
   };
 
   const handleSubmit = async () => {
+    // 1) Collect plan exercises the user marked as completed (with manual overrides)
+    const planExercises: CompletedWorkoutDetail['exercises'] = [];
+    const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number }> = [];
+    if (todayPlan) {
+      todayPlan.sessions.forEach((session, si) => {
+        session.exercises.forEach((ex, ei) => {
+          const key = `${si}-${ei}`;
+          if (exerciseActions[key] === 'completed') {
+            const r = manualReps[key] || ex.reps || 0;
+            const s = manualSets[key] || ex.sets || 1;
+            const w = manualWeight[key] || 0;
+            planExercises.push({
+              name: ex.name, type: ex.type,
+              reps: r, sets: s,
+              weight: w || undefined,
+              duration: ex.duration,
+            });
+            planScoreItems.push({ type: ex.type, reps: r, sets: s, weight: w });
+          }
+        });
+      });
+    }
+
+    // 2) Score = sum of camera/quick-tracked exercises + completed plan exercises only.
+    //    The current form's exercise is NOT auto-added — it would inflate score and
+    //    activate drivers the user never trained.
     let totalScore = 0;
     trackedExercises.forEach(ex => {
-      totalScore += calculateScore(ex.type, { reps: ex.reps, sets: 1, weight: ex.type === 'strength' ? weight : 0 });
+      totalScore += calculateScore(ex.type, {
+        reps: ex.reps, sets: 1,
+        weight: ex.type === 'strength' ? weight : 0,
+      });
     });
-    let details: Record<string, number> = {};
-    if (mode === 'strength') details = { sets, reps, weight };
-    else if (mode === 'cardio') details = { distance, time };
-    else details = { reps: bwReps };
-    totalScore += calculateScore(mode, details);
+    planScoreItems.forEach(p => {
+      totalScore += calculateScore(p.type as Mode, { reps: p.reps, sets: p.sets, weight: p.weight });
+    });
+
+    // 3) Snapshot of completed exercise names → drives Drivers Activated + Goal Impact
+    const completedNames = new Set<string>();
+    trackedExercises.forEach(ex => completedNames.add(ex.name));
+    planExercises.forEach(ex => completedNames.add(ex.name));
+    setCompletedExerciseNames(Array.from(completedNames));
 
     setScore(totalScore);
     setSubmitted(true);
@@ -485,43 +525,23 @@ const WorkoutPage = () => {
     setWorkoutStarted(false);
     setWorkoutPaused(false);
 
-    // Collect completed plan exercises
-    const planExercises: CompletedWorkoutDetail['exercises'] = [];
-    if (todayPlan) {
-      todayPlan.sessions.forEach((session, si) => {
-        session.exercises.forEach((ex, ei) => {
-          const key = `${si}-${ei}`;
-          if (exerciseActions[key] === 'completed') {
-            planExercises.push({
-              name: ex.name, type: ex.type,
-              reps: manualReps[key] || ex.reps,
-              sets: manualSets[key] || ex.sets,
-              weight: manualWeight[key] || undefined,
-              duration: ex.duration,
-            });
-          }
-        });
-      });
-    }
-
+    // 4) Persist
     const allExercises = [
       ...trackedExercises.map(ex => ({
         name: ex.name, type: ex.type, reps: ex.reps, sets: 1,
         weight: ex.type === 'strength' ? weight : undefined,
         duration: ex.duration, confidence: ex.confidence,
       })),
-      {
-        name: mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
-        type: mode,
-        reps: mode === 'cardio' ? 0 : (mode === 'strength' ? reps : bwReps),
-        sets: mode === 'strength' ? sets : 1,
-        weight: mode === 'strength' ? weight : undefined,
-        distance: mode === 'cardio' ? distance : undefined,
-        duration: mode === 'cardio' ? time * 60 : 0,
-      }
+      ...planScoreItems.map((p, i) => ({
+        name: planExercises[i].name,
+        type: planExercises[i].type,
+        reps: p.reps,
+        sets: p.sets,
+        weight: p.weight || undefined,
+        duration: typeof planExercises[i].duration === 'number' ? planExercises[i].duration as number : 0,
+      })),
     ];
 
-    // Save to local completed workouts list
     const completedDetail: CompletedWorkoutDetail = {
       id: `local-${Date.now()}`,
       date: new Date().toISOString().split('T')[0],
@@ -535,12 +555,15 @@ const WorkoutPage = () => {
     };
     setCompletedWorkouts(prev => [completedDetail, ...prev]);
 
-    await saveWorkout(mode, totalScore, allExercises);
+    if (allExercises.length > 0) {
+      await saveWorkout(mode, totalScore, allExercises);
+    }
   };
 
   const handleReset = () => {
     setSubmitted(false);
     setScore(0);
+    setCompletedExerciseNames([]);
     setReps(10);
     setBwReps(20);
     setTrackedExercises([]);
