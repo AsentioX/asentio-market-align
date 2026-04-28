@@ -187,6 +187,17 @@ const VerdantLanding = () => {
               </div>
             ))}
           </div>
+
+          <div className="mt-16 max-w-3xl mx-auto">
+            <img
+              src={setupHand}
+              alt="Hand inserting a Verdant probe into the soil of a potted monstera"
+              loading="lazy"
+              width={1280}
+              height={896}
+              className="rounded-[2rem] shadow-2xl shadow-black/30 w-full object-cover aspect-[16/10] border border-white/10"
+            />
+          </div>
         </div>
       </section>
 
