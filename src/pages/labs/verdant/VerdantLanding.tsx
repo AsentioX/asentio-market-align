@@ -208,24 +208,36 @@ const VerdantLanding = () => {
           className="absolute inset-0 pointer-events-none opacity-[0.06]"
           style={{ backgroundImage: `url(${leavesPattern})`, backgroundSize: '380px', backgroundRepeat: 'repeat', filter: 'invert(64%) sepia(38%) saturate(420%) hue-rotate(85deg) brightness(95%) contrast(85%)' }}
         />
-        <div className="relative max-w-5xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">You're not alone</p>
-            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
-              Sound familiar?
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { quote: 'I always forget to water…', meta: 'Sarah, Brooklyn' },
-              { quote: 'I think I overwatered again.', meta: 'Marcus, Austin' },
-              { quote: 'I travel and come back to dead plants.', meta: 'Aiko, Seattle' },
-            ].map((q) => (
-              <div key={q.quote} className="bg-neutral-50 rounded-3xl p-8 border border-neutral-100">
-                <p className="text-2xl font-medium tracking-tight text-neutral-900 mb-4 leading-snug">"{q.quote}"</p>
-                <p className="text-sm text-neutral-500">— {q.meta}</p>
+        <div className="relative max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-5 gap-12 items-center">
+            <div className="md:col-span-2">
+              <img
+                src={lifestylePerson}
+                alt="Person caring for indoor plants in a sunlit living room"
+                loading="lazy"
+                width={1280}
+                height={896}
+                className="rounded-[2rem] shadow-xl shadow-neutral-900/10 w-full object-cover aspect-[4/5]"
+              />
+            </div>
+            <div className="md:col-span-3">
+              <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">You're not alone</p>
+              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-10">
+                Sound familiar?
+              </h2>
+              <div className="grid sm:grid-cols-1 gap-4">
+                {[
+                  { quote: 'I always forget to water…', meta: 'Sarah, Brooklyn' },
+                  { quote: 'I think I overwatered again.', meta: 'Marcus, Austin' },
+                  { quote: 'I travel and come back to dead plants.', meta: 'Aiko, Seattle' },
+                ].map((q) => (
+                  <div key={q.quote} className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
+                    <p className="text-lg font-medium tracking-tight text-neutral-900 mb-1 leading-snug">"{q.quote}"</p>
+                    <p className="text-sm text-neutral-500">— {q.meta}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
