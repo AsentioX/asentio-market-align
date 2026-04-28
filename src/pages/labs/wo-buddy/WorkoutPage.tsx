@@ -1452,25 +1452,16 @@ const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* Start / Log Workout */}
+              {/* Log Workout — separate line */}
               {hasSessions ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={handleStartWorkout}
-                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
-                  >
-                    <Play className="w-5 h-5" />
-                    <span>Start Workout</span>
-                  </button>
-                  <button
-                    onClick={handleLogWorkout}
-                    className="flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
-                    title="Log this workout as already completed"
-                  >
-                    <Check className="w-5 h-5" />
-                    <span>Log Workout</span>
-                  </button>
-                </div>
+                <button
+                  onClick={handleLogWorkout}
+                  className="w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  title="Log this workout as already completed"
+                >
+                  <Check className="w-5 h-5" />
+                  <span>Log Workout</span>
+                </button>
               ) : (
                 <button
                   onClick={() => setWorkoutPath('new')}
