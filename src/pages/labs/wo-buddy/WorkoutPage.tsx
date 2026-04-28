@@ -1320,7 +1320,7 @@ const WorkoutPage = () => {
 
         {/* Finish Workout */}
         <button
-          onClick={handleSubmit}
+          onClick={() => handleSubmit()}
           className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-red-500/20"
         >
           <Check className="w-5 h-5" />
