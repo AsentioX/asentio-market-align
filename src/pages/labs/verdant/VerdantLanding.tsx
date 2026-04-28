@@ -15,53 +15,7 @@ const VerdantLanding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 antialiased relative overflow-hidden">
-      {/* Vertical plant graphic — right edge */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed top-0 right-0 h-screen w-24 md:w-32 lg:w-40 z-30 hidden sm:block"
-      >
-        <svg
-          viewBox="0 0 160 1000"
-          preserveAspectRatio="xMidYMid slice"
-          className="w-full h-full opacity-[0.18]"
-          fill="none"
-          stroke="rgb(5 122 85)"
-          strokeWidth="1.25"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {/* Main stem */}
-          <path d="M110 1000 C 100 900, 120 820, 105 740 C 90 660, 115 580, 100 500 C 85 420, 110 340, 95 260 C 82 190, 105 120, 92 40" />
-          {/* Side stems */}
-          <path d="M105 880 C 80 860, 55 855, 35 870" />
-          <path d="M108 720 C 130 700, 145 690, 150 670" />
-          <path d="M102 560 C 78 545, 55 545, 38 560" />
-          <path d="M105 410 C 128 395, 142 388, 148 370" />
-          <path d="M99 260 C 76 245, 55 248, 38 262" />
-          <path d="M97 110 C 120 95, 138 92, 148 78" />
-
-          {/* Leaves — left side */}
-          <path d="M35 870 C 18 858, 8 848, 5 832 C 22 838, 32 852, 35 870 Z" />
-          <path d="M38 560 C 22 548, 12 538, 8 522 C 25 528, 35 542, 38 560 Z" />
-          <path d="M38 262 C 22 250, 12 240, 8 224 C 25 230, 35 244, 38 262 Z" />
-
-          {/* Leaves — right side */}
-          <path d="M150 670 C 156 652, 156 640, 152 624 C 138 632, 130 648, 150 670 Z" />
-          <path d="M148 370 C 154 352, 154 340, 150 324 C 136 332, 128 348, 148 370 Z" />
-          <path d="M148 78 C 154 60, 154 48, 150 32 C 136 40, 128 56, 148 78 Z" />
-
-          {/* Top sprig leaves */}
-          <path d="M92 40 C 80 28, 70 22, 58 22 C 64 34, 78 42, 92 40 Z" />
-          <path d="M92 40 C 104 28, 114 22, 126 22 C 120 34, 106 42, 92 40 Z" />
-
-          {/* Tiny leaf accents along stem */}
-          <path d="M104 800 C 96 794, 90 794, 86 800" />
-          <path d="M106 470 C 114 464, 120 464, 124 470" />
-          <path d="M100 180 C 92 174, 86 174, 82 180" />
-        </svg>
-      </div>
-
+    <div className="min-h-screen bg-white text-neutral-900 antialiased">
       {/* Top nav */}
       <header className="sticky top-0 z-40 backdrop-blur bg-white/75 border-b border-neutral-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
