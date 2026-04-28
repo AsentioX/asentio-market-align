@@ -254,7 +254,9 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white">Quick presets</h3>
+              <h3 className="text-sm font-semibold text-white">
+                Quick presets <span className="text-white/40 font-normal">· {typeMeta.label}</span>
+              </h3>
               <button
                 onClick={() => setPresetsOpen(false)}
                 className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60"
@@ -264,8 +266,8 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
               </button>
             </div>
             <p className="text-xs text-white/40 mb-3">Pick one to fill in the form.</p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {QUICK_PRESETS.map(p => (
+            <div className="grid grid-cols-2 gap-1.5 max-h-[60vh] overflow-y-auto pr-0.5">
+              {QUICK_PRESETS.filter(p => p.type === state.type).map(p => (
                 <button
                   key={p.label}
                   onClick={() => applyPreset(p)}
