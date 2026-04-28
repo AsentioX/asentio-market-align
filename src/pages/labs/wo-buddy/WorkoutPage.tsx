@@ -228,6 +228,7 @@ const WorkoutPage = () => {
   // Rest between exercises
   const [isResting, setIsResting] = useState(false);
   const [restElapsed, setRestElapsed] = useState(0);
+  const [restTargetSec, setRestTargetSec] = useState(90); // editable target rest duration
   const [nextExerciseAfterRest, setNextExerciseAfterRest] = useState<string | null>(null);
   const restTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
