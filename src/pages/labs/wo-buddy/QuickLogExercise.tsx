@@ -128,7 +128,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
       {/* Name */}
       <div>
         <label className="text-[10px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">
-          What did you do?
+          What will you do?
         </label>
         <div className="relative">
           <input
