@@ -279,14 +279,24 @@ const VerdantLanding = () => {
           className="absolute inset-0 pointer-events-none opacity-[0.06]"
           style={{ backgroundImage: `url(${leavesPattern})`, backgroundSize: '380px', backgroundRepeat: 'repeat', filter: 'invert(64%) sepia(38%) saturate(420%) hue-rotate(85deg) brightness(95%) contrast(85%)' }}
         />
-        <div className="relative max-w-3xl mx-auto px-6 text-center">
-          <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">What's next</p>
-          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6 leading-[1.1]">
-            This is just the beginning.
-          </h2>
-          <p className="text-lg md:text-xl text-neutral-600 leading-relaxed">
-            Verdant is the first step toward a fully autonomous home garden — a future where growing your own food is effortless, intelligent, and accessible to everyone.
-          </p>
+        <div className="relative max-w-5xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">What's next</p>
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6 leading-[1.1]">
+              This is just the beginning.
+            </h2>
+            <p className="text-lg md:text-xl text-neutral-600 leading-relaxed">
+              Verdant is the first step toward a fully autonomous home garden — a future where growing your own food is effortless, intelligent, and accessible to everyone.
+            </p>
+          </div>
+          <img
+            src={herbsOverhead}
+            alt="Fresh herbs and cherry tomatoes growing in terracotta pots"
+            loading="lazy"
+            width={1280}
+            height={896}
+            className="rounded-[2rem] shadow-xl shadow-neutral-900/10 w-full object-cover aspect-[16/9]"
+          />
         </div>
       </section>
 
