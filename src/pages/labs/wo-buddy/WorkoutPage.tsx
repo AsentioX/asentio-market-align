@@ -341,21 +341,17 @@ const WorkoutPage = () => {
   // Log Workout: mark all plan exercises as completed and submit immediately
   // (no live-tracking session). Used when the user already did the workout.
   const handleLogWorkout = async () => {
+    const overrides: Record<string, ExerciseAction> = { ...exerciseActions };
     if (todayPlan) {
-      const next: Record<string, ExerciseAction> = { ...exerciseActions };
       todayPlan.sessions.forEach((session, si) => {
         session.exercises.forEach((_ex, ei) => {
-          next[`${si}-${ei}`] = 'completed';
+          overrides[`${si}-${ei}`] = 'completed';
         });
       });
-      flushSync(() => {
-        setExerciseActions(next);
-        if (!sessionStartTime) setSessionStartTime(new Date());
-      });
-    } else if (!sessionStartTime) {
-      flushSync(() => setSessionStartTime(new Date()));
+      setExerciseActions(overrides);
     }
-    await handleSubmit();
+    if (!sessionStartTime) setSessionStartTime(new Date());
+    await handleSubmit(overrides);
   };
 
   const [heartRate, setHeartRate] = useState(72);
