@@ -423,6 +423,9 @@ const WorkoutPage = () => {
   };
 
   const getSessionExerciseNames = (): string[] => {
+    // Pre-submit: best-effort preview that includes the form's current exercise.
+    // Post-submit: use the snapshot of what was actually completed.
+    if (submitted) return completedExerciseNames;
     const names = new Set<string>();
     trackedExercises.forEach(ex => names.add(ex.name));
     if (mode === 'strength') names.add(exercise);
