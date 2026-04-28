@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Droplets, Brain, Check, Sparkles, Plane, Salad, Clock, ArrowLeft } from 'lucide-react';
 import heroImg from './assets/hero.jpg';
 import leavesPattern from './assets/leaves-pattern.png';
+import lifestyleWindow from './assets/lifestyle-window.jpg';
+import setupHand from './assets/setup-hand.jpg';
+import herbsOverhead from './assets/herbs-overhead.jpg';
+import lifestylePerson from './assets/lifestyle-person.jpg';
 
 const VerdantLanding = () => {
   const [email, setEmail] = useState('');
@@ -82,17 +86,31 @@ const VerdantLanding = () => {
 
       {/* Why Now */}
       <section id="why" className="bg-neutral-50 py-24 md:py-32 border-y border-neutral-100">
-        <div className="max-w-4xl mx-auto px-6">
-          <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">Why now</p>
-          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-8 leading-[1.1]">
-            Why keeping plants alive is still so hard.
-          </h2>
-          <div className="space-y-6 text-lg text-neutral-600 leading-relaxed max-w-3xl">
-            <p>More people than ever are bringing plants into their homes. But plant care hasn't evolved — it still relies on guesswork.</p>
-            <p>Overwatering and underwatering are the <span className="text-neutral-900 font-medium">#1 reasons plants die</span>. Smart home tech has transformed everything from lights to locks. Plant care got left behind.</p>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">Why now</p>
+              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-8 leading-[1.1]">
+                Why keeping plants alive is still so hard.
+              </h2>
+              <div className="space-y-6 text-lg text-neutral-600 leading-relaxed">
+                <p>More people than ever are bringing plants into their homes. But plant care hasn't evolved — it still relies on guesswork.</p>
+                <p>Overwatering and underwatering are the <span className="text-neutral-900 font-medium">#1 reasons plants die</span>. Smart home tech has transformed everything from lights to locks. Plant care got left behind.</p>
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                src={lifestyleWindow}
+                alt="Sunlit windowsill with thriving potted houseplants"
+                loading="lazy"
+                width={1280}
+                height={896}
+                className="rounded-[2rem] shadow-xl shadow-neutral-900/10 w-full object-cover aspect-[4/3]"
+              />
+            </div>
           </div>
 
-          <div className="mt-12 grid md:grid-cols-3 gap-4">
+          <div className="mt-16 grid md:grid-cols-3 gap-4">
             {[
               "Most people don't know when to water",
               "Timers don't adapt to real conditions",
@@ -169,6 +187,17 @@ const VerdantLanding = () => {
               </div>
             ))}
           </div>
+
+          <div className="mt-16 max-w-3xl mx-auto">
+            <img
+              src={setupHand}
+              alt="Hand inserting a Verdant probe into the soil of a potted monstera"
+              loading="lazy"
+              width={1280}
+              height={896}
+              className="rounded-[2rem] shadow-2xl shadow-black/30 w-full object-cover aspect-[16/10] border border-white/10"
+            />
+          </div>
         </div>
       </section>
 
@@ -179,24 +208,36 @@ const VerdantLanding = () => {
           className="absolute inset-0 pointer-events-none opacity-[0.06]"
           style={{ backgroundImage: `url(${leavesPattern})`, backgroundSize: '380px', backgroundRepeat: 'repeat', filter: 'invert(64%) sepia(38%) saturate(420%) hue-rotate(85deg) brightness(95%) contrast(85%)' }}
         />
-        <div className="relative max-w-5xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">You're not alone</p>
-            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
-              Sound familiar?
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { quote: 'I always forget to water…', meta: 'Sarah, Brooklyn' },
-              { quote: 'I think I overwatered again.', meta: 'Marcus, Austin' },
-              { quote: 'I travel and come back to dead plants.', meta: 'Aiko, Seattle' },
-            ].map((q) => (
-              <div key={q.quote} className="bg-neutral-50 rounded-3xl p-8 border border-neutral-100">
-                <p className="text-2xl font-medium tracking-tight text-neutral-900 mb-4 leading-snug">"{q.quote}"</p>
-                <p className="text-sm text-neutral-500">— {q.meta}</p>
+        <div className="relative max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-5 gap-12 items-center">
+            <div className="md:col-span-2">
+              <img
+                src={lifestylePerson}
+                alt="Person caring for indoor plants in a sunlit living room"
+                loading="lazy"
+                width={1280}
+                height={896}
+                className="rounded-[2rem] shadow-xl shadow-neutral-900/10 w-full object-cover aspect-[4/5]"
+              />
+            </div>
+            <div className="md:col-span-3">
+              <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">You're not alone</p>
+              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-10">
+                Sound familiar?
+              </h2>
+              <div className="grid sm:grid-cols-1 gap-4">
+                {[
+                  { quote: 'I always forget to water…', meta: 'Sarah, Brooklyn' },
+                  { quote: 'I think I overwatered again.', meta: 'Marcus, Austin' },
+                  { quote: 'I travel and come back to dead plants.', meta: 'Aiko, Seattle' },
+                ].map((q) => (
+                  <div key={q.quote} className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
+                    <p className="text-lg font-medium tracking-tight text-neutral-900 mb-1 leading-snug">"{q.quote}"</p>
+                    <p className="text-sm text-neutral-500">— {q.meta}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -238,14 +279,24 @@ const VerdantLanding = () => {
           className="absolute inset-0 pointer-events-none opacity-[0.06]"
           style={{ backgroundImage: `url(${leavesPattern})`, backgroundSize: '380px', backgroundRepeat: 'repeat', filter: 'invert(64%) sepia(38%) saturate(420%) hue-rotate(85deg) brightness(95%) contrast(85%)' }}
         />
-        <div className="relative max-w-3xl mx-auto px-6 text-center">
-          <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">What's next</p>
-          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6 leading-[1.1]">
-            This is just the beginning.
-          </h2>
-          <p className="text-lg md:text-xl text-neutral-600 leading-relaxed">
-            Verdant is the first step toward a fully autonomous home garden — a future where growing your own food is effortless, intelligent, and accessible to everyone.
-          </p>
+        <div className="relative max-w-5xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">What's next</p>
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6 leading-[1.1]">
+              This is just the beginning.
+            </h2>
+            <p className="text-lg md:text-xl text-neutral-600 leading-relaxed">
+              Verdant is the first step toward a fully autonomous home garden — a future where growing your own food is effortless, intelligent, and accessible to everyone.
+            </p>
+          </div>
+          <img
+            src={herbsOverhead}
+            alt="Fresh herbs and cherry tomatoes growing in terracotta pots"
+            loading="lazy"
+            width={1280}
+            height={896}
+            className="rounded-[2rem] shadow-xl shadow-neutral-900/10 w-full object-cover aspect-[16/9]"
+          />
         </div>
       </section>
 
