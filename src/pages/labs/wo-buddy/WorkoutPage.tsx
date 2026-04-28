@@ -516,11 +516,14 @@ const WorkoutPage = () => {
     // 1) Collect plan exercises the user marked as completed (with manual overrides)
     const planExercises: CompletedWorkoutDetail['exercises'] = [];
     const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number; minutes: number; miles: number }> = [];
+    const sessionFocusDrivers = new Set<string>();
     if (todayPlan) {
       todayPlan.sessions.forEach((session, si) => {
+        let sessionHadCompletion = false;
         session.exercises.forEach((ex, ei) => {
           const key = `${si}-${ei}`;
           if (effectiveActions[key] === 'completed') {
+            sessionHadCompletion = true;
             const r = manualReps[key] || ex.reps || 0;
             const s = manualSets[key] || ex.sets || 1;
             const w = manualWeight[key] || 0;
@@ -534,6 +537,9 @@ const WorkoutPage = () => {
             planScoreItems.push({ type: ex.type, reps: r, sets: s, weight: w, minutes, miles });
           }
         });
+        if (sessionHadCompletion) {
+          (session.focusDrivers || []).forEach(d => sessionFocusDrivers.add(d));
+        }
       });
     }
 
