@@ -64,6 +64,9 @@ const WorkoutPage = () => {
   // session. Used by the post-workout summary so Drivers Activated and Goal Impact
   // reflect ONLY what the user really did (not whatever is currently in the form).
   const [completedExerciseNames, setCompletedExerciseNames] = useState<string[]>([]);
+  // Snapshot of session focusDrivers for sessions where the user completed at least one exercise.
+  // Acts as fallback for Drivers Activated when an exercise name isn't in ACTIVITY_DRIVER_MAP.
+  const [completedFocusDrivers, setCompletedFocusDrivers] = useState<string[]>([]);
   const [completedWorkouts, setCompletedWorkouts] = useState<CompletedWorkoutDetail[]>([]);
 
   // Workout timer
@@ -458,6 +461,10 @@ const WorkoutPage = () => {
       const drivers = ACTIVITY_DRIVER_MAP[name] || [];
       drivers.forEach(d => activatedDrivers.add(d));
     });
+    // Post-submit: include focusDrivers from sessions the user actually completed.
+    if (submitted) {
+      completedFocusDrivers.forEach(d => activatedDrivers.add(d));
+    }
     const impactedGoals = goals.filter(g => g.drivers.some(d => activatedDrivers.has(d)));
     return { drivers: Array.from(activatedDrivers), goals: impactedGoals };
   };
@@ -494,26 +501,45 @@ const WorkoutPage = () => {
 
   const handleSubmit = async (actionOverrides?: Record<string, ExerciseAction>) => {
     const effectiveActions = actionOverrides ?? exerciseActions;
+    // Parse "15 min · 1.5 mi" style duration strings into minutes + miles.
+    const parseDurationStr = (d?: string): { minutes: number; miles: number } => {
+      if (!d) return { minutes: 0, miles: 0 };
+      const minMatch = d.match(/(\d+(?:\.\d+)?)\s*min/i);
+      const secMatch = d.match(/(\d+(?:\.\d+)?)\s*sec/i);
+      const miMatch = d.match(/(\d+(?:\.\d+)?)\s*mi\b/i);
+      const kmMatch = d.match(/(\d+(?:\.\d+)?)\s*km\b/i);
+      const minutes = minMatch ? parseFloat(minMatch[1]) : (secMatch ? parseFloat(secMatch[1]) / 60 : 0);
+      const miles = miMatch ? parseFloat(miMatch[1]) : (kmMatch ? parseFloat(kmMatch[1]) * 0.621371 : 0);
+      return { minutes, miles };
+    };
+
     // 1) Collect plan exercises the user marked as completed (with manual overrides)
     const planExercises: CompletedWorkoutDetail['exercises'] = [];
-    const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number }> = [];
+    const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number; minutes: number; miles: number }> = [];
+    const sessionFocusDrivers = new Set<string>();
     if (todayPlan) {
       todayPlan.sessions.forEach((session, si) => {
+        let sessionHadCompletion = false;
         session.exercises.forEach((ex, ei) => {
           const key = `${si}-${ei}`;
           if (effectiveActions[key] === 'completed') {
+            sessionHadCompletion = true;
             const r = manualReps[key] || ex.reps || 0;
             const s = manualSets[key] || ex.sets || 1;
             const w = manualWeight[key] || 0;
+            const { minutes, miles } = parseDurationStr(ex.duration);
             planExercises.push({
               name: ex.name, type: ex.type,
               reps: r, sets: s,
               weight: w || undefined,
               duration: ex.duration,
             });
-            planScoreItems.push({ type: ex.type, reps: r, sets: s, weight: w });
+            planScoreItems.push({ type: ex.type, reps: r, sets: s, weight: w, minutes, miles });
           }
         });
+        if (sessionHadCompletion) {
+          (session.focusDrivers || []).forEach(d => sessionFocusDrivers.add(d));
+        }
       });
     }
 
@@ -528,7 +554,23 @@ const WorkoutPage = () => {
       });
     });
     planScoreItems.forEach(p => {
-      totalScore += calculateScore(p.type as Mode, { reps: p.reps, sets: p.sets, weight: p.weight });
+      // Map flexibility → bodyweight-style scoring (effort over time).
+      const scoringType: Mode =
+        p.type === 'cardio' ? 'cardio'
+        : p.type === 'strength' ? 'strength'
+        : 'bodyweight';
+      if (scoringType === 'cardio') {
+        // calculateScore('cardio', { distance, time }) where distance is km, time is minutes.
+        const distanceKm = p.miles > 0 ? p.miles * 1.60934 : 0;
+        // Fallback: if no distance, give a small score from minutes alone.
+        totalScore += calculateScore('cardio', { distance: distanceKm, time: p.minutes });
+      } else if (scoringType === 'strength') {
+        totalScore += calculateScore('strength', { reps: p.reps, sets: p.sets, weight: p.weight });
+      } else {
+        // bodyweight / flexibility: reps × sets, or duration as proxy reps if no reps.
+        const effectiveReps = (p.reps * p.sets) || Math.round(p.minutes * 5);
+        totalScore += calculateScore('bodyweight', { reps: effectiveReps });
+      }
     });
 
     // 3) Snapshot of completed exercise names → drives Drivers Activated + Goal Impact
@@ -536,6 +578,7 @@ const WorkoutPage = () => {
     trackedExercises.forEach(ex => completedNames.add(ex.name));
     planExercises.forEach(ex => completedNames.add(ex.name));
     setCompletedExerciseNames(Array.from(completedNames));
+    setCompletedFocusDrivers(Array.from(sessionFocusDrivers));
 
     setScore(totalScore);
     setSubmitted(true);
@@ -582,6 +625,7 @@ const WorkoutPage = () => {
     setSubmitted(false);
     setScore(0);
     setCompletedExerciseNames([]);
+    setCompletedFocusDrivers([]);
     setReps(10);
     setBwReps(20);
     setTrackedExercises([]);
