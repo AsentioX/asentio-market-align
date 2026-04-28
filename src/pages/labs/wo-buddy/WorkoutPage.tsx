@@ -497,7 +497,8 @@ const WorkoutPage = () => {
     // only when target_value is actually met → 'completed'.
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (actionOverrides?: Record<string, ExerciseAction>) => {
+    const effectiveActions = actionOverrides ?? exerciseActions;
     // 1) Collect plan exercises the user marked as completed (with manual overrides)
     const planExercises: CompletedWorkoutDetail['exercises'] = [];
     const planScoreItems: Array<{ type: string; reps: number; sets: number; weight: number }> = [];
@@ -505,7 +506,7 @@ const WorkoutPage = () => {
       todayPlan.sessions.forEach((session, si) => {
         session.exercises.forEach((ex, ei) => {
           const key = `${si}-${ei}`;
-          if (exerciseActions[key] === 'completed') {
+          if (effectiveActions[key] === 'completed') {
             const r = manualReps[key] || ex.reps || 0;
             const s = manualSets[key] || ex.sets || 1;
             const w = manualWeight[key] || 0;
