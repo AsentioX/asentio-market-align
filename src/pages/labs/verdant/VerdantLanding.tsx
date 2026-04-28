@@ -232,8 +232,13 @@ const VerdantLanding = () => {
       </section>
 
       {/* Future vision */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none opacity-[0.06]"
+          style={{ backgroundImage: `url(${leavesPattern})`, backgroundSize: '380px', backgroundRepeat: 'repeat', filter: 'invert(64%) sepia(38%) saturate(420%) hue-rotate(85deg) brightness(95%) contrast(85%)' }}
+        />
+        <div className="relative max-w-3xl mx-auto px-6 text-center">
           <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">What's next</p>
           <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6 leading-[1.1]">
             This is just the beginning.
