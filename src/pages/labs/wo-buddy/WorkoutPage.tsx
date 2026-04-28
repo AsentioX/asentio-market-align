@@ -60,6 +60,10 @@ const WorkoutPage = () => {
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  // Snapshot of exercise names that were actually completed in the just-finished
+  // session. Used by the post-workout summary so Drivers Activated and Goal Impact
+  // reflect ONLY what the user really did (not whatever is currently in the form).
+  const [completedExerciseNames, setCompletedExerciseNames] = useState<string[]>([]);
   const [completedWorkouts, setCompletedWorkouts] = useState<CompletedWorkoutDetail[]>([]);
 
   // Workout timer
