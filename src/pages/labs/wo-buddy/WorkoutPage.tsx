@@ -1401,14 +1401,21 @@ const WorkoutPage = () => {
                     />
                   </div>
 
-                  {/* Add Exercise — inside the plan card */}
-                  <div className="px-3 pb-3">
+                  {/* Add Exercise + Start Workout — inside the plan card */}
+                  <div className="px-3 pb-3 space-y-2">
                     <button
                       onClick={() => setWorkoutPath('new')}
                       className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3 transition-all"
                     >
                       <Plus className="w-4 h-4 text-white/50" />
                       <span className="text-sm font-medium text-white/70">Add Exercise</span>
+                    </button>
+                    <button
+                      onClick={handleStartWorkout}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-3 rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+                    >
+                      <Play className="w-5 h-5" />
+                      <span>Start Workout</span>
                     </button>
                   </div>
                 </div>
@@ -1445,25 +1452,16 @@ const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* Start / Log Workout */}
+              {/* Log Workout — separate line */}
               {hasSessions ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={handleStartWorkout}
-                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
-                  >
-                    <Play className="w-5 h-5" />
-                    <span>Start Workout</span>
-                  </button>
-                  <button
-                    onClick={handleLogWorkout}
-                    className="flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
-                    title="Log this workout as already completed"
-                  >
-                    <Check className="w-5 h-5" />
-                    <span>Log Workout</span>
-                  </button>
-                </div>
+                <button
+                  onClick={handleLogWorkout}
+                  className="w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  title="Log this workout as already completed"
+                >
+                  <Check className="w-5 h-5" />
+                  <span>Log Workout</span>
+                </button>
               ) : (
                 <button
                   onClick={() => setWorkoutPath('new')}
