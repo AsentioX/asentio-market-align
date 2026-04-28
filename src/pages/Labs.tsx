@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -135,6 +135,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Physical AI', 'Spaces', 'Intelligent IoT'],
     link: '/labs/x1-smart',
+  },
+  {
+    name: 'Verdant',
+    description: 'The self-watering plant system. Plug-and-play device that senses your plant\'s needs and waters automatically — no timers, no guesswork.',
+    icon: <Leaf className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Hardware', 'Smart Home', 'Plants'],
+    link: '/labs/verdant',
   },
 ];
 
