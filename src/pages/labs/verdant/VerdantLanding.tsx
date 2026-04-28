@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Droplets, Brain, Check, Sparkles, Plane, Salad, Clock, ArrowLeft } from 'lucide-react';
 import heroImg from './assets/hero.jpg';
+import leavesPattern from './assets/leaves-pattern.png';
 
 const VerdantLanding = () => {
   const [email, setEmail] = useState('');
@@ -137,8 +138,13 @@ const VerdantLanding = () => {
       </section>
 
       {/* How it works */}
-      <section id="how" className="bg-emerald-600 text-white py-24 md:py-32">
-        <div className="max-w-5xl mx-auto px-6">
+      <section id="how" className="relative bg-emerald-600 text-white py-24 md:py-32 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-screen"
+          style={{ backgroundImage: `url(${leavesPattern})`, backgroundSize: '420px', backgroundRepeat: 'repeat' }}
+        />
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-sm font-medium text-emerald-200 uppercase tracking-wider mb-4">How it works</p>
             <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
