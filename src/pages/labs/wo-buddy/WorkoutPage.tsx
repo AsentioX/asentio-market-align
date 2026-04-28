@@ -348,11 +348,14 @@ const WorkoutPage = () => {
           next[`${si}-${ei}`] = 'completed';
         });
       });
-      setExerciseActions(next);
+      flushSync(() => {
+        setExerciseActions(next);
+        if (!sessionStartTime) setSessionStartTime(new Date());
+      });
+    } else if (!sessionStartTime) {
+      flushSync(() => setSessionStartTime(new Date()));
     }
-    if (!sessionStartTime) setSessionStartTime(new Date());
-    // Defer to next tick so the updated exerciseActions is visible to handleSubmit
-    setTimeout(() => { handleSubmit(); }, 0);
+    await handleSubmit();
   };
 
   const [heartRate, setHeartRate] = useState(72);
