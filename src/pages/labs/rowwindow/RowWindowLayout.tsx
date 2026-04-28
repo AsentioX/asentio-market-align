@@ -250,7 +250,7 @@ const RowWindowLayout = () => {
       startedAt: sessionStartedAt,
       endedAt,
       durationMs: totalElapsed,
-      distanceMeters: Math.round(distanceMeters),
+      distanceMeters: Math.round(liveDistance),
       avgSpm: Math.round(avgSpm * 10) / 10,
       maxSpm: maxSpmRef.current,
       avgPaceSecPer500: Math.round(avgPace),
