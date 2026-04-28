@@ -173,8 +173,13 @@ const VerdantLanding = () => {
       </section>
 
       {/* Social proof */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-5xl mx-auto px-6">
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none opacity-[0.06]"
+          style={{ backgroundImage: `url(${leavesPattern})`, backgroundSize: '380px', backgroundRepeat: 'repeat', filter: 'invert(64%) sepia(38%) saturate(420%) hue-rotate(85deg) brightness(95%) contrast(85%)' }}
+        />
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-sm font-medium text-emerald-600 uppercase tracking-wider mb-4">You're not alone</p>
             <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
