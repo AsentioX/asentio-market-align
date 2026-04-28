@@ -12,12 +12,44 @@ const TYPE_OPTIONS: { value: QuickType; label: string; icon: React.ReactNode; em
 ];
 
 const QUICK_PRESETS: { label: string; emoji: string; type: QuickType; build: () => Partial<State> }[] = [
-  { label: '15 min row',    emoji: '🚣', type: 'cardio',     build: () => ({ name: 'Row',          type: 'cardio',     duration: 15 }) },
-  { label: '20 push ups',   emoji: '💪', type: 'bodyweight', build: () => ({ name: 'Push Ups',     type: 'bodyweight', reps: 20, sets: 1 }) },
-  { label: '10 quick jumps',emoji: '🦘', type: 'bodyweight', build: () => ({ name: 'Jump Squats',  type: 'bodyweight', reps: 10, sets: 1 }) },
-  { label: '5 min stretch', emoji: '🧘', type: 'flexibility',build: () => ({ name: 'Stretch',      type: 'flexibility',duration: 5 }) },
-  { label: '3×10 squats',   emoji: '🏋️', type: 'strength',   build: () => ({ name: 'Squats',       type: 'strength',   sets: 3, reps: 10, weight: 0 }) },
-  { label: '1 mile run',    emoji: '🏃', type: 'cardio',     build: () => ({ name: 'Run',          type: 'cardio',     duration: 10, distance: 1 }) },
+  // Cardio
+  { label: '15 min row',     emoji: '🚣', type: 'cardio',     build: () => ({ name: 'Row',           type: 'cardio',     duration: 15 }) },
+  { label: '1 mile run',     emoji: '🏃', type: 'cardio',     build: () => ({ name: 'Run',           type: 'cardio',     duration: 10, distance: 1 }) },
+  { label: '5K run',         emoji: '🏃', type: 'cardio',     build: () => ({ name: 'Run',           type: 'cardio',     duration: 28, distance: 3.1 }) },
+  { label: '20 min bike',    emoji: '🚴', type: 'cardio',     build: () => ({ name: 'Bike',          type: 'cardio',     duration: 20 }) },
+  { label: '30 min walk',    emoji: '🚶', type: 'cardio',     build: () => ({ name: 'Walk',          type: 'cardio',     duration: 30, distance: 1.5 }) },
+  { label: '10 min HIIT',    emoji: '🔥', type: 'cardio',     build: () => ({ name: 'HIIT',          type: 'cardio',     duration: 10 }) },
+  { label: '500m swim',      emoji: '🏊', type: 'cardio',     build: () => ({ name: 'Swim',          type: 'cardio',     duration: 12, distance: 0.3 }) },
+  { label: '15 min jump rope',emoji:'🪢', type: 'cardio',     build: () => ({ name: 'Jump Rope',     type: 'cardio',     duration: 15 }) },
+
+  // Strength
+  { label: '3×10 squats',    emoji: '🏋️', type: 'strength',   build: () => ({ name: 'Squats',        type: 'strength',   sets: 3, reps: 10, weight: 95 }) },
+  { label: '3×8 deadlift',   emoji: '🏋️', type: 'strength',   build: () => ({ name: 'Deadlift',      type: 'strength',   sets: 3, reps: 8,  weight: 135 }) },
+  { label: '3×10 bench',     emoji: '🏋️', type: 'strength',   build: () => ({ name: 'Bench Press',   type: 'strength',   sets: 3, reps: 10, weight: 95 }) },
+  { label: '3×8 OHP',        emoji: '🏋️', type: 'strength',   build: () => ({ name: 'Overhead Press',type: 'strength',   sets: 3, reps: 8,  weight: 65 }) },
+  { label: '4×8 row',        emoji: '🏋️', type: 'strength',   build: () => ({ name: 'Barbell Row',   type: 'strength',   sets: 4, reps: 8,  weight: 95 }) },
+  { label: '3×12 curls',     emoji: '💪', type: 'strength',   build: () => ({ name: 'Bicep Curls',   type: 'strength',   sets: 3, reps: 12, weight: 25 }) },
+  { label: '3×12 tri ext',   emoji: '💪', type: 'strength',   build: () => ({ name: 'Tricep Ext',    type: 'strength',   sets: 3, reps: 12, weight: 25 }) },
+  { label: '3×10 lunges',    emoji: '🦵', type: 'strength',   build: () => ({ name: 'Lunges',        type: 'strength',   sets: 3, reps: 10, weight: 30 }) },
+
+  // Bodyweight
+  { label: '20 push ups',    emoji: '💪', type: 'bodyweight', build: () => ({ name: 'Push Ups',      type: 'bodyweight', reps: 20, sets: 1 }) },
+  { label: '3×15 push ups',  emoji: '💪', type: 'bodyweight', build: () => ({ name: 'Push Ups',      type: 'bodyweight', reps: 15, sets: 3 }) },
+  { label: '10 pull ups',    emoji: '🤸', type: 'bodyweight', build: () => ({ name: 'Pull Ups',      type: 'bodyweight', reps: 10, sets: 1 }) },
+  { label: '3×10 dips',      emoji: '💪', type: 'bodyweight', build: () => ({ name: 'Dips',          type: 'bodyweight', reps: 10, sets: 3 }) },
+  { label: '50 sit ups',     emoji: '🧎', type: 'bodyweight', build: () => ({ name: 'Sit Ups',       type: 'bodyweight', reps: 50, sets: 1 }) },
+  { label: '1 min plank',    emoji: '🧘', type: 'bodyweight', build: () => ({ name: 'Plank',         type: 'bodyweight', reps: 1,  sets: 1 }) },
+  { label: '10 burpees',     emoji: '🔥', type: 'bodyweight', build: () => ({ name: 'Burpees',       type: 'bodyweight', reps: 10, sets: 1 }) },
+  { label: '10 quick jumps', emoji: '🦘', type: 'bodyweight', build: () => ({ name: 'Jump Squats',   type: 'bodyweight', reps: 10, sets: 1 }) },
+  { label: '3×20 air squats',emoji: '🦵', type: 'bodyweight', build: () => ({ name: 'Air Squats',    type: 'bodyweight', reps: 20, sets: 3 }) },
+
+  // Flexibility / Mobility
+  { label: '5 min stretch',  emoji: '🧘', type: 'flexibility',build: () => ({ name: 'Stretch',       type: 'flexibility',duration: 5 }) },
+  { label: '10 min yoga',    emoji: '🧘', type: 'flexibility',build: () => ({ name: 'Yoga',          type: 'flexibility',duration: 10 }) },
+  { label: '20 min yoga',    emoji: '🧘', type: 'flexibility',build: () => ({ name: 'Yoga',          type: 'flexibility',duration: 20 }) },
+  { label: '5 min foam roll',emoji: '🧻', type: 'flexibility',build: () => ({ name: 'Foam Roll',     type: 'flexibility',duration: 5 }) },
+  { label: '10 min mobility',emoji: '🤸', type: 'flexibility',build: () => ({ name: 'Mobility Flow', type: 'flexibility',duration: 10 }) },
+  { label: '10 min meditate',emoji: '🧠', type: 'flexibility',build: () => ({ name: 'Meditation',    type: 'flexibility',duration: 10 }) },
 ];
 
 interface State {
@@ -222,7 +254,9 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white">Quick presets</h3>
+              <h3 className="text-sm font-semibold text-white">
+                Quick presets <span className="text-white/40 font-normal">· {typeMeta.label}</span>
+              </h3>
               <button
                 onClick={() => setPresetsOpen(false)}
                 className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60"
@@ -232,8 +266,8 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
               </button>
             </div>
             <p className="text-xs text-white/40 mb-3">Pick one to fill in the form.</p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {QUICK_PRESETS.map(p => (
+            <div className="grid grid-cols-2 gap-1.5 max-h-[60vh] overflow-y-auto pr-0.5">
+              {QUICK_PRESETS.filter(p => p.type === state.type).map(p => (
                 <button
                   key={p.label}
                   onClick={() => applyPreset(p)}
