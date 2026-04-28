@@ -222,6 +222,9 @@ const RowWindowLayout = () => {
     spmHistoryRef.current = [];
     maxSpmRef.current = 22;
     maxLaneOffsetRef.current = 0;
+    sensors.resetDistance();
+    // Best-effort: trigger sensor permissions on the user-gesture that starts the row.
+    sensors.requestPermissions();
     setSessionState('active');
   };
 
