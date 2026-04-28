@@ -362,18 +362,19 @@ const RowWindowLayout = () => {
           <OnWaterView
             sessionState={sessionState}
             elapsedMs={elapsedMs}
-            distanceMeters={distanceMeters}
+            distanceMeters={liveDistance}
             spm={spm}
-            headingDeg={headingDeg}
+            headingDeg={liveHeading}
             targetHeadingDeg={targetHeadingDeg}
             laneOffsetMeters={laneOffsetMeters}
-            heartRate={heartRate}
+            heartRate={liveHeartRate}
             wind={wind}
             tide={current}
             direction={direction}
             onStart={startSession}
             onPauseResume={pauseResume}
             onEnd={endSession}
+            sensors={sensors}
           />
         )}
 
