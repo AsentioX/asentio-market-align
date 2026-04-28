@@ -58,6 +58,7 @@ import VibinShare from "./pages/labs/vibin/screens/ShareView";
 import ContractorFinderLayout from "./pages/labs/contractor-finder/ContractorFinderLayout";
 import X1SmartLayout from "./pages/labs/x1-smart/X1SmartLayout";
 import VerdantLanding from "./pages/labs/verdant/VerdantLanding";
+import CareKitsLayout from "./pages/labs/carekits/CareKitsLayout";
 import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
 import CFExplore from "./pages/labs/contractor-finder/Explore";
 import CFSegments from "./pages/labs/contractor-finder/Segments";
