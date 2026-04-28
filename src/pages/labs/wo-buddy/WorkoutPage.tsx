@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays, Play, Pause, Timer, ChevronDown, ChevronUp, Hash, ImageIcon, SkipForward, Trash2, GripVertical, Clock } from 'lucide-react';
+import { Dumbbell, Wind, Accessibility, Camera, CameraOff, Info, Check, Share2, Sparkles, ListChecks, History, Plus, Target, TrendingUp, ChevronRight, Calendar, ArrowRight, AlertTriangle, CalendarDays, Play, Pause, Timer, ChevronDown, ChevronUp, Hash, ImageIcon, SkipForward, Trash2, GripVertical, Clock, Download } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine, Area, AreaChart, CartesianGrid } from 'recharts';
 import { calculateScore } from './scoring';
 import { shareContent, buildWorkoutShareText } from './shareUtils';
@@ -13,6 +13,7 @@ import { ACTIVITY_DRIVER_MAP, PERFORMANCE_DRIVERS, getGoalStatusColor, getCatego
 import { generatePlanFromGoals, getTodayIndex, EXERCISE_TYPE_ICONS, getAllExercisesForDay, getAllDriversForDay, adjustPlanForDuration, estimatePlanDuration, type PlanDay, type PlanExercise, type PlanSession } from './planEngine';
 import { EXERCISE_LIBRARY, CATEGORY_CONFIG, findExercise } from './exerciseLibrary';
 import { useWearableDevices, useWearableLiveData, getHRZone } from './useWearableDevices';
+import { toast } from 'sonner';
 
 type Mode = 'strength' | 'cardio' | 'bodyweight';
 type View = 'log' | 'history';
@@ -1496,25 +1497,35 @@ const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* Log Workout — separate line */}
-              {hasSessions ? (
+              {/* Log Workout + Import Workout — side-by-side */}
+              <div className="grid grid-cols-2 gap-2">
+                {hasSessions ? (
+                  <button
+                    onClick={handleLogWorkout}
+                    className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                    title="Log this workout as already completed"
+                  >
+                    <Check className="w-5 h-5" />
+                    <span>Log Workout</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setWorkoutPath('new')}
+                    className="w-full flex items-center justify-center gap-2 bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-200 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Log Workout</span>
+                  </button>
+                )}
                 <button
-                  onClick={handleLogWorkout}
-                  className="w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
-                  title="Log this workout as already completed"
+                  onClick={() => toast.info('Connect Strava, Apple Health, or Garmin to import workouts.', { description: 'Coming soon — no third-party connection set up yet.' })}
+                  className="w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white/80 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  title="Import workout from Strava, Apple Health, Garmin, etc."
                 >
-                  <Check className="w-5 h-5" />
-                  <span>Log Workout</span>
+                  <Download className="w-5 h-5" />
+                  <span>Import Workout</span>
                 </button>
-              ) : (
-                <button
-                  onClick={() => setWorkoutPath('new')}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>Log Workout — Add Exercises</span>
-                </button>
-              )}
+              </div>
 
               {/* Past Workouts */}
               <PastWorkoutsList
