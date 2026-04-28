@@ -146,7 +146,28 @@ const WorkoutPage = () => {
   // Preserve the actual workout type and label from the source sessions so the
   // Workout tab visually matches what the Goals tab shows for today.
   const todayPlan = useMemo<PlanDay | null>(() => {
-    if (!baseTodayPlan) return baseTodayPlan;
+    // No underlying plan AND no user-added exercises → nothing to show.
+    if (!baseTodayPlan && resolvedExercises.length === 0) return null;
+    // No underlying plan but user added freeform exercises → synthesize a plan.
+    if (!baseTodayPlan) {
+      const firstType = resolvedExercises[0]?.type;
+      const synthType: PlanSession['workoutType'] =
+        firstType === 'cardio' ? 'cardio' :
+        firstType === 'bodyweight' ? 'bodyweight' :
+        firstType === 'flexibility' ? 'active_recovery' :
+        'strength';
+      return {
+        dayOfWeek: todayIndex,
+        isRest: false,
+        sessions: [{
+          label: "Today's Workout",
+          workoutType: synthType,
+          exercises: resolvedExercises,
+          focusDrivers: [],
+          reason: '',
+        }],
+      };
+    }
     if (resolvedExercises.length === 0 && baseTodayPlan.sessions.length === 0) return baseTodayPlan;
     const allFocusDrivers = Array.from(new Set(baseTodayPlan.sessions.flatMap(s => s.focusDrivers)));
     const primarySession = baseTodayPlan.sessions[0];
