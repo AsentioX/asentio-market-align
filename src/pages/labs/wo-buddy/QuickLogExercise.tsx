@@ -248,20 +248,6 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
         </div>
       )}
 
-      {/* Summary preview */}
-      {(state.name.trim() || summary) && (
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 flex items-center gap-3">
-          <span className="text-2xl">{typeMeta.emoji}</span>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">
-              {state.name.trim() || 'Unnamed exercise'}
-            </p>
-            <p className="text-[11px] text-white/50 truncate">
-              {summary || typeMeta.hint}
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Save */}
       <button
