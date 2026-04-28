@@ -348,12 +348,10 @@ const WorkoutPage = () => {
         });
       });
       setExerciseActions(next);
-      // Wait one tick so handleSubmit reads the updated map
-      await new Promise(r => setTimeout(r, 0));
     }
-    // Stamp a session start so duration isn't NaN
     if (!sessionStartTime) setSessionStartTime(new Date());
-    await handleSubmit();
+    // Defer to next tick so the updated exerciseActions is visible to handleSubmit
+    setTimeout(() => { handleSubmit(); }, 0);
   };
 
   const [heartRate, setHeartRate] = useState(72);
