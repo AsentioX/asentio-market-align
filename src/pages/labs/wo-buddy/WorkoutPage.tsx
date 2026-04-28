@@ -58,6 +58,8 @@ const WorkoutPage = () => {
   const [view, setView] = useState<View>('log');
   const [mode, setMode] = useState<Mode>('strength');
   const [workoutPath, setWorkoutPath] = useState<WorkoutPath>('choose');
+  // Exercises added during the current "Log Workout" session (names, for display).
+  const [loggingAddedNames, setLoggingAddedNames] = useState<string[]>([]);
   const [cameraTracking, setCameraTracking] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
