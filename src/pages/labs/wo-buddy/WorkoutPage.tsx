@@ -1176,8 +1176,34 @@ const WorkoutPage = () => {
                               <p className="text-[10px] text-white/40">Recover before next exercise</p>
                             </div>
                           </div>
-                          <span className="text-2xl font-bold tabular-nums text-amber-400">{formatTimer(restElapsed)}</span>
+                          <span className="text-2xl font-bold tabular-nums text-amber-400">
+                            {formatTimer(restElapsed)}
+                            <span className="text-xs text-white/40 font-normal"> / {formatTimer(restTargetSec)}</span>
+                          </span>
                         </div>
+
+                        {/* Editable target rest time */}
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/[0.06] px-3 py-2">
+                          <span className="text-[10px] uppercase tracking-widest text-white/40 font-semibold">Target rest</span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setRestTargetSec(s => Math.max(10, s - 15))}
+                              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 text-sm font-bold transition-colors"
+                              aria-label="Decrease rest"
+                            >−</button>
+                            <span className="text-sm font-semibold text-white tabular-nums min-w-[3rem] text-center">
+                              {restTargetSec}s
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setRestTargetSec(s => Math.min(600, s + 15))}
+                              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 text-sm font-bold transition-colors"
+                              aria-label="Increase rest"
+                            >+</button>
+                          </div>
+                        </div>
+
                         <button
                           onClick={finishRest}
                           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/30 transition-colors"
