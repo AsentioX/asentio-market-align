@@ -135,8 +135,8 @@ const RowWindowLayout = () => {
   const liveDistance: number | null = sensors.positionStatus === 'live' ? sensors.distanceMeters : null;
   const liveSpeedMs: number | null = sensors.positionStatus === 'live' ? sensors.speedMs : null;
   const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
-  // Stroke rate and lane offset have no native sensor wired up — show dash.
-  const spm: number | null = null;
+  // Stroke rate now comes from the device accelerometer (peak-detection).
+  const spm: number | null = sensors.motionStatus === 'live' ? sensors.spm : null;
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
