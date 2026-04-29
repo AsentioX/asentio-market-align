@@ -241,6 +241,7 @@ const RowWindowLayout = () => {
     // No mock seeding — sensor values come from real devices only.
 
     spmHistoryRef.current = [];
+    hrHistoryRef.current = [];
     maxSpmRef.current = 0;
     maxLaneOffsetRef.current = 0;
     sensors.resetDistance();
