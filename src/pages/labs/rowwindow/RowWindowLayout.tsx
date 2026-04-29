@@ -480,6 +480,7 @@ interface PreRowViewProps {
   direction: 'Flood' | 'Ebb' | 'Slack';
   nextTurn: ReturnType<typeof getNextTurn>;
   nextLowTurn: TideTurn | null;
+  lowTideMarker: { mode: 'to' | 'since'; t: number } | null;
   now: number;
   wind: WindReading;
   vesselId: VesselProfile['id'];
