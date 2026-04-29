@@ -1069,7 +1069,6 @@ const OnWaterView = ({
               </div>
             )}
           </div>
-          </div>
         </div>
       </section>
 
