@@ -178,10 +178,12 @@ const RowWindowLayout = () => {
   useEffect(() => {
     if (sessionState !== 'active') return;
     const id = setInterval(() => {
-      if (liveSpeedMs !== null) {
-        const pace = liveSpeedMs > 0 ? 500 / liveSpeedMs : 0;
-        spmHistoryRef.current.push({ t: Date.now(), spm: 0, pace: Math.round(pace) });
+      const pace = liveSpeedMs && liveSpeedMs > 0.2 ? Math.round(500 / liveSpeedMs) : 0;
+      const spmSample = spm ?? 0;
+      if (liveSpeedMs !== null || spm !== null) {
+        spmHistoryRef.current.push({ t: Date.now(), spm: spmSample, pace });
         if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
+        if (spm !== null && spm > maxSpmRef.current) maxSpmRef.current = spm;
       }
       if (liveHeartRate !== null) {
         hrHistoryRef.current.push({ t: Date.now(), bpm: liveHeartRate });
@@ -189,7 +191,7 @@ const RowWindowLayout = () => {
       }
     }, 1000);
     return () => clearInterval(id);
-  }, [sessionState, liveSpeedMs, liveHeartRate]);
+  }, [sessionState, liveSpeedMs, liveHeartRate, spm]);
 
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
