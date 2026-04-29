@@ -197,18 +197,24 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
         }
         lastPosRef.current = { lat: latitude, lon: longitude, t: now };
 
-        setState(s => ({
-          ...s,
-          positionStatus: 'live',
-          positionAccuracy: accuracy ?? null,
-          speedMs: computedSpeed,
-          distanceMeters: s.distanceMeters + added,
-          // GPS heading is only reliable while moving; surface it when available
-          // and we don't have a compass lock yet.
-          headingDeg: typeof heading === 'number' && !Number.isNaN(heading) && (computedSpeed ?? 0) > 1
-            ? heading
-            : s.headingDeg,
-        }));
+        setState(s => {
+          const trackPush = trackingRef.current && (accuracy ?? 100) < 30
+            ? [...s.track, { t: now, lat: latitude, lon: longitude, speedMs: computedSpeed ?? 0, accuracy: accuracy ?? 0 }]
+            : s.track;
+          return {
+            ...s,
+            positionStatus: 'live',
+            positionAccuracy: accuracy ?? null,
+            speedMs: computedSpeed,
+            distanceMeters: s.distanceMeters + added,
+            track: trackPush,
+            // GPS heading is only reliable while moving; surface it when available
+            // and we don't have a compass lock yet.
+            headingDeg: typeof heading === 'number' && !Number.isNaN(heading) && (computedSpeed ?? 0) > 1
+              ? heading
+              : s.headingDeg,
+          };
+        });
       },
       (err) => {
         setState(s => ({
@@ -218,6 +224,11 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
       },
       { enableHighAccuracy: true, maximumAge: 1000, timeout: 15000 },
     );
+  }, []);
+
+  const resetDistance = useCallback(() => {
+    lastPosRef.current = null;
+    setState(s => ({ ...s, distanceMeters: 0, track: [] }));
   }, []);
 
   const resetDistance = useCallback(() => {
