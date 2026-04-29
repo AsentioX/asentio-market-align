@@ -851,12 +851,13 @@ const OnWaterView = ({
   onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
-  const headingError = ((headingDeg - targetHeadingDeg + 540) % 360) - 180;
-  const speedMs = (spm / 26) * 4.2;
+  const DASH = '—';
+  const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
+  const speedMs = spm !== null ? (spm / 26) * 4.2 : 0;
   const pacePer500 = speedMs > 0 ? 500 / speedMs : 0;
-  const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : '—';
+  const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : DASH;
 
-  const laneAbs = Math.abs(laneOffsetMeters);
+  const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
   const laneStatus: 'good' | 'warn' | 'alert' = laneAbs < 1.5 ? 'good' : laneAbs < 3 ? 'warn' : 'alert';
   const laneColor = laneStatus === 'good' ? 'text-emerald-300' : laneStatus === 'warn' ? 'text-amber-300' : 'text-rose-300';
   const laneRingColor = laneStatus === 'good' ? 'hsl(150 80% 55%)' : laneStatus === 'warn' ? 'hsl(45 95% 55%)' : 'hsl(355 85% 55%)';
