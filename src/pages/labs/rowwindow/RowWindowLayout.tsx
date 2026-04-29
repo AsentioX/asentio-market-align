@@ -393,7 +393,7 @@ const RowWindowLayout = () => {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-5 py-6 space-y-6">
+      <main className="max-w-6xl mx-auto px-5 pt-2 pb-6 space-y-6">
         {tab === 'pre' && (
           <PreRowView
             assessment={assessment}
