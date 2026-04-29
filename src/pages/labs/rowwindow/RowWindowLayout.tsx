@@ -542,28 +542,31 @@ const PreRowView = ({
           <div>
             <div className="text-xs uppercase tracking-[0.2em] text-slate-600">Launch Status</div>
             <div className={`text-2xl md:text-3xl font-bold mt-1 ${statusMeta.textClass}`}>{statusMeta.label}</div>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <select
-                value={vesselId}
-                onChange={(e) => setVesselId(e.target.value as VesselProfile['id'])}
-                className="text-sm bg-white border border-slate-300 rounded-md px-2 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition"
-                aria-label="Vessel profile"
+            <div className="mt-1 flex flex-nowrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const ids = Object.values(VESSEL_PROFILES).map((v) => v.id);
+                  const next = ids[(ids.indexOf(vesselId) + 1) % ids.length];
+                  setVesselId(next as VesselProfile['id']);
+                }}
+                className="text-sm whitespace-nowrap bg-white border border-slate-300 rounded-md px-2.5 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition"
+                aria-label="Toggle vessel profile"
               >
-                {Object.values(VESSEL_PROFILES).map((v) => (
-                  <option key={v.id} value={v.id}>{v.label}</option>
-                ))}
-              </select>
-              
-              <select
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="text-sm bg-white border border-slate-300 rounded-md px-2 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition"
-                aria-label="Planned duration"
+                {VESSEL_PROFILES[vesselId].label}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const next = DURATIONS[(DURATIONS.indexOf(duration) + 1) % DURATIONS.length];
+                  setDuration(next);
+                }}
+                className="text-sm whitespace-nowrap bg-white border border-slate-300 rounded-md px-2.5 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition"
+                aria-label="Toggle planned duration"
               >
-                {DURATIONS.map((d) => (
-                  <option key={d} value={d}>{d} min window</option>
-                ))}
-              </select>
+                {duration} min
+              </button>
             </div>
           </div>
         </div>
