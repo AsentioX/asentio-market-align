@@ -927,10 +927,17 @@ const OnWaterView = ({
                   y2={50 + Math.sin((targetHeadingDeg - 90) * (Math.PI / 180)) * 30}
                   stroke="hsl(150 80% 55%)" strokeWidth="1.5" strokeDasharray="2 2" opacity="0.7"
                 />
-                {/* Current heading needle */}
-                <g transform={`rotate(${headingDeg - 90} 50 50)`}>
-                  <polygon points="50,12 46,52 54,52" fill="hsl(195 90% 65%)" />
-                  <circle cx="50" cy="50" r="3" fill="hsl(195 90% 75%)" />
+                {/* Boat — rotated to current heading. Port half = red, starboard half = green
+                    (standard nautical nav-light convention). */}
+                <g transform={`rotate(${headingDeg} 50 50)`}>
+                  {/* Port (left) half */}
+                  <path d="M 50 22 Q 42 30 42 56 L 50 64 Z" fill="hsl(355 85% 58%)" stroke="hsl(355 90% 35%)" strokeWidth="0.5" />
+                  {/* Starboard (right) half */}
+                  <path d="M 50 22 Q 58 30 58 56 L 50 64 Z" fill="hsl(150 80% 50%)" stroke="hsl(150 85% 28%)" strokeWidth="0.5" />
+                  {/* Centerline keel */}
+                  <line x1="50" y1="22" x2="50" y2="64" stroke="hsl(220 30% 6%)" strokeWidth="0.6" />
+                  {/* Bow tick */}
+                  <circle cx="50" cy="20" r="1.6" fill="hsl(60 100% 75%)" />
                 </g>
               </svg>
             </div>
