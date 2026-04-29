@@ -1017,7 +1017,7 @@ const OnWaterView = ({
       </section>
 
       {/* Heart rate + environment */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <BigStat
           icon={<Heart className="w-4 h-4" />}
           label="Heart Rate"
@@ -1033,7 +1033,7 @@ const OnWaterView = ({
           sub={`from ${wind.directionLabel}`}
           accent="text-slate-200"
         />
-        <div className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] px-4 py-4">
+        <div className="col-span-2 rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] px-4 py-4">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-400">
             <Waves className="w-4 h-4" />
             Tide
