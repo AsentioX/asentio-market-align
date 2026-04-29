@@ -842,14 +842,14 @@ interface OnWaterViewProps {
 }
 
 const OnWaterView = ({
-  sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg, onSetTarget,
+  sessionState, elapsedMs, distanceMeters, spm, speedMs, headingDeg, targetHeadingDeg, onSetTarget,
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
-  const speedMs = spm !== null ? (spm / 26) * 4.2 : 0;
-  const pacePer500 = speedMs > 0 ? 500 / speedMs : 0;
+  // Pace derives from real GPS ground speed (seconds per 500 m).
+  const pacePer500 = speedMs && speedMs > 0.2 ? 500 / speedMs : 0;
   const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : DASH;
 
   const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
