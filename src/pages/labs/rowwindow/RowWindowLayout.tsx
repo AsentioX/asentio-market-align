@@ -1082,28 +1082,24 @@ const HorizontalCompass = ({
   targetHeadingDeg: number;
 }) => {
   // Visible field of view in degrees
-  const FOV = 100;
+  const FOV = 130;
   const W = 320; // viewBox width
-  const H = 48;  // viewBox height (compact)
+  const H = 56;  // viewBox height
   const pxPerDeg = W / FOV;
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
 
-  // Build tick marks every 5°, labels every 20°
+  // Build tick marks every 5°, labels every 30°
   const ticks: { deg: number; label?: string; major: boolean; cardinal?: string }[] = [];
   for (let raw = -360; raw <= 720; raw += 5) {
     const norm = ((raw % 360) + 360) % 360;
-    const major = raw % 20 === 0;
+    const major = raw % 30 === 0;
     let cardinal: string | undefined;
     if (norm === 0) cardinal = 'N';
     else if (norm === 90) cardinal = 'E';
     else if (norm === 180) cardinal = 'S';
     else if (norm === 270) cardinal = 'W';
-    else if (norm === 45) cardinal = 'NE';
-    else if (norm === 135) cardinal = 'SE';
-    else if (norm === 225) cardinal = 'SW';
-    else if (norm === 315) cardinal = 'NW';
-    ticks.push({ deg: raw, label: major ? String(norm) : undefined, major, cardinal });
+    ticks.push({ deg: raw, label: major ? (cardinal ?? String(norm)) : undefined, major, cardinal });
   }
 
   const xFor = (deg: number) => {
@@ -1115,69 +1111,67 @@ const HorizontalCompass = ({
 
   const targetX = xFor(targetHeadingDeg);
   const targetVisible = targetX >= 4 && targetX <= W - 4;
-  // Match Panel title font: ui-sans-serif, semibold, uppercase tracked
   const labelFont = 'ui-sans-serif, system-ui, sans-serif';
+
+  // Find the centered label (closest major within FOV)
+  const tickRowY = 14;
+  const labelRowY = 44;
+  const ORANGE = 'hsl(22 95% 58%)';
 
   return (
     <div className="relative w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[44px]" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[56px]" preserveAspectRatio="none">
         <defs>
-          {/* Dark slate strip background */}
-          <linearGradient id="compass-bg" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="hsl(220 30% 14%)" />
-            <stop offset="50%" stopColor="hsl(220 28% 11%)" />
-            <stop offset="100%" stopColor="hsl(220 30% 8%)" />
-          </linearGradient>
-          {/* Subtle inner highlight */}
-          <linearGradient id="compass-sheen" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity="0.08" />
-            <stop offset="100%" stopColor="hsl(0 0% 100%)" stopOpacity="0" />
-          </linearGradient>
-          {/* Edge fade — content disappears into dark margins */}
+          {/* Edge fade — content disappears into black margins */}
           <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="hsl(220 30% 10%)" stopOpacity="1" />
-            <stop offset="10%" stopColor="hsl(220 30% 10%)" stopOpacity="0" />
-            <stop offset="90%" stopColor="hsl(220 30% 10%)" stopOpacity="0" />
-            <stop offset="100%" stopColor="hsl(220 30% 10%)" stopOpacity="1" />
+            <stop offset="0%" stopColor="hsl(0 0% 4%)" stopOpacity="1" />
+            <stop offset="12%" stopColor="hsl(0 0% 4%)" stopOpacity="0" />
+            <stop offset="88%" stopColor="hsl(0 0% 4%)" stopOpacity="0" />
+            <stop offset="100%" stopColor="hsl(0 0% 4%)" stopOpacity="1" />
           </linearGradient>
           <radialGradient id="pointer-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="hsl(195 90% 55%)" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity="0" />
+            <stop offset="0%" stopColor={ORANGE} stopOpacity="0.35" />
+            <stop offset="100%" stopColor={ORANGE} stopOpacity="0" />
           </radialGradient>
-          <filter id="compass-shadow" x="-5%" y="-20%" width="110%" height="160%">
-            <feDropShadow dx="0" dy="1" stdDeviation="1.2" floodColor="hsl(220 60% 5%)" floodOpacity="0.3" />
-          </filter>
         </defs>
 
-        {/* Strip body */}
-        <rect x="0" y="3" width={W} height={H - 6} rx="8" fill="url(#compass-bg)" stroke="hsl(220 25% 22%)" strokeWidth="1" filter="url(#compass-shadow)" />
-        <rect x="1" y="4" width={W - 2} height={(H - 8) / 2} rx="7" fill="url(#compass-sheen)" pointerEvents="none" />
+        {/* Pure black strip body */}
+        <rect x="0" y="0" width={W} height={H} rx="6" fill="hsl(0 0% 4%)" />
 
-        {/* Pointer halo */}
-        <ellipse cx={cx} cy={H / 2} rx="36" ry={H / 2 - 2} fill="url(#pointer-glow)" />
+        {/* Pointer glow halo behind center */}
+        <ellipse cx={cx} cy={labelRowY - 4} rx="40" ry="14" fill="url(#pointer-glow)" />
 
         {/* Ticks + labels */}
         <g opacity={headingDeg !== null ? 1 : 0.4}>
           {ticks.map((t, i) => {
             const x = xFor(t.deg);
             if (x < -10 || x > W + 10) return null;
-            const tickH = t.major ? 10 : 5;
-            const isCardinalAxis = t.cardinal === 'N' || t.cardinal === 'S' || t.cardinal === 'E' || t.cardinal === 'W';
+            const tickH = t.major ? 12 : 6;
+            // Distance-from-center fade for both ticks and labels
+            const distFromCenter = Math.abs(x - cx);
+            const fadeOpacity = Math.max(0.25, 1 - distFromCenter / (W / 2.2));
+            // The centered label gets the orange highlight
+            const isCentered = distFromCenter < pxPerDeg * 2.5 && t.major;
             return (
-              <g key={i}>
+              <g key={i} opacity={fadeOpacity}>
                 <line
                   x1={x} x2={x}
-                  y1={5} y2={5 + tickH}
-                  stroke={isCardinalAxis ? 'hsl(355 80% 60%)' : t.cardinal ? 'hsl(210 25% 85%)' : 'hsl(215 15% 55%)'}
-                  strokeWidth={t.major ? (isCardinalAxis ? 1.6 : 1.1) : 0.6}
+                  y1={tickRowY} y2={tickRowY + tickH}
+                  stroke="hsl(0 0% 92%)"
+                  strokeWidth={t.major ? 1.4 : 0.8}
                   strokeLinecap="round"
                 />
-                {t.cardinal ? (
-                  <text x={x} y={H - 7} textAnchor="middle" fontSize="9" fontWeight="600" fill={isCardinalAxis ? 'hsl(355 80% 65%)' : 'hsl(210 25% 90%)'} fontFamily={labelFont} letterSpacing="1.2">
-                    {t.cardinal}
-                  </text>
-                ) : t.label ? (
-                  <text x={x} y={H - 8} textAnchor="middle" fontSize="7.5" fill="hsl(215 15% 65%)" fontFamily={labelFont} fontWeight="600" letterSpacing="0.6">
+                {t.label ? (
+                  <text
+                    x={x}
+                    y={labelRowY}
+                    textAnchor="middle"
+                    fontSize={t.cardinal ? 14 : 12}
+                    fontWeight="600"
+                    fill={isCentered ? ORANGE : 'hsl(0 0% 78%)'}
+                    fontFamily={labelFont}
+                    letterSpacing="0.08em"
+                  >
                     {t.label}
                   </text>
                 ) : null}
@@ -1186,24 +1180,26 @@ const HorizontalCompass = ({
           })}
         </g>
 
-        {/* Edge fade */}
-        <rect x="0" y="3" width={W} height={H - 6} rx="8" fill="url(#compass-fade)" pointerEvents="none" />
+        {/* Edge fade overlay */}
+        <rect x="0" y="0" width={W} height={H} rx="6" fill="url(#compass-fade)" pointerEvents="none" />
 
-        {/* Target heading marker (green dashed) */}
+        {/* Target heading marker (subtle dashed line) */}
         {targetVisible && (
-          <g>
-            <line x1={targetX} x2={targetX} y1={5} y2={H - 4}
-              stroke="hsl(150 75% 55%)" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.95" />
-            <polygon points={`${targetX - 4},${H - 2} ${targetX + 4},${H - 2} ${targetX},${H - 8}`}
-              fill="hsl(150 75% 55%)" />
-          </g>
+          <line x1={targetX} x2={targetX} y1={tickRowY} y2={tickRowY + 14}
+            stroke="hsl(150 75% 55%)" strokeWidth="1.2" strokeDasharray="2 2" opacity="0.8" />
         )}
 
-        {/* Center pointer (current heading) */}
+        {/* Center pointer — orange diamond above the centered label */}
         <g>
-          <line x1={cx} x2={cx} y1={2} y2={H - 3} stroke="hsl(195 90% 60%)" strokeWidth="1.6" strokeLinecap="round" />
-          <polygon points={`${cx},0 ${cx + 4},5 ${cx},10 ${cx - 4},5`} fill="hsl(195 90% 60%)" stroke="hsl(220 30% 8%)" strokeWidth="0.6" />
-          <polygon points={`${cx - 4},${H} ${cx + 4},${H} ${cx},${H - 6}`} fill="hsl(195 90% 60%)" stroke="hsl(220 30% 8%)" strokeWidth="0.6" />
+          {/* diamond pointer */}
+          <polygon
+            points={`${cx},2 ${cx + 7},10 ${cx},18 ${cx - 7},10`}
+            fill={ORANGE}
+            stroke="hsl(0 0% 4%)"
+            strokeWidth="1.2"
+          />
+          {/* small dot in pointer */}
+          <circle cx={cx} cy={10} r="1.6" fill="hsl(0 0% 4%)" />
         </g>
       </svg>
     </div>
