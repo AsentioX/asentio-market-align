@@ -345,9 +345,6 @@ const PolicyLibrary = () => {
                 title="Add to docket"
               />
             )}
-            <span className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${statusStyle[policy.status] ?? 'bg-gray-100 text-gray-500'}`}>
-              {policy.status.replace('-', ' ')}
-            </span>
             {policy.category && (
               <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-medium">
                 {policy.category}
