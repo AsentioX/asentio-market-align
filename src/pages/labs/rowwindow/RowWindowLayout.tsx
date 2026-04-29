@@ -1133,6 +1133,15 @@ const HorizontalCompass = ({
             <stop offset="0%" stopColor={ORANGE} stopOpacity="0.35" />
             <stop offset="100%" stopColor={ORANGE} stopOpacity="0" />
           </radialGradient>
+          {/* Drift warning gradients — red glow growing in from each side */}
+          <linearGradient id="drift-glow-left" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="hsl(0 90% 55%)" stopOpacity="1" />
+            <stop offset="100%" stopColor="hsl(0 90% 55%)" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="drift-glow-right" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="hsl(0 90% 55%)" stopOpacity="0" />
+            <stop offset="100%" stopColor="hsl(0 90% 55%)" stopOpacity="1" />
+          </linearGradient>
         </defs>
 
         {/* Pure black strip body */}
