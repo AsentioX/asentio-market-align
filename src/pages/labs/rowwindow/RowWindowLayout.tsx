@@ -543,35 +543,33 @@ const PreRowView = ({
               <Waves className="w-4 h-4" />
               Tide
             </div>
-            <div className="mt-1 grid grid-cols-2 gap-6">
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-slate-500">Current</div>
-                <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5 leading-tight">
-                  {current.height.toFixed(2)} ft
-                  {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-500" aria-label="Rising" />}
-                  {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-500" aria-label="Falling" />}
-                </div>
-                <div className={`text-[11px] mt-0.5 ${
-                  direction === 'Flood' ? 'text-emerald-700'
-                  : direction === 'Ebb' ? 'text-amber-700'
-                  : 'text-slate-600'
-                }`}>
-                  {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
-                </div>
-              </div>
-              {nextLowTurn && (
-                <div className="text-right">
-                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Low tide</div>
-                  <div className="text-xl font-semibold font-mono text-slate-900 leading-tight">
-                    {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-                  </div>
-                  <div className="text-[11px] text-slate-600 mt-0.5">
-                    in {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
-                  </div>
-                </div>
-              )}
+            <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5 leading-tight mt-1">
+              {current.height.toFixed(2)} ft
+              {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-500" aria-label="Rising" />}
+              {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-500" aria-label="Falling" />}
+            </div>
+            <div className={`text-[11px] mt-0.5 ${
+              direction === 'Flood' ? 'text-emerald-700'
+              : direction === 'Ebb' ? 'text-amber-700'
+              : 'text-slate-600'
+            }`}>
+              {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
             </div>
           </div>
+          {nextLowTurn && (
+            <div className="px-4 py-2 sm:py-1">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                <ArrowDown className="w-4 h-4" />
+                Low tide
+              </div>
+              <div className="text-xl font-semibold font-mono text-slate-900 leading-tight mt-1">
+                {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+              </div>
+              <div className="text-[11px] text-slate-600 mt-0.5">
+                in {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
+              </div>
+            </div>
+          )}
           <div className="px-4 py-2 sm:py-1">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
               <Wind className="w-4 h-4" />
