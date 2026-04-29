@@ -953,6 +953,10 @@ const OnWaterView = ({
                   ? 'On line'
                   : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right of line' : 'left of line'}`}
               </div>
+              <div className="flex items-center gap-2 mt-3 text-[10px] text-slate-400">
+                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
+                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
+              </div>
             </div>
           </div>
         </Panel>
