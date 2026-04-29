@@ -1462,12 +1462,12 @@ const SessionCard = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <Stat icon={<Timer className="w-4 h-4" />} label="Elapsed" value={formatElapsed(session.durationMs)} />
-        <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} />
-        <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : undefined} />
-        <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke" value={session.avgSpm !== null ? `${session.avgSpm} spm` : DASH} />
-        <Stat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
+      <div className="grid grid-cols-2 md:grid-cols-5 md:divide-x divide-y md:divide-y-0 divide-slate-200 border-y border-slate-200">
+        <InlineStat icon={<Timer className="w-4 h-4" />} label="Elapsed" value={formatElapsed(session.durationMs)} />
+        <InlineStat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} />
+        <InlineStat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : undefined} />
+        <InlineStat icon={<Activity className="w-4 h-4" />} label="Avg stroke" value={session.avgSpm !== null ? `${session.avgSpm} spm` : DASH} />
+        <InlineStat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
       </div>
 
       {/* Section 2 — Map */}
