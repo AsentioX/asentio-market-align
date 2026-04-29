@@ -1038,17 +1038,32 @@ const OnWaterView = ({
             <Waves className="w-4 h-4" />
             Tide
           </div>
-          <div className="text-3xl md:text-4xl font-bold mt-1 text-slate-200 flex items-center gap-2">
-            {tide.height.toFixed(1)} ft
-            {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-400" aria-label="Rising" />}
-            {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-400" aria-label="Falling" />}
-          </div>
-          <div className={`text-[11px] mt-0.5 ${
-            direction === 'Flood' ? 'text-emerald-300'
-            : direction === 'Ebb' ? 'text-amber-300'
-            : 'text-slate-400'
-          }`}>
-            {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
+          <div className="mt-1 flex items-start justify-between gap-3">
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-slate-200 flex items-center gap-2">
+                {tide.height.toFixed(1)} ft
+                {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-400" aria-label="Rising" />}
+                {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-400" aria-label="Falling" />}
+              </div>
+              <div className={`text-[11px] mt-0.5 ${
+                direction === 'Flood' ? 'text-emerald-300'
+                : direction === 'Ebb' ? 'text-amber-300'
+                : 'text-slate-400'
+              }`}>
+                {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
+              </div>
+            </div>
+            {nextLowTurn && (
+              <div className="text-right">
+                <div className="text-[10px] uppercase tracking-wider text-slate-500">To low</div>
+                <div className="text-sm font-mono font-semibold text-slate-100">
+                  {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
+                  {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <BigStat
