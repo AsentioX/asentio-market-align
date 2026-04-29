@@ -1598,6 +1598,17 @@ const Stat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: strin
   </div>
 );
 
+const InlineStat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) => (
+  <div className="px-3 py-2.5">
+    <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+      {icon}
+      {label}
+    </div>
+    <div className="text-xl font-semibold mt-1 text-slate-900">{value}</div>
+    {sub && <div className="text-[11px] text-slate-600 mt-0.5">{sub}</div>}
+  </div>
+);
+
 const BigStat = ({
   icon, label, value, sub, accent = 'text-slate-900', mono = false, pulse = false,
 }: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
