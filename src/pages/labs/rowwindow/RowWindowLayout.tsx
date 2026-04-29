@@ -896,17 +896,17 @@ const OnWaterView = ({
         <BigStat
           icon={<Route className="w-4 h-4" />}
           label="Distance"
-          value={`${(distanceMeters / 1000).toFixed(2)} km`}
-          sub={`${Math.round(distanceMeters)} m`}
+          value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)} km` : DASH}
+          sub={distanceMeters !== null ? `${Math.round(distanceMeters)} m` : 'GPS not connected'}
           accent="text-cyan-200"
         />
         <BigStat
           icon={<Activity className="w-4 h-4" />}
           label="Stroke Rate"
-          value={`${Math.round(spm)}`}
+          value={spm !== null ? `${Math.round(spm)}` : DASH}
           sub="strokes / min"
           accent="text-cyan-200"
-          pulse={sessionState === 'active'}
+          pulse={sessionState === 'active' && spm !== null}
         />
         <BigStat
           icon={<Gauge className="w-4 h-4" />}
