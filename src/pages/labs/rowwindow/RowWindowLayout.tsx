@@ -1047,7 +1047,123 @@ const OnWaterView = ({
 // marker AND the port/starboard labels (since those swap when you turn around).
 // ============================================================
 
-interface LanePositionWidgetProps {
+// Horizontal strip compass (iPhone Compass-style)
+const HorizontalCompass = ({
+  headingDeg,
+  targetHeadingDeg,
+}: {
+  headingDeg: number | null;
+  targetHeadingDeg: number;
+}) => {
+  // Visible field of view in degrees
+  const FOV = 100;
+  const W = 320; // viewBox width
+  const H = 64;  // viewBox height
+  const pxPerDeg = W / FOV;
+  const cx = W / 2;
+  const heading = headingDeg ?? targetHeadingDeg;
+
+  // Build tick marks every 5°, labels every 20°
+  const ticks: { deg: number; label?: string; major: boolean; cardinal?: string }[] = [];
+  // Sweep a wide range, screen visibility filtered later
+  for (let raw = -360; raw <= 720; raw += 5) {
+    const norm = ((raw % 360) + 360) % 360;
+    const major = raw % 20 === 0;
+    let cardinal: string | undefined;
+    if (norm === 0) cardinal = 'N';
+    else if (norm === 90) cardinal = 'E';
+    else if (norm === 180) cardinal = 'S';
+    else if (norm === 270) cardinal = 'W';
+    else if (norm === 45) cardinal = 'NE';
+    else if (norm === 135) cardinal = 'SE';
+    else if (norm === 225) cardinal = 'SW';
+    else if (norm === 315) cardinal = 'NW';
+    ticks.push({ deg: raw, label: major ? String(norm) : undefined, major, cardinal });
+  }
+
+  // Helper: x position for an absolute degree value, given current heading at center
+  const xFor = (deg: number) => {
+    let delta = deg - heading;
+    // wrap to [-180, 180]
+    while (delta > 180) delta -= 360;
+    while (delta < -180) delta += 360;
+    return cx + delta * pxPerDeg;
+  };
+
+  const targetX = xFor(targetHeadingDeg);
+  const targetVisible = targetX >= 4 && targetX <= W - 4;
+
+  return (
+    <div className="relative w-full">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-16" preserveAspectRatio="none">
+        {/* Background strip */}
+        <defs>
+          <linearGradient id="compass-bg" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="hsl(210 40% 99%)" />
+            <stop offset="100%" stopColor="hsl(210 30% 92%)" />
+          </linearGradient>
+          <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
+            <stop offset="8%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
+            <stop offset="92%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
+            <stop offset="100%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="8" width={W} height={H - 16} rx="6" fill="url(#compass-bg)" stroke="hsl(220 15% 80%)" strokeWidth="1" />
+
+        {/* Ticks + labels */}
+        <g opacity={headingDeg !== null ? 1 : 0.4}>
+          {ticks.map((t, i) => {
+            const x = xFor(t.deg);
+            if (x < -10 || x > W + 10) return null;
+            const tickH = t.major ? 12 : 6;
+            return (
+              <g key={i}>
+                <line
+                  x1={x} x2={x}
+                  y1={10} y2={10 + tickH}
+                  stroke={t.cardinal ? 'hsl(220 15% 25%)' : 'hsl(220 10% 55%)'}
+                  strokeWidth={t.major ? 1 : 0.6}
+                />
+                {t.cardinal ? (
+                  <text x={x} y={H - 12} textAnchor="middle" fontSize="11" fontWeight="700" fill="hsl(220 15% 25%)" fontFamily="ui-sans-serif">
+                    {t.cardinal}
+                  </text>
+                ) : t.label ? (
+                  <text x={x} y={H - 14} textAnchor="middle" fontSize="8" fill="hsl(220 10% 45%)" fontFamily="ui-sans-serif">
+                    {t.label}
+                  </text>
+                ) : null}
+              </g>
+            );
+          })}
+        </g>
+
+        {/* Edge fade */}
+        <rect x="0" y="8" width={W} height={H - 16} rx="6" fill="url(#compass-fade)" pointerEvents="none" />
+
+        {/* Target heading marker (green dashed) */}
+        {targetVisible && (
+          <g>
+            <line x1={targetX} x2={targetX} y1={10} y2={H - 8}
+              stroke="hsl(150 75% 40%)" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.85" />
+            <polygon points={`${targetX - 4},${H - 4} ${targetX + 4},${H - 4} ${targetX},${H - 10}`}
+              fill="hsl(150 75% 40%)" />
+          </g>
+        )}
+
+        {/* Center pointer (current heading) */}
+        <g>
+          <line x1={cx} x2={cx} y1={6} y2={H - 6} stroke="hsl(195 85% 35%)" strokeWidth="1.5" />
+          <polygon points={`${cx - 6},2 ${cx + 6},2 ${cx},10`} fill="hsl(195 85% 35%)" />
+          <polygon points={`${cx - 6},${H - 2} ${cx + 6},${H - 2} ${cx},${H - 10}`} fill="hsl(195 85% 35%)" />
+        </g>
+      </svg>
+    </div>
+  );
+};
+
+
   laneOffsetMeters: number | null;
   laneColor: string;
   laneRingColor: string;
