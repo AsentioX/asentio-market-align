@@ -437,6 +437,7 @@ const RowWindowLayout = () => {
             spm={spm}
             headingDeg={liveHeading}
             targetHeadingDeg={targetHeadingDeg}
+            onSetTarget={setTargetHeadingDeg}
             laneOffsetMeters={laneOffsetMeters}
             heartRate={liveHeartRate}
             wind={wind}
