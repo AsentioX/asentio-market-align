@@ -181,9 +181,13 @@ const RowWindowLayout = () => {
         spmHistoryRef.current.push({ t: Date.now(), spm: 0, pace: Math.round(pace) });
         if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
       }
+      if (liveHeartRate !== null) {
+        hrHistoryRef.current.push({ t: Date.now(), bpm: liveHeartRate });
+        if (hrHistoryRef.current.length > 600) hrHistoryRef.current.shift();
+      }
     }, 1000);
     return () => clearInterval(id);
-  }, [sessionState, liveSpeedMs]);
+  }, [sessionState, liveSpeedMs, liveHeartRate]);
 
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
