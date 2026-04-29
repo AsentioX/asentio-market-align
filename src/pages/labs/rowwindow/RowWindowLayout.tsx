@@ -1132,37 +1132,40 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
         <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
         <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
         <div className="absolute inset-y-0 left-1/2 w-px bg-white/10" />
-        {/* Boat marker — small triangle on bow end indicates orientation */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 flex flex-col items-center"
-          style={{
-            left: `calc(50% + ${Math.max(-45, Math.min(45, displayOffset * 8))}% - 6px)`,
-          }}
-        >
-          {bowUp && (
-            <div
-              className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent"
-              style={{ borderBottomColor: laneRingColor }}
-            />
-          )}
+        {/* Boat marker — only when GPS lane data is available */}
+        {hasData && (
           <div
-            className="w-3 h-6 rounded-sm"
-            style={{ background: laneRingColor, boxShadow: `0 0 12px ${laneRingColor}` }}
-          />
-          {!bowUp && (
+            className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 flex flex-col items-center"
+            style={{
+              left: `calc(50% + ${Math.max(-45, Math.min(45, displayOffset * 8))}% - 6px)`,
+            }}
+          >
+            {bowUp && (
+              <div
+                className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent"
+                style={{ borderBottomColor: laneRingColor }}
+              />
+            )}
             <div
-              className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent"
-              style={{ borderTopColor: laneRingColor }}
+              className="w-3 h-6 rounded-sm"
+              style={{ background: laneRingColor, boxShadow: `0 0 12px ${laneRingColor}` }}
             />
-          )}
-        </div>
+            {!bowUp && (
+              <div
+                className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent"
+                style={{ borderTopColor: laneRingColor }}
+              />
+            )}
+          </div>
+        )}
         <div className="absolute top-1 left-2 text-[9px] text-emerald-400/60">{leftBankLabel}</div>
         <div className="absolute top-1 right-2 text-[9px] text-emerald-400/60">{rightBankLabel}</div>
       </div>
-      <div className={`text-xs ${laneColor}`}>
-        {laneStatus === 'good' && '✓ Holding the channel center line'}
-        {laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
-        {laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
+      <div className={`text-xs ${hasData ? laneColor : 'text-slate-500'}`}>
+        {!hasData && '—'}
+        {hasData && laneStatus === 'good' && '✓ Holding the channel center line'}
+        {hasData && laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
+        {hasData && laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
       </div>
     </div>
   );
