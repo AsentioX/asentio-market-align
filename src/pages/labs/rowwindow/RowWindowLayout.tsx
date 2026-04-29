@@ -863,6 +863,8 @@ interface OnWaterViewProps {
   wind: WindReading;
   tide: TidePoint;
   direction: 'Flood' | 'Ebb' | 'Slack';
+  nextLowTurn: TideTurn | null;
+  now: number;
   onStart: () => void;
   onPauseResume: () => void;
   onEnd: () => void;
@@ -871,7 +873,8 @@ interface OnWaterViewProps {
 
 const OnWaterView = ({
   sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg,
-  laneOffsetMeters, heartRate, wind, tide, direction, onStart, onPauseResume, onEnd,
+  laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, now,
+  onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
   const headingError = ((headingDeg - targetHeadingDeg + 540) % 360) - 180;
