@@ -424,6 +424,8 @@ const RowWindowLayout = () => {
             wind={wind}
             tide={current}
             direction={direction}
+            nextLowTurn={nextLowTurn}
+            now={now}
             onStart={startSession}
             onPauseResume={pauseResume}
             onEnd={endSession}
