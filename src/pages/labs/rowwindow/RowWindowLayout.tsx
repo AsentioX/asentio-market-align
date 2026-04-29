@@ -999,10 +999,10 @@ const OnWaterView = ({
         <BigStat
           icon={<Heart className="w-4 h-4" />}
           label="Heart Rate"
-          value={`${heartRate}`}
-          sub="bpm"
+          value={heartRate !== null ? `${heartRate}` : DASH}
+          sub={heartRate !== null ? 'bpm' : 'Not connected'}
           accent="text-rose-300"
-          pulse={sessionState === 'active'}
+          pulse={sessionState === 'active' && heartRate !== null}
         />
         <BigStat
           icon={<Wind className="w-4 h-4" />}
