@@ -524,7 +524,7 @@ const PreRowView = ({
     <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-6 md:p-8">
       <div className="flex flex-col md:flex-row md:items-center gap-6">
         <div className="flex items-center gap-5">
-          <div className="flex flex-col gap-2 p-3 rounded-2xl bg-black/40 border border-slate-200">
+          <div className="flex flex-col gap-2 p-3 rounded-2xl bg-slate-100 border border-slate-200">
             <div className={`w-6 h-6 rounded-full ${assessment.status === 'red' ? statusMeta.dotClass : 'bg-rose-900/40'}`} />
             <div className={`w-6 h-6 rounded-full ${assessment.status === 'yellow' ? statusMeta.dotClass : 'bg-amber-900/40'}`} />
             <div className={`w-6 h-6 rounded-full ${assessment.status === 'green' ? statusMeta.dotClass : 'bg-emerald-900/40'}`} />
@@ -538,7 +538,7 @@ const PreRowView = ({
           </div>
         </div>
         <div className="md:ml-auto grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto">
-          <div className="rounded-xl border border-slate-200 bg-black/30 px-4 py-3">
+          <div className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
               <Waves className="w-4 h-4" />
               Tide
@@ -1146,7 +1146,7 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
         </div>
       </div>
       {/* Channel visualization */}
-      <div className="relative h-12 rounded-lg bg-black/40 border border-slate-200 overflow-hidden">
+      <div className="relative h-12 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden">
         <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
         <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
         <div className="absolute inset-y-0 left-1/2 w-px bg-slate-200" />
@@ -1460,7 +1460,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 // ============================================================
 
 const Stat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) => (
-  <div className="rounded-xl border border-slate-200 bg-black/30 px-4 py-3">
+  <div className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3">
     <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
       {icon}
       {label}

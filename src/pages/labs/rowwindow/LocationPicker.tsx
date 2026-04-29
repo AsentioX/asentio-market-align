@@ -91,7 +91,7 @@ export const LocationPicker = ({
             onClick={() => setOpen(false)}
             aria-label="Close picker"
           />
-          <div className="absolute z-40 mt-2 left-0 right-0 max-h-[60vh] overflow-hidden rounded-xl border border-slate-300 bg-[hsl(220_30%_10%)] shadow-2xl shadow-black/60">
+          <div className="absolute z-40 mt-2 left-0 right-0 max-h-[60vh] overflow-hidden rounded-xl border border-slate-300 bg-white shadow-2xl shadow-slate-400/30">
             <div className="p-2 border-b border-slate-200 flex items-center gap-2">
               <Search className="w-4 h-4 text-slate-600 ml-1" />
               <input
