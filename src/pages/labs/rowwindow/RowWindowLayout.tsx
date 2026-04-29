@@ -537,13 +537,13 @@ const PreRowView = ({
             </div>
           </div>
         </div>
-        <div className="md:ml-auto grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto">
-          <div className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3">
+        <div className="md:ml-auto flex flex-col sm:flex-row sm:items-stretch sm:divide-x sm:divide-slate-200 divide-y sm:divide-y-0 divide-slate-200 w-full md:w-auto">
+          <div className="px-4 py-2 sm:py-1 sm:first:pl-0">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
               <Waves className="w-4 h-4" />
               Tide
             </div>
-            <div className="mt-1 grid grid-cols-2 gap-3">
+            <div className="mt-1 grid grid-cols-2 gap-6">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-slate-500">Current</div>
                 <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5 leading-tight">
@@ -572,7 +572,14 @@ const PreRowView = ({
               )}
             </div>
           </div>
-          <Stat icon={<Wind className="w-4 h-4" />} label="Wind" value={`${wind.speedKnots} kt`} sub={`from ${wind.directionLabel}`} />
+          <div className="px-4 py-2 sm:py-1">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+              <Wind className="w-4 h-4" />
+              Wind
+            </div>
+            <div className="text-xl font-semibold mt-1 text-slate-900 leading-tight">{wind.speedKnots} kt</div>
+            <div className="text-[11px] text-slate-600 mt-0.5">from {wind.directionLabel}</div>
+          </div>
         </div>
       </div>
     </section>
