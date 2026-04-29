@@ -937,10 +937,24 @@ const OnWaterView = ({
             {/* Compass strip */}
             <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
 
-            {/* Footer — current target bearing */}
-            <div className="text-center text-[10px] uppercase tracking-[0.15em] text-slate-500 font-medium">
-              <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
-            </div>
+            {/* Footer — Tap to set current heading as the new target center (when no GPS lane data). */}
+            {laneOffsetMeters === null ? (
+              <button
+                type="button"
+                onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
+                disabled={headingDeg === null}
+                className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
+                title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
+              >
+                <span className="text-cyan-700 normal-case tracking-normal text-[11px] font-medium">
+                  {headingDeg !== null ? 'Tap to set current heading as center' : 'Enable compass to set center'}
+                </span>
+              </button>
+            ) : (
+              <div className="text-center text-[10px] uppercase tracking-[0.15em] text-slate-500 font-medium">
+                <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
+              </div>
+            )}
           </div>
         </Panel>
 
@@ -951,8 +965,6 @@ const OnWaterView = ({
             laneColor={laneColor}
             laneRingColor={laneRingColor}
             laneStatus={laneStatus}
-            headingDeg={headingDeg}
-            onSetCenter={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
           />
         </Panel>
       </section>
@@ -1200,11 +1212,9 @@ interface LanePositionWidgetProps {
   laneColor: string;
   laneRingColor: string;
   laneStatus: 'good' | 'warn' | 'alert';
-  headingDeg: number | null;
-  onSetCenter: () => void;
 }
 
-const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneStatus, headingDeg, onSetCenter }: LanePositionWidgetProps) => {
+const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneStatus }: LanePositionWidgetProps) => {
   const [bowUp, setBowUp] = useState<boolean>(true);
   const hasData = laneOffsetMeters !== null;
   const offset = laneOffsetMeters ?? 0;
@@ -1276,23 +1286,12 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
         <div className="absolute top-1 left-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{leftBankLabel}</div>
         <div className="absolute top-1 right-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{rightBankLabel}</div>
       </div>
-      {!hasData ? (
-        <button
-          type="button"
-          onClick={onSetCenter}
-          disabled={headingDeg === null}
-          className="w-full text-center text-[11px] font-medium text-cyan-700 rounded-md px-2 py-1.5 bg-cyan-50/60 hover:bg-cyan-100 border border-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-cyan-50/60 transition"
-          title={headingDeg !== null ? 'Tap to set current heading as channel center' : 'Enable compass to set center'}
-        >
-          {headingDeg !== null ? 'Tap to set current heading as channel center' : 'Enable compass to set center'}
-        </button>
-      ) : (
-        <div className={`text-xs ${laneColor}`}>
-          {laneStatus === 'good' && '✓ Holding the channel center line'}
-          {laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
-          {laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
-        </div>
-      )}
+      <div className={`text-xs ${hasData ? laneColor : 'text-slate-500'}`}>
+        {!hasData && '—'}
+        {hasData && laneStatus === 'good' && '✓ Holding the channel center line'}
+        {hasData && laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
+        {hasData && laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
+      </div>
     </div>
   );
 };
