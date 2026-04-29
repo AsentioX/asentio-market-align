@@ -231,13 +231,21 @@ const RowWindowLayout = () => {
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
   const nextTurn = useMemo(() => getNextTurn(series, now), [series, now]);
-  const nextLowTurn = useMemo(() => {
+  const lowTideMarker = useMemo(() => {
     const turns = findTideTurns(series);
-    const future = turns.find((t) => t.type === 'low' && t.t > now);
-    if (future) return future;
-    // Fallback: return any low in series (closest upcoming or last known)
-    const lows = turns.filter((t) => t.type === 'low');
-    return lows[lows.length - 1] ?? null;
+    const nextLow = turns.find((t) => t.type === 'low' && t.t > now) ?? null;
+    const nextHigh = turns.find((t) => t.type === 'high' && t.t > now) ?? null;
+    const lastLow = [...turns].reverse().find((t) => t.type === 'low' && t.t <= now) ?? null;
+
+    // If next upcoming turn is a low → countdown to low
+    // If next upcoming turn is a high (i.e. we're past last low, heading to high) → count up since last low
+    if (nextLow && (!nextHigh || nextLow.t <= nextHigh.t)) {
+      return { mode: 'to' as const, t: nextLow.t };
+    }
+    if (lastLow) {
+      return { mode: 'since' as const, t: lastLow.t };
+    }
+    return nextLow ? { mode: 'to' as const, t: nextLow.t } : null;
   }, [series, now]);
   const vessel = VESSEL_PROFILES[vesselId];
 
