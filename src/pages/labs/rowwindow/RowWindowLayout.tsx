@@ -1105,6 +1105,19 @@ const HorizontalCompass = ({
   const labelRowY = 44;
   const ORANGE = 'hsl(22 95% 58%)';
 
+  // Drift from target — used to glow left/right side red as boat veers off line.
+  // Positive = boat heading is to the right of target (drifting starboard)
+  // Negative = boat heading is to the left of target (drifting port)
+  let driftDeg = 0;
+  if (headingDeg !== null) {
+    driftDeg = ((headingDeg - targetHeadingDeg + 540) % 360) - 180;
+  }
+  // Ramp: 0 below 5°, full at 25°
+  const driftMag = Math.max(0, Math.min(1, (Math.abs(driftDeg) - 5) / 20));
+  const leftGlow = driftDeg < 0 ? driftMag : 0;   // veering left → glow LEFT side
+  const rightGlow = driftDeg > 0 ? driftMag : 0;  // veering right → glow RIGHT side
+
+
   return (
     <div className="relative w-full">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[56px]" preserveAspectRatio="none">
@@ -1120,6 +1133,15 @@ const HorizontalCompass = ({
             <stop offset="0%" stopColor={ORANGE} stopOpacity="0.35" />
             <stop offset="100%" stopColor={ORANGE} stopOpacity="0" />
           </radialGradient>
+          {/* Drift warning gradients — red glow growing in from each side */}
+          <linearGradient id="drift-glow-left" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="hsl(0 90% 55%)" stopOpacity="1" />
+            <stop offset="100%" stopColor="hsl(0 90% 55%)" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="drift-glow-right" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="hsl(0 90% 55%)" stopOpacity="0" />
+            <stop offset="100%" stopColor="hsl(0 90% 55%)" stopOpacity="1" />
+          </linearGradient>
         </defs>
 
         {/* Pure black strip body */}
@@ -1169,6 +1191,19 @@ const HorizontalCompass = ({
 
         {/* Edge fade overlay */}
         <rect x="0" y="0" width={W} height={H} rx="6" fill="url(#compass-fade)" pointerEvents="none" />
+
+        {/* Drift warning glow — intensifies as boat veers off line */}
+        {leftGlow > 0 && (
+          <rect x="0" y="0" width={W * 0.55} height={H} rx="6"
+            fill="url(#drift-glow-left)" opacity={leftGlow * 0.85}
+            pointerEvents="none" style={{ transition: 'opacity 200ms ease-out' }} />
+        )}
+        {rightGlow > 0 && (
+          <rect x={W * 0.45} y="0" width={W * 0.55} height={H} rx="6"
+            fill="url(#drift-glow-right)" opacity={rightGlow * 0.85}
+            pointerEvents="none" style={{ transition: 'opacity 200ms ease-out' }} />
+        )}
+
 
         {/* Target heading marker (subtle dashed line) */}
         {targetVisible && (
