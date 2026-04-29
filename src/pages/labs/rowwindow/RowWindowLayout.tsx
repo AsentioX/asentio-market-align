@@ -122,6 +122,7 @@ const RowWindowLayout = () => {
 
   // Live row metrics — null when no real sensor is connected (no mock data).
   const spmHistoryRef = useRef<{ t: number; spm: number; pace: number }[]>([]);
+  const hrHistoryRef = useRef<{ t: number; bpm: number }[]>([]);
   const maxSpmRef = useRef<number>(0);
   const maxLaneOffsetRef = useRef<number>(0);
 
