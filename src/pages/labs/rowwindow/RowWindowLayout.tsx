@@ -119,29 +119,22 @@ const RowWindowLayout = () => {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
-  // Live row metrics (simulated)
-  const [spm, setSpm] = useState<number>(0);
-  const [headingDeg, setHeadingDeg] = useState<number>(45); // bearing along channel
-  const [targetHeadingDeg] = useState<number>(45);
-  const [laneOffsetMeters, setLaneOffsetMeters] = useState<number>(0); // signed: + = port, - = starboard
-  const [distanceMeters, setDistanceMeters] = useState<number>(0);
-  const [heartRate, setHeartRate] = useState<number>(72);
+  // Live row metrics — null when no real sensor is connected (no mock data).
   const spmHistoryRef = useRef<{ t: number; spm: number; pace: number }[]>([]);
   const maxSpmRef = useRef<number>(0);
   const maxLaneOffsetRef = useRef<number>(0);
 
-  // Real device sensors (compass, GPS, BLE heart-rate). Fall back to sim values
-  // when a sensor is unavailable / not yet authorized.
+  // Real device sensors (compass, GPS, BLE heart-rate). Values are null when
+  // the corresponding sensor is not live — the UI renders an em-dash.
   const sensors = useRowSensors({ tracking: sessionState === 'active' });
-  const liveHeading = sensors.headingStatus === 'live' && sensors.headingDeg !== null
-    ? sensors.headingDeg
-    : headingDeg;
-  const liveDistance = sensors.positionStatus === 'live' && sensors.distanceMeters > 0
-    ? sensors.distanceMeters
-    : distanceMeters;
-  const liveHeartRate = sensors.heartRateStatus === 'live' && sensors.heartRate !== null
-    ? sensors.heartRate
-    : heartRate;
+  const liveHeading: number | null = sensors.headingStatus === 'live' ? sensors.headingDeg : null;
+  const liveDistance: number | null = sensors.positionStatus === 'live' ? sensors.distanceMeters : null;
+  const liveSpeedMs: number | null = sensors.positionStatus === 'live' ? sensors.speedMs : null;
+  const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
+  // Stroke rate and lane offset have no native sensor wired up — show dash.
+  const spm: number | null = null;
+  const laneOffsetMeters: number | null = null;
+  const targetHeadingDeg = 45;
 
   // Tick every second when on water tab so timers/instruments feel live
   useEffect(() => {
@@ -177,56 +170,18 @@ const RowWindowLayout = () => {
     };
   }, [location.tideStationId, location.windStationId]);
 
-  // Simulated stroke + position telemetry while session is active
+  // Push real sensor samples into history while session is active (no mock data).
   useEffect(() => {
     if (sessionState !== 'active') return;
     const id = setInterval(() => {
-      // Stroke rate drifts around 22-30 spm with small noise
-      setSpm((prev) => {
-        const target = 26 + Math.sin(Date.now() / 8000) * 3;
-        const next = Math.max(16, Math.min(36, prev + (target - prev) * 0.25 + (Math.random() - 0.5) * 1.2));
-        const rounded = Math.round(next * 10) / 10;
-        if (rounded > maxSpmRef.current) maxSpmRef.current = rounded;
-        return rounded;
-      });
-      // Heading wanders +/- 8° around target
-      setHeadingDeg((prev) => {
-        const drift = (Math.random() - 0.5) * 2;
-        const pull = (targetHeadingDeg - prev) * 0.1;
-        return Math.round((prev + pull + drift) * 10) / 10;
-      });
-      // Lane offset: small drift, occasional bigger excursion
-      setLaneOffsetMeters((prev) => {
-        const drift = (Math.random() - 0.5) * 0.4;
-        const restoring = -prev * 0.05;
-        const next = prev + drift + restoring;
-        const abs = Math.abs(next);
-        if (abs > maxLaneOffsetRef.current) maxLaneOffsetRef.current = abs;
-        return Math.round(next * 100) / 100;
-      });
-      // Heart rate wanders 130-165
-      setHeartRate((prev) => {
-        const target = 145 + Math.sin(Date.now() / 12000) * 15;
-        const next = prev + (target - prev) * 0.2 + (Math.random() - 0.5) * 2;
-        return Math.round(next);
-      });
+      if (liveSpeedMs !== null) {
+        const pace = liveSpeedMs > 0 ? 500 / liveSpeedMs : 0;
+        spmHistoryRef.current.push({ t: Date.now(), spm: 0, pace: Math.round(pace) });
+        if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
+      }
     }, 1000);
     return () => clearInterval(id);
-  }, [sessionState, targetHeadingDeg]);
-
-  // Distance accumulator (boat speed roughly proportional to spm, ~4.2 m/s at 26 spm for a single)
-  useEffect(() => {
-    if (sessionState !== 'active') return;
-    const id = setInterval(() => {
-      const speedMs = (spm / 26) * 4.2; // crude: 4.2 m/s at 26 spm
-      setDistanceMeters((d) => d + speedMs * 1); // 1s tick
-      const pace = speedMs > 0 ? 500 / speedMs : 0;
-      spmHistoryRef.current.push({ t: Date.now(), spm, pace: Math.round(pace) });
-      // cap history
-      if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
-    }, 1000);
-    return () => clearInterval(id);
-  }, [sessionState, spm]);
+  }, [sessionState, liveSpeedMs]);
 
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
@@ -277,12 +232,10 @@ const RowWindowLayout = () => {
     setSessionEndedAt(null);
     setPausedMs(0);
     setPausedAt(null);
-    setDistanceMeters(0);
-    setSpm(22);
-    setHeartRate(120);
-    setLaneOffsetMeters(0);
+    // No mock seeding — sensor values come from real devices only.
+
     spmHistoryRef.current = [];
-    maxSpmRef.current = 22;
+    maxSpmRef.current = 0;
     maxLaneOffsetRef.current = 0;
     sensors.resetDistance();
     // Best-effort: trigger sensor permissions on the user-gesture that starts the row.
@@ -314,14 +267,14 @@ const RowWindowLayout = () => {
       startedAt: sessionStartedAt,
       endedAt,
       durationMs: totalElapsed,
-      distanceMeters: Math.round(liveDistance),
+      distanceMeters: Math.round(liveDistance ?? 0),
       avgSpm: Math.round(avgSpm * 10) / 10,
       maxSpm: maxSpmRef.current,
       avgPaceSecPer500: Math.round(avgPace),
-      avgHeadingDeg: Math.round(liveHeading),
+      avgHeadingDeg: Math.round(liveHeading ?? 0),
       laneDeviationMax: Math.round(maxLaneOffsetRef.current * 100) / 100,
       caloriesKcal: Math.round((totalElapsed / 60_000) * 9), // ~9 kcal/min for steady state
-      avgHeartRate: liveHeartRate,
+      avgHeartRate: liveHeartRate ?? 0,
       startConditions: {
         tideFt: current.height,
         direction,
@@ -874,12 +827,12 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
 interface OnWaterViewProps {
   sessionState: 'idle' | 'active' | 'paused';
   elapsedMs: number;
-  distanceMeters: number;
-  spm: number;
-  headingDeg: number;
+  distanceMeters: number | null;
+  spm: number | null;
+  headingDeg: number | null;
   targetHeadingDeg: number;
-  laneOffsetMeters: number;
-  heartRate: number;
+  laneOffsetMeters: number | null;
+  heartRate: number | null;
   wind: WindReading;
   tide: TidePoint;
   direction: 'Flood' | 'Ebb' | 'Slack';
@@ -898,12 +851,13 @@ const OnWaterView = ({
   onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
-  const headingError = ((headingDeg - targetHeadingDeg + 540) % 360) - 180;
-  const speedMs = (spm / 26) * 4.2;
+  const DASH = '—';
+  const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
+  const speedMs = spm !== null ? (spm / 26) * 4.2 : 0;
   const pacePer500 = speedMs > 0 ? 500 / speedMs : 0;
-  const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : '—';
+  const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : DASH;
 
-  const laneAbs = Math.abs(laneOffsetMeters);
+  const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
   const laneStatus: 'good' | 'warn' | 'alert' = laneAbs < 1.5 ? 'good' : laneAbs < 3 ? 'warn' : 'alert';
   const laneColor = laneStatus === 'good' ? 'text-emerald-300' : laneStatus === 'warn' ? 'text-amber-300' : 'text-rose-300';
   const laneRingColor = laneStatus === 'good' ? 'hsl(150 80% 55%)' : laneStatus === 'warn' ? 'hsl(45 95% 55%)' : 'hsl(355 85% 55%)';
@@ -942,17 +896,17 @@ const OnWaterView = ({
         <BigStat
           icon={<Route className="w-4 h-4" />}
           label="Distance"
-          value={`${(distanceMeters / 1000).toFixed(2)} km`}
-          sub={`${Math.round(distanceMeters)} m`}
+          value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)} km` : DASH}
+          sub={distanceMeters !== null ? `${Math.round(distanceMeters)} m` : 'GPS not connected'}
           accent="text-cyan-200"
         />
         <BigStat
           icon={<Activity className="w-4 h-4" />}
           label="Stroke Rate"
-          value={`${Math.round(spm)}`}
+          value={spm !== null ? `${Math.round(spm)}` : DASH}
           sub="strokes / min"
           accent="text-cyan-200"
-          pulse={sessionState === 'active'}
+          pulse={sessionState === 'active' && spm !== null}
         />
         <BigStat
           icon={<Gauge className="w-4 h-4" />}
@@ -992,7 +946,7 @@ const OnWaterView = ({
                 />
                 {/* Boat — rotated to current heading. Port half = red, starboard half = green
                     (standard nautical nav-light convention). */}
-                <g transform={`rotate(${headingDeg} 50 50)`}>
+                <g transform={`rotate(${headingDeg ?? 0} 50 50)`} opacity={headingDeg !== null ? 1 : 0.25}>
                   {/* Port (left) half */}
                   <path d="M 50 22 Q 42 30 42 56 L 50 64 Z" fill="hsl(355 85% 58%)" stroke="hsl(355 90% 35%)" strokeWidth="0.5" />
                   {/* Starboard (right) half */}
@@ -1005,14 +959,19 @@ const OnWaterView = ({
               </svg>
             </div>
             <div className="flex-1">
-              <div className="text-3xl font-bold font-mono text-cyan-200">{Math.round(headingDeg)}°</div>
+              <div className="text-3xl font-bold font-mono text-cyan-200">
+                {headingDeg !== null ? `${Math.round(headingDeg)}°` : DASH}
+              </div>
               <div className="text-xs text-slate-400 mt-1">Target {targetHeadingDeg}° ({degLabel(targetHeadingDeg)})</div>
               <div className={`text-xs mt-2 font-medium ${
-                Math.abs(headingError) < 5 ? 'text-emerald-300'
+                headingDeg === null ? 'text-slate-500'
+                : Math.abs(headingError) < 5 ? 'text-emerald-300'
                 : Math.abs(headingError) < 12 ? 'text-amber-300'
                 : 'text-rose-300'
               }`}>
-                {headingError === 0
+                {headingDeg === null
+                  ? 'Compass not connected'
+                  : headingError === 0
                   ? 'On line'
                   : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right of line' : 'left of line'}`}
               </div>
@@ -1040,10 +999,10 @@ const OnWaterView = ({
         <BigStat
           icon={<Heart className="w-4 h-4" />}
           label="Heart Rate"
-          value={`${heartRate}`}
-          sub="bpm"
+          value={heartRate !== null ? `${heartRate}` : DASH}
+          sub={heartRate !== null ? 'bpm' : 'Not connected'}
           accent="text-rose-300"
-          pulse={sessionState === 'active'}
+          pulse={sessionState === 'active' && heartRate !== null}
         />
         <BigStat
           icon={<Wind className="w-4 h-4" />}
@@ -1127,7 +1086,7 @@ const OnWaterView = ({
 // ============================================================
 
 interface LanePositionWidgetProps {
-  laneOffsetMeters: number;
+  laneOffsetMeters: number | null;
   laneColor: string;
   laneRingColor: string;
   laneStatus: 'good' | 'warn' | 'alert';
@@ -1135,16 +1094,17 @@ interface LanePositionWidgetProps {
 
 const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneStatus }: LanePositionWidgetProps) => {
   const [bowUp, setBowUp] = useState<boolean>(true);
+  const hasData = laneOffsetMeters !== null;
+  const offset = laneOffsetMeters ?? 0;
 
   // When facing stern-up (rower's POV), port and starboard swap sides on screen.
-  // We flip the displayed offset sign so the marker visually moves to the side
-  // that matches the active label.
-  const displayOffset = bowUp ? laneOffsetMeters : -laneOffsetMeters;
+  const displayOffset = bowUp ? offset : -offset;
   const portLabel = bowUp ? 'Port (left)' : 'Port (right)';
   const starboardLabel = bowUp ? 'Starboard (right)' : 'Starboard (left)';
-  const sideLabel =
-    laneOffsetMeters > 0.3 ? portLabel
-    : laneOffsetMeters < -0.3 ? starboardLabel
+  const sideLabel = !hasData
+    ? 'No GPS lane data'
+    : offset > 0.3 ? portLabel
+    : offset < -0.3 ? starboardLabel
     : 'Centered';
   const leftBankLabel = bowUp ? 'Port bank' : 'Starboard bank';
   const rightBankLabel = bowUp ? 'Starboard bank' : 'Port bank';
@@ -1152,8 +1112,8 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-2">
-        <div className={`text-3xl font-bold font-mono ${laneColor}`}>
-          {laneOffsetMeters >= 0 ? '+' : ''}{laneOffsetMeters.toFixed(1)} m
+        <div className={`text-3xl font-bold font-mono ${hasData ? laneColor : 'text-slate-500'}`}>
+          {hasData ? `${offset >= 0 ? '+' : ''}${offset.toFixed(1)} m` : '—'}
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-slate-400">{sideLabel}</div>
@@ -1172,37 +1132,40 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
         <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
         <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
         <div className="absolute inset-y-0 left-1/2 w-px bg-white/10" />
-        {/* Boat marker — small triangle on bow end indicates orientation */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 flex flex-col items-center"
-          style={{
-            left: `calc(50% + ${Math.max(-45, Math.min(45, displayOffset * 8))}% - 6px)`,
-          }}
-        >
-          {bowUp && (
-            <div
-              className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent"
-              style={{ borderBottomColor: laneRingColor }}
-            />
-          )}
+        {/* Boat marker — only when GPS lane data is available */}
+        {hasData && (
           <div
-            className="w-3 h-6 rounded-sm"
-            style={{ background: laneRingColor, boxShadow: `0 0 12px ${laneRingColor}` }}
-          />
-          {!bowUp && (
+            className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 flex flex-col items-center"
+            style={{
+              left: `calc(50% + ${Math.max(-45, Math.min(45, displayOffset * 8))}% - 6px)`,
+            }}
+          >
+            {bowUp && (
+              <div
+                className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent"
+                style={{ borderBottomColor: laneRingColor }}
+              />
+            )}
             <div
-              className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent"
-              style={{ borderTopColor: laneRingColor }}
+              className="w-3 h-6 rounded-sm"
+              style={{ background: laneRingColor, boxShadow: `0 0 12px ${laneRingColor}` }}
             />
-          )}
-        </div>
+            {!bowUp && (
+              <div
+                className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent"
+                style={{ borderTopColor: laneRingColor }}
+              />
+            )}
+          </div>
+        )}
         <div className="absolute top-1 left-2 text-[9px] text-emerald-400/60">{leftBankLabel}</div>
         <div className="absolute top-1 right-2 text-[9px] text-emerald-400/60">{rightBankLabel}</div>
       </div>
-      <div className={`text-xs ${laneColor}`}>
-        {laneStatus === 'good' && '✓ Holding the channel center line'}
-        {laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
-        {laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
+      <div className={`text-xs ${hasData ? laneColor : 'text-slate-500'}`}>
+        {!hasData && '—'}
+        {hasData && laneStatus === 'good' && '✓ Holding the channel center line'}
+        {hasData && laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
+        {hasData && laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
       </div>
     </div>
   );
