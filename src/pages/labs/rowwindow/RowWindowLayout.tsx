@@ -267,6 +267,10 @@ const RowWindowLayout = () => {
         windDir: wind.directionLabel,
       },
       spmSeries: [...history],
+      track: [...sensors.track],
+      speedSeries: sensors.track
+        .filter((p) => p.speedMs >= 0)
+        .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
     };
     setLastSession(summary);
     setSessionEndedAt(endedAt);
