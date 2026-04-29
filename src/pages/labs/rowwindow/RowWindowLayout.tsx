@@ -285,7 +285,9 @@ const RowWindowLayout = () => {
     const history = spmHistoryRef.current;
     const avgSpm = history.length ? history.reduce((s, h) => s + h.spm, 0) / history.length : 0;
     const avgPace = history.length ? history.reduce((s, h) => s + h.pace, 0) / history.length : 0;
+    const newId = `row-${endedAt}-${Math.random().toString(36).slice(2, 8)}`;
     const summary: RowSession = {
+      id: newId,
       startedAt: sessionStartedAt,
       endedAt,
       durationMs: totalElapsed,
@@ -309,7 +311,8 @@ const RowWindowLayout = () => {
         .filter((p) => p.speedMs >= 0)
         .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
     };
-    setLastSession(summary);
+    setSavedSessions((prev) => [summary, ...prev]);
+    setSelectedSessionId(newId);
     setSessionEndedAt(endedAt);
     setSessionState('idle');
     setSessionStartedAt(null);
