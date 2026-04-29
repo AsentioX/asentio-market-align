@@ -78,6 +78,7 @@ const PolicyLibrary = () => {
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const { isOnDocket, toggleDocket } = useDocket();
+  const { data: proposalCounts = {} } = useProposalCounts();
 
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortAsc, setSortAsc] = useState(false);
