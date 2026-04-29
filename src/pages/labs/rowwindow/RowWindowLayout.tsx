@@ -571,12 +571,6 @@ const PreRowView = ({
               )}
             </div>
           </div>
-          <Stat
-            icon={direction === 'Flood' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
-            label="Next turn"
-            value={nextTurn ? formatCountdown(nextTurn.t - now) : '—'}
-            sub={nextTurn ? `${nextTurn.type === 'high' ? 'High' : 'Low'} · ${nextTurn.height.toFixed(2)} ft` : 'Stable'}
-          />
           <Stat icon={<Wind className="w-4 h-4" />} label="Wind" value={`${wind.speedKnots} kt`} sub={`from ${wind.directionLabel}`} />
         </div>
       </div>
