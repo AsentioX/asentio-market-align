@@ -93,7 +93,14 @@ const RowWindowLayout = () => {
       const raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
       if (!raw) return [];
       const parsed = JSON.parse(raw) as RowSession[];
-      return Array.isArray(parsed) ? parsed : [];
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map((s) => ({
+        ...s,
+        track: Array.isArray(s.track) ? s.track : [],
+        spmSeries: Array.isArray(s.spmSeries) ? s.spmSeries : [],
+        speedSeries: Array.isArray(s.speedSeries) ? s.speedSeries : [],
+        hrSeries: Array.isArray((s as any).hrSeries) ? (s as any).hrSeries : [],
+      }));
     } catch { return []; }
   });
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
