@@ -436,6 +436,7 @@ const RowWindowLayout = () => {
             elapsedMs={elapsedMs}
             distanceMeters={liveDistance}
             spm={spm}
+            speedMs={liveSpeedMs}
             headingDeg={liveHeading}
             targetHeadingDeg={targetHeadingDeg}
             onSetTarget={setTargetHeadingDeg}
