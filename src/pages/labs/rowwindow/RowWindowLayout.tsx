@@ -1014,6 +1014,22 @@ const OnWaterView = ({
         </div>
       </section>
 
+      {/* Session controls — Pause / End Row on one line */}
+      <div className="flex gap-2">
+        <button
+          onClick={onPauseResume}
+          className="flex-1 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+        >
+          {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
+        </button>
+        <button
+          onClick={onEnd}
+          className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 border border-rose-500/30 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+        >
+          <Square className="w-4 h-4" /> End Row
+        </button>
+      </div>
+
       {/* Sensors */}
       <SensorsPanel sensors={sensors} />
     </>
