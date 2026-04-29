@@ -1130,14 +1130,14 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-2">
-        <div className={`text-3xl font-bold font-mono ${hasData ? laneColor : 'text-slate-500'}`}>
+        <div className={`text-4xl md:text-5xl font-bold font-mono leading-none ${hasData ? laneColor : 'text-slate-400'}`}>
           {hasData ? `${offset >= 0 ? '+' : ''}${offset.toFixed(1)} m` : '—'}
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-xs text-slate-600">{sideLabel}</div>
+          <div className="text-xs text-slate-700 font-medium">{sideLabel}</div>
           <button
             onClick={() => setBowUp((v) => !v)}
-            className="px-2 py-1 rounded-md bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1 transition"
+            className="px-2 py-1 rounded-md bg-cyan-50 hover:bg-cyan-100 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1 transition"
             title="Swap Bow / Stern perspective"
           >
             <ArrowLeftRight className="w-3 h-3" />
@@ -1145,17 +1145,20 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
           </button>
         </div>
       </div>
-      {/* Channel visualization */}
-      <div className="relative h-12 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden">
-        <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
-        <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
-        <div className="absolute inset-y-0 left-1/2 w-px bg-slate-200" />
+      {/* Channel visualization — banks on the sides, water in the middle */}
+      <div className="relative h-14 rounded-lg bg-sky-50 border border-sky-200 overflow-hidden">
+        {/* Left bank */}
+        <div className="absolute inset-y-0 left-0 w-[10%] bg-emerald-200 border-r border-emerald-400" />
+        {/* Right bank */}
+        <div className="absolute inset-y-0 right-0 w-[10%] bg-emerald-200 border-l border-emerald-400" />
+        {/* Centerline */}
+        <div className="absolute inset-y-2 left-1/2 w-px bg-sky-400/60" style={{ borderLeft: '1px dashed hsl(200 80% 45%)' }} />
         {/* Boat marker — only when GPS lane data is available */}
         {hasData && (
           <div
             className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 flex flex-col items-center"
             style={{
-              left: `calc(50% + ${Math.max(-45, Math.min(45, displayOffset * 8))}% - 6px)`,
+              left: `calc(50% + ${Math.max(-40, Math.min(40, displayOffset * 8))}% - 6px)`,
             }}
           >
             {bowUp && (
@@ -1165,8 +1168,8 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
               />
             )}
             <div
-              className="w-3 h-6 rounded-sm"
-              style={{ background: laneRingColor, boxShadow: `0 0 12px ${laneRingColor}` }}
+              className="w-3 h-7 rounded-sm"
+              style={{ background: laneRingColor, boxShadow: `0 0 10px ${laneRingColor}` }}
             />
             {!bowUp && (
               <div
@@ -1176,8 +1179,8 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
             )}
           </div>
         )}
-        <div className="absolute top-1 left-2 text-[9px] text-emerald-400/60">{leftBankLabel}</div>
-        <div className="absolute top-1 right-2 text-[9px] text-emerald-400/60">{rightBankLabel}</div>
+        <div className="absolute top-1 left-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{leftBankLabel}</div>
+        <div className="absolute top-1 right-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{rightBankLabel}</div>
       </div>
       <div className={`text-xs ${hasData ? laneColor : 'text-slate-500'}`}>
         {!hasData && '—'}
