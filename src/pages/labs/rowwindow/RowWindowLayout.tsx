@@ -487,6 +487,7 @@ interface PreRowViewProps {
   current: TidePoint;
   direction: 'Flood' | 'Ebb' | 'Slack';
   nextTurn: ReturnType<typeof getNextTurn>;
+  nextLowTurn: TideTurn | null;
   now: number;
   wind: WindReading;
   vesselId: VesselProfile['id'];
@@ -502,7 +503,7 @@ interface PreRowViewProps {
 }
 
 const PreRowView = ({
-  assessment, statusMeta, vessel, duration, current, direction, nextTurn, now, wind,
+  assessment, statusMeta, vessel, duration, current, direction, nextTurn, nextLowTurn, now, wind,
   vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
