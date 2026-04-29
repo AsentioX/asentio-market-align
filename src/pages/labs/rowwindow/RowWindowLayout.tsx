@@ -496,7 +496,7 @@ interface PreRowViewProps {
 }
 
 const PreRowView = ({
-  assessment, statusMeta, vessel, duration, current, direction, nextTurn, nextLowTurn, now, wind,
+  assessment, statusMeta, vessel, duration, current, direction, nextTurn, nextLowTurn, lowTideMarker, now, wind,
   vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
