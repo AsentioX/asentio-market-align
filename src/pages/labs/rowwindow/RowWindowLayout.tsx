@@ -687,7 +687,7 @@ const PreRowView = ({
                 <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="hsl(220 15% 85%)" strokeDasharray="3 3" vertical={false} />
+            <CartesianGrid stroke="hsl(220 15% 80%)" strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="time"
               type="number"
@@ -1358,7 +1358,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
                     <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="hsl(220 15% 85%)" strokeDasharray="3 3" vertical={false} />
+                <CartesianGrid stroke="hsl(220 15% 80%)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="idx" stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis domain={[15, 35]} stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip
@@ -1399,7 +1399,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
           <div className="h-56 w-full">
             <ResponsiveContainer>
               <LineChart data={speedChartData} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="hsl(220 15% 85%)" strokeDasharray="3 3" vertical={false} />
+                <CartesianGrid stroke="hsl(220 15% 80%)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="idx" stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="speed" stroke="hsl(195 90% 65%)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="pace" orientation="right" stroke="hsl(280 80% 70%)" fontSize={11} tickLine={false} axisLine={false} reversed />
@@ -1590,7 +1590,7 @@ const CourseMap = ({ track }: { track: TrackPoint[] }) => {
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto block" preserveAspectRatio="xMidYMid meet">
         <defs>
           <pattern id="rowGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(220 15% 88%)" strokeWidth="1" />
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(220 15% 75%)" strokeWidth="1" />
           </pattern>
           <linearGradient id="rowRoute" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="hsl(150 80% 55%)" />
