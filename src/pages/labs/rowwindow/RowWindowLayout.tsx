@@ -839,7 +839,7 @@ interface OnWaterViewProps {
 }
 
 const OnWaterView = ({
-  sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg,
+  sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg, onSetTarget,
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
