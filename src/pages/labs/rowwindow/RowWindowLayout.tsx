@@ -314,6 +314,7 @@ const RowWindowLayout = () => {
       speedSeries: sensors.track
         .filter((p) => p.speedMs >= 0)
         .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
+      hrSeries: [...hrHistoryRef.current],
     };
     setSavedSessions((prev) => [summary, ...prev]);
     setSelectedSessionId(newId);
