@@ -317,27 +317,27 @@ const RowWindowLayout = () => {
   };
 
   const statusMeta = {
-    green: { label: 'GO — Safe to Launch', dotClass: 'bg-emerald-400 shadow-[0_0_24px_hsl(150_80%_55%/0.7)]', textClass: 'text-emerald-300' },
-    yellow: { label: 'CAUTION — Proceed with Care', dotClass: 'bg-amber-400 shadow-[0_0_24px_hsl(45_95%_55%/0.7)]', textClass: 'text-amber-300' },
-    red: { label: 'STOP — Do Not Launch', dotClass: 'bg-rose-500 shadow-[0_0_24px_hsl(355_85%_55%/0.7)]', textClass: 'text-rose-300' },
+    green: { label: 'GO — Safe to Launch', dotClass: 'bg-emerald-400 shadow-[0_0_24px_hsl(150_80%_55%/0.7)]', textClass: 'text-emerald-700' },
+    yellow: { label: 'CAUTION — Proceed with Care', dotClass: 'bg-amber-400 shadow-[0_0_24px_hsl(45_95%_55%/0.7)]', textClass: 'text-amber-700' },
+    red: { label: 'STOP — Do Not Launch', dotClass: 'bg-rose-500 shadow-[0_0_24px_hsl(355_85%_55%/0.7)]', textClass: 'text-rose-700' },
   }[assessment.status];
 
   return (
-    <div className="min-h-screen bg-[hsl(220_30%_6%)] text-slate-100 pb-24">
+    <div className="min-h-screen bg-[hsl(210_40%_97%)] text-slate-900 pb-24">
       {/* Top bar */}
-      <header className="border-b border-white/5 bg-[hsl(220_30%_8%)]/80 backdrop-blur-md sticky top-0 z-10">
+      <header className="border-b border-slate-200 bg-[hsl(210_40%_99%)]/80 backdrop-blur-md sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/labs" className="p-2 -ml-2 rounded-lg hover:bg-white/5 text-slate-300" aria-label="Back to Labs">
+            <Link to="/labs" className="p-2 -ml-2 rounded-lg hover:bg-slate-100 text-slate-700" aria-label="Back to Labs">
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/30 to-blue-700/30 border border-cyan-400/20 flex items-center justify-center">
-                <Waves className="w-5 h-5 text-cyan-300" />
+                <Waves className="w-5 h-5 text-cyan-700" />
               </div>
               <div>
                 <h1 className="text-base font-semibold tracking-tight">RowWindow</h1>
-                <p className="text-[11px] text-slate-400 -mt-0.5 truncate max-w-[180px] sm:max-w-none">{location.name} · NOAA {location.tideStationId}</p>
+                <p className="text-[11px] text-slate-600 -mt-0.5 truncate max-w-[180px] sm:max-w-none">{location.name} · NOAA {location.tideStationId}</p>
               </div>
             </div>
           </div>
@@ -345,8 +345,8 @@ const RowWindowLayout = () => {
             <div
               className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border ${
                 source === 'noaa'
-                  ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-300'
-                  : 'border-amber-400/30 bg-amber-500/10 text-amber-300'
+                  ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-700'
+                  : 'border-amber-400/30 bg-amber-500/10 text-amber-700'
               }`}
               title={
                 source === 'noaa'
@@ -364,8 +364,8 @@ const RowWindowLayout = () => {
               {source === 'noaa' ? 'LIVE · NOAA' : 'MOCK'}
             </div>
             <div className="text-right">
-              <div className="text-xs text-slate-400">Local time</div>
-              <div className="text-sm font-mono text-slate-200">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+              <div className="text-xs text-slate-600">Local time</div>
+              <div className="text-sm font-mono text-slate-800">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
           </div>
         </div>
@@ -437,7 +437,7 @@ const RowWindowLayout = () => {
       </main>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-20 border-t border-white/5 bg-[hsl(220_30%_8%)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed bottom-0 inset-x-0 z-20 border-t border-slate-200 bg-[hsl(210_40%_99%)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
         <div className="max-w-6xl mx-auto grid grid-cols-3">
           <TabButton
             active={tab === 'pre'}
@@ -500,11 +500,11 @@ const PreRowView = ({
 }: PreRowViewProps) => (
   <>
     {/* Location picker */}
-    <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-4">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
       <div className="flex items-center justify-between mb-2.5">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-semibold">Rowing Location</div>
+        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-semibold">Rowing Location</div>
         {locationState.favorites.length > 0 && (
-          <div className="text-[10px] text-amber-300/80">{locationState.favorites.length} saved</div>
+          <div className="text-[10px] text-amber-700/80">{locationState.favorites.length} saved</div>
         )}
       </div>
       <LocationPicker
@@ -521,39 +521,39 @@ const PreRowView = ({
     </section>
 
     {/* Primary status — traffic light */}
-    <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-6 md:p-8">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-6 md:p-8">
       <div className="flex flex-col md:flex-row md:items-center gap-6">
         <div className="flex items-center gap-5">
-          <div className="flex flex-col gap-2 p-3 rounded-2xl bg-black/40 border border-white/5">
+          <div className="flex flex-col gap-2 p-3 rounded-2xl bg-black/40 border border-slate-200">
             <div className={`w-6 h-6 rounded-full ${assessment.status === 'red' ? statusMeta.dotClass : 'bg-rose-900/40'}`} />
             <div className={`w-6 h-6 rounded-full ${assessment.status === 'yellow' ? statusMeta.dotClass : 'bg-amber-900/40'}`} />
             <div className={`w-6 h-6 rounded-full ${assessment.status === 'green' ? statusMeta.dotClass : 'bg-emerald-900/40'}`} />
           </div>
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Launch Status</div>
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-600">Launch Status</div>
             <div className={`text-2xl md:text-3xl font-bold mt-1 ${statusMeta.textClass}`}>{statusMeta.label}</div>
-            <div className="text-sm text-slate-400 mt-1">
+            <div className="text-sm text-slate-600 mt-1">
               {vessel.label} · {duration} min window
             </div>
           </div>
         </div>
         <div className="md:ml-auto grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto">
-          <div className="rounded-xl border border-white/5 bg-black/30 px-4 py-3">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+          <div className="rounded-xl border border-slate-200 bg-black/30 px-4 py-3">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
               <Waves className="w-4 h-4" />
               Tide
             </div>
             <div className="mt-1 flex items-start justify-between gap-3">
               <div>
-                <div className="text-xl font-semibold text-slate-100 flex items-center gap-1.5">
+                <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5">
                   {current.height.toFixed(2)} ft
                   {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-400" aria-label="Rising" />}
                   {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-400" aria-label="Falling" />}
                 </div>
                 <div className={`text-[11px] mt-0.5 ${
-                  direction === 'Flood' ? 'text-emerald-300'
-                  : direction === 'Ebb' ? 'text-amber-300'
-                  : 'text-slate-400'
+                  direction === 'Flood' ? 'text-emerald-700'
+                  : direction === 'Ebb' ? 'text-amber-700'
+                  : 'text-slate-600'
                 }`}>
                   {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
                 </div>
@@ -561,10 +561,10 @@ const PreRowView = ({
               {nextLowTurn && (
                 <div className="text-right">
                   <div className="text-[10px] uppercase tracking-wider text-slate-500">Low tide</div>
-                  <div className="text-sm font-mono font-semibold text-slate-100">
+                  <div className="text-sm font-mono font-semibold text-slate-900">
                     {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
+                  <div className="text-[11px] text-slate-600 mt-0.5">
                     in {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
                   </div>
                 </div>
@@ -582,7 +582,7 @@ const PreRowView = ({
       </div>
 
       {assessment.reasons.length > 0 && (
-        <ul className="mt-6 space-y-1.5 text-sm text-slate-300/90">
+        <ul className="mt-6 space-y-1.5 text-sm text-slate-700/90">
           {assessment.reasons.map((r) => (
             <li key={r} className="flex gap-2">
               <span className="text-slate-500 mt-1">•</span>
@@ -597,8 +597,8 @@ const PreRowView = ({
         disabled={assessment.status === 'red'}
         className={`mt-6 w-full md:w-auto px-6 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${
           assessment.status === 'red'
-            ? 'bg-rose-900/30 text-rose-300/60 border border-rose-500/20 cursor-not-allowed'
-            : 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/40'
+            ? 'bg-rose-900/30 text-rose-700/60 border border-rose-500/20 cursor-not-allowed'
+            : 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40'
         }`}
       >
         <Play className="w-4 h-4" />
@@ -609,10 +609,10 @@ const PreRowView = ({
     {/* Chop alert */}
     {assessment.chopAlert && (
       <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex gap-3 items-start">
-        <AlertTriangle className="w-5 h-5 text-amber-300 mt-0.5 shrink-0" />
+        <AlertTriangle className="w-5 h-5 text-amber-700 mt-0.5 shrink-0" />
         <div>
-          <div className="font-semibold text-amber-200">Chop Alert — Square Waves in Port Channel</div>
-          <div className="text-sm text-amber-100/80 mt-0.5">
+          <div className="font-semibold text-amber-800">Chop Alert — Square Waves in Port Channel</div>
+          <div className="text-sm text-amber-800/80 mt-0.5">
             Northwest wind ({wind.speedKnots} kt) opposing the ebbing tide. Expect short, steep waves on the Port side. Consider Starboard channel or shorten the row.
           </div>
         </div>
@@ -621,7 +621,7 @@ const PreRowView = ({
 
     {/* Controls */}
     <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Panel title="Vessel Profile" icon={<Sailboat className="w-4 h-4 text-cyan-300" />}>
+      <Panel title="Vessel Profile" icon={<Sailboat className="w-4 h-4 text-cyan-700" />}>
         <div className="grid grid-cols-2 gap-2">
           {Object.values(VESSEL_PROFILES).map((v) => (
             <button
@@ -629,18 +629,18 @@ const PreRowView = ({
               onClick={() => setVesselId(v.id)}
               className={`px-4 py-3 rounded-lg text-sm font-medium border transition ${
                 vesselId === v.id
-                  ? 'bg-cyan-500/15 border-cyan-400/40 text-cyan-100'
-                  : 'border-white/5 bg-white/[0.02] text-slate-300 hover:border-white/10'
+                  ? 'bg-cyan-500/15 border-cyan-400/40 text-cyan-800'
+                  : 'border-slate-200 bg-white/[0.02] text-slate-700 hover:border-slate-300'
               }`}
             >
               <div>{v.label}</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">Wind warn &gt; {v.windWarnKnots} kt</div>
+              <div className="text-[11px] text-slate-600 mt-0.5">Wind warn &gt; {v.windWarnKnots} kt</div>
             </button>
           ))}
         </div>
       </Panel>
 
-      <Panel title="Planned Duration" icon={<Clock className="w-4 h-4 text-cyan-300" />}>
+      <Panel title="Planned Duration" icon={<Clock className="w-4 h-4 text-cyan-700" />}>
         <div className="grid grid-cols-3 gap-2">
           {DURATIONS.map((d) => (
             <button
@@ -648,17 +648,17 @@ const PreRowView = ({
               onClick={() => setDuration(d)}
               className={`px-4 py-3 rounded-lg text-sm font-medium border transition ${
                 duration === d
-                  ? 'bg-cyan-500/15 border-cyan-400/40 text-cyan-100'
-                  : 'border-white/5 bg-white/[0.02] text-slate-300 hover:border-white/10'
+                  ? 'bg-cyan-500/15 border-cyan-400/40 text-cyan-800'
+                  : 'border-slate-200 bg-white/[0.02] text-slate-700 hover:border-slate-300'
               }`}
             >
               {d} min
             </button>
           ))}
         </div>
-        <div className="mt-3 text-xs text-slate-400">
+        <div className="mt-3 text-xs text-slate-600">
           Window range:{' '}
-          <span className="font-mono text-slate-300">
+          <span className="font-mono text-slate-700">
             {assessment.minHeight.toFixed(2)}–{assessment.maxHeight.toFixed(2)} ft
           </span>
         </div>
@@ -666,13 +666,13 @@ const PreRowView = ({
     </section>
 
     {/* Tide chart */}
-    <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Anchor className="w-4 h-4 text-cyan-300" />
+          <Anchor className="w-4 h-4 text-cyan-700" />
           <h2 className="text-sm font-semibold tracking-tight">Tide Forecast (24h)</h2>
         </div>
-        <div className="flex items-center gap-3 text-[11px] text-slate-400">
+        <div className="flex items-center gap-3 text-[11px] text-slate-600">
           <LegendDot color="hsl(150 80% 55%)" label={`> ${TIDE_GREEN_FT} ft`} />
           <LegendDot color="hsl(45 95% 55%)" label={`${TIDE_RED_FT}–${TIDE_GREEN_FT} ft`} />
           <LegendDot color="hsl(355 85% 55%)" label={`< ${TIDE_RED_FT} ft`} />
@@ -687,27 +687,27 @@ const PreRowView = ({
                 <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="hsl(220 20% 18%)" strokeDasharray="3 3" vertical={false} />
+            <CartesianGrid stroke="hsl(220 15% 85%)" strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="time"
               type="number"
               domain={['dataMin', 'dataMax']}
               tickFormatter={(v) => new Date(v).toLocaleTimeString([], { hour: 'numeric' })}
-              stroke="hsl(220 15% 50%)"
+              stroke="hsl(220 15% 35%)"
               fontSize={11}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
               domain={[-1, 8]}
-              stroke="hsl(220 15% 50%)"
+              stroke="hsl(220 15% 35%)"
               fontSize={11}
               tickLine={false}
               axisLine={false}
               tickFormatter={(v) => `${v}ft`}
             />
             <Tooltip
-              contentStyle={{ background: 'hsl(220 30% 10%)', border: '1px solid hsl(220 20% 20%)', borderRadius: 8, fontSize: 12 }}
+              contentStyle={{ background: 'hsl(0 0% 100%)', border: '1px solid hsl(220 15% 80%)', borderRadius: 8, fontSize: 12 }}
               labelFormatter={(v) => new Date(v as number).toLocaleString([], { hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric' })}
               formatter={(value: number) => [`${value.toFixed(2)} ft`, 'Tide']}
             />
@@ -724,7 +724,7 @@ const PreRowView = ({
       <p className="mt-3 text-[11px] text-slate-500">
         {source === 'noaa' ? (
           <>
-            Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${locationState.location.tideStationId}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-300">NOAA CO-OPS Station {locationState.location.tideStationId}</a> ({locationState.location.name}, MLLW datum) · 6-min interval
+            Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${locationState.location.tideStationId}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">NOAA CO-OPS Station {locationState.location.tideStationId}</a> ({locationState.location.name}, MLLW datum) · 6-min interval
             {fetchedAt && <> · refreshed {new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</>}
           </>
         ) : (
@@ -762,20 +762,20 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
   const showPosBtn = sensors.positionStatus !== 'live' && sensors.positionStatus !== 'unavailable';
   const showHrBtn = sensors.heartRateStatus !== 'live';
   return (
-    <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-4">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Sensors</div>
+        <div className="text-xs uppercase tracking-[0.2em] text-slate-600">Sensors</div>
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <div className="inline-flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${statusDot(sensors.headingStatus)}`} />
-            <Compass className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-300">Compass</span>
+            <Compass className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-slate-700">Compass</span>
             <span className="text-slate-500">{statusLabel(sensors.headingStatus)}</span>
           </div>
           <div className="inline-flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${statusDot(sensors.positionStatus)}`} />
-            <MapPin className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-300">GPS</span>
+            <MapPin className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-slate-700">GPS</span>
             <span className="text-slate-500">
               {statusLabel(sensors.positionStatus)}
               {sensors.positionStatus === 'live' && sensors.positionAccuracy
@@ -785,8 +785,8 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           </div>
           <div className="inline-flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${statusDot(sensors.heartRateStatus)}`} />
-            <Heart className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-300">Heart rate</span>
+            <Heart className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-slate-700">Heart rate</span>
             <span className="text-slate-500">
               {sensors.heartRateStatus === 'live' && sensors.heartRateDeviceName
                 ? sensors.heartRateDeviceName
@@ -800,7 +800,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           {showCompassBtn && (
             <button
               onClick={sensors.requestCompass}
-              className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs inline-flex items-center gap-1.5 transition"
+              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs inline-flex items-center gap-1.5 transition"
             >
               <Compass className="w-3.5 h-3.5" /> Enable compass
             </button>
@@ -808,7 +808,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           {showPosBtn && (
             <button
               onClick={sensors.requestPosition}
-              className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs inline-flex items-center gap-1.5 transition"
+              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs inline-flex items-center gap-1.5 transition"
             >
               <MapPin className="w-3.5 h-3.5" /> Enable GPS
             </button>
@@ -816,7 +816,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           {showHrBtn && (
             <button
               onClick={sensors.connectHeartRate}
-              className="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-200 border border-rose-500/30 text-xs inline-flex items-center gap-1.5 transition"
+              className="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 border border-rose-500/30 text-xs inline-flex items-center gap-1.5 transition"
             >
               <Heart className="w-3.5 h-3.5" /> Pair heart-rate monitor
             </button>
@@ -824,7 +824,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           {sensors.heartRateStatus === 'live' && (
             <button
               onClick={sensors.disconnectHeartRate}
-              className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-xs inline-flex items-center gap-1.5 transition"
+              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs inline-flex items-center gap-1.5 transition"
             >
               Disconnect HR
             </button>
@@ -877,22 +877,22 @@ const OnWaterView = ({
 
   const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
   const laneStatus: 'good' | 'warn' | 'alert' = laneAbs < 1.5 ? 'good' : laneAbs < 3 ? 'warn' : 'alert';
-  const laneColor = laneStatus === 'good' ? 'text-emerald-300' : laneStatus === 'warn' ? 'text-amber-300' : 'text-rose-300';
+  const laneColor = laneStatus === 'good' ? 'text-emerald-700' : laneStatus === 'warn' ? 'text-amber-700' : 'text-rose-700';
   const laneRingColor = laneStatus === 'good' ? 'hsl(150 80% 55%)' : laneStatus === 'warn' ? 'hsl(45 95% 55%)' : 'hsl(355 85% 55%)';
 
   if (sessionState === 'idle') {
     return (
-      <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-8 text-center">
+      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-8 text-center">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center mb-4">
-          <Activity className="w-8 h-8 text-cyan-300" />
+          <Activity className="w-8 h-8 text-cyan-700" />
         </div>
         <h2 className="text-xl font-semibold">On-Water Instruments</h2>
-        <p className="text-sm text-slate-400 mt-2 max-w-md mx-auto">
+        <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
           Start a session to track strokes per minute, heading, lane position, pace, and heart rate while you row.
         </p>
         <button
           onClick={onStart}
-          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/40 font-semibold text-sm inline-flex items-center gap-2 transition"
+          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40 font-semibold text-sm inline-flex items-center gap-2 transition"
         >
           <Play className="w-4 h-4" /> Start Row
         </button>
@@ -908,7 +908,7 @@ const OnWaterView = ({
           icon={<Timer className="w-4 h-4" />}
           label="Elapsed"
           value={formatElapsed(elapsedMs)}
-          accent="text-cyan-200"
+          accent="text-cyan-800"
           mono
         />
         <BigStat
@@ -916,14 +916,14 @@ const OnWaterView = ({
           label="Distance"
           value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)} km` : DASH}
           sub={distanceMeters !== null ? `${Math.round(distanceMeters)} m` : 'GPS not connected'}
-          accent="text-cyan-200"
+          accent="text-cyan-800"
         />
         <BigStat
           icon={<Activity className="w-4 h-4" />}
           label="Stroke Rate"
           value={spm !== null ? `${Math.round(spm)}` : DASH}
           sub="strokes / min"
-          accent="text-cyan-200"
+          accent="text-cyan-800"
           pulse={sessionState === 'active' && spm !== null}
         />
         <BigStat
@@ -931,7 +931,7 @@ const OnWaterView = ({
           label="Pace"
           value={paceLabel}
           sub="/ 500 m"
-          accent="text-cyan-200"
+          accent="text-cyan-800"
           mono
         />
       </section>
@@ -939,18 +939,18 @@ const OnWaterView = ({
       {/* Heading + Lane keeping */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Compass */}
-        <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-300" />}>
+        <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
           <div className="flex items-center gap-6">
             <div className="relative w-32 h-32">
               <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="50" cy="50" r="46" fill="hsl(220 30% 6%)" stroke="hsl(220 20% 20%)" strokeWidth="2" />
+                <circle cx="50" cy="50" r="46" fill="hsl(210 40% 97%)" stroke="hsl(220 15% 80%)" strokeWidth="2" />
                 {/* Cardinal markers */}
                 {['N', 'E', 'S', 'W'].map((c, i) => {
                   const angle = (i * 90 - 90) * (Math.PI / 180);
                   const x = 50 + Math.cos(angle) * 38;
                   const y = 50 + Math.sin(angle) * 38;
                   return (
-                    <text key={c} x={x} y={y + 3} textAnchor="middle" fontSize="8" fill="hsl(220 15% 60%)" fontFamily="ui-sans-serif">
+                    <text key={c} x={x} y={y + 3} textAnchor="middle" fontSize="8" fill="hsl(220 15% 30%)" fontFamily="ui-sans-serif">
                       {c}
                     </text>
                   );
@@ -970,22 +970,22 @@ const OnWaterView = ({
                   {/* Starboard (right) half */}
                   <path d="M 50 22 Q 58 30 58 56 L 50 64 Z" fill="hsl(150 80% 50%)" stroke="hsl(150 85% 28%)" strokeWidth="0.5" />
                   {/* Centerline keel */}
-                  <line x1="50" y1="22" x2="50" y2="64" stroke="hsl(220 30% 6%)" strokeWidth="0.6" />
+                  <line x1="50" y1="22" x2="50" y2="64" stroke="hsl(210 40% 97%)" strokeWidth="0.6" />
                   {/* Bow tick */}
                   <circle cx="50" cy="20" r="1.6" fill="hsl(60 100% 75%)" />
                 </g>
               </svg>
             </div>
             <div className="flex-1">
-              <div className="text-3xl font-bold font-mono text-cyan-200">
+              <div className="text-3xl font-bold font-mono text-cyan-800">
                 {headingDeg !== null ? `${Math.round(headingDeg)}°` : DASH}
               </div>
-              <div className="text-xs text-slate-400 mt-1">Target {targetHeadingDeg}° ({degLabel(targetHeadingDeg)})</div>
+              <div className="text-xs text-slate-600 mt-1">Target {targetHeadingDeg}° ({degLabel(targetHeadingDeg)})</div>
               <div className={`text-xs mt-2 font-medium ${
                 headingDeg === null ? 'text-slate-500'
-                : Math.abs(headingError) < 5 ? 'text-emerald-300'
-                : Math.abs(headingError) < 12 ? 'text-amber-300'
-                : 'text-rose-300'
+                : Math.abs(headingError) < 5 ? 'text-emerald-700'
+                : Math.abs(headingError) < 12 ? 'text-amber-700'
+                : 'text-rose-700'
               }`}>
                 {headingDeg === null
                   ? 'Compass not connected'
@@ -993,7 +993,7 @@ const OnWaterView = ({
                   ? 'On line'
                   : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right of line' : 'left of line'}`}
               </div>
-              <div className="flex items-center gap-2 mt-3 text-[10px] text-slate-400">
+              <div className="flex items-center gap-2 mt-3 text-[10px] text-slate-600">
                 <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
                 <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
               </div>
@@ -1002,7 +1002,7 @@ const OnWaterView = ({
         </Panel>
 
         {/* Lane keeping */}
-        <Panel title="Lane Position" icon={<Navigation className="w-4 h-4 text-cyan-300" />}>
+        <Panel title="Lane Position" icon={<Navigation className="w-4 h-4 text-cyan-700" />}>
           <LanePositionWidget
             laneOffsetMeters={laneOffsetMeters}
             laneColor={laneColor}
@@ -1019,7 +1019,7 @@ const OnWaterView = ({
           label="Heart Rate"
           value={heartRate !== null ? `${heartRate}` : DASH}
           sub={heartRate !== null ? 'bpm' : 'Not connected'}
-          accent="text-rose-300"
+          accent="text-rose-700"
           pulse={sessionState === 'active' && heartRate !== null}
         />
         <BigStat
@@ -1027,34 +1027,34 @@ const OnWaterView = ({
           label="Wind"
           value={`${wind.speedKnots} kt`}
           sub={`from ${wind.directionLabel}`}
-          accent="text-slate-200"
+          accent="text-slate-800"
         />
-        <div className="col-span-2 rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] px-4 py-4">
-          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-400">
+        <div className="col-span-2 rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] px-4 py-4">
+          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
             <Waves className="w-4 h-4" />
             Tide
           </div>
           <div className="mt-1 flex items-start justify-between gap-3">
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-200 flex items-center gap-2">
+              <div className="text-3xl md:text-4xl font-bold text-slate-800 flex items-center gap-2">
                 {tide.height.toFixed(1)} ft
                 {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-400" aria-label="Rising" />}
                 {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-400" aria-label="Falling" />}
               </div>
               <div className={`text-[11px] mt-0.5 ${
-                direction === 'Flood' ? 'text-emerald-300'
-                : direction === 'Ebb' ? 'text-amber-300'
-                : 'text-slate-400'
+                direction === 'Flood' ? 'text-emerald-700'
+                : direction === 'Ebb' ? 'text-amber-700'
+                : 'text-slate-600'
               }`}>
                 {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
               </div>
             </div>
             {lowTideMarker && (
               <div className="text-right">
-                <div className="text-3xl md:text-4xl font-bold text-slate-200">
+                <div className="text-3xl md:text-4xl font-bold text-slate-800">
                   {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
+                <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
                   {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
                   {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
@@ -1068,24 +1068,24 @@ const OnWaterView = ({
       <SensorsPanel sensors={sensors} />
 
       {/* Session controls */}
-      <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <div className={`text-xs uppercase tracking-[0.2em] ${sessionState === 'active' ? 'text-emerald-300' : 'text-amber-300'}`}>
+            <div className={`text-xs uppercase tracking-[0.2em] ${sessionState === 'active' ? 'text-emerald-700' : 'text-amber-700'}`}>
               {sessionState === 'active' ? '● Recording' : '|| Paused'}
             </div>
-            <div className="text-sm text-slate-400 mt-1">Session controls</div>
+            <div className="text-sm text-slate-600 mt-1">Session controls</div>
           </div>
           <div className="flex gap-2">
             <button
               onClick={onPauseResume}
-              className="px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 font-medium text-sm inline-flex items-center gap-2 transition"
+              className="px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-medium text-sm inline-flex items-center gap-2 transition"
             >
               {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
             </button>
             <button
               onClick={onEnd}
-              className="px-4 py-2.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-200 border border-rose-500/30 font-medium text-sm inline-flex items-center gap-2 transition"
+              className="px-4 py-2.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 border border-rose-500/30 font-medium text-sm inline-flex items-center gap-2 transition"
             >
               <Square className="w-4 h-4" /> End Row
             </button>
@@ -1134,10 +1134,10 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
           {hasData ? `${offset >= 0 ? '+' : ''}${offset.toFixed(1)} m` : '—'}
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-xs text-slate-400">{sideLabel}</div>
+          <div className="text-xs text-slate-600">{sideLabel}</div>
           <button
             onClick={() => setBowUp((v) => !v)}
-            className="px-2 py-1 rounded-md bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 text-[10px] font-semibold inline-flex items-center gap-1 transition"
+            className="px-2 py-1 rounded-md bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1 transition"
             title="Swap Bow / Stern perspective"
           >
             <ArrowLeftRight className="w-3 h-3" />
@@ -1146,10 +1146,10 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
         </div>
       </div>
       {/* Channel visualization */}
-      <div className="relative h-12 rounded-lg bg-black/40 border border-white/5 overflow-hidden">
+      <div className="relative h-12 rounded-lg bg-black/40 border border-slate-200 overflow-hidden">
         <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
         <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
-        <div className="absolute inset-y-0 left-1/2 w-px bg-white/10" />
+        <div className="absolute inset-y-0 left-1/2 w-px bg-slate-200" />
         {/* Boat marker — only when GPS lane data is available */}
         {hasData && (
           <div
@@ -1206,17 +1206,17 @@ interface PostRowViewProps {
 const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
   if (!session) {
     return (
-      <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-8 text-center">
+      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-8 text-center">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-500/15 border border-slate-400/20 flex items-center justify-center mb-4">
-          <TrendingUp className="w-8 h-8 text-slate-400" />
+          <TrendingUp className="w-8 h-8 text-slate-600" />
         </div>
         <h2 className="text-xl font-semibold">No session yet</h2>
-        <p className="text-sm text-slate-400 mt-2 max-w-md mx-auto">
+        <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
           Complete a row from the On Water tab and your summary will appear here.
         </p>
         <button
           onClick={onNewRow}
-          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/40 font-semibold text-sm inline-flex items-center gap-2 transition"
+          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40 font-semibold text-sm inline-flex items-center gap-2 transition"
         >
           Check Conditions →
         </button>
@@ -1247,14 +1247,14 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
       <section className="rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/10 via-[hsl(220_30%_9%)] to-[hsl(220_30%_9%)] p-6 md:p-8">
         <div className="flex items-start gap-4 mb-5">
           <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
-            <TrendingUp className="w-6 h-6 text-emerald-300" />
+            <TrendingUp className="w-6 h-6 text-emerald-700" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs uppercase tracking-[0.2em] text-emerald-300">Row Complete</div>
+            <div className="text-xs uppercase tracking-[0.2em] text-emerald-700">Row Complete</div>
             <h2 className="text-2xl md:text-3xl font-bold mt-1">
               {distanceKmLabel} · {formatElapsed(session.durationMs)}
             </h2>
-            <div className="text-sm text-slate-400 mt-1">
+            <div className="text-sm text-slate-600 mt-1">
               {startedDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} ·{' '}
               {startedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} →{' '}
               {endedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
@@ -1263,7 +1263,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => onExportSession(session)}
-              className="px-3 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-100 text-xs font-medium inline-flex items-center gap-1.5 transition"
+              className="px-3 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-800 text-xs font-medium inline-flex items-center gap-1.5 transition"
               title="Export as GPX"
             >
               <Download className="w-3.5 h-3.5" /> GPX
@@ -1272,7 +1272,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
               onClick={() => {
                 if (confirm('Delete this saved row?')) onDeleteSession(session.id);
               }}
-              className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/30 text-rose-300 transition"
+              className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/30 text-rose-700 transition"
               title="Delete this session"
             >
               <Trash2 className="w-4 h-4" />
@@ -1289,13 +1289,13 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
       {/* Saved sessions list */}
       {sessions.length > 0 && (
-        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-4 h-4 text-cyan-300" />
+            <Clock className="w-4 h-4 text-cyan-700" />
             <h2 className="text-sm font-semibold tracking-tight">Saved Rows</h2>
             <span className="text-[11px] text-slate-500 ml-auto">{sessions.length} total</span>
           </div>
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-slate-200">
             {sessions.map((s) => {
               const isActive = s.id === selectedSessionId;
               const d = new Date(s.startedAt);
@@ -1303,17 +1303,17 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
                 <div
                   key={s.id}
                   className={`flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-lg transition ${
-                    isActive ? 'bg-cyan-500/10' : 'hover:bg-white/5'
+                    isActive ? 'bg-cyan-500/10' : 'hover:bg-slate-100'
                   }`}
                 >
                   <button
                     onClick={() => onSelectSession(s.id)}
                     className="flex-1 min-w-0 text-left"
                   >
-                    <div className="text-sm font-medium text-slate-100 truncate">
+                    <div className="text-sm font-medium text-slate-900 truncate">
                       {s.distanceMeters !== null ? `${(s.distanceMeters / 1000).toFixed(2)} km` : `${DASH} km`} · {formatElapsed(s.durationMs)}
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">
+                    <div className="text-[11px] text-slate-600 mt-0.5">
                       {d.toLocaleDateString([], { month: 'short', day: 'numeric' })} ·{' '}
                       {d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} ·{' '}
                       avg {s.avgSpm !== null ? `${s.avgSpm} spm` : `${DASH} spm`}
@@ -1321,7 +1321,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
                   </button>
                   <button
                     onClick={() => onExportSession(s)}
-                    className="p-1.5 rounded-md text-slate-400 hover:text-cyan-300 hover:bg-cyan-500/10 transition"
+                    className="p-1.5 rounded-md text-slate-600 hover:text-cyan-700 hover:bg-cyan-500/10 transition"
                     title="Export GPX"
                   >
                     <Download className="w-4 h-4" />
@@ -1330,7 +1330,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
                     onClick={() => {
                       if (confirm('Delete this saved row?')) onDeleteSession(s.id);
                     }}
-                    className="p-1.5 rounded-md text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 transition"
+                    className="p-1.5 rounded-md text-slate-600 hover:text-rose-700 hover:bg-rose-500/10 transition"
                     title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -1344,9 +1344,9 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
       {/* Stroke rate chart */}
       {spmChartData.length > 5 && (
-        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-4 h-4 text-cyan-300" />
+            <Activity className="w-4 h-4 text-cyan-700" />
             <h2 className="text-sm font-semibold tracking-tight">Stroke Rate Over Time</h2>
           </div>
           <div className="h-48 w-full">
@@ -1358,11 +1358,11 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
                     <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="hsl(220 20% 18%)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="idx" stroke="hsl(220 15% 50%)" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis domain={[15, 35]} stroke="hsl(220 15% 50%)" fontSize={11} tickLine={false} axisLine={false} />
+                <CartesianGrid stroke="hsl(220 15% 85%)" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="idx" stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis domain={[15, 35]} stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip
-                  contentStyle={{ background: 'hsl(220 30% 10%)', border: '1px solid hsl(220 20% 20%)', borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{ background: 'hsl(0 0% 100%)', border: '1px solid hsl(220 15% 80%)', borderRadius: 8, fontSize: 12 }}
                   formatter={(value: number) => [`${value} spm`, 'Stroke rate']}
                   labelFormatter={(idx) => `${idx}s`}
                 />
@@ -1375,9 +1375,9 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
       {/* GPS course map */}
       {hasTrack && (
-        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <MapPin className="w-4 h-4 text-cyan-300" />
+            <MapPin className="w-4 h-4 text-cyan-700" />
             <h2 className="text-sm font-semibold tracking-tight">Course on Map</h2>
             <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
           </div>
@@ -1387,11 +1387,11 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
       {/* Boat speed / pace chart */}
       {speedChartData.length > 5 && (
-        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Gauge className="w-4 h-4 text-cyan-300" />
+            <Gauge className="w-4 h-4 text-cyan-700" />
             <h2 className="text-sm font-semibold tracking-tight">Boat Speed & Pace</h2>
-            <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-400">
+            <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-600">
               <LegendDot color="hsl(195 90% 65%)" label="Speed (km/h)" />
               <LegendDot color="hsl(280 80% 70%)" label="Pace (s/500m)" />
             </div>
@@ -1399,12 +1399,12 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
           <div className="h-56 w-full">
             <ResponsiveContainer>
               <LineChart data={speedChartData} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="hsl(220 20% 18%)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="idx" stroke="hsl(220 15% 50%)" fontSize={11} tickLine={false} axisLine={false} />
+                <CartesianGrid stroke="hsl(220 15% 85%)" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="idx" stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="speed" stroke="hsl(195 90% 65%)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="pace" orientation="right" stroke="hsl(280 80% 70%)" fontSize={11} tickLine={false} axisLine={false} reversed />
                 <Tooltip
-                  contentStyle={{ background: 'hsl(220 30% 10%)', border: '1px solid hsl(220 20% 20%)', borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{ background: 'hsl(0 0% 100%)', border: '1px solid hsl(220 15% 80%)', borderRadius: 8, fontSize: 12 }}
                   formatter={(value: number, name: string) => {
                     if (name === 'speedKmh') return [`${value} km/h`, 'Speed'];
                     if (name === 'pace') {
@@ -1426,7 +1426,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
       {/* Performance + conditions */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Panel title="Performance" icon={<Flame className="w-4 h-4 text-cyan-300" />}>
+        <Panel title="Performance" icon={<Flame className="w-4 h-4 text-cyan-700" />}>
           <div className="grid grid-cols-2 gap-3">
             <Stat icon={<Heart className="w-4 h-4" />} label="Avg heart rate" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} sub={session.avgHeartRate === null ? 'Not connected' : undefined} />
             <Stat icon={<Flame className="w-4 h-4" />} label="Calories" value={session.caloriesKcal !== null ? `${session.caloriesKcal} kcal` : DASH} sub={session.caloriesKcal === null ? 'Needs HR sensor' : undefined} />
@@ -1435,7 +1435,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
           </div>
         </Panel>
 
-        <Panel title="Conditions at Launch" icon={<Waves className="w-4 h-4 text-cyan-300" />}>
+        <Panel title="Conditions at Launch" icon={<Waves className="w-4 h-4 text-cyan-700" />}>
           <div className="grid grid-cols-2 gap-3">
             <Stat icon={<Waves className="w-4 h-4" />} label="Tide" value={`${session.startConditions.tideFt.toFixed(2)} ft`} sub={session.startConditions.direction} />
             <Stat icon={<Wind className="w-4 h-4" />} label="Wind" value={`${session.startConditions.windKnots} kt`} sub={`from ${session.startConditions.windDir}`} />
@@ -1447,7 +1447,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
       <button
         onClick={onNewRow}
-        className="w-full md:w-auto px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/40 font-semibold text-sm inline-flex items-center justify-center gap-2 transition"
+        className="w-full md:w-auto px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40 font-semibold text-sm inline-flex items-center justify-center gap-2 transition"
       >
         Plan Next Row →
       </button>
@@ -1460,31 +1460,31 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 // ============================================================
 
 const Stat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) => (
-  <div className="rounded-xl border border-white/5 bg-black/30 px-4 py-3">
-    <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+  <div className="rounded-xl border border-slate-200 bg-black/30 px-4 py-3">
+    <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
       {icon}
       {label}
     </div>
-    <div className="text-xl font-semibold mt-1 text-slate-100">{value}</div>
-    {sub && <div className="text-[11px] text-slate-400 mt-0.5">{sub}</div>}
+    <div className="text-xl font-semibold mt-1 text-slate-900">{value}</div>
+    {sub && <div className="text-[11px] text-slate-600 mt-0.5">{sub}</div>}
   </div>
 );
 
 const BigStat = ({
-  icon, label, value, sub, accent = 'text-slate-100', mono = false, pulse = false,
+  icon, label, value, sub, accent = 'text-slate-900', mono = false, pulse = false,
 }: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
-  <div className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] px-4 py-4">
-    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-400">
+  <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] px-4 py-4">
+    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
       <span className={pulse ? 'animate-pulse' : ''}>{icon}</span>
       {label}
     </div>
     <div className={`${mono ? 'font-mono' : ''} text-3xl md:text-4xl font-bold mt-1 ${accent}`}>{value}</div>
-    {sub && <div className="text-[11px] text-slate-400 mt-0.5">{sub}</div>}
+    {sub && <div className="text-[11px] text-slate-600 mt-0.5">{sub}</div>}
   </div>
 );
 
 const Panel = ({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) => (
-  <div className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+  <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
     <div className="flex items-center gap-2 mb-3">
       {icon}
       <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
@@ -1506,7 +1506,7 @@ const TabButton = ({
   <button
     onClick={onClick}
     className={`flex flex-col items-center gap-0.5 py-3 transition relative ${
-      active ? 'text-cyan-300' : 'text-slate-400 hover:text-slate-200'
+      active ? 'text-cyan-700' : 'text-slate-600 hover:text-slate-800'
     }`}
   >
     {active && <span className="absolute top-0 inset-x-6 h-0.5 bg-cyan-400 rounded-full" />}
@@ -1586,11 +1586,11 @@ const CourseMap = ({ track }: { track: TrackPoint[] }) => {
   const [ex, ey] = project(track[track.length - 1].lat, track[track.length - 1].lon);
 
   return (
-    <div className="w-full rounded-xl overflow-hidden border border-white/5 bg-[hsl(220_30%_6%)]">
+    <div className="w-full rounded-xl overflow-hidden border border-slate-200 bg-[hsl(210_40%_97%)]">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto block" preserveAspectRatio="xMidYMid meet">
         <defs>
           <pattern id="rowGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(220 20% 14%)" strokeWidth="1" />
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(220 15% 88%)" strokeWidth="1" />
           </pattern>
           <linearGradient id="rowRoute" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="hsl(150 80% 55%)" />
@@ -1601,12 +1601,12 @@ const CourseMap = ({ track }: { track: TrackPoint[] }) => {
         <path d={path} fill="none" stroke="url(#rowRoute)" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
         {/* Start marker */}
         <g transform={`translate(${sx}, ${sy})`}>
-          <circle r={9} fill="hsl(150 80% 55%)" stroke="hsl(220 30% 6%)" strokeWidth={3} />
+          <circle r={9} fill="hsl(150 80% 55%)" stroke="hsl(210 40% 97%)" strokeWidth={3} />
           <text x={12} y={4} fontSize={11} fill="hsl(150 80% 75%)" fontWeight={600}>Start</text>
         </g>
         {/* End marker */}
         <g transform={`translate(${ex}, ${ey})`}>
-          <circle r={9} fill="hsl(355 85% 60%)" stroke="hsl(220 30% 6%)" strokeWidth={3} />
+          <circle r={9} fill="hsl(355 85% 60%)" stroke="hsl(210 40% 97%)" strokeWidth={3} />
           <text x={12} y={4} fontSize={11} fill="hsl(355 85% 80%)" fontWeight={600}>End</text>
         </g>
       </svg>
