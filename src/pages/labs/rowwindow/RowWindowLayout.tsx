@@ -391,8 +391,7 @@ const RowWindowLayout = () => {
               {source === 'noaa' ? 'LIVE · NOAA' : 'MOCK'}
             </div>
             <div className="text-right">
-              <div className="text-xs text-slate-600">Local time</div>
-              <div className="text-sm font-mono text-slate-800">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+              <div className="text-xl font-mono font-semibold text-slate-900 leading-none">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
           </div>
         </div>
