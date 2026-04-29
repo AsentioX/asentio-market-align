@@ -350,22 +350,24 @@ const RowWindowLayout = () => {
                   <ChevronDown className={`w-3 h-3 text-slate-500 shrink-0 transition ${locationPickerOpen ? 'rotate-180' : ''}`} />
                 </p>
               </button>
-              <div className="absolute left-0 right-auto top-full mt-1 w-[min(92vw,420px)]">
-                <LocationPicker
-                  hideTrigger
-                  open={locationPickerOpen}
-                  onOpenChange={setLocationPickerOpen}
-                  location={locationState.location}
-                  favorites={locationState.favorites}
-                  nearby={locationState.nearby}
-                  isFavorite={locationState.isFavorite}
-                  gpsStatus={locationState.gpsStatus}
-                  gpsError={locationState.gpsError}
-                  onSelect={locationState.selectLocation}
-                  onToggleFavorite={locationState.toggleFavorite}
-                  onUseGPS={locationState.useGPS}
-                />
-              </div>
+              {locationPickerOpen && (
+                <div className="fixed sm:absolute left-3 right-3 sm:left-0 sm:right-auto top-[60px] sm:top-full sm:mt-1 sm:w-[420px] sm:max-w-[calc(100vw-2rem)] z-40">
+                  <LocationPicker
+                    hideTrigger
+                    open={locationPickerOpen}
+                    onOpenChange={setLocationPickerOpen}
+                    location={locationState.location}
+                    favorites={locationState.favorites}
+                    nearby={locationState.nearby}
+                    isFavorite={locationState.isFavorite}
+                    gpsStatus={locationState.gpsStatus}
+                    gpsError={locationState.gpsError}
+                    onSelect={locationState.selectLocation}
+                    onToggleFavorite={locationState.toggleFavorite}
+                    onUseGPS={locationState.useGPS}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3">
