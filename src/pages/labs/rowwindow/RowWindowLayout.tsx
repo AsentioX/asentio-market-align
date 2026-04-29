@@ -23,7 +23,7 @@ import {
 } from './tideEngine';
 import { useRowLocation } from './useRowLocation';
 import { LocationPicker } from './LocationPicker';
-import { useRowSensors, type SensorStatus } from './useRowSensors';
+import { useRowSensors, type SensorStatus, type TrackPoint } from './useRowSensors';
 
 const DURATIONS = [60, 90, 120];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -49,6 +49,8 @@ interface RowSession {
     windDir: string;
   };
   spmSeries: { t: number; spm: number; pace: number }[];
+  track: TrackPoint[];
+  speedSeries: { t: number; speedMs: number; pace: number }[];
 }
 
 const RowWindowLayout = () => {
