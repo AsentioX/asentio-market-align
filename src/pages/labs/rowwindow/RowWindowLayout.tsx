@@ -12,9 +12,11 @@ import {
   TIDE_GREEN_FT,
   TIDE_RED_FT,
   TidePoint,
+  TideTurn,
   WindReading,
   assessLaunchWindow,
   fetchLiveConditions,
+  findTideTurns,
   formatCountdown,
   generateMockTideSeries,
   getCurrentTide,
@@ -229,6 +231,9 @@ const RowWindowLayout = () => {
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
   const nextTurn = useMemo(() => getNextTurn(series, now), [series, now]);
+  const nextLowTurn = useMemo(() => {
+    return findTideTurns(series).find((t) => t.type === 'low' && t.t > now) ?? null;
+  }, [series, now]);
   const vessel = VESSEL_PROFILES[vesselId];
 
   const assessment = useMemo(
@@ -387,6 +392,7 @@ const RowWindowLayout = () => {
             current={current}
             direction={direction}
             nextTurn={nextTurn}
+            nextLowTurn={nextLowTurn}
             now={now}
             wind={wind}
             vesselId={vesselId}
@@ -481,6 +487,7 @@ interface PreRowViewProps {
   current: TidePoint;
   direction: 'Flood' | 'Ebb' | 'Slack';
   nextTurn: ReturnType<typeof getNextTurn>;
+  nextLowTurn: TideTurn | null;
   now: number;
   wind: WindReading;
   vesselId: VesselProfile['id'];
@@ -496,7 +503,7 @@ interface PreRowViewProps {
 }
 
 const PreRowView = ({
-  assessment, statusMeta, vessel, duration, current, direction, nextTurn, now, wind,
+  assessment, statusMeta, vessel, duration, current, direction, nextTurn, nextLowTurn, now, wind,
   vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
@@ -539,7 +546,39 @@ const PreRowView = ({
           </div>
         </div>
         <div className="md:ml-auto grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto">
-          <Stat icon={<Waves className="w-4 h-4" />} label="Tide" value={`${current.height.toFixed(2)} ft`} sub={direction} />
+          <div className="rounded-xl border border-white/5 bg-black/30 px-4 py-3">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Waves className="w-4 h-4" />
+              Tide
+            </div>
+            <div className="mt-1 flex items-start justify-between gap-3">
+              <div>
+                <div className="text-xl font-semibold text-slate-100 flex items-center gap-1.5">
+                  {current.height.toFixed(2)} ft
+                  {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-400" aria-label="Rising" />}
+                  {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-400" aria-label="Falling" />}
+                </div>
+                <div className={`text-[11px] mt-0.5 ${
+                  direction === 'Flood' ? 'text-emerald-300'
+                  : direction === 'Ebb' ? 'text-amber-300'
+                  : 'text-slate-400'
+                }`}>
+                  {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
+                </div>
+              </div>
+              {nextLowTurn && (
+                <div className="text-right">
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Low tide</div>
+                  <div className="text-sm font-mono font-semibold text-slate-100">
+                    {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">
+                    in {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
           <Stat
             icon={direction === 'Flood' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
             label="Next turn"
