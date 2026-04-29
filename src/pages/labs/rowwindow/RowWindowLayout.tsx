@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw,
   Activity, Compass, Navigation, Play, Pause, Square, MapPin, Timer, Route, TrendingUp, Gauge, Heart, Flame,
-  Trash2, Download,
+  Trash2, Download, ArrowLeftRight,
 } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, LineChart, Line } from 'recharts';
 import {
@@ -1023,6 +1023,95 @@ const OnWaterView = ({
         </div>
       </section>
     </>
+  );
+};
+
+// ============================================================
+// LANE POSITION WIDGET — channel offset visual with bow/stern swap.
+// Rowers sit facing the stern, so the user can flip the perspective so the
+// boat marker reads as either Bow-up or Stern-up. Flipping mirrors the boat
+// marker AND the port/starboard labels (since those swap when you turn around).
+// ============================================================
+
+interface LanePositionWidgetProps {
+  laneOffsetMeters: number;
+  laneColor: string;
+  laneRingColor: string;
+  laneStatus: 'good' | 'warn' | 'alert';
+}
+
+const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneStatus }: LanePositionWidgetProps) => {
+  const [bowUp, setBowUp] = useState<boolean>(true);
+
+  // When facing stern-up (rower's POV), port and starboard swap sides on screen.
+  // We flip the displayed offset sign so the marker visually moves to the side
+  // that matches the active label.
+  const displayOffset = bowUp ? laneOffsetMeters : -laneOffsetMeters;
+  const portLabel = bowUp ? 'Port (left)' : 'Port (right)';
+  const starboardLabel = bowUp ? 'Starboard (right)' : 'Starboard (left)';
+  const sideLabel =
+    laneOffsetMeters > 0.3 ? portLabel
+    : laneOffsetMeters < -0.3 ? starboardLabel
+    : 'Centered';
+  const leftBankLabel = bowUp ? 'Port bank' : 'Starboard bank';
+  const rightBankLabel = bowUp ? 'Starboard bank' : 'Port bank';
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-baseline justify-between gap-2">
+        <div className={`text-3xl font-bold font-mono ${laneColor}`}>
+          {laneOffsetMeters >= 0 ? '+' : ''}{laneOffsetMeters.toFixed(1)} m
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="text-xs text-slate-400">{sideLabel}</div>
+          <button
+            onClick={() => setBowUp((v) => !v)}
+            className="px-2 py-1 rounded-md bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 text-[10px] font-semibold inline-flex items-center gap-1 transition"
+            title="Swap Bow / Stern perspective"
+          >
+            <ArrowLeftRight className="w-3 h-3" />
+            {bowUp ? 'Bow ↑' : 'Stern ↑'}
+          </button>
+        </div>
+      </div>
+      {/* Channel visualization */}
+      <div className="relative h-12 rounded-lg bg-black/40 border border-white/5 overflow-hidden">
+        <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
+        <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
+        <div className="absolute inset-y-0 left-1/2 w-px bg-white/10" />
+        {/* Boat marker — small triangle on bow end indicates orientation */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 flex flex-col items-center"
+          style={{
+            left: `calc(50% + ${Math.max(-45, Math.min(45, displayOffset * 8))}% - 6px)`,
+          }}
+        >
+          {bowUp && (
+            <div
+              className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent"
+              style={{ borderBottomColor: laneRingColor }}
+            />
+          )}
+          <div
+            className="w-3 h-6 rounded-sm"
+            style={{ background: laneRingColor, boxShadow: `0 0 12px ${laneRingColor}` }}
+          />
+          {!bowUp && (
+            <div
+              className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent"
+              style={{ borderTopColor: laneRingColor }}
+            />
+          )}
+        </div>
+        <div className="absolute top-1 left-2 text-[9px] text-emerald-400/60">{leftBankLabel}</div>
+        <div className="absolute top-1 right-2 text-[9px] text-emerald-400/60">{rightBankLabel}</div>
+      </div>
+      <div className={`text-xs ${laneColor}`}>
+        {laneStatus === 'good' && '✓ Holding the channel center line'}
+        {laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
+        {laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
+      </div>
+    </div>
   );
 };
 
