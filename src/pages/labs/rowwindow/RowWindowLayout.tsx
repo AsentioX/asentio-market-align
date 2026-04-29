@@ -574,20 +574,6 @@ const PreRowView = ({
           <Stat icon={<Wind className="w-4 h-4" />} label="Wind" value={`${wind.speedKnots} kt`} sub={`from ${wind.directionLabel}`} />
         </div>
       </div>
-
-
-      <button
-        onClick={onLaunch}
-        disabled={assessment.status === 'red'}
-        className={`mt-6 w-full md:w-auto px-6 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${
-          assessment.status === 'red'
-            ? 'bg-rose-900/30 text-rose-700/60 border border-rose-500/20 cursor-not-allowed'
-            : 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40'
-        }`}
-      >
-        <Play className="w-4 h-4" />
-        {assessment.status === 'red' ? 'Launch Disabled — Unsafe Conditions' : 'Launch & Track Row →'}
-      </button>
     </section>
 
     {/* Chop alert */}
