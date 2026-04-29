@@ -66,6 +66,7 @@ const RowWindowLayout = () => {
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
   const [tab, setTab] = useState<TabId>('pre');
+  const [locationPickerOpen, setLocationPickerOpen] = useState(false);
 
   // Location: picked, GPS, favorites
   const locationState = useRowLocation();
