@@ -870,7 +870,6 @@ const OnWaterView = ({
   onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
-  const DASH = '—';
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   const speedMs = spm !== null ? (spm / 26) * 4.2 : 0;
   const pacePer500 = speedMs > 0 ? 500 / speedMs : 0;
