@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw,
   Activity, Compass, Navigation, Play, Pause, Square, MapPin, Timer, Route, TrendingUp, Gauge, Heart, Flame,
+  Trash2, Download,
 } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, LineChart, Line } from 'recharts';
 import {
@@ -30,7 +31,10 @@ const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 
 type TabId = 'pre' | 'on' | 'post';
 
+const SESSIONS_STORAGE_KEY = 'rowwindow:sessions:v1';
+
 interface RowSession {
+  id: string;
   startedAt: number;
   endedAt: number;
   durationMs: number;
@@ -77,7 +81,41 @@ const RowWindowLayout = () => {
   const [sessionEndedAt, setSessionEndedAt] = useState<number | null>(null);
   const [pausedMs, setPausedMs] = useState<number>(0);
   const [pausedAt, setPausedAt] = useState<number | null>(null);
-  const [lastSession, setLastSession] = useState<RowSession | null>(null);
+  const [savedSessions, setSavedSessions] = useState<RowSession[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as RowSession[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch { return []; }
+  });
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const lastSession = selectedSessionId
+    ? savedSessions.find((s) => s.id === selectedSessionId) ?? null
+    : savedSessions[0] ?? null;
+
+  // Persist sessions whenever they change
+  useEffect(() => {
+    try { localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(savedSessions)); } catch {}
+  }, [savedSessions]);
+
+  const deleteSession = (id: string) => {
+    setSavedSessions((prev) => prev.filter((s) => s.id !== id));
+    if (selectedSessionId === id) setSelectedSessionId(null);
+  };
+
+  const exportSession = (s: RowSession) => {
+    const blob = new Blob([sessionToGPX(s)], { type: 'application/gpx+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rowwindow-${new Date(s.startedAt).toISOString().replace(/[:.]/g, '-')}.gpx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   // Live row metrics (simulated)
   const [spm, setSpm] = useState<number>(0);
@@ -248,7 +286,9 @@ const RowWindowLayout = () => {
     const history = spmHistoryRef.current;
     const avgSpm = history.length ? history.reduce((s, h) => s + h.spm, 0) / history.length : 0;
     const avgPace = history.length ? history.reduce((s, h) => s + h.pace, 0) / history.length : 0;
+    const newId = `row-${endedAt}-${Math.random().toString(36).slice(2, 8)}`;
     const summary: RowSession = {
+      id: newId,
       startedAt: sessionStartedAt,
       endedAt,
       durationMs: totalElapsed,
@@ -272,7 +312,8 @@ const RowWindowLayout = () => {
         .filter((p) => p.speedMs >= 0)
         .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
     };
-    setLastSession(summary);
+    setSavedSessions((prev) => [summary, ...prev]);
+    setSelectedSessionId(newId);
     setSessionEndedAt(endedAt);
     setSessionState('idle');
     setSessionStartedAt(null);
@@ -387,6 +428,11 @@ const RowWindowLayout = () => {
         {tab === 'post' && (
           <PostRowView
             session={lastSession}
+            sessions={savedSessions}
+            selectedSessionId={lastSession?.id ?? null}
+            onSelectSession={setSelectedSessionId}
+            onDeleteSession={deleteSession}
+            onExportSession={exportSession}
             onNewRow={() => setTab('pre')}
           />
         )}
@@ -1015,10 +1061,15 @@ const OnWaterView = ({
 
 interface PostRowViewProps {
   session: RowSession | null;
+  sessions: RowSession[];
+  selectedSessionId: string | null;
+  onSelectSession: (id: string) => void;
+  onDeleteSession: (id: string) => void;
+  onExportSession: (s: RowSession) => void;
   onNewRow: () => void;
 }
 
-const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
+const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
   if (!session) {
     return (
       <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-8 text-center">
@@ -1060,7 +1111,7 @@ const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
           <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
             <TrendingUp className="w-6 h-6 text-emerald-300" />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <div className="text-xs uppercase tracking-[0.2em] text-emerald-300">Row Complete</div>
             <h2 className="text-2xl md:text-3xl font-bold mt-1">
               {(session.distanceMeters / 1000).toFixed(2)} km · {formatElapsed(session.durationMs)}
@@ -1071,6 +1122,24 @@ const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
               {endedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
             </div>
           </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => onExportSession(session)}
+              className="px-3 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-100 text-xs font-medium inline-flex items-center gap-1.5 transition"
+              title="Export as GPX"
+            >
+              <Download className="w-3.5 h-3.5" /> GPX
+            </button>
+            <button
+              onClick={() => {
+                if (confirm('Delete this saved row?')) onDeleteSession(session.id);
+              }}
+              className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/30 text-rose-300 transition"
+              title="Delete this session"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat icon={<Timer className="w-4 h-4" />} label="Elapsed time" value={formatElapsed(session.durationMs)} />
@@ -1079,6 +1148,61 @@ const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
           <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke rate" value={`${session.avgSpm}`} sub={`peak ${session.maxSpm} spm`} />
         </div>
       </section>
+
+      {/* Saved sessions list */}
+      {sessions.length > 0 && (
+        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Clock className="w-4 h-4 text-cyan-300" />
+            <h2 className="text-sm font-semibold tracking-tight">Saved Rows</h2>
+            <span className="text-[11px] text-slate-500 ml-auto">{sessions.length} total</span>
+          </div>
+          <div className="divide-y divide-white/5">
+            {sessions.map((s) => {
+              const isActive = s.id === selectedSessionId;
+              const d = new Date(s.startedAt);
+              return (
+                <div
+                  key={s.id}
+                  className={`flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-lg transition ${
+                    isActive ? 'bg-cyan-500/10' : 'hover:bg-white/5'
+                  }`}
+                >
+                  <button
+                    onClick={() => onSelectSession(s.id)}
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <div className="text-sm font-medium text-slate-100 truncate">
+                      {(s.distanceMeters / 1000).toFixed(2)} km · {formatElapsed(s.durationMs)}
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">
+                      {d.toLocaleDateString([], { month: 'short', day: 'numeric' })} ·{' '}
+                      {d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} ·{' '}
+                      avg {s.avgSpm} spm
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => onExportSession(s)}
+                    className="p-1.5 rounded-md text-slate-400 hover:text-cyan-300 hover:bg-cyan-500/10 transition"
+                    title="Export GPX"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm('Delete this saved row?')) onDeleteSession(s.id);
+                    }}
+                    className="p-1.5 rounded-md text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 transition"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Stroke rate chart */}
       {spmChartData.length > 5 && (
@@ -1351,5 +1475,32 @@ const CourseMap = ({ track }: { track: TrackPoint[] }) => {
     </div>
   );
 };
+
+// Convert a session into a GPX 1.1 document. Includes track points with
+// timestamps + speed extension; falls back gracefully when no GPS was captured.
+function sessionToGPX(s: RowSession): string {
+  const esc = (v: string) => v.replace(/[<>&'"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]!));
+  const name = `RowWindow ${new Date(s.startedAt).toISOString()}`;
+  const meta = `<time>${new Date(s.startedAt).toISOString()}</time>`;
+  const trkpts = s.track.map((p) =>
+    `      <trkpt lat="${p.lat.toFixed(7)}" lon="${p.lon.toFixed(7)}">` +
+    `<time>${new Date(p.t).toISOString()}</time>` +
+    `<extensions><speed>${p.speedMs.toFixed(2)}</speed></extensions>` +
+    `</trkpt>`
+  ).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="RowWindow" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>${esc(name)}</name>
+    ${meta}
+  </metadata>
+  <trk>
+    <name>${esc(name)}</name>
+    <trkseg>
+${trkpts}
+    </trkseg>
+  </trk>
+</gpx>`;
+}
 
 export default RowWindowLayout;
