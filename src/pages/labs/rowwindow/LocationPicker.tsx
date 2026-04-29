@@ -122,7 +122,31 @@ export const LocationPicker = ({
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
+              <button
+                onClick={onUseGPS}
+                disabled={gpsStatus === 'requesting'}
+                className="p-1.5 rounded-md border border-cyan-400/30 bg-cyan-500/10 text-cyan-800 hover:bg-cyan-500/20 transition disabled:opacity-50 shrink-0"
+                aria-label="Use my GPS location"
+                title="Use my GPS location"
+              >
+                <Navigation className={`w-3.5 h-3.5 ${gpsStatus === 'requesting' ? 'animate-pulse' : ''}`} />
+              </button>
+              <button
+                onClick={() => onToggleFavorite()}
+                className={`p-1.5 rounded-md border transition shrink-0 ${
+                  isFavorite
+                    ? 'border-amber-400/40 bg-amber-500/15 text-amber-700'
+                    : 'border-slate-300 bg-white text-slate-600 hover:text-amber-700'
+                }`}
+                aria-label={isFavorite ? 'Remove current from favorites' : 'Add current to favorites'}
+                title={isFavorite ? 'Remove current from favorites' : 'Add current to favorites'}
+              >
+                <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
+              </button>
             </div>
+            {gpsError && (
+              <div className="px-3 py-1.5 text-[11px] text-rose-700/90 border-b border-slate-200 bg-rose-50/50">GPS: {gpsError}</div>
+            )}
 
             <div className="overflow-y-auto max-h-[50vh]">
               {nearby.length > 0 && !query && (
