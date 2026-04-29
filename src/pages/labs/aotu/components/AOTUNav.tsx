@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 const navItems = [
+  { label: "Product", path: "/labs/aotu/product" },
   { label: "Platform", path: "/labs/aotu/platform" },
   { label: "Solutions", path: "/labs/aotu/solutions" },
   { label: "Marketplace", path: "/labs/aotu/marketplace" },
