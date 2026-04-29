@@ -232,10 +232,8 @@ const RowWindowLayout = () => {
     setSessionEndedAt(null);
     setPausedMs(0);
     setPausedAt(null);
-    setDistanceMeters(0);
-    setSpm(22);
-    setHeartRate(120);
-    setLaneOffsetMeters(0);
+    // No mock seeding — sensor values come from real devices only.
+
     spmHistoryRef.current = [];
     maxSpmRef.current = 22;
     maxLaneOffsetRef.current = 0;
