@@ -989,46 +989,46 @@ const OnWaterView = ({
         </Panel>
       </section>
 
-      {/* Heart rate + environment */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
-        <BigStat
-          icon={<Heart className="w-4 h-4" />}
-          label="Heart Rate"
-          value={heartRate !== null ? `${heartRate}` : DASH}
-          sub={heartRate !== null ? 'bpm' : 'Not connected'}
-          accent="text-rose-700"
-          pulse={sessionState === 'active' && heartRate !== null}
-        />
-        <BigStat
-          icon={<Wind className="w-4 h-4" />}
-          label="Wind"
-          value={`${wind.speedKnots} kt`}
-          sub={`from ${wind.directionLabel}`}
-          accent="text-slate-800"
-        />
-        <div className="col-span-2 px-1 py-3 border-b border-slate-200">
-          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
-            <Waves className="w-4 h-4" />
-            Tide
-          </div>
-          <div className="mt-1 flex items-start justify-between gap-3">
-            <div>
-              <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900 flex items-center gap-2">
-                {tide.height.toFixed(1)} ft
-                {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-600" aria-label="Rising" />}
-                {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-600" aria-label="Falling" />}
+      {/* Heart rate + environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
+      <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-6 gap-y-4 items-stretch">
+        <div className="grid grid-cols-1">
+          <BigStat
+            icon={<Heart className="w-4 h-4" />}
+            label="Heart Rate"
+            value={heartRate !== null ? `${heartRate}` : DASH}
+            sub={heartRate !== null ? 'bpm' : 'Not connected'}
+            accent="text-rose-700"
+            pulse={sessionState === 'active' && heartRate !== null}
+          />
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
+          <div className="flex flex-row items-stretch divide-x divide-slate-200">
+            <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                <Waves className="w-4 h-4" />
+                Tide
               </div>
-              <div className={`text-[11px] mt-1.5 ${
+              <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5 leading-tight mt-1">
+                {tide.height.toFixed(2)} ft
+                {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-500" aria-label="Rising" />}
+                {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-500" aria-label="Falling" />}
+              </div>
+              <div className={`text-[11px] mt-0.5 ${
                 direction === 'Flood' ? 'text-emerald-700'
                 : direction === 'Ebb' ? 'text-amber-700'
                 : 'text-slate-600'
               }`}>
-                {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
+                {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
               </div>
             </div>
             {lowTideMarker && (
-              <div className="text-right">
-                <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900">
+              <div className="flex-1 px-3 sm:px-4 py-2">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                  <ArrowDown className="w-4 h-4" />
+                  Low tide
+                </div>
+                <div className="text-xl font-semibold text-slate-900 leading-tight mt-1">
+                  {lowTideMarker.mode === 'to' ? 'in ' : ''}
                   {(() => {
                     const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
                     const h = Math.floor(mins / 60);
@@ -1036,12 +1036,20 @@ const OnWaterView = ({
                     return h > 0 ? `${h}h ${m}m` : `${m}m`;
                   })()}
                 </div>
-                <div className="text-[11px] text-slate-600 mt-1.5 font-mono">
-                  {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
+                <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
+                  {lowTideMarker.mode === 'to' ? 'at ' : 'since '}
                   {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
               </div>
             )}
+            <div className="flex-1 px-3 sm:px-4 py-2">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                <Wind className="w-4 h-4" />
+                Wind
+              </div>
+              <div className="text-xl font-semibold mt-1 text-slate-900 leading-tight">{wind.speedKnots} kt</div>
+              <div className="text-[11px] text-slate-600 mt-0.5">from {wind.directionLabel}</div>
+            </div>
           </div>
         </div>
       </section>
