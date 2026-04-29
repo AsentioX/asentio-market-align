@@ -109,6 +109,17 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   const hrCharRef = useRef<BluetoothRemoteGATTCharacteristic | null>(null);
   const hrHandlerRef = useRef<((e: Event) => void) | null>(null);
   const trackingRef = useRef(tracking);
+  const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
+  // Stroke-detection state — kept in refs so the listener doesn't re-subscribe.
+  const strokeStateRef = useRef<{
+    // Low-pass filtered vertical acceleration (gravity removed).
+    lpAccel: number;
+    // High-pass (signal − slow baseline) used for peak detection.
+    baseline: number;
+    lastPeakT: number;
+    // Sliding window of recent stroke intervals (ms) for SPM smoothing.
+    intervals: number[];
+  }>({ lpAccel: 0, baseline: 0, lastPeakT: 0, intervals: [] });
 
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
 
