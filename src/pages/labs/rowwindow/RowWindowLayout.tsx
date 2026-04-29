@@ -1462,12 +1462,12 @@ const SessionCard = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <Stat icon={<Timer className="w-4 h-4" />} label="Elapsed" value={formatElapsed(session.durationMs)} />
-        <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} />
-        <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : undefined} />
-        <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke" value={session.avgSpm !== null ? `${session.avgSpm} spm` : DASH} />
-        <Stat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
+      <div className="grid grid-cols-2 md:grid-cols-5 md:divide-x divide-y md:divide-y-0 divide-slate-200 border-y border-slate-200">
+        <InlineStat icon={<Timer className="w-4 h-4" />} label="Elapsed" value={formatElapsed(session.durationMs)} />
+        <InlineStat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} />
+        <InlineStat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : undefined} />
+        <InlineStat icon={<Activity className="w-4 h-4" />} label="Avg stroke" value={session.avgSpm !== null ? `${session.avgSpm} spm` : DASH} />
+        <InlineStat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
       </div>
 
       {/* Section 2 — Map */}
@@ -1589,6 +1589,17 @@ function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number)
 
 const Stat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) => (
   <div className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3">
+    <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+      {icon}
+      {label}
+    </div>
+    <div className="text-xl font-semibold mt-1 text-slate-900">{value}</div>
+    {sub && <div className="text-[11px] text-slate-600 mt-0.5">{sub}</div>}
+  </div>
+);
+
+const InlineStat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) => (
+  <div className="px-3 py-2.5">
     <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
       {icon}
       {label}
