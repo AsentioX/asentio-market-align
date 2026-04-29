@@ -382,6 +382,7 @@ const RowWindowLayout = () => {
             direction={direction}
             nextTurn={nextTurn}
             nextLowTurn={nextLowTurn}
+            lowTideMarker={lowTideMarker}
             now={now}
             wind={wind}
             vesselId={vesselId}
@@ -480,6 +481,7 @@ interface PreRowViewProps {
   direction: 'Flood' | 'Ebb' | 'Slack';
   nextTurn: ReturnType<typeof getNextTurn>;
   nextLowTurn: TideTurn | null;
+  lowTideMarker: { mode: 'to' | 'since'; t: number } | null;
   now: number;
   wind: WindReading;
   vesselId: VesselProfile['id'];
@@ -495,7 +497,7 @@ interface PreRowViewProps {
 }
 
 const PreRowView = ({
-  assessment, statusMeta, vessel, duration, current, direction, nextTurn, nextLowTurn, now, wind,
+  assessment, statusMeta, vessel, duration, current, direction, nextTurn, nextLowTurn, lowTideMarker, now, wind,
   vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
@@ -556,17 +558,18 @@ const PreRowView = ({
               {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
             </div>
           </div>
-          {nextLowTurn && (
+          {lowTideMarker && (
             <div className="px-4 py-2 sm:py-1">
               <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
                 <ArrowDown className="w-4 h-4" />
                 Low tide
               </div>
               <div className="text-xl font-semibold font-mono text-slate-900 leading-tight mt-1">
-                {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
               </div>
               <div className="text-[11px] text-slate-600 mt-0.5">
-                in {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
+                {lowTideMarker.mode === 'to' ? 'in ' : 'since '}
+                {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
               </div>
             </div>
           )}
