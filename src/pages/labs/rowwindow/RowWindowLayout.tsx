@@ -1043,7 +1043,7 @@ const OnWaterView = ({
             <Waves className="w-4 h-4" />
             Tide
           </div>
-          <div className="mt-1 flex items-start justify-between gap-3">
+          <div className="mt-1 flex items-end justify-between gap-3">
             <div>
               <div className="text-3xl md:text-4xl font-bold text-slate-200 flex items-center gap-2">
                 {tide.height.toFixed(1)} ft
