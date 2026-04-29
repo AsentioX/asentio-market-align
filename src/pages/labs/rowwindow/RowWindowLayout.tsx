@@ -1311,12 +1311,12 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
                     className="flex-1 min-w-0 text-left"
                   >
                     <div className="text-sm font-medium text-slate-100 truncate">
-                      {(s.distanceMeters / 1000).toFixed(2)} km · {formatElapsed(s.durationMs)}
+                      {s.distanceMeters !== null ? `${(s.distanceMeters / 1000).toFixed(2)} km` : `${DASH} km`} · {formatElapsed(s.durationMs)}
                     </div>
                     <div className="text-[11px] text-slate-400 mt-0.5">
                       {d.toLocaleDateString([], { month: 'short', day: 'numeric' })} ·{' '}
                       {d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} ·{' '}
-                      avg {s.avgSpm} spm
+                      avg {s.avgSpm !== null ? `${s.avgSpm} spm` : `${DASH} spm`}
                     </div>
                   </button>
                   <button
