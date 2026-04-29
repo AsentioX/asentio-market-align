@@ -1226,7 +1226,11 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
   const paceLabel = session.avgPaceSecPer500
     ? `${Math.floor(session.avgPaceSecPer500 / 60)}:${String(session.avgPaceSecPer500 % 60).padStart(2, '0')}`
-    : '—';
+    : DASH;
+  const distanceKmLabel = session.distanceMeters !== null
+    ? `${(session.distanceMeters / 1000).toFixed(2)} km`
+    : `${DASH} km`;
+  const distanceMetersLabel = session.distanceMeters !== null ? `${session.distanceMeters} m` : 'GPS not connected';
   const startedDate = new Date(session.startedAt);
   const endedDate = new Date(session.endedAt);
   const spmChartData = session.spmSeries.map((p, i) => ({ idx: i, spm: p.spm, pace: p.pace }));
