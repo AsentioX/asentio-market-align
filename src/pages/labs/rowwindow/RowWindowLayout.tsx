@@ -1200,9 +1200,11 @@ interface LanePositionWidgetProps {
   laneColor: string;
   laneRingColor: string;
   laneStatus: 'good' | 'warn' | 'alert';
+  headingDeg: number | null;
+  onSetCenter: () => void;
 }
 
-const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneStatus }: LanePositionWidgetProps) => {
+const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneStatus, headingDeg, onSetCenter }: LanePositionWidgetProps) => {
   const [bowUp, setBowUp] = useState<boolean>(true);
   const hasData = laneOffsetMeters !== null;
   const offset = laneOffsetMeters ?? 0;
