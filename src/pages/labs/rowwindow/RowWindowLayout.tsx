@@ -1086,7 +1086,7 @@ const OnWaterView = ({
 // ============================================================
 
 interface LanePositionWidgetProps {
-  laneOffsetMeters: number;
+  laneOffsetMeters: number | null;
   laneColor: string;
   laneRingColor: string;
   laneStatus: 'good' | 'warn' | 'alert';
@@ -1094,16 +1094,17 @@ interface LanePositionWidgetProps {
 
 const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneStatus }: LanePositionWidgetProps) => {
   const [bowUp, setBowUp] = useState<boolean>(true);
+  const hasData = laneOffsetMeters !== null;
+  const offset = laneOffsetMeters ?? 0;
 
   // When facing stern-up (rower's POV), port and starboard swap sides on screen.
-  // We flip the displayed offset sign so the marker visually moves to the side
-  // that matches the active label.
-  const displayOffset = bowUp ? laneOffsetMeters : -laneOffsetMeters;
+  const displayOffset = bowUp ? offset : -offset;
   const portLabel = bowUp ? 'Port (left)' : 'Port (right)';
   const starboardLabel = bowUp ? 'Starboard (right)' : 'Starboard (left)';
-  const sideLabel =
-    laneOffsetMeters > 0.3 ? portLabel
-    : laneOffsetMeters < -0.3 ? starboardLabel
+  const sideLabel = !hasData
+    ? 'No GPS lane data'
+    : offset > 0.3 ? portLabel
+    : offset < -0.3 ? starboardLabel
     : 'Centered';
   const leftBankLabel = bowUp ? 'Port bank' : 'Starboard bank';
   const rightBankLabel = bowUp ? 'Starboard bank' : 'Port bank';
@@ -1111,8 +1112,8 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-2">
-        <div className={`text-3xl font-bold font-mono ${laneColor}`}>
-          {laneOffsetMeters >= 0 ? '+' : ''}{laneOffsetMeters.toFixed(1)} m
+        <div className={`text-3xl font-bold font-mono ${hasData ? laneColor : 'text-slate-500'}`}>
+          {hasData ? `${offset >= 0 ? '+' : ''}${offset.toFixed(1)} m` : '—'}
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-slate-400">{sideLabel}</div>
