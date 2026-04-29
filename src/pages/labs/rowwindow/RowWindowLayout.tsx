@@ -34,6 +34,7 @@ const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 type TabId = 'pre' | 'on' | 'post';
 
 const SESSIONS_STORAGE_KEY = 'rowwindow:sessions:v1';
+const DASH = '—';
 
 interface RowSession {
   id: string;
