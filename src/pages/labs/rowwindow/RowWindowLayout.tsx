@@ -1276,12 +1276,23 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
         <div className="absolute top-1 left-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{leftBankLabel}</div>
         <div className="absolute top-1 right-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{rightBankLabel}</div>
       </div>
-      <div className={`text-xs ${hasData ? laneColor : 'text-slate-500'}`}>
-        {!hasData && '—'}
-        {hasData && laneStatus === 'good' && '✓ Holding the channel center line'}
-        {hasData && laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
-        {hasData && laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
-      </div>
+      {!hasData ? (
+        <button
+          type="button"
+          onClick={onSetCenter}
+          disabled={headingDeg === null}
+          className="w-full text-center text-[11px] font-medium text-cyan-700 rounded-md px-2 py-1.5 bg-cyan-50/60 hover:bg-cyan-100 border border-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-cyan-50/60 transition"
+          title={headingDeg !== null ? 'Tap to set current heading as channel center' : 'Enable compass to set center'}
+        >
+          {headingDeg !== null ? 'Tap to set current heading as channel center' : 'Enable compass to set center'}
+        </button>
+      ) : (
+        <div className={`text-xs ${laneColor}`}>
+          {laneStatus === 'good' && '✓ Holding the channel center line'}
+          {laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
+          {laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
+        </div>
+      )}
     </div>
   );
 };
