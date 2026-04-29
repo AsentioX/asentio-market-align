@@ -232,7 +232,12 @@ const RowWindowLayout = () => {
   const direction = useMemo(() => getDirection(series, now), [series, now]);
   const nextTurn = useMemo(() => getNextTurn(series, now), [series, now]);
   const nextLowTurn = useMemo(() => {
-    return findTideTurns(series).find((t) => t.type === 'low' && t.t > now) ?? null;
+    const turns = findTideTurns(series);
+    const future = turns.find((t) => t.type === 'low' && t.t > now);
+    if (future) return future;
+    // Fallback: return any low in series (closest upcoming or last known)
+    const lows = turns.filter((t) => t.type === 'low');
+    return lows[lows.length - 1] ?? null;
   }, [series, now]);
   const vessel = VESSEL_PROFILES[vesselId];
 
