@@ -170,56 +170,18 @@ const RowWindowLayout = () => {
     };
   }, [location.tideStationId, location.windStationId]);
 
-  // Simulated stroke + position telemetry while session is active
+  // Push real sensor samples into history while session is active (no mock data).
   useEffect(() => {
     if (sessionState !== 'active') return;
     const id = setInterval(() => {
-      // Stroke rate drifts around 22-30 spm with small noise
-      setSpm((prev) => {
-        const target = 26 + Math.sin(Date.now() / 8000) * 3;
-        const next = Math.max(16, Math.min(36, prev + (target - prev) * 0.25 + (Math.random() - 0.5) * 1.2));
-        const rounded = Math.round(next * 10) / 10;
-        if (rounded > maxSpmRef.current) maxSpmRef.current = rounded;
-        return rounded;
-      });
-      // Heading wanders +/- 8° around target
-      setHeadingDeg((prev) => {
-        const drift = (Math.random() - 0.5) * 2;
-        const pull = (targetHeadingDeg - prev) * 0.1;
-        return Math.round((prev + pull + drift) * 10) / 10;
-      });
-      // Lane offset: small drift, occasional bigger excursion
-      setLaneOffsetMeters((prev) => {
-        const drift = (Math.random() - 0.5) * 0.4;
-        const restoring = -prev * 0.05;
-        const next = prev + drift + restoring;
-        const abs = Math.abs(next);
-        if (abs > maxLaneOffsetRef.current) maxLaneOffsetRef.current = abs;
-        return Math.round(next * 100) / 100;
-      });
-      // Heart rate wanders 130-165
-      setHeartRate((prev) => {
-        const target = 145 + Math.sin(Date.now() / 12000) * 15;
-        const next = prev + (target - prev) * 0.2 + (Math.random() - 0.5) * 2;
-        return Math.round(next);
-      });
+      if (liveSpeedMs !== null) {
+        const pace = liveSpeedMs > 0 ? 500 / liveSpeedMs : 0;
+        spmHistoryRef.current.push({ t: Date.now(), spm: 0, pace: Math.round(pace) });
+        if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
+      }
     }, 1000);
     return () => clearInterval(id);
-  }, [sessionState, targetHeadingDeg]);
-
-  // Distance accumulator (boat speed roughly proportional to spm, ~4.2 m/s at 26 spm for a single)
-  useEffect(() => {
-    if (sessionState !== 'active') return;
-    const id = setInterval(() => {
-      const speedMs = (spm / 26) * 4.2; // crude: 4.2 m/s at 26 spm
-      setDistanceMeters((d) => d + speedMs * 1); // 1s tick
-      const pace = speedMs > 0 ? 500 / speedMs : 0;
-      spmHistoryRef.current.push({ t: Date.now(), spm, pace: Math.round(pace) });
-      // cap history
-      if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
-    }, 1000);
-    return () => clearInterval(id);
-  }, [sessionState, spm]);
+  }, [sessionState, liveSpeedMs]);
 
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
