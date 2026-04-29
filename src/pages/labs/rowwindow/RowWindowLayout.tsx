@@ -551,7 +551,7 @@ const PreRowView = ({
                   <option key={v.id} value={v.id}>{v.label}</option>
                 ))}
               </select>
-              <span className="text-slate-400">·</span>
+              
               <select
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
