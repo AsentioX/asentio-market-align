@@ -265,30 +265,41 @@ const RowWindowLayout = () => {
     if (!sessionStartedAt) return;
     const endedAt = Date.now();
     const totalElapsed = endedAt - sessionStartedAt - pausedMs - (sessionState === 'paused' && pausedAt ? endedAt - pausedAt : 0);
-    const history = spmHistoryRef.current;
-    const avgSpm = history.length ? history.reduce((s, h) => s + h.spm, 0) / history.length : 0;
-    const avgPace = history.length ? history.reduce((s, h) => s + h.pace, 0) / history.length : 0;
+    const paceHistory = spmHistoryRef.current.filter((h) => h.pace > 0);
+    const hrHistory = hrHistoryRef.current;
+    // Only compute averages from real samples; otherwise null (rendered as em-dash).
+    const avgPace = paceHistory.length
+      ? Math.round(paceHistory.reduce((s, h) => s + h.pace, 0) / paceHistory.length)
+      : null;
+    const avgHr = hrHistory.length
+      ? Math.round(hrHistory.reduce((s, h) => s + h.bpm, 0) / hrHistory.length)
+      : null;
+    const distanceReal = sensors.positionStatus === 'live' ? Math.round(sensors.distanceMeters) : null;
+    const headingReal = liveHeading !== null ? Math.round(liveHeading) : null;
     const newId = `row-${endedAt}-${Math.random().toString(36).slice(2, 8)}`;
     const summary: RowSession = {
       id: newId,
       startedAt: sessionStartedAt,
       endedAt,
       durationMs: totalElapsed,
-      distanceMeters: Math.round(liveDistance ?? 0),
-      avgSpm: Math.round(avgSpm * 10) / 10,
-      maxSpm: maxSpmRef.current,
-      avgPaceSecPer500: Math.round(avgPace),
-      avgHeadingDeg: Math.round(liveHeading ?? 0),
-      laneDeviationMax: Math.round(maxLaneOffsetRef.current * 100) / 100,
-      caloriesKcal: Math.round((totalElapsed / 60_000) * 9), // ~9 kcal/min for steady state
-      avgHeartRate: liveHeartRate ?? 0,
+      distanceMeters: distanceReal,
+      // Stroke rate has no real sensor wired up — leave null instead of fabricating.
+      avgSpm: null,
+      maxSpm: null,
+      avgPaceSecPer500: avgPace,
+      avgHeadingDeg: headingReal,
+      // Lane offset has no real sensor — null.
+      laneDeviationMax: null,
+      // Calories require HR or power; without a real signal, leave null.
+      caloriesKcal: null,
+      avgHeartRate: avgHr,
       startConditions: {
         tideFt: current.height,
         direction,
         windKnots: wind.speedKnots,
         windDir: wind.directionLabel,
       },
-      spmSeries: [...history],
+      spmSeries: [...spmHistoryRef.current],
       track: [...sensors.track],
       speedSeries: sensors.track
         .filter((p) => p.speedMs >= 0)
