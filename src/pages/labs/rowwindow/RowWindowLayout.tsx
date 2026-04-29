@@ -382,6 +382,7 @@ const RowWindowLayout = () => {
             direction={direction}
             nextTurn={nextTurn}
             nextLowTurn={nextLowTurn}
+            lowTideMarker={lowTideMarker}
             now={now}
             wind={wind}
             vesselId={vesselId}
