@@ -1565,13 +1565,6 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
           </div>
         </Panel>
       </section>
-
-      <button
-        onClick={onNewRow}
-        className="w-full md:w-auto px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40 font-semibold text-sm inline-flex items-center justify-center gap-2 transition"
-      >
-        Plan Next Row →
-      </button>
     </>
   );
 };
