@@ -564,17 +564,18 @@ const PreRowView = ({
                 <ArrowDown className="w-4 h-4" />
                 Low tide
               </div>
-              <div className="text-xl font-semibold font-mono text-slate-900 leading-tight mt-1">
-                {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-              </div>
-              <div className="text-[11px] text-slate-600 mt-0.5">
-                {lowTideMarker.mode === 'to' ? 'in ' : 'since '}
+              <div className="text-xl font-semibold text-slate-900 leading-tight mt-1">
+                {lowTideMarker.mode === 'to' ? 'in ' : ''}
                 {(() => {
                   const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
                   const h = Math.floor(mins / 60);
                   const m = mins % 60;
                   return h > 0 ? `${h}h ${m}m` : `${m}m`;
                 })()}
+              </div>
+              <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
+                {lowTideMarker.mode === 'to' ? 'at ' : 'since '}
+                {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
               </div>
             </div>
           )}
