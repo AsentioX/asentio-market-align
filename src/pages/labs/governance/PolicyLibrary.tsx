@@ -85,6 +85,7 @@ const PolicyLibrary = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   const [editingTimeline, setEditingTimeline] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
 
   // Gather unique categories
   const categories = useMemo(() => {
