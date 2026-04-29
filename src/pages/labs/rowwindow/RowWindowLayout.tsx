@@ -235,9 +235,21 @@ const RowWindowLayout = () => {
     const turns = findTideTurns(series);
     const future = turns.find((t) => t.type === 'low' && t.t > now);
     if (future) return future;
-    // Fallback: return any low in series (closest upcoming or last known)
     const lows = turns.filter((t) => t.type === 'low');
     return lows[lows.length - 1] ?? null;
+  }, [series, now]);
+  const lowTideMarker = useMemo(() => {
+    const turns = findTideTurns(series);
+    const nextLow = turns.find((t) => t.type === 'low' && t.t > now) ?? null;
+    const nextHigh = turns.find((t) => t.type === 'high' && t.t > now) ?? null;
+    const lastLow = [...turns].reverse().find((t) => t.type === 'low' && t.t <= now) ?? null;
+    if (nextLow && (!nextHigh || nextLow.t <= nextHigh.t)) {
+      return { mode: 'to' as const, t: nextLow.t };
+    }
+    if (lastLow) {
+      return { mode: 'since' as const, t: lastLow.t };
+    }
+    return nextLow ? { mode: 'to' as const, t: nextLow.t } : null;
   }, [series, now]);
   const vessel = VESSEL_PROFILES[vesselId];
 
@@ -430,6 +442,7 @@ const RowWindowLayout = () => {
             tide={current}
             direction={direction}
             nextLowTurn={nextLowTurn}
+            lowTideMarker={lowTideMarker}
             now={now}
             onStart={startSession}
             onPauseResume={pauseResume}
@@ -871,6 +884,7 @@ interface OnWaterViewProps {
   tide: TidePoint;
   direction: 'Flood' | 'Ebb' | 'Slack';
   nextLowTurn: TideTurn | null;
+  lowTideMarker: { mode: 'to' | 'since'; t: number } | null;
   now: number;
   onStart: () => void;
   onPauseResume: () => void;
@@ -880,7 +894,7 @@ interface OnWaterViewProps {
 
 const OnWaterView = ({
   sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg,
-  laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, now,
+  laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
@@ -1058,13 +1072,14 @@ const OnWaterView = ({
                 {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
               </div>
             </div>
-            {nextLowTurn && (
+            {lowTideMarker && (
               <div className="text-right">
                 <div className="text-3xl md:text-4xl font-bold text-slate-200">
-                  {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
+                  {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
-                  to low @ {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                  {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
+                  {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
               </div>
             )}
