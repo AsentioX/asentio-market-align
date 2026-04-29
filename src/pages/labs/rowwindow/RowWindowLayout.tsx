@@ -1428,10 +1428,10 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Panel title="Performance" icon={<Flame className="w-4 h-4 text-cyan-300" />}>
           <div className="grid grid-cols-2 gap-3">
-            <Stat icon={<Heart className="w-4 h-4" />} label="Avg heart rate" value={`${session.avgHeartRate} bpm`} />
-            <Stat icon={<Flame className="w-4 h-4" />} label="Calories" value={`${session.caloriesKcal} kcal`} />
-            <Stat icon={<Compass className="w-4 h-4" />} label="Avg heading" value={`${session.avgHeadingDeg}°`} sub={degLabel(session.avgHeadingDeg)} />
-            <Stat icon={<Navigation className="w-4 h-4" />} label="Max lane drift" value={`${session.laneDeviationMax} m`} sub={session.laneDeviationMax < 1.5 ? 'Tight line' : session.laneDeviationMax < 3 ? 'Some drift' : 'Significant drift'} />
+            <Stat icon={<Heart className="w-4 h-4" />} label="Avg heart rate" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} sub={session.avgHeartRate === null ? 'Not connected' : undefined} />
+            <Stat icon={<Flame className="w-4 h-4" />} label="Calories" value={session.caloriesKcal !== null ? `${session.caloriesKcal} kcal` : DASH} sub={session.caloriesKcal === null ? 'Needs HR sensor' : undefined} />
+            <Stat icon={<Compass className="w-4 h-4" />} label="Avg heading" value={session.avgHeadingDeg !== null ? `${session.avgHeadingDeg}°` : DASH} sub={session.avgHeadingDeg !== null ? degLabel(session.avgHeadingDeg) : 'Compass not connected'} />
+            <Stat icon={<Navigation className="w-4 h-4" />} label="Max lane drift" value={session.laneDeviationMax !== null ? `${session.laneDeviationMax} m` : DASH} sub={session.laneDeviationMax === null ? 'No lane sensor' : session.laneDeviationMax < 1.5 ? 'Tight line' : session.laneDeviationMax < 3 ? 'Some drift' : 'Significant drift'} />
           </div>
         </Panel>
 
