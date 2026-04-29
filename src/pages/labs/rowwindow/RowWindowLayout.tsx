@@ -138,7 +138,7 @@ const RowWindowLayout = () => {
   // Stroke rate and lane offset have no native sensor wired up — show dash.
   const spm: number | null = null;
   const laneOffsetMeters: number | null = null;
-  const targetHeadingDeg = 45;
+  const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
   // Tick every second when on water tab so timers/instruments feel live
   useEffect(() => {
@@ -437,6 +437,7 @@ const RowWindowLayout = () => {
             spm={spm}
             headingDeg={liveHeading}
             targetHeadingDeg={targetHeadingDeg}
+            onSetTarget={setTargetHeadingDeg}
             laneOffsetMeters={laneOffsetMeters}
             heartRate={liveHeartRate}
             wind={wind}
@@ -822,6 +823,7 @@ interface OnWaterViewProps {
   spm: number | null;
   headingDeg: number | null;
   targetHeadingDeg: number;
+  onSetTarget: (deg: number) => void;
   laneOffsetMeters: number | null;
   heartRate: number | null;
   wind: WindReading;
@@ -837,7 +839,7 @@ interface OnWaterViewProps {
 }
 
 const OnWaterView = ({
-  sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg,
+  sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg, onSetTarget,
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
@@ -912,14 +914,14 @@ const OnWaterView = ({
       <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0">
         {/* Compass */}
         <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
-          <div className="space-y-3">
-            {/* Header row — mirrors LanePositionWidget layout */}
+          <div className="space-y-2">
+            {/* Header row */}
             <div className="flex items-baseline justify-between gap-2">
-              <div className={`text-4xl md:text-5xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
+              <div className={`text-2xl md:text-3xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
                 {headingDeg !== null ? `${Math.round(headingDeg)}°` : '—'}
               </div>
               <div className="flex items-center gap-2">
-                <div className={`text-xs font-medium ${
+                <div className={`text-[11px] font-medium ${
                   headingDeg === null ? 'text-slate-500'
                   : Math.abs(headingError) < 5 ? 'text-emerald-700'
                   : Math.abs(headingError) < 12 ? 'text-amber-700'
@@ -931,7 +933,7 @@ const OnWaterView = ({
                     ? 'On line'
                     : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right' : 'left'}`}
                 </div>
-                <div className="px-2 py-1 rounded-md bg-cyan-50 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1">
+                <div className="px-1.5 py-0.5 rounded-md bg-cyan-50 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1">
                   <Navigation className="w-3 h-3" />
                   Target {targetHeadingDeg}°
                 </div>
@@ -941,14 +943,38 @@ const OnWaterView = ({
             {/* Compass strip */}
             <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
 
-            {/* Footer legend — mirrors lane footer height */}
-            <div className="flex items-center justify-between text-xs text-slate-600">
-              <span>{degLabel(targetHeadingDeg)} bearing</span>
-              <span className="flex items-center gap-2 text-[10px]">
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
-              </span>
-            </div>
+            {/* Footer — Port/Stbd indicator. Tap to set current heading as the new target center (when no GPS lane data). */}
+            {laneOffsetMeters === null ? (
+              <button
+                type="button"
+                onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
+                disabled={headingDeg === null}
+                className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition group"
+                title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm bg-rose-500" />
+                  Port
+                </span>
+                <span className="text-cyan-700 normal-case tracking-normal text-[10px] font-medium opacity-0 group-hover:opacity-100 transition">
+                  Tap to set center
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  Stbd
+                  <span className="w-2 h-2 rounded-sm bg-emerald-500" />
+                </span>
+              </button>
+            ) : (
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm bg-rose-500" /> Port
+                </span>
+                <span className="normal-case tracking-normal text-slate-500 font-normal">{degLabel(targetHeadingDeg)} bearing</span>
+                <span className="inline-flex items-center gap-1.5">
+                  Stbd <span className="w-2 h-2 rounded-sm bg-emerald-500" />
+                </span>
+              </div>
+            )}
           </div>
         </Panel>
 
@@ -963,46 +989,46 @@ const OnWaterView = ({
         </Panel>
       </section>
 
-      {/* Heart rate + environment */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
-        <BigStat
-          icon={<Heart className="w-4 h-4" />}
-          label="Heart Rate"
-          value={heartRate !== null ? `${heartRate}` : DASH}
-          sub={heartRate !== null ? 'bpm' : 'Not connected'}
-          accent="text-rose-700"
-          pulse={sessionState === 'active' && heartRate !== null}
-        />
-        <BigStat
-          icon={<Wind className="w-4 h-4" />}
-          label="Wind"
-          value={`${wind.speedKnots} kt`}
-          sub={`from ${wind.directionLabel}`}
-          accent="text-slate-800"
-        />
-        <div className="col-span-2 px-1 py-3 border-b border-slate-200">
-          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
-            <Waves className="w-4 h-4" />
-            Tide
-          </div>
-          <div className="mt-1 flex items-start justify-between gap-3">
-            <div>
-              <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900 flex items-center gap-2">
-                {tide.height.toFixed(1)} ft
-                {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-600" aria-label="Rising" />}
-                {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-600" aria-label="Falling" />}
+      {/* Heart rate + environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
+      <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-6 gap-y-4 items-stretch">
+        <div className="grid grid-cols-1">
+          <BigStat
+            icon={<Heart className="w-4 h-4" />}
+            label="Heart Rate"
+            value={heartRate !== null ? `${heartRate}` : DASH}
+            sub={heartRate !== null ? 'bpm' : 'Not connected'}
+            accent="text-rose-700"
+            pulse={sessionState === 'active' && heartRate !== null}
+          />
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
+          <div className="flex flex-row items-stretch divide-x divide-slate-200">
+            <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                <Waves className="w-4 h-4" />
+                Tide
               </div>
-              <div className={`text-[11px] mt-1.5 ${
+              <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5 leading-tight mt-1">
+                {tide.height.toFixed(2)} ft
+                {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-500" aria-label="Rising" />}
+                {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-500" aria-label="Falling" />}
+              </div>
+              <div className={`text-[11px] mt-0.5 ${
                 direction === 'Flood' ? 'text-emerald-700'
                 : direction === 'Ebb' ? 'text-amber-700'
                 : 'text-slate-600'
               }`}>
-                {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
+                {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
               </div>
             </div>
             {lowTideMarker && (
-              <div className="text-right">
-                <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900">
+              <div className="flex-1 px-3 sm:px-4 py-2">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                  <ArrowDown className="w-4 h-4" />
+                  Low tide
+                </div>
+                <div className="text-xl font-semibold text-slate-900 leading-tight mt-1">
+                  {lowTideMarker.mode === 'to' ? 'in ' : ''}
                   {(() => {
                     const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
                     const h = Math.floor(mins / 60);
@@ -1010,12 +1036,20 @@ const OnWaterView = ({
                     return h > 0 ? `${h}h ${m}m` : `${m}m`;
                   })()}
                 </div>
-                <div className="text-[11px] text-slate-600 mt-1.5 font-mono">
-                  {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
+                <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
+                  {lowTideMarker.mode === 'to' ? 'at ' : 'since '}
                   {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
               </div>
             )}
+            <div className="flex-1 px-3 sm:px-4 py-2">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                <Wind className="w-4 h-4" />
+                Wind
+              </div>
+              <div className="text-xl font-semibold mt-1 text-slate-900 leading-tight">{wind.speedKnots} kt</div>
+              <div className="text-[11px] text-slate-600 mt-0.5">from {wind.directionLabel}</div>
+            </div>
           </div>
         </div>
       </section>
@@ -1070,14 +1104,13 @@ const HorizontalCompass = ({
   // Visible field of view in degrees
   const FOV = 100;
   const W = 320; // viewBox width
-  const H = 64;  // viewBox height
+  const H = 48;  // viewBox height (compact)
   const pxPerDeg = W / FOV;
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
 
   // Build tick marks every 5°, labels every 20°
   const ticks: { deg: number; label?: string; major: boolean; cardinal?: string }[] = [];
-  // Sweep a wide range, screen visibility filtered later
   for (let raw = -360; raw <= 720; raw += 5) {
     const norm = ((raw % 360) + 360) % 360;
     const major = raw % 20 === 0;
@@ -1093,10 +1126,8 @@ const HorizontalCompass = ({
     ticks.push({ deg: raw, label: major ? String(norm) : undefined, major, cardinal });
   }
 
-  // Helper: x position for an absolute degree value, given current heading at center
   const xFor = (deg: number) => {
     let delta = deg - heading;
-    // wrap to [-180, 180]
     while (delta > 180) delta -= 360;
     while (delta < -180) delta += 360;
     return cx + delta * pxPerDeg;
@@ -1104,68 +1135,69 @@ const HorizontalCompass = ({
 
   const targetX = xFor(targetHeadingDeg);
   const targetVisible = targetX >= 4 && targetX <= W - 4;
+  // Match Panel title font: ui-sans-serif, semibold, uppercase tracked
+  const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
   return (
     <div className="relative w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[72px]" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[44px]" preserveAspectRatio="none">
         <defs>
-          {/* Polished metallic strip background */}
+          {/* Dark slate strip background */}
           <linearGradient id="compass-bg" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="hsl(210 50% 99%)" />
-            <stop offset="40%" stopColor="hsl(205 40% 96%)" />
-            <stop offset="100%" stopColor="hsl(210 25% 88%)" />
+            <stop offset="0%" stopColor="hsl(220 30% 14%)" />
+            <stop offset="50%" stopColor="hsl(220 28% 11%)" />
+            <stop offset="100%" stopColor="hsl(220 30% 8%)" />
           </linearGradient>
-          {/* Soft inner highlight */}
+          {/* Subtle inner highlight */}
           <linearGradient id="compass-sheen" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity="0.6" />
-            <stop offset="50%" stopColor="hsl(0 0% 100%)" stopOpacity="0" />
+            <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="hsl(0 0% 100%)" stopOpacity="0" />
           </linearGradient>
-          {/* Edge fade — content disappears into rounded margins */}
+          {/* Edge fade — content disappears into dark margins */}
           <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
-            <stop offset="10%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
-            <stop offset="90%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
-            <stop offset="100%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
+            <stop offset="0%" stopColor="hsl(220 30% 10%)" stopOpacity="1" />
+            <stop offset="10%" stopColor="hsl(220 30% 10%)" stopOpacity="0" />
+            <stop offset="90%" stopColor="hsl(220 30% 10%)" stopOpacity="0" />
+            <stop offset="100%" stopColor="hsl(220 30% 10%)" stopOpacity="1" />
           </linearGradient>
-          {/* Glow under pointer */}
           <radialGradient id="pointer-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="hsl(195 90% 45%)" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="hsl(195 90% 45%)" stopOpacity="0" />
+            <stop offset="0%" stopColor="hsl(195 90% 55%)" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity="0" />
           </radialGradient>
           <filter id="compass-shadow" x="-5%" y="-20%" width="110%" height="160%">
-            <feDropShadow dx="0" dy="1" stdDeviation="1.2" floodColor="hsl(220 30% 30%)" floodOpacity="0.15" />
+            <feDropShadow dx="0" dy="1" stdDeviation="1.2" floodColor="hsl(220 60% 5%)" floodOpacity="0.3" />
           </filter>
         </defs>
 
         {/* Strip body */}
-        <rect x="0" y="6" width={W} height={H - 12} rx="10" fill="url(#compass-bg)" stroke="hsl(220 18% 78%)" strokeWidth="1" filter="url(#compass-shadow)" />
-        <rect x="1" y="7" width={W - 2} height={(H - 14) / 2} rx="9" fill="url(#compass-sheen)" pointerEvents="none" />
+        <rect x="0" y="3" width={W} height={H - 6} rx="8" fill="url(#compass-bg)" stroke="hsl(220 25% 22%)" strokeWidth="1" filter="url(#compass-shadow)" />
+        <rect x="1" y="4" width={W - 2} height={(H - 8) / 2} rx="7" fill="url(#compass-sheen)" pointerEvents="none" />
 
         {/* Pointer halo */}
-        <ellipse cx={cx} cy={H / 2} rx="36" ry={H / 2 - 4} fill="url(#pointer-glow)" />
+        <ellipse cx={cx} cy={H / 2} rx="36" ry={H / 2 - 2} fill="url(#pointer-glow)" />
 
         {/* Ticks + labels */}
         <g opacity={headingDeg !== null ? 1 : 0.4}>
           {ticks.map((t, i) => {
             const x = xFor(t.deg);
             if (x < -10 || x > W + 10) return null;
-            const tickH = t.major ? 14 : 7;
+            const tickH = t.major ? 10 : 5;
             const isCardinalAxis = t.cardinal === 'N' || t.cardinal === 'S' || t.cardinal === 'E' || t.cardinal === 'W';
             return (
               <g key={i}>
                 <line
                   x1={x} x2={x}
-                  y1={9} y2={9 + tickH}
-                  stroke={isCardinalAxis ? 'hsl(355 70% 45%)' : t.cardinal ? 'hsl(220 25% 22%)' : 'hsl(220 12% 55%)'}
+                  y1={5} y2={5 + tickH}
+                  stroke={isCardinalAxis ? 'hsl(355 80% 60%)' : t.cardinal ? 'hsl(210 25% 85%)' : 'hsl(215 15% 55%)'}
                   strokeWidth={t.major ? (isCardinalAxis ? 1.6 : 1.1) : 0.6}
                   strokeLinecap="round"
                 />
                 {t.cardinal ? (
-                  <text x={x} y={H - 12} textAnchor="middle" fontSize="11.5" fontWeight="800" fill={isCardinalAxis ? 'hsl(355 70% 40%)' : 'hsl(220 25% 22%)'} fontFamily="ui-sans-serif" letterSpacing="0.5">
+                  <text x={x} y={H - 7} textAnchor="middle" fontSize="9" fontWeight="600" fill={isCardinalAxis ? 'hsl(355 80% 65%)' : 'hsl(210 25% 90%)'} fontFamily={labelFont} letterSpacing="1.2">
                     {t.cardinal}
                   </text>
                 ) : t.label ? (
-                  <text x={x} y={H - 13} textAnchor="middle" fontSize="8.5" fill="hsl(220 12% 42%)" fontFamily="ui-sans-serif">
+                  <text x={x} y={H - 8} textAnchor="middle" fontSize="7.5" fill="hsl(215 15% 65%)" fontFamily={labelFont} fontWeight="600" letterSpacing="0.6">
                     {t.label}
                   </text>
                 ) : null}
@@ -1175,25 +1207,23 @@ const HorizontalCompass = ({
         </g>
 
         {/* Edge fade */}
-        <rect x="0" y="6" width={W} height={H - 12} rx="10" fill="url(#compass-fade)" pointerEvents="none" />
+        <rect x="0" y="3" width={W} height={H - 6} rx="8" fill="url(#compass-fade)" pointerEvents="none" />
 
         {/* Target heading marker (green dashed) */}
         {targetVisible && (
           <g>
-            <line x1={targetX} x2={targetX} y1={9} y2={H - 7}
-              stroke="hsl(150 75% 38%)" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.9" />
-            <polygon points={`${targetX - 4.5},${H - 4} ${targetX + 4.5},${H - 4} ${targetX},${H - 11}`}
-              fill="hsl(150 75% 38%)" />
+            <line x1={targetX} x2={targetX} y1={5} y2={H - 4}
+              stroke="hsl(150 75% 55%)" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.95" />
+            <polygon points={`${targetX - 4},${H - 2} ${targetX + 4},${H - 2} ${targetX},${H - 8}`}
+              fill="hsl(150 75% 55%)" />
           </g>
         )}
 
-        {/* Center pointer (current heading) — diamond + line + bottom triangle */}
+        {/* Center pointer (current heading) */}
         <g>
-          <line x1={cx} x2={cx} y1={4} y2={H - 5} stroke="hsl(195 90% 32%)" strokeWidth="1.8" strokeLinecap="round" />
-          {/* Top diamond */}
-          <polygon points={`${cx},1 ${cx + 5},7 ${cx},13 ${cx - 5},7`} fill="hsl(195 90% 38%)" stroke="hsl(0 0% 100%)" strokeWidth="0.8" />
-          {/* Bottom arrow */}
-          <polygon points={`${cx - 5},${H - 1} ${cx + 5},${H - 1} ${cx},${H - 9}`} fill="hsl(195 90% 38%)" stroke="hsl(0 0% 100%)" strokeWidth="0.8" />
+          <line x1={cx} x2={cx} y1={2} y2={H - 3} stroke="hsl(195 90% 60%)" strokeWidth="1.6" strokeLinecap="round" />
+          <polygon points={`${cx},0 ${cx + 4},5 ${cx},10 ${cx - 4},5`} fill="hsl(195 90% 60%)" stroke="hsl(220 30% 8%)" strokeWidth="0.6" />
+          <polygon points={`${cx - 4},${H} ${cx + 4},${H} ${cx},${H - 6}`} fill="hsl(195 90% 60%)" stroke="hsl(220 30% 8%)" strokeWidth="0.6" />
         </g>
       </svg>
     </div>
