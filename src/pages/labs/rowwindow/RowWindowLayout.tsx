@@ -823,6 +823,7 @@ interface OnWaterViewProps {
   elapsedMs: number;
   distanceMeters: number | null;
   spm: number | null;
+  speedMs: number | null;
   headingDeg: number | null;
   targetHeadingDeg: number;
   onSetTarget: (deg: number) => void;
