@@ -1164,6 +1164,7 @@ const HorizontalCompass = ({
 };
 
 
+interface LanePositionWidgetProps {
   laneOffsetMeters: number | null;
   laneColor: string;
   laneRingColor: string;
