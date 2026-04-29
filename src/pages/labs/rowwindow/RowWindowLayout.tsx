@@ -559,7 +559,7 @@ const PreRowView = ({
             </div>
           </div>
           {lowTideMarker && (
-            <div className="px-4 py-2 sm:py-1">
+            <div className="flex-1 md:flex-none px-3 sm:px-4 py-2 sm:py-1">
               <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
                 <ArrowDown className="w-4 h-4" />
                 Low tide
