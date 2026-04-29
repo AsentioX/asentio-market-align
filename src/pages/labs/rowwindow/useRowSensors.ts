@@ -69,6 +69,11 @@ export interface RowSensorState {
   heartRate: number | null;
   heartRateStatus: SensorStatus;
   heartRateDeviceName: string | null;
+
+  // Stroke rate derived from device accelerometer (peak-detection on the
+  // dominant rocking axis of the boat). null until enough peaks are seen.
+  spm: number | null;
+  motionStatus: SensorStatus;
 }
 
 interface UseRowSensorsOptions {
