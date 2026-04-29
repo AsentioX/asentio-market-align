@@ -13,13 +13,25 @@ interface LocationPickerProps {
   onSelect: (id: string) => void;
   onToggleFavorite: (id?: string) => void;
   onUseGPS: () => void;
+  /** Hide the built-in trigger row (use when controlling externally). */
+  hideTrigger?: boolean;
+  /** Controlled open state. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const LocationPicker = ({
   location, favorites, nearby, isFavorite, gpsStatus, gpsError,
   onSelect, onToggleFavorite, onUseGPS,
+  hideTrigger = false, open: openProp, onOpenChange,
 }: LocationPickerProps) => {
-  const [open, setOpen] = useState(false);
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
+  const setOpen = (next: boolean | ((v: boolean) => boolean)) => {
+    const value = typeof next === 'function' ? next(open) : next;
+    if (onOpenChange) onOpenChange(value);
+    else setOpenState(value);
+  };
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
