@@ -912,18 +912,13 @@ const OnWaterView = ({
       <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0">
         {/* Compass */}
         <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
-          <div className="flex flex-col gap-3">
-            <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <div className="text-3xl font-bold font-mono text-cyan-800 leading-none">
-                  {headingDeg !== null ? `${Math.round(headingDeg)}°` : DASH}
-                </div>
-                <div className="text-xs text-slate-600 mt-1">
-                  Target {targetHeadingDeg}° ({degLabel(targetHeadingDeg)})
-                </div>
+          <div className="space-y-3">
+            {/* Header row — mirrors LanePositionWidget layout */}
+            <div className="flex items-baseline justify-between gap-2">
+              <div className={`text-4xl md:text-5xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
+                {headingDeg !== null ? `${Math.round(headingDeg)}°` : '—'}
               </div>
-              <div className="text-right">
+              <div className="flex items-center gap-2">
                 <div className={`text-xs font-medium ${
                   headingDeg === null ? 'text-slate-500'
                   : Math.abs(headingError) < 5 ? 'text-emerald-700'
@@ -934,13 +929,25 @@ const OnWaterView = ({
                     ? 'Compass not connected'
                     : headingError === 0
                     ? 'On line'
-                    : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right of line' : 'left of line'}`}
+                    : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right' : 'left'}`}
                 </div>
-                <div className="flex items-center gap-2 mt-1.5 text-[10px] text-slate-600 justify-end">
-                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
-                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
+                <div className="px-2 py-1 rounded-md bg-cyan-50 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1">
+                  <Navigation className="w-3 h-3" />
+                  Target {targetHeadingDeg}°
                 </div>
               </div>
+            </div>
+
+            {/* Compass strip */}
+            <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
+
+            {/* Footer legend — mirrors lane footer height */}
+            <div className="flex items-center justify-between text-xs text-slate-600">
+              <span>{degLabel(targetHeadingDeg)} bearing</span>
+              <span className="flex items-center gap-2 text-[10px]">
+                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
+                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
+              </span>
             </div>
           </div>
         </Panel>
