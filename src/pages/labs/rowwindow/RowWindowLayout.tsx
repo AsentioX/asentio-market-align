@@ -23,7 +23,7 @@ import {
 } from './tideEngine';
 import { useRowLocation } from './useRowLocation';
 import { LocationPicker } from './LocationPicker';
-import { useRowSensors, type SensorStatus } from './useRowSensors';
+import { useRowSensors, type SensorStatus, type TrackPoint } from './useRowSensors';
 
 const DURATIONS = [60, 90, 120];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -49,6 +49,8 @@ interface RowSession {
     windDir: string;
   };
   spmSeries: { t: number; spm: number; pace: number }[];
+  track: TrackPoint[];
+  speedSeries: { t: number; speedMs: number; pace: number }[];
 }
 
 const RowWindowLayout = () => {
@@ -265,6 +267,10 @@ const RowWindowLayout = () => {
         windDir: wind.directionLabel,
       },
       spmSeries: [...history],
+      track: [...sensors.track],
+      speedSeries: sensors.track
+        .filter((p) => p.speedMs >= 0)
+        .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
     };
     setLastSession(summary);
     setSessionEndedAt(endedAt);
@@ -1039,6 +1045,12 @@ const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
   const startedDate = new Date(session.startedAt);
   const endedDate = new Date(session.endedAt);
   const spmChartData = session.spmSeries.map((p, i) => ({ idx: i, spm: p.spm, pace: p.pace }));
+  const speedChartData = session.speedSeries.map((p, i) => ({
+    idx: i,
+    speedKmh: Math.round(p.speedMs * 3.6 * 10) / 10,
+    pace: p.pace,
+  }));
+  const hasTrack = session.track.length >= 2;
 
   return (
     <>
@@ -1093,6 +1105,57 @@ const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
                   labelFormatter={(idx) => `${idx}s`}
                 />
                 <Line type="monotone" dataKey="spm" stroke="hsl(195 90% 65%)" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      )}
+
+      {/* GPS course map */}
+      {hasTrack && (
+        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <MapPin className="w-4 h-4 text-cyan-300" />
+            <h2 className="text-sm font-semibold tracking-tight">Course on Map</h2>
+            <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
+          </div>
+          <CourseMap track={session.track} />
+        </section>
+      )}
+
+      {/* Boat speed / pace chart */}
+      {speedChartData.length > 5 && (
+        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Gauge className="w-4 h-4 text-cyan-300" />
+            <h2 className="text-sm font-semibold tracking-tight">Boat Speed & Pace</h2>
+            <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-400">
+              <LegendDot color="hsl(195 90% 65%)" label="Speed (km/h)" />
+              <LegendDot color="hsl(280 80% 70%)" label="Pace (s/500m)" />
+            </div>
+          </div>
+          <div className="h-56 w-full">
+            <ResponsiveContainer>
+              <LineChart data={speedChartData} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
+                <CartesianGrid stroke="hsl(220 20% 18%)" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="idx" stroke="hsl(220 15% 50%)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="speed" stroke="hsl(195 90% 65%)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="pace" orientation="right" stroke="hsl(280 80% 70%)" fontSize={11} tickLine={false} axisLine={false} reversed />
+                <Tooltip
+                  contentStyle={{ background: 'hsl(220 30% 10%)', border: '1px solid hsl(220 20% 20%)', borderRadius: 8, fontSize: 12 }}
+                  formatter={(value: number, name: string) => {
+                    if (name === 'speedKmh') return [`${value} km/h`, 'Speed'];
+                    if (name === 'pace') {
+                      const m = Math.floor(value / 60);
+                      const s = value % 60;
+                      return [`${m}:${String(s).padStart(2, '0')} /500m`, 'Pace'];
+                    }
+                    return [value, name];
+                  }}
+                  labelFormatter={(idx) => `Fix ${idx}`}
+                />
+                <Line yAxisId="speed" type="monotone" dataKey="speedKmh" stroke="hsl(195 90% 65%)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line yAxisId="pace" type="monotone" dataKey="pace" stroke="hsl(280 80% 70%)" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -1209,5 +1272,84 @@ function degLabel(deg: number): string {
   const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
   return dirs[Math.round(((deg % 360) / 45)) % 8];
 }
+
+// ============================================================
+// CourseMap — projects GPS track points into an SVG viewport.
+// Uses an equirectangular projection scaled to the bounding box of the track,
+// which is plenty accurate for a single rowing session (< few km).
+// ============================================================
+const CourseMap = ({ track }: { track: TrackPoint[] }) => {
+  if (track.length < 2) return null;
+  const W = 800;
+  const H = 360;
+  const PAD = 24;
+
+  let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+  for (const p of track) {
+    if (p.lat < minLat) minLat = p.lat;
+    if (p.lat > maxLat) maxLat = p.lat;
+    if (p.lon < minLon) minLon = p.lon;
+    if (p.lon > maxLon) maxLon = p.lon;
+  }
+  // Avoid divide-by-zero for extremely tight tracks
+  const latSpan = Math.max(maxLat - minLat, 1e-6);
+  const lonSpan = Math.max(maxLon - minLon, 1e-6);
+  const midLat = (minLat + maxLat) / 2;
+  // Adjust longitude scale by latitude so the route isn't horizontally squashed.
+  const lonScale = Math.cos((midLat * Math.PI) / 180);
+  const aspect = (lonSpan * lonScale) / latSpan;
+  const innerW = W - PAD * 2;
+  const innerH = H - PAD * 2;
+  let drawW = innerW;
+  let drawH = innerW / aspect;
+  if (drawH > innerH) {
+    drawH = innerH;
+    drawW = innerH * aspect;
+  }
+  const offsetX = (W - drawW) / 2;
+  const offsetY = (H - drawH) / 2;
+
+  const project = (lat: number, lon: number) => {
+    const x = offsetX + ((lon - minLon) / lonSpan) * drawW;
+    const y = offsetY + (1 - (lat - minLat) / latSpan) * drawH;
+    return [x, y] as const;
+  };
+
+  const path = track.map((p, i) => {
+    const [x, y] = project(p.lat, p.lon);
+    return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+
+  const [sx, sy] = project(track[0].lat, track[0].lon);
+  const [ex, ey] = project(track[track.length - 1].lat, track[track.length - 1].lon);
+
+  return (
+    <div className="w-full rounded-xl overflow-hidden border border-white/5 bg-[hsl(220_30%_6%)]">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto block" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <pattern id="rowGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(220 20% 14%)" strokeWidth="1" />
+          </pattern>
+          <linearGradient id="rowRoute" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="hsl(150 80% 55%)" />
+            <stop offset="100%" stopColor="hsl(195 90% 65%)" />
+          </linearGradient>
+        </defs>
+        <rect width={W} height={H} fill="url(#rowGrid)" />
+        <path d={path} fill="none" stroke="url(#rowRoute)" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+        {/* Start marker */}
+        <g transform={`translate(${sx}, ${sy})`}>
+          <circle r={9} fill="hsl(150 80% 55%)" stroke="hsl(220 30% 6%)" strokeWidth={3} />
+          <text x={12} y={4} fontSize={11} fill="hsl(150 80% 75%)" fontWeight={600}>Start</text>
+        </g>
+        {/* End marker */}
+        <g transform={`translate(${ex}, ${ey})`}>
+          <circle r={9} fill="hsl(355 85% 60%)" stroke="hsl(220 30% 6%)" strokeWidth={3} />
+          <text x={12} y={4} fontSize={11} fill="hsl(355 85% 80%)" fontWeight={600}>End</text>
+        </g>
+      </svg>
+    </div>
+  );
+};
 
 export default RowWindowLayout;

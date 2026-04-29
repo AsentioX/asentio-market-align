@@ -48,6 +48,14 @@ interface Bluetooth {
 
 export type SensorStatus = 'idle' | 'requesting' | 'live' | 'denied' | 'unavailable' | 'error';
 
+export interface TrackPoint {
+  t: number;        // unix ms
+  lat: number;
+  lon: number;
+  speedMs: number;  // ground speed at this fix
+  accuracy: number; // meters
+}
+
 export interface RowSensorState {
   headingDeg: number | null;
   headingStatus: SensorStatus;
@@ -56,6 +64,7 @@ export interface RowSensorState {
   distanceMeters: number;       // accumulated while `tracking` is true
   positionStatus: SensorStatus;
   positionAccuracy: number | null;
+  track: TrackPoint[];          // accumulated GPS fixes while tracking
 
   heartRate: number | null;
   heartRateStatus: SensorStatus;
@@ -79,6 +88,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     distanceMeters: 0,
     positionStatus: 'idle',
     positionAccuracy: null,
+    track: [],
     heartRate: null,
     heartRateStatus: 'idle',
     heartRateDeviceName: null,
@@ -187,18 +197,24 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
         }
         lastPosRef.current = { lat: latitude, lon: longitude, t: now };
 
-        setState(s => ({
-          ...s,
-          positionStatus: 'live',
-          positionAccuracy: accuracy ?? null,
-          speedMs: computedSpeed,
-          distanceMeters: s.distanceMeters + added,
-          // GPS heading is only reliable while moving; surface it when available
-          // and we don't have a compass lock yet.
-          headingDeg: typeof heading === 'number' && !Number.isNaN(heading) && (computedSpeed ?? 0) > 1
-            ? heading
-            : s.headingDeg,
-        }));
+        setState(s => {
+          const trackPush = trackingRef.current && (accuracy ?? 100) < 30
+            ? [...s.track, { t: now, lat: latitude, lon: longitude, speedMs: computedSpeed ?? 0, accuracy: accuracy ?? 0 }]
+            : s.track;
+          return {
+            ...s,
+            positionStatus: 'live',
+            positionAccuracy: accuracy ?? null,
+            speedMs: computedSpeed,
+            distanceMeters: s.distanceMeters + added,
+            track: trackPush,
+            // GPS heading is only reliable while moving; surface it when available
+            // and we don't have a compass lock yet.
+            headingDeg: typeof heading === 'number' && !Number.isNaN(heading) && (computedSpeed ?? 0) > 1
+              ? heading
+              : s.headingDeg,
+          };
+        });
       },
       (err) => {
         setState(s => ({
@@ -212,7 +228,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
 
   const resetDistance = useCallback(() => {
     lastPosRef.current = null;
-    setState(s => ({ ...s, distanceMeters: 0 }));
+    setState(s => ({ ...s, distanceMeters: 0, track: [] }));
   }, []);
 
   // -------------------------------------------------------------------------
