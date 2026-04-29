@@ -1104,14 +1104,13 @@ const HorizontalCompass = ({
   // Visible field of view in degrees
   const FOV = 100;
   const W = 320; // viewBox width
-  const H = 64;  // viewBox height
+  const H = 48;  // viewBox height (compact)
   const pxPerDeg = W / FOV;
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
 
   // Build tick marks every 5°, labels every 20°
   const ticks: { deg: number; label?: string; major: boolean; cardinal?: string }[] = [];
-  // Sweep a wide range, screen visibility filtered later
   for (let raw = -360; raw <= 720; raw += 5) {
     const norm = ((raw % 360) + 360) % 360;
     const major = raw % 20 === 0;
@@ -1127,10 +1126,8 @@ const HorizontalCompass = ({
     ticks.push({ deg: raw, label: major ? String(norm) : undefined, major, cardinal });
   }
 
-  // Helper: x position for an absolute degree value, given current heading at center
   const xFor = (deg: number) => {
     let delta = deg - heading;
-    // wrap to [-180, 180]
     while (delta > 180) delta -= 360;
     while (delta < -180) delta += 360;
     return cx + delta * pxPerDeg;
@@ -1138,68 +1135,69 @@ const HorizontalCompass = ({
 
   const targetX = xFor(targetHeadingDeg);
   const targetVisible = targetX >= 4 && targetX <= W - 4;
+  // Match Panel title font: ui-sans-serif, semibold, uppercase tracked
+  const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
   return (
     <div className="relative w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[72px]" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[44px]" preserveAspectRatio="none">
         <defs>
-          {/* Polished metallic strip background */}
+          {/* Dark slate strip background */}
           <linearGradient id="compass-bg" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="hsl(210 50% 99%)" />
-            <stop offset="40%" stopColor="hsl(205 40% 96%)" />
-            <stop offset="100%" stopColor="hsl(210 25% 88%)" />
+            <stop offset="0%" stopColor="hsl(220 30% 14%)" />
+            <stop offset="50%" stopColor="hsl(220 28% 11%)" />
+            <stop offset="100%" stopColor="hsl(220 30% 8%)" />
           </linearGradient>
-          {/* Soft inner highlight */}
+          {/* Subtle inner highlight */}
           <linearGradient id="compass-sheen" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity="0.6" />
-            <stop offset="50%" stopColor="hsl(0 0% 100%)" stopOpacity="0" />
+            <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="hsl(0 0% 100%)" stopOpacity="0" />
           </linearGradient>
-          {/* Edge fade — content disappears into rounded margins */}
+          {/* Edge fade — content disappears into dark margins */}
           <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
-            <stop offset="10%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
-            <stop offset="90%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
-            <stop offset="100%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
+            <stop offset="0%" stopColor="hsl(220 30% 10%)" stopOpacity="1" />
+            <stop offset="10%" stopColor="hsl(220 30% 10%)" stopOpacity="0" />
+            <stop offset="90%" stopColor="hsl(220 30% 10%)" stopOpacity="0" />
+            <stop offset="100%" stopColor="hsl(220 30% 10%)" stopOpacity="1" />
           </linearGradient>
-          {/* Glow under pointer */}
           <radialGradient id="pointer-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="hsl(195 90% 45%)" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="hsl(195 90% 45%)" stopOpacity="0" />
+            <stop offset="0%" stopColor="hsl(195 90% 55%)" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity="0" />
           </radialGradient>
           <filter id="compass-shadow" x="-5%" y="-20%" width="110%" height="160%">
-            <feDropShadow dx="0" dy="1" stdDeviation="1.2" floodColor="hsl(220 30% 30%)" floodOpacity="0.15" />
+            <feDropShadow dx="0" dy="1" stdDeviation="1.2" floodColor="hsl(220 60% 5%)" floodOpacity="0.3" />
           </filter>
         </defs>
 
         {/* Strip body */}
-        <rect x="0" y="6" width={W} height={H - 12} rx="10" fill="url(#compass-bg)" stroke="hsl(220 18% 78%)" strokeWidth="1" filter="url(#compass-shadow)" />
-        <rect x="1" y="7" width={W - 2} height={(H - 14) / 2} rx="9" fill="url(#compass-sheen)" pointerEvents="none" />
+        <rect x="0" y="3" width={W} height={H - 6} rx="8" fill="url(#compass-bg)" stroke="hsl(220 25% 22%)" strokeWidth="1" filter="url(#compass-shadow)" />
+        <rect x="1" y="4" width={W - 2} height={(H - 8) / 2} rx="7" fill="url(#compass-sheen)" pointerEvents="none" />
 
         {/* Pointer halo */}
-        <ellipse cx={cx} cy={H / 2} rx="36" ry={H / 2 - 4} fill="url(#pointer-glow)" />
+        <ellipse cx={cx} cy={H / 2} rx="36" ry={H / 2 - 2} fill="url(#pointer-glow)" />
 
         {/* Ticks + labels */}
         <g opacity={headingDeg !== null ? 1 : 0.4}>
           {ticks.map((t, i) => {
             const x = xFor(t.deg);
             if (x < -10 || x > W + 10) return null;
-            const tickH = t.major ? 14 : 7;
+            const tickH = t.major ? 10 : 5;
             const isCardinalAxis = t.cardinal === 'N' || t.cardinal === 'S' || t.cardinal === 'E' || t.cardinal === 'W';
             return (
               <g key={i}>
                 <line
                   x1={x} x2={x}
-                  y1={9} y2={9 + tickH}
-                  stroke={isCardinalAxis ? 'hsl(355 70% 45%)' : t.cardinal ? 'hsl(220 25% 22%)' : 'hsl(220 12% 55%)'}
+                  y1={5} y2={5 + tickH}
+                  stroke={isCardinalAxis ? 'hsl(355 80% 60%)' : t.cardinal ? 'hsl(210 25% 85%)' : 'hsl(215 15% 55%)'}
                   strokeWidth={t.major ? (isCardinalAxis ? 1.6 : 1.1) : 0.6}
                   strokeLinecap="round"
                 />
                 {t.cardinal ? (
-                  <text x={x} y={H - 12} textAnchor="middle" fontSize="11.5" fontWeight="800" fill={isCardinalAxis ? 'hsl(355 70% 40%)' : 'hsl(220 25% 22%)'} fontFamily="ui-sans-serif" letterSpacing="0.5">
+                  <text x={x} y={H - 7} textAnchor="middle" fontSize="9" fontWeight="600" fill={isCardinalAxis ? 'hsl(355 80% 65%)' : 'hsl(210 25% 90%)'} fontFamily={labelFont} letterSpacing="1.2">
                     {t.cardinal}
                   </text>
                 ) : t.label ? (
-                  <text x={x} y={H - 13} textAnchor="middle" fontSize="8.5" fill="hsl(220 12% 42%)" fontFamily="ui-sans-serif">
+                  <text x={x} y={H - 8} textAnchor="middle" fontSize="7.5" fill="hsl(215 15% 65%)" fontFamily={labelFont} fontWeight="600" letterSpacing="0.6">
                     {t.label}
                   </text>
                 ) : null}
@@ -1209,25 +1207,23 @@ const HorizontalCompass = ({
         </g>
 
         {/* Edge fade */}
-        <rect x="0" y="6" width={W} height={H - 12} rx="10" fill="url(#compass-fade)" pointerEvents="none" />
+        <rect x="0" y="3" width={W} height={H - 6} rx="8" fill="url(#compass-fade)" pointerEvents="none" />
 
         {/* Target heading marker (green dashed) */}
         {targetVisible && (
           <g>
-            <line x1={targetX} x2={targetX} y1={9} y2={H - 7}
-              stroke="hsl(150 75% 38%)" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.9" />
-            <polygon points={`${targetX - 4.5},${H - 4} ${targetX + 4.5},${H - 4} ${targetX},${H - 11}`}
-              fill="hsl(150 75% 38%)" />
+            <line x1={targetX} x2={targetX} y1={5} y2={H - 4}
+              stroke="hsl(150 75% 55%)" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.95" />
+            <polygon points={`${targetX - 4},${H - 2} ${targetX + 4},${H - 2} ${targetX},${H - 8}`}
+              fill="hsl(150 75% 55%)" />
           </g>
         )}
 
-        {/* Center pointer (current heading) — diamond + line + bottom triangle */}
+        {/* Center pointer (current heading) */}
         <g>
-          <line x1={cx} x2={cx} y1={4} y2={H - 5} stroke="hsl(195 90% 32%)" strokeWidth="1.8" strokeLinecap="round" />
-          {/* Top diamond */}
-          <polygon points={`${cx},1 ${cx + 5},7 ${cx},13 ${cx - 5},7`} fill="hsl(195 90% 38%)" stroke="hsl(0 0% 100%)" strokeWidth="0.8" />
-          {/* Bottom arrow */}
-          <polygon points={`${cx - 5},${H - 1} ${cx + 5},${H - 1} ${cx},${H - 9}`} fill="hsl(195 90% 38%)" stroke="hsl(0 0% 100%)" strokeWidth="0.8" />
+          <line x1={cx} x2={cx} y1={2} y2={H - 3} stroke="hsl(195 90% 60%)" strokeWidth="1.6" strokeLinecap="round" />
+          <polygon points={`${cx},0 ${cx + 4},5 ${cx},10 ${cx - 4},5`} fill="hsl(195 90% 60%)" stroke="hsl(220 30% 8%)" strokeWidth="0.6" />
+          <polygon points={`${cx - 4},${H} ${cx + 4},${H} ${cx},${H - 6}`} fill="hsl(195 90% 60%)" stroke="hsl(220 30% 8%)" strokeWidth="0.6" />
         </g>
       </svg>
     </div>
