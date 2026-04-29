@@ -97,6 +97,8 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     heartRate: null,
     heartRateStatus: 'idle',
     heartRateDeviceName: null,
+    spm: null,
+    motionStatus: 'idle',
   });
 
   // Refs for cleanup / cross-callback access without re-subscribing
