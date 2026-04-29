@@ -267,14 +267,14 @@ const RowWindowLayout = () => {
       startedAt: sessionStartedAt,
       endedAt,
       durationMs: totalElapsed,
-      distanceMeters: Math.round(liveDistance),
+      distanceMeters: Math.round(liveDistance ?? 0),
       avgSpm: Math.round(avgSpm * 10) / 10,
       maxSpm: maxSpmRef.current,
       avgPaceSecPer500: Math.round(avgPace),
-      avgHeadingDeg: Math.round(liveHeading),
+      avgHeadingDeg: Math.round(liveHeading ?? 0),
       laneDeviationMax: Math.round(maxLaneOffsetRef.current * 100) / 100,
       caloriesKcal: Math.round((totalElapsed / 60_000) * 9), // ~9 kcal/min for steady state
-      avgHeartRate: liveHeartRate,
+      avgHeartRate: liveHeartRate ?? 0,
       startConditions: {
         tideFt: current.height,
         direction,
