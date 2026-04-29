@@ -1028,13 +1028,24 @@ const OnWaterView = ({
           sub={`from ${wind.directionLabel}`}
           accent="text-slate-200"
         />
-        <BigStat
-          icon={<Waves className="w-4 h-4" />}
-          label="Tide"
-          value={`${tide.height.toFixed(1)} ft`}
-          sub={direction}
-          accent="text-slate-200"
-        />
+        <div className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] px-4 py-4">
+          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-400">
+            <Waves className="w-4 h-4" />
+            Tide
+          </div>
+          <div className="text-3xl md:text-4xl font-bold mt-1 text-slate-200 flex items-center gap-2">
+            {tide.height.toFixed(1)} ft
+            {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-400" aria-label="Rising" />}
+            {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-400" aria-label="Falling" />}
+          </div>
+          <div className={`text-[11px] mt-0.5 ${
+            direction === 'Flood' ? 'text-emerald-300'
+            : direction === 'Ebb' ? 'text-amber-300'
+            : 'text-slate-400'
+          }`}>
+            {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
+          </div>
+        </div>
         <BigStat
           icon={<MapPin className="w-4 h-4" />}
           label="Channel"
