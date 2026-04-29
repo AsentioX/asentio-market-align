@@ -542,7 +542,7 @@ const PreRowView = ({
           <div>
             <div className="text-xs uppercase tracking-[0.2em] text-slate-600">Launch Status</div>
             <div className={`text-2xl md:text-3xl font-bold mt-1 ${statusMeta.textClass}`}>{statusMeta.label}</div>
-            <div className="mt-1 flex flex-nowrap items-center gap-2">
+            <div className="mt-1 flex flex-nowrap items-stretch gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -550,10 +550,11 @@ const PreRowView = ({
                   const next = ids[(ids.indexOf(vesselId) + 1) % ids.length];
                   setVesselId(next as VesselProfile['id']);
                 }}
-                className="text-sm whitespace-nowrap bg-white border border-slate-300 rounded-md px-2.5 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition"
+                className="text-left whitespace-nowrap bg-white border border-slate-300 rounded-md px-2.5 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition leading-tight"
                 aria-label="Toggle vessel profile"
               >
-                {VESSEL_PROFILES[vesselId].label}
+                <div className="text-sm">{VESSEL_PROFILES[vesselId].label}</div>
+                <div className="text-[10px] text-slate-500">wind &lt; {VESSEL_PROFILES[vesselId].windWarnKnots} kt</div>
               </button>
 
               <button
@@ -562,10 +563,11 @@ const PreRowView = ({
                   const next = DURATIONS[(DURATIONS.indexOf(duration) + 1) % DURATIONS.length];
                   setDuration(next);
                 }}
-                className="text-sm whitespace-nowrap bg-white border border-slate-300 rounded-md px-2.5 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition"
+                className="text-left whitespace-nowrap bg-white border border-slate-300 rounded-md px-2.5 py-1 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition leading-tight"
                 aria-label="Toggle planned duration"
               >
-                {duration} min
+                <div className="text-sm">{duration} min</div>
+                <div className="text-[10px] text-slate-500">tide &gt; {TIDE_GREEN_FT} ft</div>
               </button>
             </div>
           </div>
