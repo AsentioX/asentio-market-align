@@ -123,5 +123,22 @@ export function useRowLocation(): RowLocationState {
     );
   }, []);
 
+  // Auto-request GPS once on mount (browser will prompt only if not already decided).
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+    const nav = navigator as Navigator & { permissions?: { query: (q: { name: PermissionName }) => Promise<PermissionStatus> } };
+    if (nav.permissions?.query) {
+      nav.permissions
+        .query({ name: 'geolocation' as PermissionName })
+        .then((res) => {
+          if (res.state === 'granted' || res.state === 'prompt') useGPS();
+        })
+        .catch(() => useGPS());
+    } else {
+      useGPS();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return { location, favorites, nearby, isFavorite, gpsStatus, gpsError, selectLocation, toggleFavorite, useGPS };
 }
