@@ -40,14 +40,15 @@ interface RowSession {
   startedAt: number;
   endedAt: number;
   durationMs: number;
-  distanceMeters: number;
-  avgSpm: number;
-  maxSpm: number;
-  avgPaceSecPer500: number;
-  avgHeadingDeg: number;
-  laneDeviationMax: number;
-  caloriesKcal: number;
-  avgHeartRate: number;
+  // Nullable fields are null when no real sensor was connected for that metric.
+  distanceMeters: number | null;
+  avgSpm: number | null;
+  maxSpm: number | null;
+  avgPaceSecPer500: number | null;
+  avgHeadingDeg: number | null;
+  laneDeviationMax: number | null;
+  caloriesKcal: number | null;
+  avgHeartRate: number | null;
   startConditions: {
     tideFt: number;
     direction: string;
