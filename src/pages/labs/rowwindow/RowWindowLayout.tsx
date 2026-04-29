@@ -551,7 +551,7 @@ const PreRowView = ({
                   <option key={v.id} value={v.id}>{v.label}</option>
                 ))}
               </select>
-              <span className="text-slate-400">·</span>
+              
               <select
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
@@ -629,52 +629,6 @@ const PreRowView = ({
         </div>
       </div>
     )}
-
-    {/* Controls */}
-    <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Panel title="Vessel Profile" icon={<Sailboat className="w-4 h-4 text-cyan-700" />}>
-        <div className="grid grid-cols-2 gap-2">
-          {Object.values(VESSEL_PROFILES).map((v) => (
-            <button
-              key={v.id}
-              onClick={() => setVesselId(v.id)}
-              className={`px-4 py-3 rounded-lg text-sm font-medium border transition ${
-                vesselId === v.id
-                  ? 'bg-cyan-500/15 border-cyan-400/40 text-cyan-800'
-                  : 'border-slate-200 bg-white/[0.02] text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <div>{v.label}</div>
-              <div className="text-[11px] text-slate-600 mt-0.5">Wind warn &gt; {v.windWarnKnots} kt</div>
-            </button>
-          ))}
-        </div>
-      </Panel>
-
-      <Panel title="Planned Duration" icon={<Clock className="w-4 h-4 text-cyan-700" />}>
-        <div className="grid grid-cols-3 gap-2">
-          {DURATIONS.map((d) => (
-            <button
-              key={d}
-              onClick={() => setDuration(d)}
-              className={`px-4 py-3 rounded-lg text-sm font-medium border transition ${
-                duration === d
-                  ? 'bg-cyan-500/15 border-cyan-400/40 text-cyan-800'
-                  : 'border-slate-200 bg-white/[0.02] text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              {d} min
-            </button>
-          ))}
-        </div>
-        <div className="mt-3 text-xs text-slate-600">
-          Window range:{' '}
-          <span className="font-mono text-slate-700">
-            {assessment.minHeight.toFixed(2)}–{assessment.maxHeight.toFixed(2)} ft
-          </span>
-        </div>
-      </Panel>
-    </section>
 
     {/* Tide chart */}
     <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
