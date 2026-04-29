@@ -287,9 +287,14 @@ const RowWindowLayout = () => {
       endedAt,
       durationMs: totalElapsed,
       distanceMeters: distanceReal,
-      // Stroke rate has no real sensor wired up — leave null instead of fabricating.
-      avgSpm: null,
-      maxSpm: null,
+      // Stroke rate from the accelerometer — only count real (non-zero) samples.
+      avgSpm: (() => {
+        const spmSamples = spmHistoryRef.current.filter((h) => h.spm > 0);
+        return spmSamples.length
+          ? Math.round(spmSamples.reduce((s, h) => s + h.spm, 0) / spmSamples.length)
+          : null;
+      })(),
+      maxSpm: maxSpmRef.current > 0 ? Math.round(maxSpmRef.current) : null,
       avgPaceSecPer500: avgPace,
       avgHeadingDeg: headingReal,
       // Lane offset has no real sensor — null.
