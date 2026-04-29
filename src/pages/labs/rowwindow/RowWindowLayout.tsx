@@ -442,6 +442,7 @@ const RowWindowLayout = () => {
             tide={current}
             direction={direction}
             nextLowTurn={nextLowTurn}
+            lowTideMarker={lowTideMarker}
             now={now}
             onStart={startSession}
             onPauseResume={pauseResume}
