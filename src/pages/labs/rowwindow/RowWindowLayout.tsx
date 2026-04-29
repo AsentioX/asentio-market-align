@@ -235,7 +235,7 @@ const RowWindowLayout = () => {
     // No mock seeding — sensor values come from real devices only.
 
     spmHistoryRef.current = [];
-    maxSpmRef.current = 22;
+    maxSpmRef.current = 0;
     maxLaneOffsetRef.current = 0;
     sensors.resetDistance();
     // Best-effort: trigger sensor permissions on the user-gesture that starts the row.
