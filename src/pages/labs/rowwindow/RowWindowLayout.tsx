@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw,
   Activity, Compass, Navigation, Play, Pause, Square, MapPin, Timer, Route, TrendingUp, Gauge, Heart, Flame,
-  Trash2, Download, ArrowLeftRight,
+  Trash2, Download, ArrowLeftRight, ChevronDown,
 } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, LineChart, Line } from 'recharts';
 import {
@@ -66,6 +66,7 @@ const RowWindowLayout = () => {
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
   const [tab, setTab] = useState<TabId>('pre');
+  const [locationPickerOpen, setLocationPickerOpen] = useState(false);
 
   // Location: picked, GPS, favorites
   const locationState = useRowLocation();
@@ -331,13 +332,39 @@ const RowWindowLayout = () => {
             <Link to="/labs" className="p-2 -ml-2 rounded-lg hover:bg-slate-100 text-slate-700" aria-label="Back to Labs">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="flex items-center gap-2">
+            <div className="relative flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/30 to-blue-700/30 border border-cyan-400/20 flex items-center justify-center">
                 <Waves className="w-5 h-5 text-cyan-700" />
               </div>
-              <div>
+              <button
+                type="button"
+                onClick={() => setLocationPickerOpen((v) => !v)}
+                className="text-left rounded-md px-1.5 py-0.5 -mx-1.5 hover:bg-slate-100 transition group"
+                aria-label="Change rowing location"
+                aria-expanded={locationPickerOpen}
+              >
                 <h1 className="text-base font-semibold tracking-tight">RowWindow</h1>
-                <p className="text-[11px] text-slate-600 -mt-0.5 truncate max-w-[180px] sm:max-w-none">{location.name} · NOAA {location.tideStationId}</p>
+                <p className="text-[11px] text-slate-600 -mt-0.5 truncate max-w-[180px] sm:max-w-none flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-cyan-700 shrink-0" />
+                  <span className="truncate">{location.name} · NOAA {location.tideStationId}</span>
+                  <ChevronDown className={`w-3 h-3 text-slate-500 shrink-0 transition ${locationPickerOpen ? 'rotate-180' : ''}`} />
+                </p>
+              </button>
+              <div className="absolute left-0 right-auto top-full mt-1 w-[min(92vw,420px)]">
+                <LocationPicker
+                  hideTrigger
+                  open={locationPickerOpen}
+                  onOpenChange={setLocationPickerOpen}
+                  location={locationState.location}
+                  favorites={locationState.favorites}
+                  nearby={locationState.nearby}
+                  isFavorite={locationState.isFavorite}
+                  gpsStatus={locationState.gpsStatus}
+                  gpsError={locationState.gpsError}
+                  onSelect={locationState.selectLocation}
+                  onToggleFavorite={locationState.toggleFavorite}
+                  onUseGPS={locationState.useGPS}
+                />
               </div>
             </div>
           </div>
@@ -501,26 +528,6 @@ const PreRowView = ({
   vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
-    {/* Location picker */}
-    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-semibold">Rowing Location</div>
-        {locationState.favorites.length > 0 && (
-          <div className="text-[10px] text-amber-700/80">{locationState.favorites.length} saved</div>
-        )}
-      </div>
-      <LocationPicker
-        location={locationState.location}
-        favorites={locationState.favorites}
-        nearby={locationState.nearby}
-        isFavorite={locationState.isFavorite}
-        gpsStatus={locationState.gpsStatus}
-        gpsError={locationState.gpsError}
-        onSelect={locationState.selectLocation}
-        onToggleFavorite={locationState.toggleFavorite}
-        onUseGPS={locationState.useGPS}
-      />
-    </section>
 
     {/* Primary status — traffic light */}
     <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-6 md:p-8">

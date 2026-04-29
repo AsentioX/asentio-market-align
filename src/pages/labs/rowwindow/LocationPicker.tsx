@@ -13,13 +13,25 @@ interface LocationPickerProps {
   onSelect: (id: string) => void;
   onToggleFavorite: (id?: string) => void;
   onUseGPS: () => void;
+  /** Hide the built-in trigger row (use when controlling externally). */
+  hideTrigger?: boolean;
+  /** Controlled open state. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const LocationPicker = ({
   location, favorites, nearby, isFavorite, gpsStatus, gpsError,
   onSelect, onToggleFavorite, onUseGPS,
+  hideTrigger = false, open: openProp, onOpenChange,
 }: LocationPickerProps) => {
-  const [open, setOpen] = useState(false);
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
+  const setOpen = (next: boolean | ((v: boolean) => boolean)) => {
+    const value = typeof next === 'function' ? next(open) : next;
+    if (onOpenChange) onOpenChange(value);
+    else setOpenState(value);
+  };
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -44,43 +56,47 @@ export const LocationPicker = ({
 
   return (
     <div className="relative">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 bg-white/[0.03] hover:bg-white/[0.06] text-left transition"
-        >
-          <MapPin className="w-4 h-4 text-cyan-700 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-slate-900 truncate">{location.name}</div>
-            <div className="text-[11px] text-slate-600 truncate">{location.region}</div>
+      {!hideTrigger && (
+        <>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 bg-white/[0.03] hover:bg-white/[0.06] text-left transition"
+            >
+              <MapPin className="w-4 h-4 text-cyan-700 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-slate-900 truncate">{location.name}</div>
+                <div className="text-[11px] text-slate-600 truncate">{location.region}</div>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-slate-600 transition ${open ? 'rotate-180' : ''}`} />
+            </button>
+            <button
+              onClick={() => onToggleFavorite()}
+              className={`p-2 rounded-lg border transition ${
+                isFavorite
+                  ? 'border-amber-400/40 bg-amber-500/15 text-amber-700'
+                  : 'border-slate-300 bg-white/[0.03] text-slate-600 hover:text-amber-700'
+              }`}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+            </button>
+            <button
+              onClick={onUseGPS}
+              disabled={gpsStatus === 'requesting'}
+              className="p-2 rounded-lg border border-cyan-400/30 bg-cyan-500/10 text-cyan-800 hover:bg-cyan-500/20 transition disabled:opacity-50"
+              aria-label="Use my GPS location"
+              title="Use my GPS location"
+            >
+              <Navigation className={`w-4 h-4 ${gpsStatus === 'requesting' ? 'animate-pulse' : ''}`} />
+            </button>
           </div>
-          <ChevronDown className={`w-4 h-4 text-slate-600 transition ${open ? 'rotate-180' : ''}`} />
-        </button>
-        <button
-          onClick={() => onToggleFavorite()}
-          className={`p-2 rounded-lg border transition ${
-            isFavorite
-              ? 'border-amber-400/40 bg-amber-500/15 text-amber-700'
-              : 'border-slate-300 bg-white/[0.03] text-slate-600 hover:text-amber-700'
-          }`}
-          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-          title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-        >
-          <Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
-        </button>
-        <button
-          onClick={onUseGPS}
-          disabled={gpsStatus === 'requesting'}
-          className="p-2 rounded-lg border border-cyan-400/30 bg-cyan-500/10 text-cyan-800 hover:bg-cyan-500/20 transition disabled:opacity-50"
-          aria-label="Use my GPS location"
-          title="Use my GPS location"
-        >
-          <Navigation className={`w-4 h-4 ${gpsStatus === 'requesting' ? 'animate-pulse' : ''}`} />
-        </button>
-      </div>
 
-      {gpsError && (
-        <div className="mt-2 text-[11px] text-rose-700/90">GPS: {gpsError}</div>
+          {gpsError && (
+            <div className="mt-2 text-[11px] text-rose-700/90">GPS: {gpsError}</div>
+          )}
+        </>
       )}
 
       {open && (
@@ -106,7 +122,31 @@ export const LocationPicker = ({
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
+              <button
+                onClick={onUseGPS}
+                disabled={gpsStatus === 'requesting'}
+                className="p-1.5 rounded-md border border-cyan-400/30 bg-cyan-500/10 text-cyan-800 hover:bg-cyan-500/20 transition disabled:opacity-50 shrink-0"
+                aria-label="Use my GPS location"
+                title="Use my GPS location"
+              >
+                <Navigation className={`w-3.5 h-3.5 ${gpsStatus === 'requesting' ? 'animate-pulse' : ''}`} />
+              </button>
+              <button
+                onClick={() => onToggleFavorite()}
+                className={`p-1.5 rounded-md border transition shrink-0 ${
+                  isFavorite
+                    ? 'border-amber-400/40 bg-amber-500/15 text-amber-700'
+                    : 'border-slate-300 bg-white text-slate-600 hover:text-amber-700'
+                }`}
+                aria-label={isFavorite ? 'Remove current from favorites' : 'Add current to favorites'}
+                title={isFavorite ? 'Remove current from favorites' : 'Add current to favorites'}
+              >
+                <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
+              </button>
             </div>
+            {gpsError && (
+              <div className="px-3 py-1.5 text-[11px] text-rose-700/90 border-b border-slate-200 bg-rose-50/50">GPS: {gpsError}</div>
+            )}
 
             <div className="overflow-y-auto max-h-[50vh]">
               {nearby.length > 0 && !query && (
