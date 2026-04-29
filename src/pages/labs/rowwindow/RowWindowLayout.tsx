@@ -332,13 +332,39 @@ const RowWindowLayout = () => {
             <Link to="/labs" className="p-2 -ml-2 rounded-lg hover:bg-slate-100 text-slate-700" aria-label="Back to Labs">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="flex items-center gap-2">
+            <div className="relative flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/30 to-blue-700/30 border border-cyan-400/20 flex items-center justify-center">
                 <Waves className="w-5 h-5 text-cyan-700" />
               </div>
-              <div>
+              <button
+                type="button"
+                onClick={() => setLocationPickerOpen((v) => !v)}
+                className="text-left rounded-md px-1.5 py-0.5 -mx-1.5 hover:bg-slate-100 transition group"
+                aria-label="Change rowing location"
+                aria-expanded={locationPickerOpen}
+              >
                 <h1 className="text-base font-semibold tracking-tight">RowWindow</h1>
-                <p className="text-[11px] text-slate-600 -mt-0.5 truncate max-w-[180px] sm:max-w-none">{location.name} · NOAA {location.tideStationId}</p>
+                <p className="text-[11px] text-slate-600 -mt-0.5 truncate max-w-[180px] sm:max-w-none flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-cyan-700 shrink-0" />
+                  <span className="truncate">{location.name} · NOAA {location.tideStationId}</span>
+                  <ChevronDown className={`w-3 h-3 text-slate-500 shrink-0 transition ${locationPickerOpen ? 'rotate-180' : ''}`} />
+                </p>
+              </button>
+              <div className="absolute left-0 right-auto top-full mt-1 w-[min(92vw,420px)]">
+                <LocationPicker
+                  hideTrigger
+                  open={locationPickerOpen}
+                  onOpenChange={setLocationPickerOpen}
+                  location={locationState.location}
+                  favorites={locationState.favorites}
+                  nearby={locationState.nearby}
+                  isFavorite={locationState.isFavorite}
+                  gpsStatus={locationState.gpsStatus}
+                  gpsError={locationState.gpsError}
+                  onSelect={locationState.selectLocation}
+                  onToggleFavorite={locationState.toggleFavorite}
+                  onUseGPS={locationState.useGPS}
+                />
               </div>
             </div>
           </div>
