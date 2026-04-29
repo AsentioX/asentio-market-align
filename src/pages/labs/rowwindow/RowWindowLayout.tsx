@@ -914,14 +914,14 @@ const OnWaterView = ({
       <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0">
         {/* Compass */}
         <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
-          <div className="space-y-3">
-            {/* Header row — mirrors LanePositionWidget layout */}
+          <div className="space-y-2">
+            {/* Header row */}
             <div className="flex items-baseline justify-between gap-2">
-              <div className={`text-4xl md:text-5xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
+              <div className={`text-2xl md:text-3xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
                 {headingDeg !== null ? `${Math.round(headingDeg)}°` : '—'}
               </div>
               <div className="flex items-center gap-2">
-                <div className={`text-xs font-medium ${
+                <div className={`text-[11px] font-medium ${
                   headingDeg === null ? 'text-slate-500'
                   : Math.abs(headingError) < 5 ? 'text-emerald-700'
                   : Math.abs(headingError) < 12 ? 'text-amber-700'
@@ -933,7 +933,7 @@ const OnWaterView = ({
                     ? 'On line'
                     : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right' : 'left'}`}
                 </div>
-                <div className="px-2 py-1 rounded-md bg-cyan-50 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1">
+                <div className="px-1.5 py-0.5 rounded-md bg-cyan-50 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1">
                   <Navigation className="w-3 h-3" />
                   Target {targetHeadingDeg}°
                 </div>
@@ -943,14 +943,38 @@ const OnWaterView = ({
             {/* Compass strip */}
             <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
 
-            {/* Footer legend — mirrors lane footer height */}
-            <div className="flex items-center justify-between text-xs text-slate-600">
-              <span>{degLabel(targetHeadingDeg)} bearing</span>
-              <span className="flex items-center gap-2 text-[10px]">
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
-              </span>
-            </div>
+            {/* Footer — Port/Stbd indicator. Tap to set current heading as the new target center (when no GPS lane data). */}
+            {laneOffsetMeters === null ? (
+              <button
+                type="button"
+                onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
+                disabled={headingDeg === null}
+                className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition group"
+                title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm bg-rose-500" />
+                  Port
+                </span>
+                <span className="text-cyan-700 normal-case tracking-normal text-[10px] font-medium opacity-0 group-hover:opacity-100 transition">
+                  Tap to set center
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  Stbd
+                  <span className="w-2 h-2 rounded-sm bg-emerald-500" />
+                </span>
+              </button>
+            ) : (
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm bg-rose-500" /> Port
+                </span>
+                <span className="normal-case tracking-normal text-slate-500 font-normal">{degLabel(targetHeadingDeg)} bearing</span>
+                <span className="inline-flex items-center gap-1.5">
+                  Stbd <span className="w-2 h-2 rounded-sm bg-emerald-500" />
+                </span>
+              </div>
+            )}
           </div>
         </Panel>
 
