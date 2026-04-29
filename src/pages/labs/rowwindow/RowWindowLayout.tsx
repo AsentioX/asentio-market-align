@@ -59,6 +59,7 @@ interface RowSession {
   spmSeries: { t: number; spm: number; pace: number }[];
   track: TrackPoint[];
   speedSeries: { t: number; speedMs: number; pace: number }[];
+  hrSeries: { t: number; bpm: number }[];
 }
 
 const RowWindowLayout = () => {
