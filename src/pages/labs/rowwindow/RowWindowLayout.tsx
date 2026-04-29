@@ -1473,21 +1473,21 @@ const Stat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: strin
 const BigStat = ({
   icon, label, value, sub, accent = 'text-slate-900', mono = false, pulse = false,
 }: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
-  <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] px-4 py-4">
+  <div className="px-1 py-3 border-b border-slate-200">
     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
       <span className={pulse ? 'animate-pulse' : ''}>{icon}</span>
       {label}
     </div>
-    <div className={`${mono ? 'font-mono' : ''} text-3xl md:text-4xl font-bold mt-1 ${accent}`}>{value}</div>
-    {sub && <div className="text-[11px] text-slate-600 mt-0.5">{sub}</div>}
+    <div className={`${mono ? 'font-mono' : ''} text-4xl md:text-5xl font-bold mt-1 leading-none ${accent}`}>{value}</div>
+    {sub && <div className="text-[11px] text-slate-600 mt-1.5">{sub}</div>}
   </div>
 );
 
 const Panel = ({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) => (
-  <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
+  <div className="px-1 py-4 border-b border-slate-200">
     <div className="flex items-center gap-2 mb-3">
       {icon}
-      <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+      <h2 className="text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold">{title}</h2>
     </div>
     {children}
   </div>
