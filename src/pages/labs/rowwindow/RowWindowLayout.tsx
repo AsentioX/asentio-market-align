@@ -823,6 +823,7 @@ interface OnWaterViewProps {
   spm: number | null;
   headingDeg: number | null;
   targetHeadingDeg: number;
+  onSetTarget: (deg: number) => void;
   laneOffsetMeters: number | null;
   heartRate: number | null;
   wind: WindReading;
