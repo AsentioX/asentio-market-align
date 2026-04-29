@@ -951,7 +951,7 @@ const OnWaterView = ({
           icon={<Gauge className="w-4 h-4" />}
           label="Pace"
           value={paceLabel}
-          sub="/ 500 m"
+          sub={paceLabel === DASH ? (speedMs === null ? 'GPS not connected' : 'Waiting for movement') : '/ 500 m'}
           accent="text-cyan-800"
           mono
         />
