@@ -231,6 +231,9 @@ const RowWindowLayout = () => {
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
   const nextTurn = useMemo(() => getNextTurn(series, now), [series, now]);
+  const nextLowTurn = useMemo(() => {
+    return findTideTurns(series).find((t) => t.type === 'low' && t.t > now) ?? null;
+  }, [series, now]);
   const vessel = VESSEL_PROFILES[vesselId];
 
   const assessment = useMemo(
