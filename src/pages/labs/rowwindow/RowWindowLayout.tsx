@@ -1020,9 +1020,6 @@ const OnWaterView = ({
         </div>
       </section>
 
-      {/* Sensors */}
-      <SensorsPanel sensors={sensors} />
-
       {/* Session controls */}
       <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
         <div className="flex items-center justify-between gap-3">
@@ -1048,6 +1045,9 @@ const OnWaterView = ({
           </div>
         </div>
       </section>
+
+      {/* Sensors */}
+      <SensorsPanel sensors={sensors} />
     </>
   );
 };
