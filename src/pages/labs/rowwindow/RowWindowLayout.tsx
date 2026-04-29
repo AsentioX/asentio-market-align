@@ -569,7 +569,12 @@ const PreRowView = ({
               </div>
               <div className="text-[11px] text-slate-600 mt-0.5">
                 {lowTideMarker.mode === 'to' ? 'in ' : 'since '}
-                {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
+                {(() => {
+                  const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
+                  const h = Math.floor(mins / 60);
+                  const m = mins % 60;
+                  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+                })()}
               </div>
             </div>
           )}
