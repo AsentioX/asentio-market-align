@@ -1013,7 +1013,7 @@ const OnWaterView = ({
       </section>
 
       {/* Heart rate + environment */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
         <BigStat
           icon={<Heart className="w-4 h-4" />}
           label="Heart Rate"
