@@ -903,7 +903,7 @@ const OnWaterView = ({
   return (
     <>
       {/* Primary metrics row */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
         <BigStat
           icon={<Timer className="w-4 h-4" />}
           label="Elapsed"
@@ -937,7 +937,7 @@ const OnWaterView = ({
       </section>
 
       {/* Heading + Lane keeping */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0">
         {/* Compass */}
         <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
           <div className="flex items-center gap-6">
@@ -1013,7 +1013,7 @@ const OnWaterView = ({
       </section>
 
       {/* Heart rate + environment */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
         <BigStat
           icon={<Heart className="w-4 h-4" />}
           label="Heart Rate"
@@ -1029,19 +1029,19 @@ const OnWaterView = ({
           sub={`from ${wind.directionLabel}`}
           accent="text-slate-800"
         />
-        <div className="col-span-2 rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] px-4 py-4">
+        <div className="col-span-2 px-1 py-3 border-b border-slate-200">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
             <Waves className="w-4 h-4" />
             Tide
           </div>
           <div className="mt-1 flex items-start justify-between gap-3">
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-800 flex items-center gap-2">
+              <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900 flex items-center gap-2">
                 {tide.height.toFixed(1)} ft
-                {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-400" aria-label="Rising" />}
-                {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-400" aria-label="Falling" />}
+                {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-600" aria-label="Rising" />}
+                {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-600" aria-label="Falling" />}
               </div>
-              <div className={`text-[11px] mt-0.5 ${
+              <div className={`text-[11px] mt-1.5 ${
                 direction === 'Flood' ? 'text-emerald-700'
                 : direction === 'Ebb' ? 'text-amber-700'
                 : 'text-slate-600'
@@ -1051,10 +1051,10 @@ const OnWaterView = ({
             </div>
             {lowTideMarker && (
               <div className="text-right">
-                <div className="text-3xl md:text-4xl font-bold text-slate-800">
+                <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900">
                   {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
                 </div>
-                <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
+                <div className="text-[11px] text-slate-600 mt-1.5 font-mono">
                   {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
                   {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
@@ -1130,14 +1130,14 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-2">
-        <div className={`text-3xl font-bold font-mono ${hasData ? laneColor : 'text-slate-500'}`}>
+        <div className={`text-4xl md:text-5xl font-bold font-mono leading-none ${hasData ? laneColor : 'text-slate-400'}`}>
           {hasData ? `${offset >= 0 ? '+' : ''}${offset.toFixed(1)} m` : '—'}
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-xs text-slate-600">{sideLabel}</div>
+          <div className="text-xs text-slate-700 font-medium">{sideLabel}</div>
           <button
             onClick={() => setBowUp((v) => !v)}
-            className="px-2 py-1 rounded-md bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1 transition"
+            className="px-2 py-1 rounded-md bg-cyan-50 hover:bg-cyan-100 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1 transition"
             title="Swap Bow / Stern perspective"
           >
             <ArrowLeftRight className="w-3 h-3" />
@@ -1145,17 +1145,20 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
           </button>
         </div>
       </div>
-      {/* Channel visualization */}
-      <div className="relative h-12 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden">
-        <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
-        <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
-        <div className="absolute inset-y-0 left-1/2 w-px bg-slate-200" />
+      {/* Channel visualization — banks on the sides, water in the middle */}
+      <div className="relative h-14 rounded-lg bg-sky-50 border border-sky-200 overflow-hidden">
+        {/* Left bank */}
+        <div className="absolute inset-y-0 left-0 w-[10%] bg-emerald-200 border-r border-emerald-400" />
+        {/* Right bank */}
+        <div className="absolute inset-y-0 right-0 w-[10%] bg-emerald-200 border-l border-emerald-400" />
+        {/* Centerline */}
+        <div className="absolute inset-y-2 left-1/2 w-px bg-sky-400/60" style={{ borderLeft: '1px dashed hsl(200 80% 45%)' }} />
         {/* Boat marker — only when GPS lane data is available */}
         {hasData && (
           <div
             className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 flex flex-col items-center"
             style={{
-              left: `calc(50% + ${Math.max(-45, Math.min(45, displayOffset * 8))}% - 6px)`,
+              left: `calc(50% + ${Math.max(-40, Math.min(40, displayOffset * 8))}% - 6px)`,
             }}
           >
             {bowUp && (
@@ -1165,8 +1168,8 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
               />
             )}
             <div
-              className="w-3 h-6 rounded-sm"
-              style={{ background: laneRingColor, boxShadow: `0 0 12px ${laneRingColor}` }}
+              className="w-3 h-7 rounded-sm"
+              style={{ background: laneRingColor, boxShadow: `0 0 10px ${laneRingColor}` }}
             />
             {!bowUp && (
               <div
@@ -1176,8 +1179,8 @@ const LanePositionWidget = ({ laneOffsetMeters, laneColor, laneRingColor, laneSt
             )}
           </div>
         )}
-        <div className="absolute top-1 left-2 text-[9px] text-emerald-400/60">{leftBankLabel}</div>
-        <div className="absolute top-1 right-2 text-[9px] text-emerald-400/60">{rightBankLabel}</div>
+        <div className="absolute top-1 left-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{leftBankLabel}</div>
+        <div className="absolute top-1 right-2 text-[9px] font-semibold text-emerald-800 uppercase tracking-wider">{rightBankLabel}</div>
       </div>
       <div className={`text-xs ${hasData ? laneColor : 'text-slate-500'}`}>
         {!hasData && '—'}
@@ -1473,21 +1476,21 @@ const Stat = ({ icon, label, value, sub }: { icon: React.ReactNode; label: strin
 const BigStat = ({
   icon, label, value, sub, accent = 'text-slate-900', mono = false, pulse = false,
 }: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
-  <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] px-4 py-4">
+  <div className="px-1 py-3 border-b border-slate-200">
     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
       <span className={pulse ? 'animate-pulse' : ''}>{icon}</span>
       {label}
     </div>
-    <div className={`${mono ? 'font-mono' : ''} text-3xl md:text-4xl font-bold mt-1 ${accent}`}>{value}</div>
-    {sub && <div className="text-[11px] text-slate-600 mt-0.5">{sub}</div>}
+    <div className={`${mono ? 'font-mono' : ''} text-4xl md:text-5xl font-bold mt-1 leading-none ${accent}`}>{value}</div>
+    {sub && <div className="text-[11px] text-slate-600 mt-1.5">{sub}</div>}
   </div>
 );
 
 const Panel = ({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) => (
-  <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
+  <div className="px-1 py-4 border-b border-slate-200">
     <div className="flex items-center gap-2 mb-3">
       {icon}
-      <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+      <h2 className="text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold">{title}</h2>
     </div>
     {children}
   </div>
