@@ -907,62 +907,34 @@ const OnWaterView = ({
       <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0">
         {/* Compass */}
         <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
-          <div className="flex items-center gap-6">
-            <div className="relative w-32 h-32">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="50" cy="50" r="46" fill="hsl(210 40% 97%)" stroke="hsl(220 15% 80%)" strokeWidth="2" />
-                {/* Cardinal markers */}
-                {['N', 'E', 'S', 'W'].map((c, i) => {
-                  const angle = (i * 90 - 90) * (Math.PI / 180);
-                  const x = 50 + Math.cos(angle) * 38;
-                  const y = 50 + Math.sin(angle) * 38;
-                  return (
-                    <text key={c} x={x} y={y + 3} textAnchor="middle" fontSize="8" fill="hsl(220 15% 30%)" fontFamily="ui-sans-serif">
-                      {c}
-                    </text>
-                  );
-                })}
-                {/* Target heading marker */}
-                <line
-                  x1="50" y1="50"
-                  x2={50 + Math.cos((targetHeadingDeg - 90) * (Math.PI / 180)) * 30}
-                  y2={50 + Math.sin((targetHeadingDeg - 90) * (Math.PI / 180)) * 30}
-                  stroke="hsl(150 80% 55%)" strokeWidth="1.5" strokeDasharray="2 2" opacity="0.7"
-                />
-                {/* Boat — rotated to current heading. Port half = red, starboard half = green
-                    (standard nautical nav-light convention). */}
-                <g transform={`rotate(${headingDeg ?? 0} 50 50)`} opacity={headingDeg !== null ? 1 : 0.25}>
-                  {/* Port (left) half */}
-                  <path d="M 50 22 Q 42 30 42 56 L 50 64 Z" fill="hsl(355 85% 58%)" stroke="hsl(355 90% 35%)" strokeWidth="0.5" />
-                  {/* Starboard (right) half */}
-                  <path d="M 50 22 Q 58 30 58 56 L 50 64 Z" fill="hsl(150 80% 50%)" stroke="hsl(150 85% 28%)" strokeWidth="0.5" />
-                  {/* Centerline keel */}
-                  <line x1="50" y1="22" x2="50" y2="64" stroke="hsl(210 40% 97%)" strokeWidth="0.6" />
-                  {/* Bow tick */}
-                  <circle cx="50" cy="20" r="1.6" fill="hsl(60 100% 75%)" />
-                </g>
-              </svg>
-            </div>
-            <div className="flex-1">
-              <div className="text-3xl font-bold font-mono text-cyan-800">
-                {headingDeg !== null ? `${Math.round(headingDeg)}°` : DASH}
+          <div className="flex flex-col gap-3">
+            <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <div className="text-3xl font-bold font-mono text-cyan-800 leading-none">
+                  {headingDeg !== null ? `${Math.round(headingDeg)}°` : DASH}
+                </div>
+                <div className="text-xs text-slate-600 mt-1">
+                  Target {targetHeadingDeg}° ({degLabel(targetHeadingDeg)})
+                </div>
               </div>
-              <div className="text-xs text-slate-600 mt-1">Target {targetHeadingDeg}° ({degLabel(targetHeadingDeg)})</div>
-              <div className={`text-xs mt-2 font-medium ${
-                headingDeg === null ? 'text-slate-500'
-                : Math.abs(headingError) < 5 ? 'text-emerald-700'
-                : Math.abs(headingError) < 12 ? 'text-amber-700'
-                : 'text-rose-700'
-              }`}>
-                {headingDeg === null
-                  ? 'Compass not connected'
-                  : headingError === 0
-                  ? 'On line'
-                  : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right of line' : 'left of line'}`}
-              </div>
-              <div className="flex items-center gap-2 mt-3 text-[10px] text-slate-600">
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
+              <div className="text-right">
+                <div className={`text-xs font-medium ${
+                  headingDeg === null ? 'text-slate-500'
+                  : Math.abs(headingError) < 5 ? 'text-emerald-700'
+                  : Math.abs(headingError) < 12 ? 'text-amber-700'
+                  : 'text-rose-700'
+                }`}>
+                  {headingDeg === null
+                    ? 'Compass not connected'
+                    : headingError === 0
+                    ? 'On line'
+                    : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right of line' : 'left of line'}`}
+                </div>
+                <div className="flex items-center gap-2 mt-1.5 text-[10px] text-slate-600 justify-end">
+                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" /> Port</span>
+                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" /> Stbd</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1074,6 +1046,123 @@ const OnWaterView = ({
 // boat marker reads as either Bow-up or Stern-up. Flipping mirrors the boat
 // marker AND the port/starboard labels (since those swap when you turn around).
 // ============================================================
+
+// Horizontal strip compass (iPhone Compass-style)
+const HorizontalCompass = ({
+  headingDeg,
+  targetHeadingDeg,
+}: {
+  headingDeg: number | null;
+  targetHeadingDeg: number;
+}) => {
+  // Visible field of view in degrees
+  const FOV = 100;
+  const W = 320; // viewBox width
+  const H = 64;  // viewBox height
+  const pxPerDeg = W / FOV;
+  const cx = W / 2;
+  const heading = headingDeg ?? targetHeadingDeg;
+
+  // Build tick marks every 5°, labels every 20°
+  const ticks: { deg: number; label?: string; major: boolean; cardinal?: string }[] = [];
+  // Sweep a wide range, screen visibility filtered later
+  for (let raw = -360; raw <= 720; raw += 5) {
+    const norm = ((raw % 360) + 360) % 360;
+    const major = raw % 20 === 0;
+    let cardinal: string | undefined;
+    if (norm === 0) cardinal = 'N';
+    else if (norm === 90) cardinal = 'E';
+    else if (norm === 180) cardinal = 'S';
+    else if (norm === 270) cardinal = 'W';
+    else if (norm === 45) cardinal = 'NE';
+    else if (norm === 135) cardinal = 'SE';
+    else if (norm === 225) cardinal = 'SW';
+    else if (norm === 315) cardinal = 'NW';
+    ticks.push({ deg: raw, label: major ? String(norm) : undefined, major, cardinal });
+  }
+
+  // Helper: x position for an absolute degree value, given current heading at center
+  const xFor = (deg: number) => {
+    let delta = deg - heading;
+    // wrap to [-180, 180]
+    while (delta > 180) delta -= 360;
+    while (delta < -180) delta += 360;
+    return cx + delta * pxPerDeg;
+  };
+
+  const targetX = xFor(targetHeadingDeg);
+  const targetVisible = targetX >= 4 && targetX <= W - 4;
+
+  return (
+    <div className="relative w-full">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-16" preserveAspectRatio="none">
+        {/* Background strip */}
+        <defs>
+          <linearGradient id="compass-bg" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="hsl(210 40% 99%)" />
+            <stop offset="100%" stopColor="hsl(210 30% 92%)" />
+          </linearGradient>
+          <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
+            <stop offset="8%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
+            <stop offset="92%" stopColor="hsl(210 30% 92%)" stopOpacity="0" />
+            <stop offset="100%" stopColor="hsl(210 30% 92%)" stopOpacity="1" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="8" width={W} height={H - 16} rx="6" fill="url(#compass-bg)" stroke="hsl(220 15% 80%)" strokeWidth="1" />
+
+        {/* Ticks + labels */}
+        <g opacity={headingDeg !== null ? 1 : 0.4}>
+          {ticks.map((t, i) => {
+            const x = xFor(t.deg);
+            if (x < -10 || x > W + 10) return null;
+            const tickH = t.major ? 12 : 6;
+            return (
+              <g key={i}>
+                <line
+                  x1={x} x2={x}
+                  y1={10} y2={10 + tickH}
+                  stroke={t.cardinal ? 'hsl(220 15% 25%)' : 'hsl(220 10% 55%)'}
+                  strokeWidth={t.major ? 1 : 0.6}
+                />
+                {t.cardinal ? (
+                  <text x={x} y={H - 12} textAnchor="middle" fontSize="11" fontWeight="700" fill="hsl(220 15% 25%)" fontFamily="ui-sans-serif">
+                    {t.cardinal}
+                  </text>
+                ) : t.label ? (
+                  <text x={x} y={H - 14} textAnchor="middle" fontSize="8" fill="hsl(220 10% 45%)" fontFamily="ui-sans-serif">
+                    {t.label}
+                  </text>
+                ) : null}
+              </g>
+            );
+          })}
+        </g>
+
+        {/* Edge fade */}
+        <rect x="0" y="8" width={W} height={H - 16} rx="6" fill="url(#compass-fade)" pointerEvents="none" />
+
+        {/* Target heading marker (green dashed) */}
+        {targetVisible && (
+          <g>
+            <line x1={targetX} x2={targetX} y1={10} y2={H - 8}
+              stroke="hsl(150 75% 40%)" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.85" />
+            <polygon points={`${targetX - 4},${H - 4} ${targetX + 4},${H - 4} ${targetX},${H - 10}`}
+              fill="hsl(150 75% 40%)" />
+          </g>
+        )}
+
+        {/* Center pointer (current heading) */}
+        <g>
+          <line x1={cx} x2={cx} y1={6} y2={H - 6} stroke="hsl(195 85% 35%)" strokeWidth="1.5" />
+          <polygon points={`${cx - 6},2 ${cx + 6},2 ${cx},10`} fill="hsl(195 85% 35%)" />
+          <polygon points={`${cx - 6},${H - 2} ${cx + 6},${H - 2} ${cx},${H - 10}`} fill="hsl(195 85% 35%)" />
+        </g>
+      </svg>
+    </div>
+  );
+};
+
 
 interface LanePositionWidgetProps {
   laneOffsetMeters: number | null;
