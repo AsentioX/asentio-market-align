@@ -1192,6 +1192,19 @@ const HorizontalCompass = ({
         {/* Edge fade overlay */}
         <rect x="0" y="0" width={W} height={H} rx="6" fill="url(#compass-fade)" pointerEvents="none" />
 
+        {/* Drift warning glow — intensifies as boat veers off line */}
+        {leftGlow > 0 && (
+          <rect x="0" y="0" width={W * 0.55} height={H} rx="6"
+            fill="url(#drift-glow-left)" opacity={leftGlow * 0.85}
+            pointerEvents="none" style={{ transition: 'opacity 200ms ease-out' }} />
+        )}
+        {rightGlow > 0 && (
+          <rect x={W * 0.45} y="0" width={W * 0.55} height={H} rx="6"
+            fill="url(#drift-glow-right)" opacity={rightGlow * 0.85}
+            pointerEvents="none" style={{ transition: 'opacity 200ms ease-out' }} />
+        )}
+
+
         {/* Target heading marker (subtle dashed line) */}
         {targetVisible && (
           <line x1={targetX} x2={targetX} y1={tickRowY} y2={tickRowY + 14}
