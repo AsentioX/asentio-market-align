@@ -575,16 +575,6 @@ const PreRowView = ({
         </div>
       </div>
 
-      {assessment.reasons.length > 0 && (
-        <ul className="mt-6 space-y-1.5 text-sm text-slate-700/90">
-          {assessment.reasons.map((r) => (
-            <li key={r} className="flex gap-2">
-              <span className="text-slate-500 mt-1">•</span>
-              <span>{r}</span>
-            </li>
-          ))}
-        </ul>
-      )}
 
       <button
         onClick={onLaunch}
