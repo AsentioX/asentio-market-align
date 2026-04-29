@@ -501,26 +501,6 @@ const PreRowView = ({
   vesselId, setVesselId, setDuration, chartData, windowEndMs, source, fetchedAt, fetchError, locationState, onLaunch,
 }: PreRowViewProps) => (
   <>
-    {/* Location picker */}
-    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-semibold">Rowing Location</div>
-        {locationState.favorites.length > 0 && (
-          <div className="text-[10px] text-amber-700/80">{locationState.favorites.length} saved</div>
-        )}
-      </div>
-      <LocationPicker
-        location={locationState.location}
-        favorites={locationState.favorites}
-        nearby={locationState.nearby}
-        isFavorite={locationState.isFavorite}
-        gpsStatus={locationState.gpsStatus}
-        gpsError={locationState.gpsError}
-        onSelect={locationState.selectLocation}
-        onToggleFavorite={locationState.toggleFavorite}
-        onUseGPS={locationState.useGPS}
-      />
-    </section>
 
     {/* Primary status — traffic light */}
     <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-6 md:p-8">
