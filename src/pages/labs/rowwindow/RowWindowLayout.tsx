@@ -1252,7 +1252,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
           <div className="flex-1 min-w-0">
             <div className="text-xs uppercase tracking-[0.2em] text-emerald-300">Row Complete</div>
             <h2 className="text-2xl md:text-3xl font-bold mt-1">
-              {(session.distanceMeters / 1000).toFixed(2)} km · {formatElapsed(session.durationMs)}
+              {distanceKmLabel} · {formatElapsed(session.durationMs)}
             </h2>
             <div className="text-sm text-slate-400 mt-1">
               {startedDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} ·{' '}
