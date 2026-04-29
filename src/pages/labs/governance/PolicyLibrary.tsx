@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, useDocket, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
-import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText, Trash2, Pencil } from 'lucide-react';
+import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText, Trash2, Pencil, LayoutGrid, Table as TableIcon } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
