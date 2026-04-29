@@ -48,6 +48,14 @@ interface Bluetooth {
 
 export type SensorStatus = 'idle' | 'requesting' | 'live' | 'denied' | 'unavailable' | 'error';
 
+export interface TrackPoint {
+  t: number;        // unix ms
+  lat: number;
+  lon: number;
+  speedMs: number;  // ground speed at this fix
+  accuracy: number; // meters
+}
+
 export interface RowSensorState {
   headingDeg: number | null;
   headingStatus: SensorStatus;
@@ -56,6 +64,7 @@ export interface RowSensorState {
   distanceMeters: number;       // accumulated while `tracking` is true
   positionStatus: SensorStatus;
   positionAccuracy: number | null;
+  track: TrackPoint[];          // accumulated GPS fixes while tracking
 
   heartRate: number | null;
   heartRateStatus: SensorStatus;
@@ -79,6 +88,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     distanceMeters: 0,
     positionStatus: 'idle',
     positionAccuracy: null,
+    track: [],
     heartRate: null,
     heartRateStatus: 'idle',
     heartRateDeviceName: null,
