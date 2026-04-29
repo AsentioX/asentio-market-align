@@ -539,8 +539,8 @@ const PreRowView = ({
             </div>
           </div>
         </div>
-        <div className="md:ml-auto flex flex-col sm:flex-row sm:items-stretch sm:divide-x sm:divide-slate-200 divide-y sm:divide-y-0 divide-slate-200 w-full md:w-auto">
-          <div className="px-4 py-2 sm:py-1 sm:first:pl-0">
+        <div className="md:ml-auto flex flex-row items-stretch divide-x divide-slate-200 w-full md:w-auto">
+          <div className="flex-1 md:flex-none px-3 sm:px-4 py-2 sm:py-1 first:pl-0">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
               <Waves className="w-4 h-4" />
               Tide
