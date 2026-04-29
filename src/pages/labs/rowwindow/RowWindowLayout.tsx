@@ -1045,6 +1045,12 @@ const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
   const startedDate = new Date(session.startedAt);
   const endedDate = new Date(session.endedAt);
   const spmChartData = session.spmSeries.map((p, i) => ({ idx: i, spm: p.spm, pace: p.pace }));
+  const speedChartData = session.speedSeries.map((p, i) => ({
+    idx: i,
+    speedKmh: Math.round(p.speedMs * 3.6 * 10) / 10,
+    pace: p.pace,
+  }));
+  const hasTrack = session.track.length >= 2;
 
   return (
     <>
@@ -1099,6 +1105,57 @@ const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
                   labelFormatter={(idx) => `${idx}s`}
                 />
                 <Line type="monotone" dataKey="spm" stroke="hsl(195 90% 65%)" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      )}
+
+      {/* GPS course map */}
+      {hasTrack && (
+        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <MapPin className="w-4 h-4 text-cyan-300" />
+            <h2 className="text-sm font-semibold tracking-tight">Course on Map</h2>
+            <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
+          </div>
+          <CourseMap track={session.track} />
+        </section>
+      )}
+
+      {/* Boat speed / pace chart */}
+      {speedChartData.length > 5 && (
+        <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Gauge className="w-4 h-4 text-cyan-300" />
+            <h2 className="text-sm font-semibold tracking-tight">Boat Speed & Pace</h2>
+            <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-400">
+              <LegendDot color="hsl(195 90% 65%)" label="Speed (km/h)" />
+              <LegendDot color="hsl(280 80% 70%)" label="Pace (s/500m)" />
+            </div>
+          </div>
+          <div className="h-56 w-full">
+            <ResponsiveContainer>
+              <LineChart data={speedChartData} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
+                <CartesianGrid stroke="hsl(220 20% 18%)" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="idx" stroke="hsl(220 15% 50%)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="speed" stroke="hsl(195 90% 65%)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="pace" orientation="right" stroke="hsl(280 80% 70%)" fontSize={11} tickLine={false} axisLine={false} reversed />
+                <Tooltip
+                  contentStyle={{ background: 'hsl(220 30% 10%)', border: '1px solid hsl(220 20% 20%)', borderRadius: 8, fontSize: 12 }}
+                  formatter={(value: number, name: string) => {
+                    if (name === 'speedKmh') return [`${value} km/h`, 'Speed'];
+                    if (name === 'pace') {
+                      const m = Math.floor(value / 60);
+                      const s = value % 60;
+                      return [`${m}:${String(s).padStart(2, '0')} /500m`, 'Pace'];
+                    }
+                    return [value, name];
+                  }}
+                  labelFormatter={(idx) => `Fix ${idx}`}
+                />
+                <Line yAxisId="speed" type="monotone" dataKey="speedKmh" stroke="hsl(195 90% 65%)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line yAxisId="pace" type="monotone" dataKey="pace" stroke="hsl(280 80% 70%)" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
