@@ -1326,16 +1326,16 @@ interface PostRowViewProps {
   onNewRow: () => void;
 }
 
-const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
-  if (!session) {
+const PostRowView = ({ sessions, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
+  if (sessions.length === 0) {
     return (
       <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-8 text-center">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-500/15 border border-slate-400/20 flex items-center justify-center mb-4">
           <TrendingUp className="w-8 h-8 text-slate-600" />
         </div>
-        <h2 className="text-xl font-semibold">No session yet</h2>
+        <h2 className="text-xl font-semibold">No sessions yet</h2>
         <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
-          Complete a row from the On Water tab and your summary will appear here.
+          Complete a row from the On Water tab and your sessions will appear here.
         </p>
         <button
           onClick={onNewRow}
@@ -1347,229 +1347,234 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
     );
   }
 
-  const paceLabel = session.avgPaceSecPer500
-    ? `${Math.floor(session.avgPaceSecPer500 / 60)}:${String(session.avgPaceSecPer500 % 60).padStart(2, '0')}`
-    : DASH;
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 px-1">
+        <Clock className="w-4 h-4 text-cyan-700" />
+        <h2 className="text-sm font-semibold tracking-tight">Saved Rows</h2>
+        <span className="text-[11px] text-slate-500 ml-auto">{sessions.length} total</span>
+      </div>
+      {sessions.map((s) => (
+        <SessionCard
+          key={s.id}
+          session={s}
+          onDelete={() => {
+            if (confirm('Delete this saved row?')) onDeleteSession(s.id);
+          }}
+          onExport={() => onExportSession(s)}
+        />
+      ))}
+    </div>
+  );
+};
+
+// ============================================================
+// SessionCard — one row session displayed as 4 sections.
+// ============================================================
+const SessionCard = ({
+  session,
+  onDelete,
+  onExport,
+}: {
+  session: RowSession;
+  onDelete: () => void;
+  onExport: () => void;
+}) => {
+  const [show, setShow] = useState({ pace: true, speed: true, hr: true });
+  const toggle = (k: 'pace' | 'speed' | 'hr') => setShow((s) => ({ ...s, [k]: !s[k] }));
+
+  const startedDate = new Date(session.startedAt);
   const distanceKmLabel = session.distanceMeters !== null
     ? `${(session.distanceMeters / 1000).toFixed(2)} km`
     : `${DASH} km`;
-  const distanceMetersLabel = session.distanceMeters !== null ? `${session.distanceMeters} m` : 'GPS not connected';
-  const startedDate = new Date(session.startedAt);
-  const endedDate = new Date(session.endedAt);
-  const spmChartData = session.spmSeries.map((p, i) => ({ idx: i, spm: p.spm, pace: p.pace }));
-  const speedChartData = session.speedSeries.map((p, i) => ({
-    idx: i,
-    speedKmh: Math.round(p.speedMs * 3.6 * 10) / 10,
-    pace: p.pace,
-  }));
+  const paceLabel = session.avgPaceSecPer500
+    ? `${Math.floor(session.avgPaceSecPer500 / 60)}:${String(session.avgPaceSecPer500 % 60).padStart(2, '0')}`
+    : DASH;
+
+  // Build distance-indexed chart data by walking the GPS track and accumulating
+  // distance between successive fixes. Then attach nearest-timestamp HR.
+  const chartData = useMemo(() => {
+    const t = session.track;
+    if (t.length < 2) return [];
+    const hr = session.hrSeries;
+    let hrI = 0;
+    const out: { distM: number; pace: number | null; speedKmh: number | null; hr: number | null }[] = [];
+    let cum = 0;
+    for (let i = 0; i < t.length; i++) {
+      if (i > 0) {
+        cum += haversineMeters(t[i - 1].lat, t[i - 1].lon, t[i].lat, t[i].lon);
+      }
+      const speedMs = t[i].speedMs;
+      const pace = speedMs > 0.2 ? Math.round(500 / speedMs) : null;
+      // advance HR index to nearest <= t[i].t
+      while (hrI + 1 < hr.length && hr[hrI + 1].t <= t[i].t) hrI++;
+      const hrVal = hr.length > 0
+        ? (Math.abs((hr[hrI]?.t ?? 0) - t[i].t) < 30000 ? hr[hrI].bpm : null)
+        : null;
+      out.push({
+        distM: Math.round(cum),
+        pace,
+        speedKmh: speedMs >= 0 ? Math.round(speedMs * 3.6 * 10) / 10 : null,
+        hr: hrVal,
+      });
+    }
+    return out;
+  }, [session.track, session.hrSeries]);
+
   const hasTrack = session.track.length >= 2;
+  const hasHR = session.hrSeries.length > 0;
+  const hasChart = chartData.length > 1;
 
   return (
-    <>
-      {/* Summary headline */}
-      <section className="rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/10 via-[hsl(220_30%_9%)] to-[hsl(220_30%_9%)] p-6 md:p-8">
-        <div className="flex items-start gap-4 mb-5">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
-            <TrendingUp className="w-6 h-6 text-emerald-700" />
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 space-y-5">
+      {/* Section 1 — header stats */}
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
+            {startedDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs uppercase tracking-[0.2em] text-emerald-700">Row Complete</div>
-            <h2 className="text-2xl md:text-3xl font-bold mt-1">
-              {distanceKmLabel} · {formatElapsed(session.durationMs)}
-            </h2>
-            <div className="text-sm text-slate-600 mt-1">
-              {startedDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} ·{' '}
-              {startedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} →{' '}
-              {endedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => onExportSession(session)}
-              className="px-3 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-800 text-xs font-medium inline-flex items-center gap-1.5 transition"
-              title="Export as GPX"
-            >
-              <Download className="w-3.5 h-3.5" /> GPX
-            </button>
-            <button
-              onClick={() => {
-                if (confirm('Delete this saved row?')) onDeleteSession(session.id);
-              }}
-              className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/30 text-rose-700 transition"
-              title="Delete this session"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+          <div className="text-[11px] text-slate-500 mt-0.5">
+            {startedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat icon={<Timer className="w-4 h-4" />} label="Elapsed time" value={formatElapsed(session.durationMs)} />
-          <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} sub={distanceMetersLabel} />
-          <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : 'GPS not connected'} />
-          <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke rate" value={session.avgSpm !== null ? `${session.avgSpm}` : DASH} sub={session.maxSpm !== null ? `peak ${session.maxSpm} spm` : 'No stroke sensor'} />
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={onExport}
+            className="px-3 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-800 text-xs font-medium inline-flex items-center gap-1.5 transition"
+            title="Download as GPX"
+          >
+            <Download className="w-3.5 h-3.5" /> GPX
+          </button>
+          <button
+            onClick={onDelete}
+            className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/30 text-rose-700 transition"
+            title="Delete this session"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         </div>
-      </section>
+      </div>
 
-      {/* Saved sessions list */}
-      {sessions.length > 0 && (
-        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-4 h-4 text-cyan-700" />
-            <h2 className="text-sm font-semibold tracking-tight">Saved Rows</h2>
-            <span className="text-[11px] text-slate-500 ml-auto">{sessions.length} total</span>
-          </div>
-          <div className="divide-y divide-slate-200">
-            {sessions.map((s) => {
-              const isActive = s.id === selectedSessionId;
-              const d = new Date(s.startedAt);
-              return (
-                <div
-                  key={s.id}
-                  className={`flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-lg transition ${
-                    isActive ? 'bg-cyan-500/10' : 'hover:bg-slate-100'
-                  }`}
-                >
-                  <button
-                    onClick={() => onSelectSession(s.id)}
-                    className="flex-1 min-w-0 text-left"
-                  >
-                    <div className="text-sm font-medium text-slate-900 truncate">
-                      {s.distanceMeters !== null ? `${(s.distanceMeters / 1000).toFixed(2)} km` : `${DASH} km`} · {formatElapsed(s.durationMs)}
-                    </div>
-                    <div className="text-[11px] text-slate-600 mt-0.5">
-                      {d.toLocaleDateString([], { month: 'short', day: 'numeric' })} ·{' '}
-                      {d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} ·{' '}
-                      avg {s.avgSpm !== null ? `${s.avgSpm} spm` : `${DASH} spm`}
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => onExportSession(s)}
-                    className="p-1.5 rounded-md text-slate-600 hover:text-cyan-700 hover:bg-cyan-500/10 transition"
-                    title="Export GPX"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (confirm('Delete this saved row?')) onDeleteSession(s.id);
-                    }}
-                    className="p-1.5 rounded-md text-slate-600 hover:text-rose-700 hover:bg-rose-500/10 transition"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <Stat icon={<Timer className="w-4 h-4" />} label="Elapsed" value={formatElapsed(session.durationMs)} />
+        <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} />
+        <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : undefined} />
+        <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke" value={session.avgSpm !== null ? `${session.avgSpm} spm` : DASH} />
+        <Stat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
+      </div>
 
-      {/* Stroke rate chart */}
-      {spmChartData.length > 5 && (
-        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-4 h-4 text-cyan-700" />
-            <h2 className="text-sm font-semibold tracking-tight">Stroke Rate Over Time</h2>
-          </div>
-          <div className="h-48 w-full">
-            <ResponsiveContainer>
-              <LineChart data={spmChartData} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="spmFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(195 90% 55%)" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="hsl(195 90% 55%)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid stroke="hsl(220 15% 80%)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="idx" stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis domain={[15, 35]} stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={{ background: 'hsl(0 0% 100%)', border: '1px solid hsl(220 15% 80%)', borderRadius: 8, fontSize: 12 }}
-                  formatter={(value: number) => [`${value} spm`, 'Stroke rate']}
-                  labelFormatter={(idx) => `${idx}s`}
-                />
-                <Line type="monotone" dataKey="spm" stroke="hsl(195 90% 65%)" strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
-      )}
-
-      {/* GPS course map */}
-      {hasTrack && (
-        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
-          <div className="flex items-center gap-2 mb-4">
+      {/* Section 2 — Map */}
+      {hasTrack ? (
+        <div>
+          <div className="flex items-center gap-2 mb-2">
             <MapPin className="w-4 h-4 text-cyan-700" />
-            <h2 className="text-sm font-semibold tracking-tight">Course on Map</h2>
+            <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Path travelled</h3>
             <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
           </div>
           <CourseMap track={session.track} />
-        </section>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+          No GPS track recorded for this session.
+        </div>
       )}
 
-      {/* Boat speed / pace chart */}
-      {speedChartData.length > 5 && (
-        <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Gauge className="w-4 h-4 text-cyan-700" />
-            <h2 className="text-sm font-semibold tracking-tight">Boat Speed & Pace</h2>
-            <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-600">
-              <LegendDot color="hsl(195 90% 65%)" label="Speed (km/h)" />
-              <LegendDot color="hsl(280 80% 70%)" label="Pace (s/500m)" />
+      {/* Section 3 — Combined chart with toggles */}
+      {hasChart ? (
+        <div>
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <TrendingUp className="w-4 h-4 text-cyan-700" />
+            <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Pace · Speed · Heart rate vs Distance</h3>
+            <div className="ml-auto flex items-center gap-1.5">
+              <SeriesToggle active={show.pace} color="hsl(280 80% 55%)" label="Pace" onClick={() => toggle('pace')} />
+              <SeriesToggle active={show.speed} color="hsl(195 90% 45%)" label="Speed" onClick={() => toggle('speed')} />
+              <SeriesToggle active={show.hr && hasHR} color="hsl(355 75% 55%)" label="HR" disabled={!hasHR} onClick={() => toggle('hr')} />
             </div>
           </div>
-          <div className="h-56 w-full">
+          <div className="h-64 w-full">
             <ResponsiveContainer>
-              <LineChart data={speedChartData} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="hsl(220 15% 80%)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="idx" stroke="hsl(220 15% 35%)" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis yAxisId="speed" stroke="hsl(195 90% 65%)" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis yAxisId="pace" orientation="right" stroke="hsl(280 80% 70%)" fontSize={11} tickLine={false} axisLine={false} reversed />
+              <LineChart data={chartData} margin={{ top: 10, right: 8, left: -16, bottom: 0 }}>
+                <CartesianGrid stroke="hsl(220 15% 88%)" strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="distM"
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  stroke="hsl(220 15% 35%)"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(m) => (m >= 1000 ? `${(m / 1000).toFixed(1)}km` : `${m}m`)}
+                />
+                <YAxis yAxisId="left" stroke="hsl(195 90% 45%)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" orientation="right" stroke="hsl(355 75% 55%)" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip
                   contentStyle={{ background: 'hsl(0 0% 100%)', border: '1px solid hsl(220 15% 80%)', borderRadius: 8, fontSize: 12 }}
+                  labelFormatter={(m: number) => (m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${m} m`)}
                   formatter={(value: number, name: string) => {
-                    if (name === 'speedKmh') return [`${value} km/h`, 'Speed'];
                     if (name === 'pace') {
-                      const m = Math.floor(value / 60);
-                      const s = value % 60;
-                      return [`${m}:${String(s).padStart(2, '0')} /500m`, 'Pace'];
+                      const mm = Math.floor(value / 60);
+                      const ss = value % 60;
+                      return [`${mm}:${String(ss).padStart(2, '0')} /500m`, 'Pace'];
                     }
+                    if (name === 'speedKmh') return [`${value} km/h`, 'Speed'];
+                    if (name === 'hr') return [`${value} bpm`, 'Heart rate'];
                     return [value, name];
                   }}
-                  labelFormatter={(idx) => `Fix ${idx}`}
                 />
-                <Line yAxisId="speed" type="monotone" dataKey="speedKmh" stroke="hsl(195 90% 65%)" strokeWidth={2} dot={false} isAnimationActive={false} />
-                <Line yAxisId="pace" type="monotone" dataKey="pace" stroke="hsl(280 80% 70%)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                {show.speed && (
+                  <Line yAxisId="left" type="monotone" dataKey="speedKmh" stroke="hsl(195 90% 45%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
+                )}
+                {show.pace && (
+                  <Line yAxisId="left" type="monotone" dataKey="pace" stroke="hsl(280 80% 55%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
+                )}
+                {show.hr && hasHR && (
+                  <Line yAxisId="right" type="monotone" dataKey="hr" stroke="hsl(355 75% 55%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
+                )}
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </section>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+          Not enough data to chart pace, speed, or heart rate.
+        </div>
       )}
-
-      {/* Performance + conditions */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Panel title="Performance" icon={<Flame className="w-4 h-4 text-cyan-700" />}>
-          <div className="grid grid-cols-2 gap-3">
-            <Stat icon={<Heart className="w-4 h-4" />} label="Avg heart rate" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} sub={session.avgHeartRate === null ? 'Not connected' : undefined} />
-            <Stat icon={<Flame className="w-4 h-4" />} label="Calories" value={session.caloriesKcal !== null ? `${session.caloriesKcal} kcal` : DASH} sub={session.caloriesKcal === null ? 'Needs HR sensor' : undefined} />
-            <Stat icon={<Compass className="w-4 h-4" />} label="Avg heading" value={session.avgHeadingDeg !== null ? `${session.avgHeadingDeg}°` : DASH} sub={session.avgHeadingDeg !== null ? degLabel(session.avgHeadingDeg) : 'Compass not connected'} />
-            <Stat icon={<Navigation className="w-4 h-4" />} label="Max lane drift" value={session.laneDeviationMax !== null ? `${session.laneDeviationMax} m` : DASH} sub={session.laneDeviationMax === null ? 'No lane sensor' : session.laneDeviationMax < 1.5 ? 'Tight line' : session.laneDeviationMax < 3 ? 'Some drift' : 'Significant drift'} />
-          </div>
-        </Panel>
-
-        <Panel title="Conditions at Launch" icon={<Waves className="w-4 h-4 text-cyan-700" />}>
-          <div className="grid grid-cols-2 gap-3">
-            <Stat icon={<Waves className="w-4 h-4" />} label="Tide" value={`${session.startConditions.tideFt.toFixed(2)} ft`} sub={session.startConditions.direction} />
-            <Stat icon={<Wind className="w-4 h-4" />} label="Wind" value={`${session.startConditions.windKnots} kt`} sub={`from ${session.startConditions.windDir}`} />
-            <Stat icon={<MapPin className="w-4 h-4" />} label="Location" value="BIAC" sub="Redwood City" />
-            <Stat icon={<Clock className="w-4 h-4" />} label="Started" value={startedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} sub={startedDate.toLocaleDateString([], { month: 'short', day: 'numeric' })} />
-          </div>
-        </Panel>
-      </section>
-    </>
+    </section>
   );
 };
+
+const SeriesToggle = ({
+  active, color, label, onClick, disabled = false,
+}: { active: boolean; color: string; label: string; onClick: () => void; disabled?: boolean }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition inline-flex items-center gap-1.5 ${
+      disabled
+        ? 'border-slate-200 text-slate-400 bg-slate-50 cursor-not-allowed'
+        : active
+          ? 'border-slate-300 bg-white text-slate-800 shadow-sm'
+          : 'border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100'
+    }`}
+    title={disabled ? `${label} not recorded` : `Toggle ${label}`}
+  >
+    <span
+      className="w-2 h-2 rounded-full"
+      style={{ background: active && !disabled ? color : 'hsl(220 15% 75%)' }}
+    />
+    {label}
+  </button>
+);
+
+function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371000;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
 
 // ============================================================
 // Shared UI primitives
