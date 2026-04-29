@@ -951,6 +951,8 @@ const OnWaterView = ({
             laneColor={laneColor}
             laneRingColor={laneRingColor}
             laneStatus={laneStatus}
+            headingDeg={headingDeg}
+            onSetCenter={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
           />
         </Panel>
       </section>
