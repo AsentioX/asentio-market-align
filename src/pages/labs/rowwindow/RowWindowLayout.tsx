@@ -427,6 +427,11 @@ const RowWindowLayout = () => {
         {tab === 'post' && (
           <PostRowView
             session={lastSession}
+            sessions={savedSessions}
+            selectedSessionId={lastSession?.id ?? null}
+            onSelectSession={setSelectedSessionId}
+            onDeleteSession={deleteSession}
+            onExportSession={exportSession}
             onNewRow={() => setTab('pre')}
           />
         )}
@@ -1055,10 +1060,15 @@ const OnWaterView = ({
 
 interface PostRowViewProps {
   session: RowSession | null;
+  sessions: RowSession[];
+  selectedSessionId: string | null;
+  onSelectSession: (id: string) => void;
+  onDeleteSession: (id: string) => void;
+  onExportSession: (s: RowSession) => void;
   onNewRow: () => void;
 }
 
-const PostRowView = ({ session, onNewRow }: PostRowViewProps) => {
+const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
   if (!session) {
     return (
       <section className="rounded-2xl border border-white/5 bg-[hsl(220_30%_9%)] p-8 text-center">
