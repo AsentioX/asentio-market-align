@@ -69,6 +69,11 @@ export interface RowSensorState {
   heartRate: number | null;
   heartRateStatus: SensorStatus;
   heartRateDeviceName: string | null;
+
+  // Stroke rate derived from device accelerometer (peak-detection on the
+  // dominant rocking axis of the boat). null until enough peaks are seen.
+  spm: number | null;
+  motionStatus: SensorStatus;
 }
 
 interface UseRowSensorsOptions {
@@ -92,6 +97,8 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     heartRate: null,
     heartRateStatus: 'idle',
     heartRateDeviceName: null,
+    spm: null,
+    motionStatus: 'idle',
   });
 
   // Refs for cleanup / cross-callback access without re-subscribing
@@ -102,6 +109,17 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   const hrCharRef = useRef<BluetoothRemoteGATTCharacteristic | null>(null);
   const hrHandlerRef = useRef<((e: Event) => void) | null>(null);
   const trackingRef = useRef(tracking);
+  const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
+  // Stroke-detection state — kept in refs so the listener doesn't re-subscribe.
+  const strokeStateRef = useRef<{
+    // Low-pass filtered vertical acceleration (gravity removed).
+    lpAccel: number;
+    // High-pass (signal − slow baseline) used for peak detection.
+    baseline: number;
+    lastPeakT: number;
+    // Sliding window of recent stroke intervals (ms) for SPM smoothing.
+    intervals: number[];
+  }>({ lpAccel: 0, baseline: 0, lastPeakT: 0, intervals: [] });
 
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
 
@@ -300,11 +318,92 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     setState(s => ({ ...s, heartRateStatus: 'idle', heartRate: null, heartRateDeviceName: null }));
   }, []);
 
-  // Convenience: request both motion-style sensors in one user gesture.
+  // -------------------------------------------------------------------------
+  // Stroke rate (DeviceMotion accelerometer — peak detection on the
+  // dominant rocking axis of the boat). Each rowing stroke produces one
+  // characteristic accel peak as the rower drives + recovers; we measure the
+  // interval between successive peaks and convert to strokes-per-minute.
+  // -------------------------------------------------------------------------
+  const requestMotion = useCallback(async () => {
+    if (typeof window === 'undefined' || !('DeviceMotionEvent' in window)) {
+      setState(s => ({ ...s, motionStatus: 'unavailable' }));
+      return;
+    }
+    setState(s => ({ ...s, motionStatus: 'requesting' }));
+
+    // iOS 13+ requires explicit permission.
+    const DME = window.DeviceMotionEvent as unknown as {
+      requestPermission?: () => Promise<'granted' | 'denied'>;
+    };
+    if (typeof DME.requestPermission === 'function') {
+      try {
+        const result = await DME.requestPermission();
+        if (result !== 'granted') {
+          setState(s => ({ ...s, motionStatus: 'denied' }));
+          return;
+        }
+      } catch {
+        setState(s => ({ ...s, motionStatus: 'denied' }));
+        return;
+      }
+    }
+
+    const handler = (e: DeviceMotionEvent) => {
+      const a = e.accelerationIncludingGravity ?? e.acceleration;
+      if (!a || a.x == null || a.y == null || a.z == null) return;
+      // Magnitude is orientation-independent — the boat may be in any pose.
+      const mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+      const st = strokeStateRef.current;
+
+      // Two cascaded one-pole filters:
+      //   lpAccel  ≈ smoothed signal (cuts high-frequency noise)
+      //   baseline ≈ very slow average (acts as DC / gravity removal)
+      st.lpAccel = st.lpAccel * 0.8 + mag * 0.2;
+      st.baseline = st.baseline * 0.985 + st.lpAccel * 0.015;
+      const dynamic = st.lpAccel - st.baseline;
+
+      const now = e.timeStamp ? performance.timeOrigin + e.timeStamp : Date.now();
+      // Threshold tuned for typical rowing rocking (≈0.4 m/s² above baseline);
+      // refractory period prevents double-counting within one stroke (max ~60 spm).
+      const THRESHOLD = 0.4;
+      const MIN_INTERVAL_MS = 1000; // ≥ 60 spm cap
+      const MAX_INTERVAL_MS = 6000; // ≤ 10 spm floor (otherwise treat as stopped)
+
+      if (dynamic > THRESHOLD && now - st.lastPeakT > MIN_INTERVAL_MS) {
+        if (st.lastPeakT !== 0) {
+          const interval = now - st.lastPeakT;
+          if (interval < MAX_INTERVAL_MS) {
+            st.intervals.push(interval);
+            if (st.intervals.length > 6) st.intervals.shift();
+            const avg = st.intervals.reduce((a, b) => a + b, 0) / st.intervals.length;
+            const spm = Math.round(60000 / avg);
+            setState(s => ({ ...s, spm, motionStatus: 'live' }));
+          } else {
+            // Long gap — restart cadence tracking.
+            st.intervals = [];
+            setState(s => ({ ...s, spm: null, motionStatus: 'live' }));
+          }
+        } else {
+          setState(s => ({ ...s, motionStatus: 'live' }));
+        }
+        st.lastPeakT = now;
+      } else if (now - st.lastPeakT > MAX_INTERVAL_MS && st.lastPeakT !== 0) {
+        // Idle — clear stale SPM so the UI doesn't lie.
+        st.intervals = [];
+        st.lastPeakT = 0;
+        setState(s => ({ ...s, spm: null }));
+      }
+    };
+    motionHandlerRef.current = handler;
+    window.addEventListener('devicemotion', handler);
+  }, []);
+
+  // Convenience: request all motion-style sensors in one user gesture.
   const requestPermissions = useCallback(async () => {
     await requestCompass();
+    await requestMotion();
     requestPosition();
-  }, [requestCompass, requestPosition]);
+  }, [requestCompass, requestMotion, requestPosition]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -317,6 +416,9 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
           ? 'deviceorientationabsolute'
           : 'deviceorientation';
         window.removeEventListener(eventName, orientationHandlerRef.current as EventListener, true);
+      }
+      if (motionHandlerRef.current && typeof window !== 'undefined') {
+        window.removeEventListener('devicemotion', motionHandlerRef.current);
       }
       try {
         if (hrCharRef.current && hrHandlerRef.current) {
@@ -334,6 +436,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     ...state,
     requestPermissions,
     requestCompass,
+    requestMotion,
     requestPosition,
     connectHeartRate,
     disconnectHeartRate,

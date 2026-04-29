@@ -135,8 +135,8 @@ const RowWindowLayout = () => {
   const liveDistance: number | null = sensors.positionStatus === 'live' ? sensors.distanceMeters : null;
   const liveSpeedMs: number | null = sensors.positionStatus === 'live' ? sensors.speedMs : null;
   const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
-  // Stroke rate and lane offset have no native sensor wired up — show dash.
-  const spm: number | null = null;
+  // Stroke rate now comes from the device accelerometer (peak-detection).
+  const spm: number | null = sensors.motionStatus === 'live' ? sensors.spm : null;
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
@@ -178,10 +178,12 @@ const RowWindowLayout = () => {
   useEffect(() => {
     if (sessionState !== 'active') return;
     const id = setInterval(() => {
-      if (liveSpeedMs !== null) {
-        const pace = liveSpeedMs > 0 ? 500 / liveSpeedMs : 0;
-        spmHistoryRef.current.push({ t: Date.now(), spm: 0, pace: Math.round(pace) });
+      const pace = liveSpeedMs && liveSpeedMs > 0.2 ? Math.round(500 / liveSpeedMs) : 0;
+      const spmSample = spm ?? 0;
+      if (liveSpeedMs !== null || spm !== null) {
+        spmHistoryRef.current.push({ t: Date.now(), spm: spmSample, pace });
         if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
+        if (spm !== null && spm > maxSpmRef.current) maxSpmRef.current = spm;
       }
       if (liveHeartRate !== null) {
         hrHistoryRef.current.push({ t: Date.now(), bpm: liveHeartRate });
@@ -189,7 +191,7 @@ const RowWindowLayout = () => {
       }
     }, 1000);
     return () => clearInterval(id);
-  }, [sessionState, liveSpeedMs, liveHeartRate]);
+  }, [sessionState, liveSpeedMs, liveHeartRate, spm]);
 
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
@@ -285,9 +287,14 @@ const RowWindowLayout = () => {
       endedAt,
       durationMs: totalElapsed,
       distanceMeters: distanceReal,
-      // Stroke rate has no real sensor wired up — leave null instead of fabricating.
-      avgSpm: null,
-      maxSpm: null,
+      // Stroke rate from the accelerometer — only count real (non-zero) samples.
+      avgSpm: (() => {
+        const spmSamples = spmHistoryRef.current.filter((h) => h.spm > 0);
+        return spmSamples.length
+          ? Math.round(spmSamples.reduce((s, h) => s + h.spm, 0) / spmSamples.length)
+          : null;
+      })(),
+      maxSpm: maxSpmRef.current > 0 ? Math.round(maxSpmRef.current) : null,
       avgPaceSecPer500: avgPace,
       avgHeadingDeg: headingReal,
       // Lane offset has no real sensor — null.
@@ -429,6 +436,7 @@ const RowWindowLayout = () => {
             elapsedMs={elapsedMs}
             distanceMeters={liveDistance}
             spm={spm}
+            speedMs={liveSpeedMs}
             headingDeg={liveHeading}
             targetHeadingDeg={targetHeadingDeg}
             onSetTarget={setTargetHeadingDeg}
@@ -815,6 +823,7 @@ interface OnWaterViewProps {
   elapsedMs: number;
   distanceMeters: number | null;
   spm: number | null;
+  speedMs: number | null;
   headingDeg: number | null;
   targetHeadingDeg: number;
   onSetTarget: (deg: number) => void;
@@ -833,14 +842,14 @@ interface OnWaterViewProps {
 }
 
 const OnWaterView = ({
-  sessionState, elapsedMs, distanceMeters, spm, headingDeg, targetHeadingDeg, onSetTarget,
+  sessionState, elapsedMs, distanceMeters, spm, speedMs, headingDeg, targetHeadingDeg, onSetTarget,
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
-  const speedMs = spm !== null ? (spm / 26) * 4.2 : 0;
-  const pacePer500 = speedMs > 0 ? 500 / speedMs : 0;
+  // Pace derives from real GPS ground speed (seconds per 500 m).
+  const pacePer500 = speedMs && speedMs > 0.2 ? 500 / speedMs : 0;
   const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : DASH;
 
   const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
@@ -942,7 +951,7 @@ const OnWaterView = ({
           icon={<Gauge className="w-4 h-4" />}
           label="Pace"
           value={paceLabel}
-          sub="/ 500 m"
+          sub={paceLabel === DASH ? (speedMs === null ? 'GPS not connected' : 'Waiting for movement') : '/ 500 m'}
           accent="text-cyan-800"
           mono
         />
