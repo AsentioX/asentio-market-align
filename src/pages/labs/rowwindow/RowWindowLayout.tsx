@@ -937,7 +937,7 @@ const OnWaterView = ({
       </section>
 
       {/* Heading + Lane keeping */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0">
         {/* Compass */}
         <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
           <div className="flex items-center gap-6">
