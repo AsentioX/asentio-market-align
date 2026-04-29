@@ -1036,7 +1036,12 @@ const OnWaterView = ({
             {lowTideMarker && (
               <div className="text-right">
                 <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900">
-                  {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
+                  {(() => {
+                    const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
+                    const h = Math.floor(mins / 60);
+                    const m = mins % 60;
+                    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+                  })()}
                 </div>
                 <div className="text-[11px] text-slate-600 mt-1.5 font-mono">
                   {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
