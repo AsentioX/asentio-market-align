@@ -1029,19 +1029,19 @@ const OnWaterView = ({
           sub={`from ${wind.directionLabel}`}
           accent="text-slate-800"
         />
-        <div className="col-span-2 rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] px-4 py-4">
+        <div className="col-span-2 px-1 py-3 border-b border-slate-200">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
             <Waves className="w-4 h-4" />
             Tide
           </div>
           <div className="mt-1 flex items-start justify-between gap-3">
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-slate-800 flex items-center gap-2">
+              <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900 flex items-center gap-2">
                 {tide.height.toFixed(1)} ft
-                {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-400" aria-label="Rising" />}
-                {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-400" aria-label="Falling" />}
+                {direction === 'Flood' && <ArrowUp className="w-6 h-6 text-emerald-600" aria-label="Rising" />}
+                {direction === 'Ebb' && <ArrowDown className="w-6 h-6 text-amber-600" aria-label="Falling" />}
               </div>
-              <div className={`text-[11px] mt-0.5 ${
+              <div className={`text-[11px] mt-1.5 ${
                 direction === 'Flood' ? 'text-emerald-700'
                 : direction === 'Ebb' ? 'text-amber-700'
                 : 'text-slate-600'
@@ -1051,10 +1051,10 @@ const OnWaterView = ({
             </div>
             {lowTideMarker && (
               <div className="text-right">
-                <div className="text-3xl md:text-4xl font-bold text-slate-800">
+                <div className="text-4xl md:text-5xl font-bold leading-none text-slate-900">
                   {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
                 </div>
-                <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
+                <div className="text-[11px] text-slate-600 mt-1.5 font-mono">
                   {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
                   {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
