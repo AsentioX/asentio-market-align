@@ -34,20 +34,22 @@ const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 type TabId = 'pre' | 'on' | 'post';
 
 const SESSIONS_STORAGE_KEY = 'rowwindow:sessions:v1';
+const DASH = '—';
 
 interface RowSession {
   id: string;
   startedAt: number;
   endedAt: number;
   durationMs: number;
-  distanceMeters: number;
-  avgSpm: number;
-  maxSpm: number;
-  avgPaceSecPer500: number;
-  avgHeadingDeg: number;
-  laneDeviationMax: number;
-  caloriesKcal: number;
-  avgHeartRate: number;
+  // Nullable fields are null when no real sensor was connected for that metric.
+  distanceMeters: number | null;
+  avgSpm: number | null;
+  maxSpm: number | null;
+  avgPaceSecPer500: number | null;
+  avgHeadingDeg: number | null;
+  laneDeviationMax: number | null;
+  caloriesKcal: number | null;
+  avgHeartRate: number | null;
   startConditions: {
     tideFt: number;
     direction: string;
@@ -121,6 +123,7 @@ const RowWindowLayout = () => {
 
   // Live row metrics — null when no real sensor is connected (no mock data).
   const spmHistoryRef = useRef<{ t: number; spm: number; pace: number }[]>([]);
+  const hrHistoryRef = useRef<{ t: number; bpm: number }[]>([]);
   const maxSpmRef = useRef<number>(0);
   const maxLaneOffsetRef = useRef<number>(0);
 
@@ -179,9 +182,13 @@ const RowWindowLayout = () => {
         spmHistoryRef.current.push({ t: Date.now(), spm: 0, pace: Math.round(pace) });
         if (spmHistoryRef.current.length > 600) spmHistoryRef.current.shift();
       }
+      if (liveHeartRate !== null) {
+        hrHistoryRef.current.push({ t: Date.now(), bpm: liveHeartRate });
+        if (hrHistoryRef.current.length > 600) hrHistoryRef.current.shift();
+      }
     }, 1000);
     return () => clearInterval(id);
-  }, [sessionState, liveSpeedMs]);
+  }, [sessionState, liveSpeedMs, liveHeartRate]);
 
   const current = useMemo(() => getCurrentTide(series, now), [series, now]);
   const direction = useMemo(() => getDirection(series, now), [series, now]);
@@ -235,6 +242,7 @@ const RowWindowLayout = () => {
     // No mock seeding — sensor values come from real devices only.
 
     spmHistoryRef.current = [];
+    hrHistoryRef.current = [];
     maxSpmRef.current = 0;
     maxLaneOffsetRef.current = 0;
     sensors.resetDistance();
@@ -258,30 +266,41 @@ const RowWindowLayout = () => {
     if (!sessionStartedAt) return;
     const endedAt = Date.now();
     const totalElapsed = endedAt - sessionStartedAt - pausedMs - (sessionState === 'paused' && pausedAt ? endedAt - pausedAt : 0);
-    const history = spmHistoryRef.current;
-    const avgSpm = history.length ? history.reduce((s, h) => s + h.spm, 0) / history.length : 0;
-    const avgPace = history.length ? history.reduce((s, h) => s + h.pace, 0) / history.length : 0;
+    const paceHistory = spmHistoryRef.current.filter((h) => h.pace > 0);
+    const hrHistory = hrHistoryRef.current;
+    // Only compute averages from real samples; otherwise null (rendered as em-dash).
+    const avgPace = paceHistory.length
+      ? Math.round(paceHistory.reduce((s, h) => s + h.pace, 0) / paceHistory.length)
+      : null;
+    const avgHr = hrHistory.length
+      ? Math.round(hrHistory.reduce((s, h) => s + h.bpm, 0) / hrHistory.length)
+      : null;
+    const distanceReal = sensors.positionStatus === 'live' ? Math.round(sensors.distanceMeters) : null;
+    const headingReal = liveHeading !== null ? Math.round(liveHeading) : null;
     const newId = `row-${endedAt}-${Math.random().toString(36).slice(2, 8)}`;
     const summary: RowSession = {
       id: newId,
       startedAt: sessionStartedAt,
       endedAt,
       durationMs: totalElapsed,
-      distanceMeters: Math.round(liveDistance ?? 0),
-      avgSpm: Math.round(avgSpm * 10) / 10,
-      maxSpm: maxSpmRef.current,
-      avgPaceSecPer500: Math.round(avgPace),
-      avgHeadingDeg: Math.round(liveHeading ?? 0),
-      laneDeviationMax: Math.round(maxLaneOffsetRef.current * 100) / 100,
-      caloriesKcal: Math.round((totalElapsed / 60_000) * 9), // ~9 kcal/min for steady state
-      avgHeartRate: liveHeartRate ?? 0,
+      distanceMeters: distanceReal,
+      // Stroke rate has no real sensor wired up — leave null instead of fabricating.
+      avgSpm: null,
+      maxSpm: null,
+      avgPaceSecPer500: avgPace,
+      avgHeadingDeg: headingReal,
+      // Lane offset has no real sensor — null.
+      laneDeviationMax: null,
+      // Calories require HR or power; without a real signal, leave null.
+      caloriesKcal: null,
+      avgHeartRate: avgHr,
       startConditions: {
         tideFt: current.height,
         direction,
         windKnots: wind.speedKnots,
         windDir: wind.directionLabel,
       },
-      spmSeries: [...history],
+      spmSeries: [...spmHistoryRef.current],
       track: [...sensors.track],
       speedSeries: sensors.track
         .filter((p) => p.speedMs >= 0)
@@ -851,7 +870,6 @@ const OnWaterView = ({
   onStart, onPauseResume, onEnd,
   sensors,
 }: OnWaterViewProps) => {
-  const DASH = '—';
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   const speedMs = spm !== null ? (spm / 26) * 4.2 : 0;
   const pacePer500 = speedMs > 0 ? 500 / speedMs : 0;
@@ -1208,7 +1226,11 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
 
   const paceLabel = session.avgPaceSecPer500
     ? `${Math.floor(session.avgPaceSecPer500 / 60)}:${String(session.avgPaceSecPer500 % 60).padStart(2, '0')}`
-    : '—';
+    : DASH;
+  const distanceKmLabel = session.distanceMeters !== null
+    ? `${(session.distanceMeters / 1000).toFixed(2)} km`
+    : `${DASH} km`;
+  const distanceMetersLabel = session.distanceMeters !== null ? `${session.distanceMeters} m` : 'GPS not connected';
   const startedDate = new Date(session.startedAt);
   const endedDate = new Date(session.endedAt);
   const spmChartData = session.spmSeries.map((p, i) => ({ idx: i, spm: p.spm, pace: p.pace }));
@@ -1230,7 +1252,7 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
           <div className="flex-1 min-w-0">
             <div className="text-xs uppercase tracking-[0.2em] text-emerald-300">Row Complete</div>
             <h2 className="text-2xl md:text-3xl font-bold mt-1">
-              {(session.distanceMeters / 1000).toFixed(2)} km · {formatElapsed(session.durationMs)}
+              {distanceKmLabel} · {formatElapsed(session.durationMs)}
             </h2>
             <div className="text-sm text-slate-400 mt-1">
               {startedDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} ·{' '}
@@ -1259,9 +1281,9 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat icon={<Timer className="w-4 h-4" />} label="Elapsed time" value={formatElapsed(session.durationMs)} />
-          <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={`${(session.distanceMeters / 1000).toFixed(2)} km`} sub={`${session.distanceMeters} m`} />
-          <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub="/ 500 m" />
-          <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke rate" value={`${session.avgSpm}`} sub={`peak ${session.maxSpm} spm`} />
+          <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} sub={distanceMetersLabel} />
+          <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : 'GPS not connected'} />
+          <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke rate" value={session.avgSpm !== null ? `${session.avgSpm}` : DASH} sub={session.maxSpm !== null ? `peak ${session.maxSpm} spm` : 'No stroke sensor'} />
         </div>
       </section>
 
@@ -1289,12 +1311,12 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
                     className="flex-1 min-w-0 text-left"
                   >
                     <div className="text-sm font-medium text-slate-100 truncate">
-                      {(s.distanceMeters / 1000).toFixed(2)} km · {formatElapsed(s.durationMs)}
+                      {s.distanceMeters !== null ? `${(s.distanceMeters / 1000).toFixed(2)} km` : `${DASH} km`} · {formatElapsed(s.durationMs)}
                     </div>
                     <div className="text-[11px] text-slate-400 mt-0.5">
                       {d.toLocaleDateString([], { month: 'short', day: 'numeric' })} ·{' '}
                       {d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} ·{' '}
-                      avg {s.avgSpm} spm
+                      avg {s.avgSpm !== null ? `${s.avgSpm} spm` : `${DASH} spm`}
                     </div>
                   </button>
                   <button
@@ -1406,10 +1428,10 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Panel title="Performance" icon={<Flame className="w-4 h-4 text-cyan-300" />}>
           <div className="grid grid-cols-2 gap-3">
-            <Stat icon={<Heart className="w-4 h-4" />} label="Avg heart rate" value={`${session.avgHeartRate} bpm`} />
-            <Stat icon={<Flame className="w-4 h-4" />} label="Calories" value={`${session.caloriesKcal} kcal`} />
-            <Stat icon={<Compass className="w-4 h-4" />} label="Avg heading" value={`${session.avgHeadingDeg}°`} sub={degLabel(session.avgHeadingDeg)} />
-            <Stat icon={<Navigation className="w-4 h-4" />} label="Max lane drift" value={`${session.laneDeviationMax} m`} sub={session.laneDeviationMax < 1.5 ? 'Tight line' : session.laneDeviationMax < 3 ? 'Some drift' : 'Significant drift'} />
+            <Stat icon={<Heart className="w-4 h-4" />} label="Avg heart rate" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} sub={session.avgHeartRate === null ? 'Not connected' : undefined} />
+            <Stat icon={<Flame className="w-4 h-4" />} label="Calories" value={session.caloriesKcal !== null ? `${session.caloriesKcal} kcal` : DASH} sub={session.caloriesKcal === null ? 'Needs HR sensor' : undefined} />
+            <Stat icon={<Compass className="w-4 h-4" />} label="Avg heading" value={session.avgHeadingDeg !== null ? `${session.avgHeadingDeg}°` : DASH} sub={session.avgHeadingDeg !== null ? degLabel(session.avgHeadingDeg) : 'Compass not connected'} />
+            <Stat icon={<Navigation className="w-4 h-4" />} label="Max lane drift" value={session.laneDeviationMax !== null ? `${session.laneDeviationMax} m` : DASH} sub={session.laneDeviationMax === null ? 'No lane sensor' : session.laneDeviationMax < 1.5 ? 'Tight line' : session.laneDeviationMax < 3 ? 'Some drift' : 'Significant drift'} />
           </div>
         </Panel>
 
