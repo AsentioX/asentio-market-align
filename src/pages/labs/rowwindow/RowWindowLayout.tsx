@@ -1066,13 +1066,6 @@ const OnWaterView = ({
             )}
           </div>
         </div>
-        <BigStat
-          icon={<MapPin className="w-4 h-4" />}
-          label="Channel"
-          value="BIAC"
-          sub="Redwood City"
-          accent="text-slate-200"
-        />
       </section>
 
       {/* Sensors */}
