@@ -927,10 +927,6 @@ const OnWaterView = ({
                     ? 'On line'
                     : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right' : 'left'}`}
                 </div>
-                <div className="px-1.5 py-0.5 rounded-md bg-cyan-50 border border-cyan-300 text-cyan-800 text-[10px] font-semibold inline-flex items-center gap-1">
-                  <Navigation className="w-3 h-3" />
-                  Target {targetHeadingDeg}°
-                </div>
               </div>
             </div>
 
