@@ -1022,7 +1022,7 @@ const OnWaterView = ({
       </section>
 
       {/* Heart rate + environment */}
-      <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <BigStat
           icon={<Heart className="w-4 h-4" />}
           label="Heart Rate"
@@ -1061,7 +1061,7 @@ const OnWaterView = ({
             {nextLowTurn && (
               <div className="text-right">
                 <div className="text-[10px] uppercase tracking-wider text-slate-500">To low</div>
-                <div className="text-sm font-mono font-semibold text-slate-100">
+                <div className="text-3xl md:text-4xl font-bold text-slate-200">
                   {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
