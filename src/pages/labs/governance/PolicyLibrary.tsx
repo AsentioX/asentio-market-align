@@ -432,11 +432,116 @@ const PolicyLibrary = () => {
     );
   };
 
+  const renderKanbanColumn = (section: typeof sections[0]) => (
+    <div key={section.key} className="flex-shrink-0 w-80 bg-gray-50 rounded-xl border border-gray-200 flex flex-col max-h-[calc(100vh-280px)]">
+      <div className="flex items-center gap-2 p-3 border-b border-gray-200 sticky top-0 bg-gray-50 rounded-t-xl">
+        {section.icon}
+        <h3 className="font-semibold text-gray-800 text-sm">{section.label}</h3>
+        <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full ml-auto">{section.policies.length}</span>
+      </div>
+      <div className="p-3 space-y-3 overflow-y-auto flex-1">
+        {section.policies.length === 0 && (
+          <p className="text-xs text-gray-400 text-center py-6">No policies</p>
+        )}
+        {buildHierarchy(section.policies).map(p => (
+          <div key={p.id} className="space-y-2">
+            {renderPolicyCard(p, false, section.key as SectionKey)}
+            {p.children.map(c => renderPolicyCard(c, true, section.key as SectionKey))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderListView = () => (
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-50 hover:bg-gray-50">
+            <TableHead className="w-[32%]">Title</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead>Voting Deadline</TableHead>
+            <TableHead className="text-center">Likes</TableHead>
+            <TableHead className="text-center">Votes</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-sm text-gray-400 py-8">No policies match your filters.</TableCell>
+            </TableRow>
+          )}
+          {filtered.map(p => {
+            const tally = getVoteTally(p.id);
+            return (
+              <TableRow key={p.id}>
+                <TableCell>
+                  <Link to={`/labs/fieldofviews/library/${p.id}`} className="font-medium text-gray-800 hover:text-teal-600">
+                    {p.parent_id && <span className="text-gray-300 mr-1">↳</span>}
+                    {p.title}
+                  </Link>
+                  <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{p.summary}</p>
+                </TableCell>
+                <TableCell>
+                  <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${statusStyle[p.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                    {p.status.replace('-', ' ')}
+                  </span>
+                </TableCell>
+                <TableCell className="text-sm text-gray-600">{p.category ?? <span className="text-gray-300">—</span>}</TableCell>
+                <TableCell className="text-xs text-gray-500">{format(new Date(p.created_at), 'MMM d, yyyy')}</TableCell>
+                <TableCell className="text-xs text-gray-500">{p.voting_deadline ? format(new Date(p.voting_deadline), 'MMM d, yyyy') : <span className="text-gray-300">—</span>}</TableCell>
+                <TableCell className="text-center text-sm text-gray-600">{getLikeCount(p.id) || <span className="text-gray-300">0</span>}</TableCell>
+                <TableCell className="text-center text-xs text-gray-600">
+                  {tally.total > 0 ? (
+                    <span className="inline-flex gap-1">
+                      <span className="text-emerald-600">{tally.agree}</span>/
+                      <span className="text-gray-500">{tally.abstain}</span>/
+                      <span className="text-amber-600">{tally.disagree}</span>
+                    </span>
+                  ) : <span className="text-gray-300">—</span>}
+                </TableCell>
+                <TableCell>
+                  {isAdmin && (
+                    <PolicyStatusDropdown
+                      current={p.status}
+                      onChange={(s) => updatePolicy.mutate({ id: p.id, status: s })}
+                      onDelete={() => { if (confirm('Delete this policy permanently?')) deletePolicy.mutate(p.id); }}
+                      onEdit={() => setEditingTimeline(p.id)}
+                    />
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-800">Policy Library</h2>
-        <p className="text-gray-500 mt-1">Your approved operating model. Discuss, vote, and refine each policy.</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">Policy Library</h2>
+          <p className="text-gray-500 mt-1">Your approved operating model. Discuss, vote, and refine each policy.</p>
+        </div>
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('kanban')}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${viewMode === 'kanban' ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" /> Kanban
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${viewMode === 'list' ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            <TableIcon className="w-3.5 h-3.5" /> List
+          </button>
+        </div>
       </div>
 
       {/* Toolbar: Filter & Sort */}
@@ -471,10 +576,14 @@ const PolicyLibrary = () => {
         ))}
       </div>
 
-      {/* Sections */}
-      <div className="space-y-8">
-        {sections.map(renderSection)}
-      </div>
+      {/* View */}
+      {viewMode === 'kanban' ? (
+        <div className="flex gap-4 overflow-x-auto pb-4 -mx-2 px-2">
+          {sections.map(renderKanbanColumn)}
+        </div>
+      ) : (
+        renderListView()
+      )}
       {renderEditModal()}
     </div>
   );
