@@ -870,6 +870,56 @@ const OnWaterView = ({
 
   return (
     <>
+      {/* Heading — full-width compass at top */}
+      <section>
+        <Panel title="Heading" icon={<Compass className="w-4 h-4 text-cyan-700" />}>
+          <div className="space-y-2">
+            {/* Header row */}
+            <div className="flex items-baseline justify-between gap-2">
+              <div className={`text-2xl md:text-3xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
+                {headingDeg !== null ? `${Math.round(headingDeg)}°` : '—'}
+              </div>
+              <div className="flex items-center gap-2">
+                <div className={`text-[11px] font-medium ${
+                  headingDeg === null ? 'text-slate-500'
+                  : Math.abs(headingError) < 5 ? 'text-emerald-700'
+                  : Math.abs(headingError) < 12 ? 'text-amber-700'
+                  : 'text-rose-700'
+                }`}>
+                  {headingDeg === null
+                    ? 'Compass not connected'
+                    : headingError === 0
+                    ? 'On line'
+                    : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right' : 'left'}`}
+                </div>
+              </div>
+            </div>
+
+            {/* Compass strip — scales with screen width */}
+            <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
+
+            {/* Footer — Tap to set current heading as the new target center (when no GPS lane data). */}
+            {laneOffsetMeters === null ? (
+              <button
+                type="button"
+                onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
+                disabled={headingDeg === null}
+                className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
+                title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
+              >
+                <span className="text-cyan-700 normal-case tracking-normal text-[11px] font-medium">
+                  {headingDeg !== null ? 'Tap to set current heading as center' : 'Enable compass to set center'}
+                </span>
+              </button>
+            ) : (
+              <div className="text-center text-[10px] uppercase tracking-[0.15em] text-slate-500 font-medium">
+                <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
+              </div>
+            )}
+          </div>
+        </Panel>
+      </section>
+
       {/* Primary metrics row */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
         <BigStat
