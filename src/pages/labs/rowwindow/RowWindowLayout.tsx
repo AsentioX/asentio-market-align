@@ -946,7 +946,7 @@ const OnWaterView = ({
                 />
                 {/* Boat — rotated to current heading. Port half = red, starboard half = green
                     (standard nautical nav-light convention). */}
-                <g transform={`rotate(${headingDeg} 50 50)`}>
+                <g transform={`rotate(${headingDeg ?? 0} 50 50)`} opacity={headingDeg !== null ? 1 : 0.25}>
                   {/* Port (left) half */}
                   <path d="M 50 22 Q 42 30 42 56 L 50 64 Z" fill="hsl(355 85% 58%)" stroke="hsl(355 90% 35%)" strokeWidth="0.5" />
                   {/* Starboard (right) half */}
@@ -959,14 +959,19 @@ const OnWaterView = ({
               </svg>
             </div>
             <div className="flex-1">
-              <div className="text-3xl font-bold font-mono text-cyan-200">{Math.round(headingDeg)}°</div>
+              <div className="text-3xl font-bold font-mono text-cyan-200">
+                {headingDeg !== null ? `${Math.round(headingDeg)}°` : DASH}
+              </div>
               <div className="text-xs text-slate-400 mt-1">Target {targetHeadingDeg}° ({degLabel(targetHeadingDeg)})</div>
               <div className={`text-xs mt-2 font-medium ${
-                Math.abs(headingError) < 5 ? 'text-emerald-300'
+                headingDeg === null ? 'text-slate-500'
+                : Math.abs(headingError) < 5 ? 'text-emerald-300'
                 : Math.abs(headingError) < 12 ? 'text-amber-300'
                 : 'text-rose-300'
               }`}>
-                {headingError === 0
+                {headingDeg === null
+                  ? 'Compass not connected'
+                  : headingError === 0
                   ? 'On line'
                   : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right of line' : 'left of line'}`}
               </div>
