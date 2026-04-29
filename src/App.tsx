@@ -41,6 +41,7 @@ import AOTUHome from "./pages/labs/aotu/AOTUHome";
 import AOTUStub from "./pages/labs/aotu/AOTUStub";
 import BrainFramePlatform from "./pages/labs/aotu/BrainFramePlatform";
 import AOTUSolutions from "./pages/labs/aotu/AOTUSolutions";
+import AOTUProduct from "./pages/labs/aotu/AOTUProduct";
 import VibinLayout from "./pages/labs/vibin/VibinLayout";
 import VibinHome from "./pages/labs/vibin/screens/Home";
 import VibinCards from "./pages/labs/vibin/screens/Cards";
@@ -138,6 +139,7 @@ const AppContent = () => {
           </Route>
           <Route path="/labs/aotu" element={<AOTULayout />}>
             <Route index element={<AOTUHome />} />
+            <Route path="product" element={<AOTUProduct />} />
             <Route path="platform" element={<BrainFramePlatform />} />
             <Route path="solutions" element={<AOTUSolutions />} />
             <Route path="marketplace" element={<AOTUStub />} />
