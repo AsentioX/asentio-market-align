@@ -903,7 +903,7 @@ const OnWaterView = ({
   return (
     <>
       {/* Primary metrics row */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
         <BigStat
           icon={<Timer className="w-4 h-4" />}
           label="Elapsed"
