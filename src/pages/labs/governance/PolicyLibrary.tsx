@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, useDocket, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
+import { usePolicies, usePolicyMutations, usePolicyLikes, usePolicyVotes, useCanParticipate, useDocket, useProposalCounts, Policy, PolicyStatus, VoteType } from '@/hooks/useGovernance';
 import { MessageCircle, ThumbsUp, Vote, Filter, ArrowUpDown, ChevronDown, ChevronRight, Calendar, Clock, CheckCircle2, Archive, AlertTriangle, FileText, Trash2, Pencil, LayoutGrid, Table as TableIcon } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Link } from 'react-router-dom';
@@ -78,6 +78,7 @@ const PolicyLibrary = () => {
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const { isOnDocket, toggleDocket } = useDocket();
+  const { data: proposalCounts = {} } = useProposalCounts();
 
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortAsc, setSortAsc] = useState(false);
@@ -370,7 +371,7 @@ const PolicyLibrary = () => {
       <div className="border-t border-gray-100 px-5 py-3 flex items-center justify-between">
         <Link to={`/labs/fieldofviews/library/${policy.id}`} className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors">
           <MessageCircle className="w-4 h-4" />
-          Discussion
+          Discussion{proposalCounts[policy.id] ? ` (${proposalCounts[policy.id]})` : ''}
         </Link>
         <button onClick={() => handleLike(policy.id)} className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${hasLiked(policy.id) ? 'text-teal-600' : 'text-gray-400 hover:text-teal-500'}`}>
           <ThumbsUp className={`w-4 h-4 ${hasLiked(policy.id) ? 'fill-teal-600' : ''}`} />

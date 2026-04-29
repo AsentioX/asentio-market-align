@@ -196,6 +196,22 @@ export function useProposals(policyId: string | undefined) {
       if (error) throw error;
       return data as Proposal[];
     },
+});
+}
+
+// All proposal counts grouped by policy_id
+export function useProposalCounts() {
+  return useQuery({
+    queryKey: ['gov-proposal-counts'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('gov_proposals').select('policy_id');
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      (data ?? []).forEach((p: { policy_id: string }) => {
+        counts[p.policy_id] = (counts[p.policy_id] ?? 0) + 1;
+      });
+      return counts;
+    },
   });
 }
 
