@@ -231,11 +231,6 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     setState(s => ({ ...s, distanceMeters: 0, track: [] }));
   }, []);
 
-  const resetDistance = useCallback(() => {
-    lastPosRef.current = null;
-    setState(s => ({ ...s, distanceMeters: 0 }));
-  }, []);
-
   // -------------------------------------------------------------------------
   // Heart rate (Web Bluetooth)
   // -------------------------------------------------------------------------
