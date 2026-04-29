@@ -1105,6 +1105,19 @@ const HorizontalCompass = ({
   const labelRowY = 44;
   const ORANGE = 'hsl(22 95% 58%)';
 
+  // Drift from target — used to glow left/right side red as boat veers off line.
+  // Positive = boat heading is to the right of target (drifting starboard)
+  // Negative = boat heading is to the left of target (drifting port)
+  let driftDeg = 0;
+  if (headingDeg !== null) {
+    driftDeg = ((headingDeg - targetHeadingDeg + 540) % 360) - 180;
+  }
+  // Ramp: 0 below 5°, full at 25°
+  const driftMag = Math.max(0, Math.min(1, (Math.abs(driftDeg) - 5) / 20));
+  const leftGlow = driftDeg < 0 ? driftMag : 0;   // veering left → glow LEFT side
+  const rightGlow = driftDeg > 0 ? driftMag : 0;  // veering right → glow RIGHT side
+
+
   return (
     <div className="relative w-full">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[56px]" preserveAspectRatio="none">
