@@ -827,12 +827,12 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
 interface OnWaterViewProps {
   sessionState: 'idle' | 'active' | 'paused';
   elapsedMs: number;
-  distanceMeters: number;
-  spm: number;
-  headingDeg: number;
+  distanceMeters: number | null;
+  spm: number | null;
+  headingDeg: number | null;
   targetHeadingDeg: number;
-  laneOffsetMeters: number;
-  heartRate: number;
+  laneOffsetMeters: number | null;
+  heartRate: number | null;
   wind: WindReading;
   tide: TidePoint;
   direction: 'Flood' | 'Ebb' | 'Slack';
