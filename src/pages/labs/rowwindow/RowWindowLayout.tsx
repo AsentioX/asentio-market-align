@@ -958,15 +958,6 @@ const OnWaterView = ({
           </div>
         </Panel>
 
-        {/* Lane keeping */}
-        <Panel title="Lane Position" icon={<Navigation className="w-4 h-4 text-cyan-700" />}>
-          <LanePositionWidget
-            laneOffsetMeters={laneOffsetMeters}
-            laneColor={laneColor}
-            laneRingColor={laneRingColor}
-            laneStatus={laneStatus}
-          />
-        </Panel>
       </section>
 
       {/* Heart rate + environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
