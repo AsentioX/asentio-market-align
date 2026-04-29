@@ -1273,4 +1273,83 @@ function degLabel(deg: number): string {
   return dirs[Math.round(((deg % 360) / 45)) % 8];
 }
 
+// ============================================================
+// CourseMap — projects GPS track points into an SVG viewport.
+// Uses an equirectangular projection scaled to the bounding box of the track,
+// which is plenty accurate for a single rowing session (< few km).
+// ============================================================
+const CourseMap = ({ track }: { track: TrackPoint[] }) => {
+  if (track.length < 2) return null;
+  const W = 800;
+  const H = 360;
+  const PAD = 24;
+
+  let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+  for (const p of track) {
+    if (p.lat < minLat) minLat = p.lat;
+    if (p.lat > maxLat) maxLat = p.lat;
+    if (p.lon < minLon) minLon = p.lon;
+    if (p.lon > maxLon) maxLon = p.lon;
+  }
+  // Avoid divide-by-zero for extremely tight tracks
+  const latSpan = Math.max(maxLat - minLat, 1e-6);
+  const lonSpan = Math.max(maxLon - minLon, 1e-6);
+  const midLat = (minLat + maxLat) / 2;
+  // Adjust longitude scale by latitude so the route isn't horizontally squashed.
+  const lonScale = Math.cos((midLat * Math.PI) / 180);
+  const aspect = (lonSpan * lonScale) / latSpan;
+  const innerW = W - PAD * 2;
+  const innerH = H - PAD * 2;
+  let drawW = innerW;
+  let drawH = innerW / aspect;
+  if (drawH > innerH) {
+    drawH = innerH;
+    drawW = innerH * aspect;
+  }
+  const offsetX = (W - drawW) / 2;
+  const offsetY = (H - drawH) / 2;
+
+  const project = (lat: number, lon: number) => {
+    const x = offsetX + ((lon - minLon) / lonSpan) * drawW;
+    const y = offsetY + (1 - (lat - minLat) / latSpan) * drawH;
+    return [x, y] as const;
+  };
+
+  const path = track.map((p, i) => {
+    const [x, y] = project(p.lat, p.lon);
+    return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+
+  const [sx, sy] = project(track[0].lat, track[0].lon);
+  const [ex, ey] = project(track[track.length - 1].lat, track[track.length - 1].lon);
+
+  return (
+    <div className="w-full rounded-xl overflow-hidden border border-white/5 bg-[hsl(220_30%_6%)]">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto block" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <pattern id="rowGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(220 20% 14%)" strokeWidth="1" />
+          </pattern>
+          <linearGradient id="rowRoute" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="hsl(150 80% 55%)" />
+            <stop offset="100%" stopColor="hsl(195 90% 65%)" />
+          </linearGradient>
+        </defs>
+        <rect width={W} height={H} fill="url(#rowGrid)" />
+        <path d={path} fill="none" stroke="url(#rowRoute)" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+        {/* Start marker */}
+        <g transform={`translate(${sx}, ${sy})`}>
+          <circle r={9} fill="hsl(150 80% 55%)" stroke="hsl(220 30% 6%)" strokeWidth={3} />
+          <text x={12} y={4} fontSize={11} fill="hsl(150 80% 75%)" fontWeight={600}>Start</text>
+        </g>
+        {/* End marker */}
+        <g transform={`translate(${ex}, ${ey})`}>
+          <circle r={9} fill="hsl(355 85% 60%)" stroke="hsl(220 30% 6%)" strokeWidth={3} />
+          <text x={12} y={4} fontSize={11} fill="hsl(355 85% 80%)" fontWeight={600}>End</text>
+        </g>
+      </svg>
+    </div>
+  );
+};
+
 export default RowWindowLayout;
