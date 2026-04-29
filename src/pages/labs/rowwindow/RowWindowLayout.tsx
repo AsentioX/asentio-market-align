@@ -1476,4 +1476,31 @@ const CourseMap = ({ track }: { track: TrackPoint[] }) => {
   );
 };
 
+// Convert a session into a GPX 1.1 document. Includes track points with
+// timestamps + speed extension; falls back gracefully when no GPS was captured.
+function sessionToGPX(s: RowSession): string {
+  const esc = (v: string) => v.replace(/[<>&'"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]!));
+  const name = `RowWindow ${new Date(s.startedAt).toISOString()}`;
+  const meta = `<time>${new Date(s.startedAt).toISOString()}</time>`;
+  const trkpts = s.track.map((p) =>
+    `      <trkpt lat="${p.lat.toFixed(7)}" lon="${p.lon.toFixed(7)}">` +
+    `<time>${new Date(p.t).toISOString()}</time>` +
+    `<extensions><speed>${p.speedMs.toFixed(2)}</speed></extensions>` +
+    `</trkpt>`
+  ).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="RowWindow" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>${esc(name)}</name>
+    ${meta}
+  </metadata>
+  <trk>
+    <name>${esc(name)}</name>
+    <trkseg>
+${trkpts}
+    </trkseg>
+  </trk>
+</gpx>`;
+}
+
 export default RowWindowLayout;
