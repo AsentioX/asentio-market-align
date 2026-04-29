@@ -119,29 +119,22 @@ const RowWindowLayout = () => {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
-  // Live row metrics (simulated)
-  const [spm, setSpm] = useState<number>(0);
-  const [headingDeg, setHeadingDeg] = useState<number>(45); // bearing along channel
-  const [targetHeadingDeg] = useState<number>(45);
-  const [laneOffsetMeters, setLaneOffsetMeters] = useState<number>(0); // signed: + = port, - = starboard
-  const [distanceMeters, setDistanceMeters] = useState<number>(0);
-  const [heartRate, setHeartRate] = useState<number>(72);
+  // Live row metrics — null when no real sensor is connected (no mock data).
   const spmHistoryRef = useRef<{ t: number; spm: number; pace: number }[]>([]);
   const maxSpmRef = useRef<number>(0);
   const maxLaneOffsetRef = useRef<number>(0);
 
-  // Real device sensors (compass, GPS, BLE heart-rate). Fall back to sim values
-  // when a sensor is unavailable / not yet authorized.
+  // Real device sensors (compass, GPS, BLE heart-rate). Values are null when
+  // the corresponding sensor is not live — the UI renders an em-dash.
   const sensors = useRowSensors({ tracking: sessionState === 'active' });
-  const liveHeading = sensors.headingStatus === 'live' && sensors.headingDeg !== null
-    ? sensors.headingDeg
-    : headingDeg;
-  const liveDistance = sensors.positionStatus === 'live' && sensors.distanceMeters > 0
-    ? sensors.distanceMeters
-    : distanceMeters;
-  const liveHeartRate = sensors.heartRateStatus === 'live' && sensors.heartRate !== null
-    ? sensors.heartRate
-    : heartRate;
+  const liveHeading: number | null = sensors.headingStatus === 'live' ? sensors.headingDeg : null;
+  const liveDistance: number | null = sensors.positionStatus === 'live' ? sensors.distanceMeters : null;
+  const liveSpeedMs: number | null = sensors.positionStatus === 'live' ? sensors.speedMs : null;
+  const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
+  // Stroke rate and lane offset have no native sensor wired up — show dash.
+  const spm: number | null = null;
+  const laneOffsetMeters: number | null = null;
+  const targetHeadingDeg = 45;
 
   // Tick every second when on water tab so timers/instruments feel live
   useEffect(() => {
