@@ -30,7 +30,10 @@ const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 
 type TabId = 'pre' | 'on' | 'post';
 
+const SESSIONS_STORAGE_KEY = 'rowwindow:sessions:v1';
+
 interface RowSession {
+  id: string;
   startedAt: number;
   endedAt: number;
   durationMs: number;
@@ -77,7 +80,41 @@ const RowWindowLayout = () => {
   const [sessionEndedAt, setSessionEndedAt] = useState<number | null>(null);
   const [pausedMs, setPausedMs] = useState<number>(0);
   const [pausedAt, setPausedAt] = useState<number | null>(null);
-  const [lastSession, setLastSession] = useState<RowSession | null>(null);
+  const [savedSessions, setSavedSessions] = useState<RowSession[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as RowSession[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch { return []; }
+  });
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const lastSession = selectedSessionId
+    ? savedSessions.find((s) => s.id === selectedSessionId) ?? null
+    : savedSessions[0] ?? null;
+
+  // Persist sessions whenever they change
+  useEffect(() => {
+    try { localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(savedSessions)); } catch {}
+  }, [savedSessions]);
+
+  const deleteSession = (id: string) => {
+    setSavedSessions((prev) => prev.filter((s) => s.id !== id));
+    if (selectedSessionId === id) setSelectedSessionId(null);
+  };
+
+  const exportSession = (s: RowSession) => {
+    const blob = new Blob([sessionToGPX(s)], { type: 'application/gpx+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rowwindow-${new Date(s.startedAt).toISOString().replace(/[:.]/g, '-')}.gpx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   // Live row metrics (simulated)
   const [spm, setSpm] = useState<number>(0);
