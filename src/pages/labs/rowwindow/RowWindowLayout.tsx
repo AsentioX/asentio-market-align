@@ -1281,9 +1281,9 @@ const PostRowView = ({ session, sessions, selectedSessionId, onSelectSession, on
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat icon={<Timer className="w-4 h-4" />} label="Elapsed time" value={formatElapsed(session.durationMs)} />
-          <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={`${(session.distanceMeters / 1000).toFixed(2)} km`} sub={`${session.distanceMeters} m`} />
-          <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub="/ 500 m" />
-          <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke rate" value={`${session.avgSpm}`} sub={`peak ${session.maxSpm} spm`} />
+          <Stat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} sub={distanceMetersLabel} />
+          <Stat icon={<Gauge className="w-4 h-4" />} label="Avg pace" value={paceLabel} sub={session.avgPaceSecPer500 ? '/ 500 m' : 'GPS not connected'} />
+          <Stat icon={<Activity className="w-4 h-4" />} label="Avg stroke rate" value={session.avgSpm !== null ? `${session.avgSpm}` : DASH} sub={session.maxSpm !== null ? `peak ${session.maxSpm} spm` : 'No stroke sensor'} />
         </div>
       </section>
 
