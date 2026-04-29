@@ -138,7 +138,7 @@ const RowWindowLayout = () => {
   // Stroke rate and lane offset have no native sensor wired up — show dash.
   const spm: number | null = null;
   const laneOffsetMeters: number | null = null;
-  const targetHeadingDeg = 45;
+  const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
   // Tick every second when on water tab so timers/instruments feel live
   useEffect(() => {
