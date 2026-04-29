@@ -1072,13 +1072,14 @@ const OnWaterView = ({
                 {direction === 'Flood' ? 'Rising (Flood)' : direction === 'Ebb' ? 'Falling (Ebb)' : 'Slack'}
               </div>
             </div>
-            {nextLowTurn && (
+            {lowTideMarker && (
               <div className="text-right">
                 <div className="text-3xl md:text-4xl font-bold text-slate-200">
-                  {Math.max(0, Math.round((nextLowTurn.t - now) / 60_000))} min
+                  {Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000))} min
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
-                  to low @ {new Date(nextLowTurn.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                  {lowTideMarker.mode === 'to' ? 'to low @ ' : 'since low @ '}
+                  {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
               </div>
             )}
