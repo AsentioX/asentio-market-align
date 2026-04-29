@@ -952,41 +952,12 @@ const OnWaterView = ({
 
         {/* Lane keeping */}
         <Panel title="Lane Position" icon={<Navigation className="w-4 h-4 text-cyan-300" />}>
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <div className={`text-3xl font-bold font-mono ${laneColor}`}>
-                {laneOffsetMeters >= 0 ? '+' : ''}{laneOffsetMeters.toFixed(1)} m
-              </div>
-              <div className="text-xs text-slate-400">
-                {laneOffsetMeters > 0.3 ? 'Port (left)' : laneOffsetMeters < -0.3 ? 'Starboard (right)' : 'Centered'}
-              </div>
-            </div>
-            {/* Channel visualization */}
-            <div className="relative h-12 rounded-lg bg-black/40 border border-white/5 overflow-hidden">
-              {/* Channel banks */}
-              <div className="absolute inset-y-0 left-0 w-[8%] bg-gradient-to-r from-emerald-900/40 to-transparent" />
-              <div className="absolute inset-y-0 right-0 w-[8%] bg-gradient-to-l from-emerald-900/40 to-transparent" />
-              {/* Center line */}
-              <div className="absolute inset-y-0 left-1/2 w-px bg-white/10" />
-              {/* Boat marker */}
-              <div
-                className="absolute top-1/2 -translate-y-1/2 w-3 h-8 rounded-sm transition-all duration-500"
-                style={{
-                  left: `calc(50% + ${Math.max(-45, Math.min(45, laneOffsetMeters * 8))}% - 6px)`,
-                  background: laneRingColor,
-                  boxShadow: `0 0 12px ${laneRingColor}`,
-                }}
-              />
-              {/* Bank labels */}
-              <div className="absolute top-1 left-2 text-[9px] text-emerald-400/60">Port bank</div>
-              <div className="absolute top-1 right-2 text-[9px] text-emerald-400/60">Starboard bank</div>
-            </div>
-            <div className={`text-xs ${laneColor}`}>
-              {laneStatus === 'good' && '✓ Holding the channel center line'}
-              {laneStatus === 'warn' && '⚠ Drifting — correct your steering'}
-              {laneStatus === 'alert' && '⚠ Off line — risk of channel edge'}
-            </div>
-          </div>
+          <LanePositionWidget
+            laneOffsetMeters={laneOffsetMeters}
+            laneColor={laneColor}
+            laneRingColor={laneRingColor}
+            laneStatus={laneStatus}
+          />
         </Panel>
       </section>
 
