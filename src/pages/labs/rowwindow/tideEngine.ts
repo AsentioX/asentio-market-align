@@ -28,8 +28,8 @@ export interface VesselProfile {
 }
 
 export const VESSEL_PROFILES: Record<VesselProfile['id'], VesselProfile> = {
-  single: { id: 'single', label: 'Single Scull (1x)', windWarnKnots: 10 },
-  eight: { id: 'eight', label: 'Sweep Eight (8+)', windWarnKnots: 16 },
+  single: { id: 'single', label: 'Single (1x)', windWarnKnots: 10 },
+  eight: { id: 'eight', label: 'Eight (8+)', windWarnKnots: 16 },
 };
 
 // Safety thresholds (feet, MLLW) — BIAC channel constraints
