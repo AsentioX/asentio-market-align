@@ -937,36 +937,22 @@ const OnWaterView = ({
             {/* Compass strip */}
             <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
 
-            {/* Footer — Port/Stbd indicator. Tap to set current heading as the new target center (when no GPS lane data). */}
+            {/* Footer — Tap to set current heading as the new target center (when no GPS lane data). */}
             {laneOffsetMeters === null ? (
               <button
                 type="button"
                 onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
                 disabled={headingDeg === null}
-                className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition group"
+                className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
                 title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
               >
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-sm bg-rose-500" />
-                  Port
-                </span>
-                <span className="text-cyan-700 normal-case tracking-normal text-[10px] font-medium opacity-0 group-hover:opacity-100 transition">
-                  Tap to set center
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  Stbd
-                  <span className="w-2 h-2 rounded-sm bg-emerald-500" />
+                <span className="text-cyan-700 normal-case tracking-normal text-[11px] font-medium">
+                  {headingDeg !== null ? 'Tap to set current heading as center' : 'Enable compass to set center'}
                 </span>
               </button>
             ) : (
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-sm bg-rose-500" /> Port
-                </span>
-                <span className="normal-case tracking-normal text-slate-500 font-normal">{degLabel(targetHeadingDeg)} bearing</span>
-                <span className="inline-flex items-center gap-1.5">
-                  Stbd <span className="w-2 h-2 rounded-sm bg-emerald-500" />
-                </span>
+              <div className="text-center text-[10px] uppercase tracking-[0.15em] text-slate-500 font-medium">
+                <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
               </div>
             )}
           </div>
