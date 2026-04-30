@@ -211,10 +211,10 @@ const BreathingOrb = ({
       ctx.fill();
 
       // ─── Dancing Dots ──────────────────────────────
-      // Energy → speed multiplier; density → number of "active" dots; beat → radial kick
+      // Energy → speed multiplier; density → number of "active" dots
+      // (Dots are decoupled from the heartbeat — driven only by music params)
       const speedMul = 0.4 + curEnergy * 2.2;
       const activeCount = Math.round(8 + curDensity * (DOT_COUNT - 8));
-      const beatKick = beatBoost * 22;
 
       ctx.save();
       for (let i = 0; i < dots.length; i++) {
@@ -223,13 +223,13 @@ const BreathingOrb = ({
         d.angle += dt * d.angularSpeed * speedMul * d.direction;
 
         const bob = Math.sin(time / 1000 * d.bobSpeed + d.phaseOffset);
-        const radius = d.orbitBase + bob * d.orbitWobble + beatKick * (0.6 + Math.sin(d.phaseOffset) * 0.4);
+        const radius = d.orbitBase + bob * d.orbitWobble;
         const x = cx + Math.cos(d.angle) * radius;
         const y = cy + Math.sin(d.angle) * radius;
 
-        const dotSize = (d.sizeBase + beatBoost * 1.4) * (isActive ? 1 : 0.45);
+        const dotSize = d.sizeBase * (isActive ? 1 : 0.45);
         const baseAlpha = isActive ? 0.55 + curEnergy * 0.35 : 0.18;
-        const alpha = Math.min(1, baseAlpha + beatBoost * 0.3);
+        const alpha = Math.min(1, baseAlpha);
 
         // Soft glow halo
         const haloR = dotSize * 4;
