@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { UserMode, BioInputs, computeState, StateSnapshot, getTimeOfDay } from './stateEngine';
-import { MusicParams, NowPlaying, computeMusicParams, selectTrack } from './musicEngine';
+import { MusicParams, NowPlaying, computeMusicParams, selectTrack, SelectionFlavor } from './musicEngine';
 import { getAudioEngine } from './audioEngine';
 import { getGenerativeEngine } from './generativeEngine';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,10 +39,13 @@ export function useMyDJ() {
   const generativeEngine = useRef(getGenerativeEngine());
   const modeRef = useRef(mode);
   const musicSourceRef = useRef(musicSource);
+  const [intentFlavor, setIntentFlavor] = useState<SelectionFlavor | null>(null);
+  const intentFlavorRef = useRef<SelectionFlavor | null>(null);
 
   // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
+  useEffect(() => { intentFlavorRef.current = intentFlavor; }, [intentFlavor]);
 
   // Sync volume to both engines
   useEffect(() => {
@@ -83,7 +86,7 @@ export function useMyDJ() {
           modeRef.current,
           intensity
         );
-        const track = selectTrack(params, modeRef.current);
+        const track = selectTrack(params, modeRef.current, intentFlavorRef.current ?? undefined);
         elapsedRef.current = 0;
         setNowPlaying({
           title: track.title,
@@ -110,7 +113,7 @@ export function useMyDJ() {
         modeRef.current,
         intensity
       );
-      const track = selectTrack(params, modeRef.current);
+      const track = selectTrack(params, modeRef.current, intentFlavorRef.current ?? undefined);
       elapsedRef.current = 0;
       setNowPlaying({
         title: track.title,
@@ -174,7 +177,7 @@ export function useMyDJ() {
         url: '',
       });
     } else {
-      const track = selectTrack(params, currentMode);
+      const track = selectTrack(params, currentMode, intentFlavorRef.current ?? undefined);
       elapsedRef.current = 0;
       setNowPlaying({
         title: track.title,
@@ -336,5 +339,6 @@ export function useMyDJ() {
     bio, setBio, state, musicParams, nowPlaying,
     stats, skip, like, dislike, timeOfDay: getTimeOfDay(),
     musicSource, setMusicSource,
+    intentFlavor, setIntentFlavor,
   };
 }

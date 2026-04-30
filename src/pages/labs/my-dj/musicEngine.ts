@@ -203,16 +203,46 @@ export function computeMusicParams(state: StateSnapshot, bio: BioInputs, mode: U
 const recentlyPlayed: string[] = [];
 const RECENT_MEMORY = 8;
 
-export function selectTrack(params: MusicParams, mode: UserMode): typeof TRACK_DB[number] {
+/** Per-intent flavor that biases track selection on top of the mode + params */
+export interface SelectionFlavor {
+  vocals: 'prefer' | 'avoid' | 'any';
+  genres?: string[];
+  bpmBias?: number;
+  energyBias?: number;
+}
+
+const VOCAL_GENRE = 'Indie Vocal';
+
+export function selectTrack(
+  params: MusicParams,
+  mode: UserMode,
+  flavor?: SelectionFlavor
+): typeof TRACK_DB[number] {
   // Filter to tracks that match the current mode
   const modeTracks = TRACK_DB.filter(t => t.modes.includes(mode));
   const pool = modeTracks.length > 0 ? modeTracks : TRACK_DB;
 
-  // Score every track by param proximity (lower = better fit)
+  // Apply intent's bpm/energy biases to the target so fit-scoring shifts accordingly
+  const targetBpm = params.bpm + (flavor?.bpmBias ?? 0);
+  const targetEnergy = params.energy + (flavor?.energyBias ?? 0);
+
+  // Score every track by param proximity (lower = better fit) plus intent bonuses
   const scored = pool.map(track => {
-    const bpmDiff = Math.abs(track.baseBpm - params.bpm);
-    const energyDiff = Math.abs(track.baseEnergy - params.energy);
-    const fitScore = bpmDiff * 0.4 + energyDiff * 0.6;
+    const bpmDiff = Math.abs(track.baseBpm - targetBpm);
+    const energyDiff = Math.abs(track.baseEnergy - targetEnergy);
+    let fitScore = bpmDiff * 0.4 + energyDiff * 0.6;
+
+    // Vocal preference: each genre is ~10pts; treat vocal bonus on the same scale
+    if (flavor) {
+      const isVocal = track.genre === VOCAL_GENRE;
+      if (flavor.vocals === 'prefer' && isVocal) fitScore -= 12;
+      if (flavor.vocals === 'prefer' && !isVocal) fitScore += 4;
+      if (flavor.vocals === 'avoid' && isVocal) fitScore += 20;
+
+      // Genre preference: strong nudge toward listed genres
+      if (flavor.genres?.includes(track.genre)) fitScore -= 10;
+    }
+
     return { track, fitScore };
   });
 

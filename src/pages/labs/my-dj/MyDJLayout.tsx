@@ -19,6 +19,17 @@ const MyDJLayout = () => {
       ? Math.round((primary.intensityHint + secondary.intensityHint) / 2)
       : primary.intensityHint
     );
+    // Primary flavor wins; secondary contributes extra genres so blends feel distinct
+    const mergedGenres = Array.from(new Set([
+      ...(primary.flavor.genres ?? []),
+      ...(secondary?.flavor.genres ?? []),
+    ]));
+    dj.setIntentFlavor({
+      vocals: primary.flavor.vocals,
+      genres: mergedGenres.length ? mergedGenres : undefined,
+      bpmBias: primary.flavor.bpmBias,
+      energyBias: primary.flavor.energyBias,
+    });
     setActiveIntent({ primary, secondary });
     if (!dj.isPlaying) {
       setTimeout(() => dj.startSession(), 400);
