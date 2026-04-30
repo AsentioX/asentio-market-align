@@ -106,6 +106,20 @@ const TRACK_DB: Array<{
   { title: '3AM Sink Light', artist: 'OpenLo-Fi', genre: 'Soul Lo-Fi', duration: 98, baseBpm: 91, baseEnergy: 44, url: '/tracks/3am-sink-light.mp3', modes: ['energize', 'calm'] },
   { title: 'Slow Dance in the Living Room', artist: 'OpenLo-Fi', genre: 'Soul Lo-Fi', duration: 96, baseBpm: 94, baseEnergy: 48, url: '/tracks/slow-dance-in-the-living-room.mp3', modes: ['energize', 'calm'] },
   { title: 'Porcelain Heartbeat', artist: 'OpenLo-Fi', genre: 'Soul Lo-Fi', duration: 115, baseBpm: 97, baseEnergy: 52, url: '/tracks/porcelain-heartbeat.mp3', modes: ['energize', 'calm'] },
+
+  // ── Vocal / Indie (CC0, HoliznaCC0) — songs WITH LYRICS ─────────
+  { title: 'Garden Eyes', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 184, baseBpm: 72, baseEnergy: 30, url: '/tracks/garden-eyes.mp3', modes: ['calm', 'focus'] },
+  { title: 'Eden', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 392, baseBpm: 70, baseEnergy: 28, url: '/tracks/eden.mp3', modes: ['calm', 'recovery'] },
+  { title: 'A Cloud Dog Named Sky', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 412, baseBpm: 68, baseEnergy: 26, url: '/tracks/cloud-dog-named-sky.mp3', modes: ['calm', 'recovery'] },
+  { title: 'The Wind That Whistled Through the Wicker Chair', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 281, baseBpm: 76, baseEnergy: 34, url: '/tracks/wind-whistled-wicker-chair.mp3', modes: ['calm', 'focus'] },
+  { title: 'Iron Skies', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 296, baseBpm: 82, baseEnergy: 42, url: '/tracks/iron-skies.mp3', modes: ['focus', 'energize'] },
+  { title: 'Goodbye Good Times', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 223, baseBpm: 88, baseEnergy: 50, url: '/tracks/goodbye-good-times.mp3', modes: ['focus', 'energize'] },
+  { title: 'A Small Town on Pluto', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 189, baseBpm: 92, baseEnergy: 55, url: '/tracks/small-town-on-pluto.mp3', modes: ['energize', 'focus'] },
+  { title: 'Your Nature', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 283, baseBpm: 96, baseEnergy: 58, url: '/tracks/your-nature.mp3', modes: ['energize', 'endurance'] },
+  { title: "Won't Need Money Where I'm Going", artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 280, baseBpm: 104, baseEnergy: 64, url: '/tracks/wont-need-money.mp3', modes: ['energize', 'endurance'] },
+  { title: 'The Sound of Violent Lovers', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 253, baseBpm: 112, baseEnergy: 70, url: '/tracks/sound-of-violent-lovers.mp3', modes: ['energize', 'endurance'] },
+  { title: 'Smile and Nod', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 103, baseBpm: 118, baseEnergy: 75, url: '/tracks/smile-and-nod.mp3', modes: ['energize', 'endurance'] },
+  { title: 'Willy Loman', artist: 'HoliznaCC0', genre: 'Indie Vocal', duration: 258, baseBpm: 100, baseEnergy: 60, url: '/tracks/willy-loman.mp3', modes: ['energize', 'focus'] },
 ];
 
 export function computeMusicParams(state: StateSnapshot, bio: BioInputs, mode: UserMode, intensity: number): MusicParams {
