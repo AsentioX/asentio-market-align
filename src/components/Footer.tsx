@@ -25,37 +25,37 @@ const Footer = () => {
             <h4 className="text-lg font-medium mb-4">{t('footer.quicklinks')}</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/" onClick={handleNavClick} className="text-gray-300 hover:text-white transition-colors">
                   {t('nav.home')}
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/about" onClick={handleNavClick} className="text-gray-300 hover:text-white transition-colors">
                   {t('nav.about')}
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/services" onClick={handleNavClick} className="text-gray-300 hover:text-white transition-colors">
                   {t('nav.services')}
                 </Link>
               </li>
               <li>
-                <Link to="/xr-directory" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/xr-directory" onClick={handleNavClick} className="text-gray-300 hover:text-white transition-colors">
                   XR Directory
                 </Link>
               </li>
               <li>
-                <Link to="/labs" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/labs" onClick={handleNavClick} className="text-gray-300 hover:text-white transition-colors">
                   Labs
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/contact" onClick={handleNavClick} className="text-gray-300 hover:text-white transition-colors">
                   {t('footer.contact')}
                 </Link>
               </li>
               <li>
-                <Link to="/admin" className="transition-colors text-accent-foreground">
+                <Link to="/admin" onClick={handleNavClick} className="transition-colors text-accent-foreground">
                   Admin Login
                 </Link>
               </li>
