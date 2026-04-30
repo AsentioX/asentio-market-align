@@ -491,7 +491,15 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
 
         {/* Central Breathing Orb */}
         <div className="relative z-10 flex justify-center mb-4">
-          <BreathingOrb color={stateColor} heartRate={bio.heartRate} alignment={state.alignment} />
+          <BreathingOrb
+            color={stateColor}
+            heartRate={bio.heartRate}
+            alignment={state.alignment}
+            bpm={musicParams.bpm}
+            energy={musicParams.energy}
+            rhythmDensity={musicParams.rhythmDensity}
+            isPlaying={isPlaying}
+          />
           {/* State text overlay on orb */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <p
