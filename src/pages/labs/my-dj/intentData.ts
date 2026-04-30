@@ -1,5 +1,16 @@
 // Intent definitions: all the nuanced states users can express
 
+export interface IntentFlavor {
+  /** 'prefer' boosts vocal tracks, 'avoid' deprioritizes them, 'any' is neutral */
+  vocals: 'prefer' | 'avoid' | 'any';
+  /** Genres to boost in track selection (matched against TRACK_DB.genre) */
+  genres?: string[];
+  /** Small bias added on top of mode's BPM (-15..+15) */
+  bpmBias?: number;
+  /** Small bias added on top of mode's energy (-15..+15) */
+  energyBias?: number;
+}
+
 export interface IntentDef {
   id: string;
   label: string;
@@ -10,7 +21,10 @@ export interface IntentDef {
   engineMode: 'calm' | 'focus' | 'energize' | 'endurance' | 'recovery';
   /** 0–100 intensity hint for the engine */
   intensityHint: number;
+  /** How this intent flavors track selection on top of the mode */
+  flavor: IntentFlavor;
 }
+
 
 export const INTENTS: IntentDef[] = [
   // 🧠 Mind
