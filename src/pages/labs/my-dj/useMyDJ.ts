@@ -58,6 +58,8 @@ export function useMyDJ() {
   const ytHistoryRef = useRef<YouTubeTrack[]>([]);
   const ytSeedRef = useRef<YouTubeSeed | null>(null);
   const nowPlayingRef = useRef<NowPlaying | null>(null);
+  const lastTrackChangeRef = useRef<number>(0);
+  const MIN_TRACK_DWELL_MS = 45_000; // don't auto-swap tracks more often than this
 
   // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
@@ -267,8 +269,12 @@ export function useMyDJ() {
       if (newState.current !== prevPhysioState.current) {
         prevPhysioState.current = newState.current;
         if (musicSource === 'recorded' || musicSource === 'youtube') {
-          playTrack(newParams, mode);
-          setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+          const now = Date.now();
+          if (now - lastTrackChangeRef.current >= MIN_TRACK_DWELL_MS) {
+            lastTrackChangeRef.current = now;
+            playTrack(newParams, mode);
+            setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+          }
         }
       }
 
@@ -300,6 +306,7 @@ export function useMyDJ() {
     alignmentSumRef.current = 0;
     alignmentCountRef.current = 0;
     elapsedRef.current = 0;
+    lastTrackChangeRef.current = Date.now();
     setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 1, likes: 0, skips: 0, alignmentHistory: [] });
 
     if (musicSourceRef.current === 'generative') {
@@ -338,6 +345,7 @@ export function useMyDJ() {
   const skip = useCallback(() => {
     setStats(s => ({ ...s, skips: s.skips + 1, tracksPlayed: s.tracksPlayed + 1 }));
     if (musicSourceRef.current === 'recorded' || musicSourceRef.current === 'youtube') {
+      lastTrackChangeRef.current = Date.now();
       playTrack(musicParams, mode);
     }
   }, [musicParams, mode, playTrack]);
