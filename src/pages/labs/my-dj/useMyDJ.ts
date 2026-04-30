@@ -345,6 +345,7 @@ export function useMyDJ() {
   const skip = useCallback(() => {
     setStats(s => ({ ...s, skips: s.skips + 1, tracksPlayed: s.tracksPlayed + 1 }));
     if (musicSourceRef.current === 'recorded' || musicSourceRef.current === 'youtube') {
+      lastTrackChangeRef.current = Date.now();
       playTrack(musicParams, mode);
     }
   }, [musicParams, mode, playTrack]);
