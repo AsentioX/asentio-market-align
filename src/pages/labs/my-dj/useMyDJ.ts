@@ -364,7 +364,7 @@ export function useMyDJ() {
     volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
-    stats, skip, like, dislike, timeOfDay: getTimeOfDay(),
+    stats, skip, previous, like, dislike, timeOfDay: getTimeOfDay(),
     musicSource, setMusicSource,
     intentFlavor, setIntentFlavor,
   };
