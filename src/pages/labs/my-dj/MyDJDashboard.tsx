@@ -441,6 +441,14 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
             {/* Transport row: play / next / like + volume */}
             <div className="flex items-center gap-3">
               <button
+                onClick={() => { previous(); setIsLiked(false); }}
+                disabled={musicSource !== 'recorded'}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white/30 hover:text-white/70 transition-colors shrink-0 disabled:opacity-30 disabled:hover:text-white/30"
+                title="Previous track"
+              >
+                <SkipBack className="w-3.5 h-3.5" />
+              </button>
+              <button
                 onClick={isPlaying ? stopSession : startSession}
                 className="w-10 h-10 rounded-full border border-white/[0.1] bg-white/[0.04] flex items-center justify-center text-white/60 hover:text-white/90 hover:bg-white/[0.08] transition-all active:scale-95 shrink-0"
               >
