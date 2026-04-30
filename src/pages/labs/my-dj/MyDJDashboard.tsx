@@ -553,8 +553,52 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
                 >
                   <Radio className="w-3 h-3" />
                 </button>
+                <button
+                  onClick={() => setMusicSource('youtube')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
+                    musicSource === 'youtube' ? 'bg-white/[0.1] text-white/70' : 'text-white/25 hover:text-white/40'
+                  }`}
+                  title="YouTube — adaptive search"
+                >
+                  <Youtube className="w-3 h-3" />
+                </button>
               </div>
             </div>
+
+            {/* YouTube seed search — only when YT is the active source */}
+            {musicSource === 'youtube' && (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 flex-1 min-w-0 bg-white/[0.04] rounded-md px-2 py-1">
+                  <Search className="w-3 h-3 text-white/30 shrink-0" />
+                  <input
+                    type="text"
+                    value={seedInput}
+                    onChange={(e) => setSeedInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && seedInput.trim()) {
+                        setYoutubeSeed(seedInput.trim());
+                        setSeedInput('');
+                      }
+                    }}
+                    placeholder={ytSeed ? `Seeded: ${ytSeed.title.slice(0, 40)}` : 'Seed a song (artist + title)…'}
+                    className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[11px] text-white/70 placeholder:text-white/25"
+                  />
+                  {ytLoading && <Loader2 className="w-3 h-3 text-white/40 animate-spin shrink-0" />}
+                </div>
+                {ytSeed && (
+                  <button
+                    onClick={clearYoutubeSeed}
+                    className="text-[10px] text-white/30 hover:text-white/60 px-1.5 py-0.5 rounded transition-colors"
+                    title="Clear seed — return to pure adaptive selection"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+                {ytError && (
+                  <span className="text-[10px] text-red-400/70 truncate">{ytError}</span>
+                )}
+              </div>
+            )}
 
             {/* Transport row: play / next / like + volume */}
             <div className="flex items-center gap-3">
