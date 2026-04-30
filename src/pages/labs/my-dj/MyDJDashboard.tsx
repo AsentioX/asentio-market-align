@@ -512,6 +512,15 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
               <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
             </div>
 
+            {/* Music-reactive visualization */}
+            <MusicVisualizer
+              params={musicParams}
+              isPlaying={isPlaying}
+              color={stateColor}
+              alignment={state.alignment}
+              height={88}
+            />
+
             {/* Adaptive params — ambient bars */}
             <div className="flex items-end gap-1 h-8">
               {[
