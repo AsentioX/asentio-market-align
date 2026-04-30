@@ -39,10 +39,13 @@ export function useMyDJ() {
   const generativeEngine = useRef(getGenerativeEngine());
   const modeRef = useRef(mode);
   const musicSourceRef = useRef(musicSource);
+  const [intentFlavor, setIntentFlavor] = useState<SelectionFlavor | null>(null);
+  const intentFlavorRef = useRef<SelectionFlavor | null>(null);
 
   // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
+  useEffect(() => { intentFlavorRef.current = intentFlavor; }, [intentFlavor]);
 
   // Sync volume to both engines
   useEffect(() => {
