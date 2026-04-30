@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { UserMode, BioInputs, computeState, StateSnapshot, getTimeOfDay } from './stateEngine';
-import { MusicParams, NowPlaying, computeMusicParams, selectTrack, SelectionFlavor } from './musicEngine';
+import { MusicParams, NowPlaying, computeMusicParams, selectTrack, SelectionFlavor, getTrackDB } from './musicEngine';
 import { getAudioEngine } from './audioEngine';
 import { getGenerativeEngine } from './generativeEngine';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,11 +41,14 @@ export function useMyDJ() {
   const musicSourceRef = useRef(musicSource);
   const [intentFlavor, setIntentFlavor] = useState<SelectionFlavor | null>(null);
   const intentFlavorRef = useRef<SelectionFlavor | null>(null);
+  const trackHistoryRef = useRef<string[]>([]); // urls of previously played recorded tracks
+  const nowPlayingRef = useRef<NowPlaying | null>(null);
 
   // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
   useEffect(() => { intentFlavorRef.current = intentFlavor; }, [intentFlavor]);
+  useEffect(() => { nowPlayingRef.current = nowPlaying; }, [nowPlaying]);
 
   // Sync volume to both engines
   useEffect(() => {
@@ -179,6 +182,11 @@ export function useMyDJ() {
     } else {
       const track = selectTrack(params, currentMode, intentFlavorRef.current ?? undefined);
       elapsedRef.current = 0;
+      // push current track to history before swapping
+      const current = nowPlayingRef.current;
+      if (current?.url) trackHistoryRef.current.push(current.url);
+      // cap history to last 30
+      if (trackHistoryRef.current.length > 30) trackHistoryRef.current.shift();
       setNowPlaying({
         title: track.title,
         artist: track.artist,
@@ -281,6 +289,25 @@ export function useMyDJ() {
     // For generative, skip doesn't apply — params update continuously
   }, [musicParams, mode, playTrack]);
 
+  const previous = useCallback(() => {
+    if (musicSourceRef.current !== 'recorded') return;
+    const prevUrl = trackHistoryRef.current.pop();
+    if (!prevUrl) return;
+    const track = getTrackDB().find(t => t.url === prevUrl);
+    if (!track) return;
+    elapsedRef.current = 0;
+    setNowPlaying({
+      title: track.title,
+      artist: track.artist,
+      genre: track.genre,
+      duration: track.duration,
+      elapsed: 0,
+      params: musicParams,
+      url: track.url,
+    });
+    audioEngine.current.loadAndPlay(track.url);
+  }, [musicParams]);
+
   const submitFeedback = useCallback(async (feedbackType: 'thumbs_up' | 'thumbs_down') => {
     if (!nowPlaying) return;
     try {
@@ -337,7 +364,7 @@ export function useMyDJ() {
     volume, setVolume,
     isPlaying, startSession, stopSession,
     bio, setBio, state, musicParams, nowPlaying,
-    stats, skip, like, dislike, timeOfDay: getTimeOfDay(),
+    stats, skip, previous, like, dislike, timeOfDay: getTimeOfDay(),
     musicSource, setMusicSource,
     intentFlavor, setIntentFlavor,
   };
