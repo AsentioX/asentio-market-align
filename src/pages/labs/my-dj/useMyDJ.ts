@@ -42,6 +42,7 @@ export function useMyDJ() {
   const [intentFlavor, setIntentFlavor] = useState<SelectionFlavor | null>(null);
   const intentFlavorRef = useRef<SelectionFlavor | null>(null);
   const trackHistoryRef = useRef<string[]>([]); // urls of previously played recorded tracks
+  const nowPlayingRef = useRef<NowPlaying | null>(null);
 
   // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
