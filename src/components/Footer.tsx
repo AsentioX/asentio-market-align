@@ -5,6 +5,9 @@ const Footer = () => {
   const {
     t
   } = useLanguage();
+  const handleNavClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   return <footer className="bg-asentio-blue text-white py-8 md:py-12">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 text-center sm:text-left">
