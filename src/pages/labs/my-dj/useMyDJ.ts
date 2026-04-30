@@ -269,8 +269,12 @@ export function useMyDJ() {
       if (newState.current !== prevPhysioState.current) {
         prevPhysioState.current = newState.current;
         if (musicSource === 'recorded' || musicSource === 'youtube') {
-          playTrack(newParams, mode);
-          setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+          const now = Date.now();
+          if (now - lastTrackChangeRef.current >= MIN_TRACK_DWELL_MS) {
+            lastTrackChangeRef.current = now;
+            playTrack(newParams, mode);
+            setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
+          }
         }
       }
 
