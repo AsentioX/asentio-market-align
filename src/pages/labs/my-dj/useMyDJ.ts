@@ -289,6 +289,25 @@ export function useMyDJ() {
     // For generative, skip doesn't apply — params update continuously
   }, [musicParams, mode, playTrack]);
 
+  const previous = useCallback(() => {
+    if (musicSourceRef.current !== 'recorded') return;
+    const prevUrl = trackHistoryRef.current.pop();
+    if (!prevUrl) return;
+    const track = getTrackDB().find(t => t.url === prevUrl);
+    if (!track) return;
+    elapsedRef.current = 0;
+    setNowPlaying({
+      title: track.title,
+      artist: track.artist,
+      genre: track.genre,
+      duration: track.duration,
+      elapsed: 0,
+      params: musicParams,
+      url: track.url,
+    });
+    audioEngine.current.loadAndPlay(track.url);
+  }, [musicParams]);
+
   const submitFeedback = useCallback(async (feedbackType: 'thumbs_up' | 'thumbs_down') => {
     if (!nowPlaying) return;
     try {
