@@ -358,7 +358,9 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
     bio, setBio, state, musicParams, nowPlaying,
     stats, skip, previous, like, dislike, timeOfDay,
     musicSource, setMusicSource,
+    ytSeed, setYoutubeSeed, clearYoutubeSeed, ytLoading, ytError,
   } = djState;
+  const [seedInput, setSeedInput] = useState('');
 
   const [showInfluence, setShowInfluence] = useState(false);
   const [showBioSliders, setShowBioSliders] = useState(false);
