@@ -657,25 +657,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
         </div>
       </div>
 
-      {/* ═══ ALIGNMENT HISTORY (when active) ═══ */}
-      {isPlaying && stats.alignmentHistory.length > 10 && (
-        <div className="px-6 pb-8">
-          <p className="text-[10px] text-white/15 uppercase tracking-widest mb-2">Alignment Over Time</p>
-          <div className="h-10 flex items-end gap-px">
-            {stats.alignmentHistory.slice(-60).map((pt, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-t-[1px] transition-all duration-300"
-                style={{
-                  height: `${pt.v * 100}%`,
-                  background: `linear-gradient(to top, ${stateColor.from}40, ${stateColor.to}15)`,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* ═══ BIO SIMULATOR (dev/demo) ═══ */}
       <div className="px-6 pb-8">
         <button
