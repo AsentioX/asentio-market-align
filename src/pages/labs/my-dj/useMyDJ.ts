@@ -492,5 +492,6 @@ export function useMyDJ() {
     musicSource, setMusicSource,
     intentFlavor, setIntentFlavor,
     ytSeed, setYoutubeSeed, clearYoutubeSeed, ytLoading, ytError,
+    genrePreference, setGenrePreference,
   };
 }
