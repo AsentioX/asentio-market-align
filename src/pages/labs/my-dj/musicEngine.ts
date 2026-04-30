@@ -114,53 +114,74 @@ export function computeMusicParams(state: StateSnapshot, bio: BioInputs, mode: U
   switch (mode) {
     case 'calm': {
       const stressFactor = Math.min(bio.stress / 100, 1);
+      // Low HRV (< 40ms) → tension; pull BPM down a touch more to soothe
+      const hrvCalm = bio.hrv < 40 ? (40 - bio.hrv) / 40 : 0; // 0..1
       return {
-        bpm: Math.round(80 - stressFactor * 15 - (1 - intFactor) * 10),
-        energy: Math.round(20 - stressFactor * 10 + intFactor * 15),
+        bpm: Math.round(80 - stressFactor * 15 - hrvCalm * 5 - (1 - intFactor) * 10),
+        energy: Math.round(20 - stressFactor * 10 - hrvCalm * 4 + intFactor * 15),
         rhythmDensity: Math.round(15 + intFactor * 10),
         vocalPresence: Math.round(10 + intFactor * 20),
         harmonicTension: Math.round(10 + intFactor * 10),
         intensity,
       };
     }
-    case 'focus':
+    case 'focus': {
+      // Stressed / low-HRV / fatigued bodies → softer focus (counterbalance)
+      const stressFactor = Math.min(bio.stress / 100, 1);
+      const hrvDrag = bio.hrv < 40 ? (40 - bio.hrv) / 40 : 0;
+      const fatigueDrag = bio.sleepScore < 50 ? (50 - bio.sleepScore) / 50 : 0;
+      const ease = Math.min(1, stressFactor * 0.6 + hrvDrag * 0.3 + fatigueDrag * 0.3);
       return {
-        bpm: Math.round(75 + intFactor * 25),
-        energy: Math.round(30 + intFactor * 20),
-        rhythmDensity: Math.round(30 + intFactor * 15),
+        bpm: Math.round(75 + intFactor * 25 - ease * 12),
+        energy: Math.round(30 + intFactor * 20 - ease * 12),
+        rhythmDensity: Math.round(30 + intFactor * 15 - ease * 10),
         vocalPresence: Math.round(5 + intFactor * 10),
-        harmonicTension: Math.round(20 + intFactor * 10),
+        harmonicTension: Math.round(20 + intFactor * 10 - ease * 8),
         intensity,
       };
-    case 'energize':
+    }
+    case 'energize': {
+      // Don't push a stressed/depleted body harder — ease up slightly
+      const stressFactor = Math.min(bio.stress / 100, 1);
+      const hrvDrag = bio.hrv < 40 ? (40 - bio.hrv) / 40 : 0;
+      const ease = Math.min(1, stressFactor * 0.5 + hrvDrag * 0.5);
       return {
-        bpm: Math.round(110 + intFactor * 30),
-        energy: Math.round(60 + intFactor * 35),
-        rhythmDensity: Math.round(55 + intFactor * 30),
-        vocalPresence: Math.round(40 + intFactor * 40),
-        harmonicTension: Math.round(40 + intFactor * 30),
+        bpm: Math.round(110 + intFactor * 30 - ease * 10),
+        energy: Math.round(60 + intFactor * 35 - ease * 12),
+        rhythmDensity: Math.round(55 + intFactor * 30 - ease * 10),
+        vocalPresence: Math.round(40 + intFactor * 40 - ease * 10),
+        harmonicTension: Math.round(40 + intFactor * 30 - ease * 10),
         intensity,
       };
+    }
     case 'endurance': {
-      const targetBpm = bio.cadence > 60 ? bio.cadence : 130;
+      // Mirror cadence, but floor at 110 so warm-up / cycling cadences still feel like endurance.
+      // Add a small lift from elevated HR.
+      const cadenceTarget = bio.cadence > 60 ? Math.max(110, bio.cadence) : 130;
+      const hrLift = bio.heartRate > 120 ? Math.min(8, (bio.heartRate - 120) / 5) : 0;
       return {
-        bpm: Math.round(targetBpm + intFactor * 10),
-        energy: Math.round(55 + intFactor * 30),
+        bpm: Math.round(cadenceTarget + intFactor * 10 + hrLift),
+        energy: Math.round(55 + intFactor * 30 + hrLift * 0.5),
         rhythmDensity: Math.round(60 + intFactor * 20),
         vocalPresence: Math.round(30 + intFactor * 30),
         harmonicTension: Math.round(35 + intFactor * 25),
         intensity,
       };
     }
-    case 'recovery':
+    case 'recovery': {
+      // Deeper recovery when more depleted: poor sleep / low HRV → slower & lower energy
+      const hrvDrag = bio.hrv < 50 ? (50 - bio.hrv) / 50 : 0;        // 0..1
+      const sleepDrag = bio.sleepScore < 60 ? (60 - bio.sleepScore) / 60 : 0; // 0..1
+      const depletion = Math.min(1, hrvDrag * 0.6 + sleepDrag * 0.6);
       return {
-        bpm: Math.round(65 - (1 - intFactor) * 10),
-        energy: Math.round(15 + intFactor * 10),
-        rhythmDensity: Math.round(10 + intFactor * 10),
-        vocalPresence: Math.round(15 + intFactor * 15),
+        bpm: Math.round(65 - (1 - intFactor) * 10 - depletion * 8),
+        energy: Math.round(15 + intFactor * 10 - depletion * 8),
+        rhythmDensity: Math.round(10 + intFactor * 10 - depletion * 5),
+        vocalPresence: Math.round(15 + intFactor * 15 - depletion * 6),
         harmonicTension: Math.round(5 + intFactor * 10),
         intensity,
       };
+    }
   }
 }
 
