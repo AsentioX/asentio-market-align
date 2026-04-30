@@ -153,9 +153,6 @@ const IntentSelection = ({
 }: IntentSelectionProps) => {
   const [primary, setPrimary] = useState<IntentDef | null>(null);
   const [secondary, setSecondary] = useState<IntentDef | null>(null);
-  const [expandedDim, setExpandedDim] = useState<IntentDef['dimension'] | null>(null);
-  const [showSpectrum, setShowSpectrum] = useState(false);
-  const [spectrumValues, setSpectrumValues] = useState({ energy: 0.5, social: 0.5, mood: 0.5 });
   const [showAdapting, setShowAdapting] = useState(false);
 
   const suggestions = getSuggestions(timeOfDay, physioState);
