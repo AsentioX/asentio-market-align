@@ -74,15 +74,13 @@ const MOOD_ORDER = [
   // Row 1 — peak energy / party
   'party', 'dance', 'energize', 'activate',
   // Row 2 — uplifted / confident
-  'happy', 'confident', 'flirty', 'social-vibe',
+  'happy', 'confident', 'flirty', 'date-night',
   // Row 3 — warm / engaged
-  'romantic', 'date-night', 'creative', 'endurance',
+  'romantic', 'creative', 'endurance', 'recover',
   // Row 4 — focused / steady
-  'focus', 'deep-work', 'thoughtful', 'recover',
-  // Row 5 — calm / inward
-  'calm', 'slow-down', 'pensive', 'melancholic',
-  // Row 6 — ambient
-  'ambient',
+  'focus', 'deep-work', 'thoughtful', 'slow-down',
+  // Row 5 — calm / inward / ambient
+  'calm', 'pensive', 'melancholic', 'ambient',
 ];
 
 // ─── Main Component ───────────────────────────────────
@@ -196,7 +194,7 @@ const IntentSelection = ({
           <Sparkles className="w-3.5 h-3.5 text-white/30" />
           <span className="text-[11px] text-white/35 uppercase tracking-wider">Suggested for you</span>
         </div>
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-3 gap-2.5">
           {suggestions.map((intent) => {
             const isActive = primary?.id === intent.id;
             const isSecondaryActive = secondary?.id === intent.id;
@@ -204,7 +202,7 @@ const IntentSelection = ({
               <button
                 key={intent.id}
                 onClick={() => handleSelect(intent)}
-                className={`relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 border ${
+                className={`relative overflow-hidden rounded-2xl p-3.5 text-left transition-all duration-500 border ${
                   isActive
                     ? 'border-white/[0.15] scale-[1.01]'
                     : isSecondaryActive
@@ -217,12 +215,12 @@ const IntentSelection = ({
                     : 'rgba(255,255,255,0.02)',
                 }}
               >
-                <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} size="lg" />
+                <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} />
                 <div className="relative z-10">
-                  <p className={`text-lg font-medium transition-colors duration-500 ${isActive ? 'text-white' : 'text-white/80'}`}>
+                  <p className={`text-sm font-medium transition-colors duration-500 ${isActive ? 'text-white' : 'text-white/80'}`}>
                     {intent.label}
                   </p>
-                  <p className="text-[12px] text-white/40 mt-0.5">{intent.descriptor}</p>
+                  <p className="text-[10px] text-white/40 mt-0.5 leading-snug line-clamp-2">{intent.descriptor}</p>
                 </div>
                 {isSecondaryActive && (
                   <div className="absolute top-3 right-3 z-10">
