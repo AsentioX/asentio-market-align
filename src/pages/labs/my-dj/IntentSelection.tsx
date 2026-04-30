@@ -74,15 +74,13 @@ const MOOD_ORDER = [
   // Row 1 — peak energy / party
   'party', 'dance', 'energize', 'activate',
   // Row 2 — uplifted / confident
-  'happy', 'confident', 'flirty', 'social-vibe',
+  'happy', 'confident', 'flirty', 'date-night',
   // Row 3 — warm / engaged
-  'romantic', 'date-night', 'creative', 'endurance',
+  'romantic', 'creative', 'endurance', 'recover',
   // Row 4 — focused / steady
-  'focus', 'deep-work', 'thoughtful', 'recover',
-  // Row 5 — calm / inward
-  'calm', 'slow-down', 'pensive', 'melancholic',
-  // Row 6 — ambient
-  'ambient',
+  'focus', 'deep-work', 'thoughtful', 'slow-down',
+  // Row 5 — calm / inward / ambient
+  'calm', 'pensive', 'melancholic', 'ambient',
 ];
 
 // ─── Main Component ───────────────────────────────────
