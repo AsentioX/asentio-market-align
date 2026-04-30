@@ -86,7 +86,7 @@ export function useMyDJ() {
           modeRef.current,
           intensity
         );
-        const track = selectTrack(params, modeRef.current);
+        const track = selectTrack(params, modeRef.current, intentFlavorRef.current ?? undefined);
         elapsedRef.current = 0;
         setNowPlaying({
           title: track.title,
