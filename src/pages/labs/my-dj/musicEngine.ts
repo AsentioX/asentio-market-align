@@ -185,31 +185,38 @@ export function computeMusicParams(state: StateSnapshot, bio: BioInputs, mode: U
   }
 }
 
-let lastTrackUrl = '';
+// Remember the last few tracks so the engine cycles through the catalog
+const recentlyPlayed: string[] = [];
+const RECENT_MEMORY = 8;
 
 export function selectTrack(params: MusicParams, mode: UserMode): typeof TRACK_DB[number] {
   // Filter to tracks that match the current mode
   const modeTracks = TRACK_DB.filter(t => t.modes.includes(mode));
   const pool = modeTracks.length > 0 ? modeTracks : TRACK_DB;
 
-  // Score tracks by param proximity, exclude last played
-  let best = pool[0];
-  let bestScore = Infinity;
-
-  for (const track of pool) {
-    if (track.url === lastTrackUrl && pool.length > 1) continue;
-
+  // Score every track by param proximity (lower = better fit)
+  const scored = pool.map(track => {
     const bpmDiff = Math.abs(track.baseBpm - params.bpm);
     const energyDiff = Math.abs(track.baseEnergy - params.energy);
-    const score = bpmDiff * 0.4 + energyDiff * 0.6 + Math.random() * 15; // add randomness
-    if (score < bestScore) {
-      bestScore = score;
-      best = track;
-    }
-  }
+    const fitScore = bpmDiff * 0.4 + energyDiff * 0.6;
+    return { track, fitScore };
+  });
 
-  lastTrackUrl = best.url;
-  return best;
+  // Exclude recently-played; if pool is too small, only exclude the very last
+  const memory = pool.length > RECENT_MEMORY ? RECENT_MEMORY : 1;
+  const recent = recentlyPlayed.slice(-memory);
+  let candidates = scored.filter(s => !recent.includes(s.track.url));
+  if (candidates.length === 0) candidates = scored;
+
+  // Take the top half of best-fitting candidates, then pick randomly among them
+  candidates.sort((a, b) => a.fitScore - b.fitScore);
+  const topN = Math.max(3, Math.ceil(candidates.length / 2));
+  const top = candidates.slice(0, topN);
+  const pick = top[Math.floor(Math.random() * top.length)].track;
+
+  recentlyPlayed.push(pick.url);
+  if (recentlyPlayed.length > RECENT_MEMORY * 2) recentlyPlayed.shift();
+  return pick;
 }
 
 export function getTrackDB() {
