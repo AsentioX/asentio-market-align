@@ -78,10 +78,46 @@ const LOCATION_NAME_ICON_MAP: Record<string, string> = {
 };
 
 // ─── Breathing Orb ───────────────────────────────────
-const BreathingOrb = ({ color, heartRate, alignment }: { color: { from: string; to: string; glow: string }; heartRate: number; alignment: number }) => {
+const BreathingOrb = ({
+  color,
+  heartRate,
+  alignment,
+  bpm,
+  energy,
+  rhythmDensity,
+  isPlaying,
+}: {
+  color: { from: string; to: string; glow: string };
+  heartRate: number;
+  alignment: number;
+  bpm: number;
+  energy: number;
+  rhythmDensity: number;
+  isPlaying: boolean;
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
   const phaseRef = useRef(0);
+  const beatPhaseRef = useRef(0);
+  const beatPulseRef = useRef(0); // 0..1 — decays after each beat
+  const lastBeatRef = useRef(0);
+
+  // Live refs so we don't restart the animation on every param tween
+  const colorRef = useRef(color);
+  const hrRef = useRef(heartRate);
+  const alignRef = useRef(alignment);
+  const bpmRef = useRef(bpm);
+  const energyRef = useRef(energy);
+  const densityRef = useRef(rhythmDensity);
+  const playingRef = useRef(isPlaying);
+
+  useEffect(() => { colorRef.current = color; }, [color]);
+  useEffect(() => { hrRef.current = heartRate; }, [heartRate]);
+  useEffect(() => { alignRef.current = alignment; }, [alignment]);
+  useEffect(() => { bpmRef.current = bpm; }, [bpm]);
+  useEffect(() => { energyRef.current = energy; }, [energy]);
+  useEffect(() => { densityRef.current = rhythmDensity; }, [rhythmDensity]);
+  useEffect(() => { playingRef.current = isPlaying; }, [isPlaying]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -95,39 +131,72 @@ const BreathingOrb = ({ color, heartRate, alignment }: { color: { from: string; 
     canvas.height = size * dpr;
     ctx.scale(dpr, dpr);
 
-    const breathRate = Math.max(0.3, Math.min(2.5, heartRate / 60));
+    // Persistent dot ensemble — each dot has a base orbit + jitter personality
+    const DOT_COUNT = 36;
+    const dots = Array.from({ length: DOT_COUNT }, (_, i) => ({
+      angle: (i / DOT_COUNT) * Math.PI * 2 + Math.random() * 0.4,
+      orbitBase: 95 + Math.random() * 30, // base radius from center
+      orbitWobble: 8 + Math.random() * 14,
+      angularSpeed: 0.15 + Math.random() * 0.4, // rad/s baseline
+      direction: Math.random() > 0.5 ? 1 : -1,
+      sizeBase: 1.2 + Math.random() * 1.8,
+      phaseOffset: Math.random() * Math.PI * 2,
+      bobSpeed: 0.6 + Math.random() * 1.4,
+    }));
+
     let lastTime = 0;
 
     const draw = (time: number) => {
-      const dt = lastTime ? (time - lastTime) / 1000 : 0.016;
+      const dt = lastTime ? Math.min(0.05, (time - lastTime) / 1000) : 0.016;
       lastTime = time;
+
+      const hr = hrRef.current;
+      const align = alignRef.current;
+      const c = colorRef.current;
+      const curBpm = bpmRef.current;
+      const curEnergy = energyRef.current / 100;   // 0..1
+      const curDensity = densityRef.current / 100; // 0..1
+      const playing = playingRef.current;
+
+      const breathRate = Math.max(0.3, Math.min(2.5, hr / 60));
       phaseRef.current += dt * breathRate * Math.PI;
+
+      // Beat tracking — pulse that fires at BPM rate
+      const beatHz = Math.max(0.5, curBpm / 60);
+      beatPhaseRef.current += dt * beatHz * Math.PI * 2;
+      beatPulseRef.current = Math.max(0, beatPulseRef.current - dt * 3.5); // decay
+      // Detect downbeat crossings (every 2π)
+      if (beatPhaseRef.current - lastBeatRef.current >= Math.PI * 2) {
+        lastBeatRef.current = beatPhaseRef.current;
+        if (playing) beatPulseRef.current = 1;
+      }
 
       ctx.clearRect(0, 0, size, size);
       const cx = size / 2;
       const cy = size / 2;
 
-      const breathScale = 0.85 + Math.sin(phaseRef.current) * 0.15;
+      const beatBoost = beatPulseRef.current * (0.4 + curEnergy * 0.6);
+      const breathScale = 0.85 + Math.sin(phaseRef.current) * 0.15 + beatBoost * 0.08;
       const baseRadius = 70 * breathScale;
 
-      // Outer glow rings
+      // Outer glow rings — also pulse with the beat
       for (let i = 4; i >= 0; i--) {
-        const r = baseRadius + i * 18 + Math.sin(phaseRef.current + i * 0.5) * 4;
-        const alpha = (0.03 + alignment * 0.03) * (1 - i * 0.18);
+        const r = baseRadius + i * 18 + Math.sin(phaseRef.current + i * 0.5) * 4 + beatBoost * 6;
+        const alpha = (0.03 + align * 0.03 + beatBoost * 0.04) * (1 - i * 0.18);
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         const grad = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r);
-        grad.addColorStop(0, `${color.from}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`);
-        grad.addColorStop(1, `${color.to}00`);
+        grad.addColorStop(0, `${c.from}${Math.round(Math.min(1, alpha) * 255).toString(16).padStart(2, '0')}`);
+        grad.addColorStop(1, `${c.to}00`);
         ctx.fillStyle = grad;
         ctx.fill();
       }
 
       // Core orb
       const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseRadius);
-      coreGrad.addColorStop(0, color.from + '90');
-      coreGrad.addColorStop(0.6, color.to + '50');
-      coreGrad.addColorStop(1, color.to + '00');
+      coreGrad.addColorStop(0, c.from + '90');
+      coreGrad.addColorStop(0.6, c.to + '50');
+      coreGrad.addColorStop(1, c.to + '00');
       ctx.beginPath();
       ctx.arc(cx, cy, baseRadius, 0, Math.PI * 2);
       ctx.fillStyle = coreGrad;
@@ -142,12 +211,51 @@ const BreathingOrb = ({ color, heartRate, alignment }: { color: { from: string; 
       ctx.fillStyle = innerGrad;
       ctx.fill();
 
+      // ─── Dancing Dots ──────────────────────────────
+      // Energy → speed multiplier; density → number of "active" dots; beat → radial kick
+      const speedMul = 0.4 + curEnergy * 2.2;
+      const activeCount = Math.round(8 + curDensity * (DOT_COUNT - 8));
+      const beatKick = beatBoost * 22;
+
+      ctx.save();
+      for (let i = 0; i < dots.length; i++) {
+        const d = dots[i];
+        const isActive = i < activeCount;
+        d.angle += dt * d.angularSpeed * speedMul * d.direction;
+
+        const bob = Math.sin(time / 1000 * d.bobSpeed + d.phaseOffset);
+        const radius = d.orbitBase + bob * d.orbitWobble + beatKick * (0.6 + Math.sin(d.phaseOffset) * 0.4);
+        const x = cx + Math.cos(d.angle) * radius;
+        const y = cy + Math.sin(d.angle) * radius;
+
+        const dotSize = (d.sizeBase + beatBoost * 1.4) * (isActive ? 1 : 0.45);
+        const baseAlpha = isActive ? 0.55 + curEnergy * 0.35 : 0.18;
+        const alpha = Math.min(1, baseAlpha + beatBoost * 0.3);
+
+        // Soft glow halo
+        const haloR = dotSize * 4;
+        const halo = ctx.createRadialGradient(x, y, 0, x, y, haloR);
+        halo.addColorStop(0, `${c.from}${Math.round(alpha * 0.45 * 255).toString(16).padStart(2, '0')}`);
+        halo.addColorStop(1, `${c.to}00`);
+        ctx.beginPath();
+        ctx.arc(x, y, haloR, 0, Math.PI * 2);
+        ctx.fillStyle = halo;
+        ctx.fill();
+
+        // Dot core
+        ctx.beginPath();
+        ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+      }
+      ctx.restore();
+
       animRef.current = requestAnimationFrame(draw);
     };
 
     animRef.current = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(animRef.current);
-  }, [color, heartRate, alignment]);
+  }, []); // run once — driven by refs
 
   return <canvas ref={canvasRef} className="w-[280px] h-[280px]" style={{ width: 280, height: 280 }} />;
 };
@@ -383,7 +491,15 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
 
         {/* Central Breathing Orb */}
         <div className="relative z-10 flex justify-center mb-4">
-          <BreathingOrb color={stateColor} heartRate={bio.heartRate} alignment={state.alignment} />
+          <BreathingOrb
+            color={stateColor}
+            heartRate={bio.heartRate}
+            alignment={state.alignment}
+            bpm={musicParams.bpm}
+            energy={musicParams.energy}
+            rhythmDensity={musicParams.rhythmDensity}
+            isPlaying={isPlaying}
+          />
           {/* State text overlay on orb */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <p
