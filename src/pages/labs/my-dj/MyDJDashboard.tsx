@@ -398,30 +398,83 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
           </div>
         </div>
 
-        {/* Play controls */}
-        <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
-          <button
-            onClick={isPlaying ? stopSession : startSession}
-            className="w-11 h-11 rounded-full border border-white/[0.1] bg-white/[0.04] flex items-center justify-center text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-all active:scale-95"
-          >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-          </button>
-          <button
-            onClick={() => { dislike(); setIsLiked(false); }}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-white/20 hover:text-white/60 transition-colors"
-            title="Next track"
-          >
-            <SkipForward className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => { if (isLiked) { setIsLiked(false); } else { like(); setIsLiked(true); } }}
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-              isLiked ? 'text-emerald-400' : 'text-white/20 hover:text-emerald-400/80'
-            }`}
-            title="Like — remember preference"
-          >
-            <ThumbsUp className="w-3.5 h-3.5" />
-          </button>
+        {/* ═══ UNIFIED MUSIC CONTROLS ═══ */}
+        <div className="relative z-10 mb-5">
+          <div className="mx-auto max-w-md bg-white/[0.03] border border-white/[0.05] rounded-2xl px-4 py-3 space-y-3">
+            {/* Title / Artist + Source toggle */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                {nowPlaying ? (
+                  <>
+                    <p className="text-sm text-white/85 truncate">{nowPlaying.title}</p>
+                    <p className="text-[11px] text-white/35 truncate">{nowPlaying.artist}</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-white/40 truncate">No track</p>
+                    <p className="text-[11px] text-white/25 truncate">Press play to start</p>
+                  </>
+                )}
+              </div>
+              <div className="flex items-center gap-0.5 shrink-0 bg-white/[0.04] rounded-lg p-0.5">
+                <button
+                  onClick={() => setMusicSource('recorded')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
+                    musicSource === 'recorded' ? 'bg-white/[0.1] text-white/70' : 'text-white/25 hover:text-white/40'
+                  }`}
+                  title="Recorded tracks"
+                >
+                  <Disc className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => setMusicSource('generative')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
+                    musicSource === 'generative' ? 'bg-white/[0.1] text-white/70' : 'text-white/25 hover:text-white/40'
+                  }`}
+                  title="Generative soundscape"
+                >
+                  <Radio className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
+            {/* Transport row: play / next / like + volume */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={isPlaying ? stopSession : startSession}
+                className="w-10 h-10 rounded-full border border-white/[0.1] bg-white/[0.04] flex items-center justify-center text-white/60 hover:text-white/90 hover:bg-white/[0.08] transition-all active:scale-95 shrink-0"
+              >
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+              </button>
+              <button
+                onClick={() => { dislike(); setIsLiked(false); }}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white/30 hover:text-white/70 transition-colors shrink-0"
+                title="Next track"
+              >
+                <SkipForward className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => { if (isLiked) { setIsLiked(false); } else { like(); setIsLiked(true); } }}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0 ${
+                  isLiked ? 'text-emerald-400' : 'text-white/30 hover:text-emerald-400/80'
+                }`}
+                title="Like — remember preference"
+              >
+                <ThumbsUp className="w-3.5 h-3.5" />
+              </button>
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Volume2 className="w-3 h-3 text-white/25 shrink-0" />
+                <Slider
+                  value={[Math.round(volume * 100)]}
+                  onValueChange={([v]) => setVolume(v / 100)}
+                  min={0}
+                  max={100}
+                  step={5}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Bio Pulse Strip — ambient, not clinical */}
@@ -435,11 +488,12 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
 
 
 
-      {/* ═══ SESSION STATUS ═══ */}
+      {/* ═══ ADAPTIVE SESSION (status + influence + alignment) ═══ */}
       {isPlaying && (
         <div className="px-6 pb-4">
-          <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.04]">
-            <div className="flex items-center justify-between mb-3">
+          <div className="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.04] space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div
                   className="w-2 h-2 rounded-full animate-pulse"
@@ -450,43 +504,8 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
               <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
             </div>
 
-            {/* Now playing + source toggle */}
-            {nowPlaying && (
-              <div className="flex items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white/80 truncate">{nowPlaying.title}</p>
-                  <p className="text-[11px] text-white/30 truncate">{nowPlaying.artist}</p>
-                </div>
-                {/* Inline source toggle */}
-                <div className="flex items-center gap-0.5 shrink-0 bg-white/[0.04] rounded-lg p-0.5">
-                  <button
-                    onClick={() => setMusicSource('recorded')}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
-                      musicSource === 'recorded'
-                        ? 'bg-white/[0.1] text-white/70'
-                        : 'text-white/25 hover:text-white/40'
-                    }`}
-                    title="Recorded tracks"
-                  >
-                    <Disc className="w-3 h-3" />
-                  </button>
-                  <button
-                    onClick={() => setMusicSource('generative')}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all text-[10px] ${
-                      musicSource === 'generative'
-                        ? 'bg-white/[0.1] text-white/70'
-                        : 'text-white/25 hover:text-white/40'
-                    }`}
-                    title="Generative soundscape"
-                  >
-                    <Radio className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Adaptive params — ambient bars */}
-            <div className="mt-4 flex items-end gap-1 h-8">
+            <div className="flex items-end gap-1 h-8">
               {[
                 { label: 'BPM', value: musicParams.bpm / 200 },
                 { label: 'Energy', value: musicParams.energy / 100 },
@@ -509,18 +528,54 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
               ))}
             </div>
 
-            {/* Volume — ultra minimal */}
-            <div className="mt-3 flex items-center gap-3">
-              <Volume2 className="w-3 h-3 text-white/20 shrink-0" />
-              <Slider
-                value={[Math.round(volume * 100)]}
-                onValueChange={([v]) => setVolume(v / 100)}
-                min={0}
-                max={100}
-                step={5}
-                className="flex-1"
-              />
+            {/* System Influence */}
+            <div className="pt-2 border-t border-white/[0.04]">
+              <button
+                onClick={() => setShowInfluence(!showInfluence)}
+                className="w-full flex items-center justify-between py-1"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-white/30 uppercase tracking-widest">System Influence</span>
+                  <span className="text-[11px] text-white/50">{influenceLabel}</span>
+                </div>
+                <ChevronUp className={`w-3 h-3 text-white/25 transition-transform ${showInfluence ? '' : 'rotate-180'}`} />
+              </button>
+              {showInfluence && (
+                <div className="pt-2 pb-1">
+                  <Slider
+                    value={[intensity]}
+                    onValueChange={([v]) => setIntensity(v)}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between mt-1.5">
+                    <span className="text-[9px] text-white/25">Assistive</span>
+                    <span className="text-[9px] text-white/25">Transformative</span>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Alignment Over Time */}
+            {stats.alignmentHistory.length > 10 && (
+              <div className="pt-2 border-t border-white/[0.04]">
+                <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Alignment Over Time</p>
+                <div className="h-10 flex items-end gap-px">
+                  {stats.alignmentHistory.slice(-60).map((pt, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 rounded-t-[1px] transition-all duration-300"
+                      style={{
+                        height: `${pt.v * 100}%`,
+                        background: `linear-gradient(to top, ${stateColor.from}40, ${stateColor.to}15)`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -558,36 +613,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
           </div>
         </div>
       )}
-
-      {/* ═══ SYSTEM INFLUENCE ═══ */}
-      <div className="px-6 pb-4">
-        <button
-          onClick={() => setShowInfluence(!showInfluence)}
-          className="w-full flex items-center justify-between py-2"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-white/25 uppercase tracking-widest">System Influence</span>
-            <span className="text-[11px] text-white/40">{influenceLabel}</span>
-          </div>
-          <ChevronUp className={`w-3 h-3 text-white/20 transition-transform ${showInfluence ? '' : 'rotate-180'}`} />
-        </button>
-        {showInfluence && (
-          <div className="pt-2 pb-1">
-            <Slider
-              value={[intensity]}
-              onValueChange={([v]) => setIntensity(v)}
-              min={0}
-              max={100}
-              step={5}
-              className="w-full"
-            />
-            <div className="flex justify-between mt-1.5">
-              <span className="text-[9px] text-white/20">Assistive</span>
-              <span className="text-[9px] text-white/20">Transformative</span>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* ═══ ACTIVE INTENT — FIXED BOTTOM BAR ═══ */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a10]/95 backdrop-blur-2xl border-t border-white/[0.03]">
@@ -631,25 +656,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
           )}
         </div>
       </div>
-
-      {/* ═══ ALIGNMENT HISTORY (when active) ═══ */}
-      {isPlaying && stats.alignmentHistory.length > 10 && (
-        <div className="px-6 pb-8">
-          <p className="text-[10px] text-white/15 uppercase tracking-widest mb-2">Alignment Over Time</p>
-          <div className="h-10 flex items-end gap-px">
-            {stats.alignmentHistory.slice(-60).map((pt, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-t-[1px] transition-all duration-300"
-                style={{
-                  height: `${pt.v * 100}%`,
-                  background: `linear-gradient(to top, ${stateColor.from}40, ${stateColor.to}15)`,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ═══ BIO SIMULATOR (dev/demo) ═══ */}
       <div className="px-6 pb-8">
