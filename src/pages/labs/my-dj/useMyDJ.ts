@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { UserMode, BioInputs, computeState, StateSnapshot, getTimeOfDay } from './stateEngine';
-import { MusicParams, NowPlaying, computeMusicParams, selectTrack } from './musicEngine';
+import { MusicParams, NowPlaying, computeMusicParams, selectTrack, SelectionFlavor } from './musicEngine';
 import { getAudioEngine } from './audioEngine';
 import { getGenerativeEngine } from './generativeEngine';
 import { supabase } from '@/integrations/supabase/client';
