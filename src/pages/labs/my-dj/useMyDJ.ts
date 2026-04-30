@@ -261,22 +261,16 @@ export function useMyDJ() {
     setMusicParams(newParams);
 
     if (isPlaying) {
+      // Generative engine smoothly retunes with bio drift; recorded/youtube tracks play through.
       if (musicSource === 'generative') {
         generativeEngine.current.setParams(newParams);
         setNowPlaying(np => np ? { ...np, params: newParams } : null);
       }
 
-      if (newState.current !== prevPhysioState.current) {
-        prevPhysioState.current = newState.current;
-        if (musicSource === 'recorded' || musicSource === 'youtube') {
-          const now = Date.now();
-          if (now - lastTrackChangeRef.current >= MIN_TRACK_DWELL_MS) {
-            lastTrackChangeRef.current = now;
-            playTrack(newParams, mode);
-            setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
-          }
-        }
-      }
+      // NOTE: We intentionally do NOT auto-swap recorded/YouTube tracks on bio-driven
+      // physio-state changes. Tracks play to completion unless the user changes
+      // mode, intent, source, genre, or hits skip / next.
+      prevPhysioState.current = newState.current;
 
       alignmentSumRef.current += newState.alignment;
       alignmentCountRef.current += 1;
@@ -286,7 +280,7 @@ export function useMyDJ() {
         alignmentHistory: [...s.alignmentHistory.slice(-59), { t: Date.now(), v: newState.alignment }],
       }));
     }
-  }, [bio, mode, intensity, isPlaying, musicSource, playTrack]);
+  }, [bio, mode, intensity, isPlaying, musicSource]);
 
   // Elapsed time ticker
   useEffect(() => {
