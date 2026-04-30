@@ -196,7 +196,7 @@ const IntentSelection = ({
           <Sparkles className="w-3.5 h-3.5 text-white/30" />
           <span className="text-[11px] text-white/35 uppercase tracking-wider">Suggested for you</span>
         </div>
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-3 gap-2.5">
           {suggestions.map((intent) => {
             const isActive = primary?.id === intent.id;
             const isSecondaryActive = secondary?.id === intent.id;
