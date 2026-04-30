@@ -161,28 +161,27 @@ const BreathingOrb = ({
       const breathRate = Math.max(0.3, Math.min(2.5, hr / 60));
       phaseRef.current += dt * breathRate * Math.PI;
 
-      // Beat tracking — pulse that fires at BPM rate
-      const beatHz = Math.max(0.5, curBpm / 60);
-      beatPhaseRef.current += dt * beatHz * Math.PI * 2;
+      // Heart-driven pulse — fires once per heartbeat (independent of music BPM)
+      const heartHz = Math.max(0.5, hr / 60);
+      beatPhaseRef.current += dt * heartHz * Math.PI * 2;
       beatPulseRef.current = Math.max(0, beatPulseRef.current - dt * 3.5); // decay
-      // Detect downbeat crossings (every 2π)
       if (beatPhaseRef.current - lastBeatRef.current >= Math.PI * 2) {
         lastBeatRef.current = beatPhaseRef.current;
-        if (playing) beatPulseRef.current = 1;
+        beatPulseRef.current = 1;
       }
 
       ctx.clearRect(0, 0, size, size);
       const cx = size / 2;
       const cy = size / 2;
 
-      const beatBoost = beatPulseRef.current * (0.4 + curEnergy * 0.6);
-      const breathScale = 0.85 + Math.sin(phaseRef.current) * 0.15 + beatBoost * 0.08;
+      const beatBoost = beatPulseRef.current * 0.5;
+      const breathScale = 0.85 + Math.sin(phaseRef.current) * 0.15 + beatBoost * 0.06;
       const baseRadius = 70 * breathScale;
 
-      // Outer glow rings — also pulse with the beat
+      // Outer glow rings — pulse with the heartbeat only
       for (let i = 4; i >= 0; i--) {
-        const r = baseRadius + i * 18 + Math.sin(phaseRef.current + i * 0.5) * 4 + beatBoost * 6;
-        const alpha = (0.03 + align * 0.03 + beatBoost * 0.04) * (1 - i * 0.18);
+        const r = baseRadius + i * 18 + Math.sin(phaseRef.current + i * 0.5) * 4 + beatBoost * 5;
+        const alpha = (0.03 + align * 0.03 + beatBoost * 0.03) * (1 - i * 0.18);
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         const grad = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r);
