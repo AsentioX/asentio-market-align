@@ -204,7 +204,7 @@ const IntentSelection = ({
               <button
                 key={intent.id}
                 onClick={() => handleSelect(intent)}
-                className={`relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 border ${
+                className={`relative overflow-hidden rounded-2xl p-3.5 text-left transition-all duration-500 border ${
                   isActive
                     ? 'border-white/[0.15] scale-[1.01]'
                     : isSecondaryActive
@@ -217,12 +217,12 @@ const IntentSelection = ({
                     : 'rgba(255,255,255,0.02)',
                 }}
               >
-                <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} size="lg" />
+                <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} />
                 <div className="relative z-10">
-                  <p className={`text-lg font-medium transition-colors duration-500 ${isActive ? 'text-white' : 'text-white/80'}`}>
+                  <p className={`text-sm font-medium transition-colors duration-500 ${isActive ? 'text-white' : 'text-white/80'}`}>
                     {intent.label}
                   </p>
-                  <p className="text-[12px] text-white/40 mt-0.5">{intent.descriptor}</p>
+                  <p className="text-[10px] text-white/40 mt-0.5 leading-snug line-clamp-2">{intent.descriptor}</p>
                 </div>
                 {isSecondaryActive && (
                   <div className="absolute top-3 right-3 z-10">
