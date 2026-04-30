@@ -604,7 +604,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
             <div className="flex items-center gap-3">
               <button
                 onClick={() => { previous(); setIsLiked(false); }}
-                disabled={musicSource !== 'recorded'}
+                disabled={musicSource === 'generative'}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white/30 hover:text-white/70 transition-colors shrink-0 disabled:opacity-30 disabled:hover:text-white/30"
                 title="Previous track"
               >
