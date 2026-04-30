@@ -121,6 +121,23 @@ const SpectrumSlider = ({ left, right, value, onChange }: {
   );
 };
 
+// ─── Mood ordering: top = party/uplifted, bottom = ambient/chill ──
+// Arranged in a 4-column grid (read left→right, top→bottom)
+const MOOD_ORDER = [
+  // Row 1 — peak energy / party
+  'party', 'dance', 'energize', 'activate',
+  // Row 2 — uplifted / confident
+  'happy', 'confident', 'flirty', 'social-vibe',
+  // Row 3 — warm / engaged
+  'romantic', 'date-night', 'creative', 'endurance',
+  // Row 4 — focused / steady
+  'focus', 'deep-work', 'thoughtful', 'recover',
+  // Row 5 — calm / inward
+  'calm', 'slow-down', 'pensive', 'melancholic',
+  // Row 6 — ambient
+  'ambient',
+];
+
 // ─── Main Component ───────────────────────────────────
 interface IntentSelectionProps {
   timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
