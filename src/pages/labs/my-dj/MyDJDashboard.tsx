@@ -614,36 +614,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
         </div>
       )}
 
-      {/* ═══ SYSTEM INFLUENCE ═══ */}
-      <div className="px-6 pb-4">
-        <button
-          onClick={() => setShowInfluence(!showInfluence)}
-          className="w-full flex items-center justify-between py-2"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-white/25 uppercase tracking-widest">System Influence</span>
-            <span className="text-[11px] text-white/40">{influenceLabel}</span>
-          </div>
-          <ChevronUp className={`w-3 h-3 text-white/20 transition-transform ${showInfluence ? '' : 'rotate-180'}`} />
-        </button>
-        {showInfluence && (
-          <div className="pt-2 pb-1">
-            <Slider
-              value={[intensity]}
-              onValueChange={([v]) => setIntensity(v)}
-              min={0}
-              max={100}
-              step={5}
-              className="w-full"
-            />
-            <div className="flex justify-between mt-1.5">
-              <span className="text-[9px] text-white/20">Assistive</span>
-              <span className="text-[9px] text-white/20">Transformative</span>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* ═══ ACTIVE INTENT — FIXED BOTTOM BAR ═══ */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a10]/95 backdrop-blur-2xl border-t border-white/[0.03]">
         <div className="max-w-lg mx-auto px-4 py-3">
