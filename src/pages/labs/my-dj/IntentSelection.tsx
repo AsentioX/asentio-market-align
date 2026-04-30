@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronRight, Sparkles, Blend } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Sparkles, Blend } from 'lucide-react';
 import {
-  IntentDef, INTENTS, DIMENSION_META, getSuggestions, getContextLine, getBlendLabel,
+  IntentDef, INTENTS, getSuggestions, getContextLine, getBlendLabel,
 } from './intentData';
 import { PhysioState } from './stateEngine';
 
@@ -67,59 +67,23 @@ const IntentCardCanvas = ({ gradient, isSelected, size = 'md' }: {
   );
 };
 
-// ─── Spectrum Slider ──────────────────────────────────
-const SpectrumSlider = ({ left, right, value, onChange }: {
-  left: string; right: string; value: number; onChange: (v: number) => void;
-}) => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef(false);
 
-  const handleMove = useCallback((clientX: number) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const rect = track.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    onChange(pct);
-  }, [onChange]);
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    dragging.current = true;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    handleMove(e.clientX);
-  };
-  const onPointerMove = (e: React.PointerEvent) => { if (dragging.current) handleMove(e.clientX); };
-  const onPointerUp = () => { dragging.current = false; };
-
-  return (
-    <div className="space-y-1.5">
-      <div
-        ref={trackRef}
-        className="relative h-8 rounded-full bg-white/[0.04] cursor-pointer touch-none"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-      >
-        {/* Fill */}
-        <div
-          className="absolute inset-y-0 left-0 rounded-full transition-all duration-150"
-          style={{
-            width: `${value * 100}%`,
-            background: `linear-gradient(90deg, rgba(99,102,241,0.3), rgba(249,115,22,0.3))`,
-          }}
-        />
-        {/* Thumb */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/90 shadow-lg shadow-black/30 transition-[left] duration-75"
-          style={{ left: `calc(${value * 100}% - 10px)` }}
-        />
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[10px] text-white/25">{left}</span>
-        <span className="text-[10px] text-white/25">{right}</span>
-      </div>
-    </div>
-  );
-};
+// ─── Mood ordering: top = party/uplifted, bottom = ambient/chill ──
+// Arranged in a 4-column grid (read left→right, top→bottom)
+const MOOD_ORDER = [
+  // Row 1 — peak energy / party
+  'party', 'dance', 'energize', 'activate',
+  // Row 2 — uplifted / confident
+  'happy', 'confident', 'flirty', 'social-vibe',
+  // Row 3 — warm / engaged
+  'romantic', 'date-night', 'creative', 'endurance',
+  // Row 4 — focused / steady
+  'focus', 'deep-work', 'thoughtful', 'recover',
+  // Row 5 — calm / inward
+  'calm', 'slow-down', 'pensive', 'melancholic',
+  // Row 6 — ambient
+  'ambient',
+];
 
 // ─── Main Component ───────────────────────────────────
 interface IntentSelectionProps {
@@ -136,9 +100,6 @@ const IntentSelection = ({
 }: IntentSelectionProps) => {
   const [primary, setPrimary] = useState<IntentDef | null>(null);
   const [secondary, setSecondary] = useState<IntentDef | null>(null);
-  const [expandedDim, setExpandedDim] = useState<IntentDef['dimension'] | null>(null);
-  const [showSpectrum, setShowSpectrum] = useState(false);
-  const [spectrumValues, setSpectrumValues] = useState({ energy: 0.5, social: 0.5, mood: 0.5 });
   const [showAdapting, setShowAdapting] = useState(false);
 
   const suggestions = getSuggestions(timeOfDay, physioState);
@@ -274,113 +235,47 @@ const IntentSelection = ({
         </div>
       </div>
 
-      {/* ═══ EXPLORE BY DIMENSION ═══ */}
+      {/* ═══ ALL INTENTS — 4-COLUMN GRID, SORTED BY MOOD ═══ */}
+      {/* Top: party/dance/uplifted   →   Bottom: ambient/pensive/chill */}
       <div className="px-6">
-        <p className="text-[11px] text-white/25 uppercase tracking-wider mb-3">Explore</p>
-        <div className="space-y-1.5">
-          {(Object.keys(DIMENSION_META) as IntentDef['dimension'][]).map((dim) => {
-            const meta = DIMENSION_META[dim];
-            const dimIntents = INTENTS.filter(i => i.dimension === dim);
-            const isExpanded = expandedDim === dim;
-
+        <p className="text-[11px] text-white/25 uppercase tracking-wider mb-3">All moods</p>
+        <div className="grid grid-cols-4 gap-2">
+          {MOOD_ORDER.map((id) => {
+            const intent = INTENTS.find(i => i.id === id);
+            if (!intent) return null;
+            const isActive = primary?.id === intent.id;
+            const isSecondaryActive = secondary?.id === intent.id;
             return (
-              <div key={dim}>
-                <button
-                  onClick={() => setExpandedDim(isExpanded ? null : dim)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
-                    isExpanded
-                      ? 'bg-white/[0.06] border border-white/[0.08]'
-                      : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.04]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">{meta.emoji}</span>
-                    <span className={`text-sm ${isExpanded ? 'text-white/80' : 'text-white/50'}`}>{meta.label}</span>
-                    <span className="text-[10px] text-white/20">{dimIntents.length}</span>
-                  </div>
-                  <ChevronRight
-                    className={`w-3.5 h-3.5 text-white/20 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`}
-                  />
-                </button>
-
-                {isExpanded && (
-                  <div className="grid grid-cols-2 gap-2 mt-2 pl-2 animate-fade-in">
-                    {dimIntents.map((intent) => {
-                      const isActive = primary?.id === intent.id;
-                      const isSecondaryActive = secondary?.id === intent.id;
-                      return (
-                        <button
-                          key={intent.id}
-                          onClick={() => handleSelect(intent)}
-                          className={`relative overflow-hidden rounded-xl p-3.5 text-left transition-all duration-400 border ${
-                            isActive
-                              ? 'border-white/[0.15]'
-                              : isSecondaryActive
-                                ? 'border-white/[0.1]'
-                                : 'border-white/[0.04] hover:border-white/[0.08]'
-                          }`}
-                          style={{
-                            background: isActive
-                              ? `linear-gradient(135deg, ${intent.gradient.from}25, ${intent.gradient.to}10)`
-                              : 'rgba(255,255,255,0.02)',
-                          }}
-                        >
-                          <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} />
-                          <div className="relative z-10">
-                            <p className={`text-sm font-medium ${isActive ? 'text-white' : 'text-white/70'}`}>
-                              {intent.label}
-                            </p>
-                            <p className="text-[10px] text-white/30 mt-0.5 leading-snug line-clamp-2">
-                              {intent.descriptor}
-                            </p>
-                          </div>
-                          {isSecondaryActive && (
-                            <div className="absolute top-2 right-2 z-10">
-                              <Blend className="w-3 h-3 text-white/30" />
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
+              <button
+                key={intent.id}
+                onClick={() => handleSelect(intent)}
+                className={`relative overflow-hidden rounded-xl px-2 py-3 text-center transition-all duration-300 border aspect-[1/0.85] flex items-center justify-center ${
+                  isActive
+                    ? 'border-white/[0.18] scale-[1.02]'
+                    : isSecondaryActive
+                      ? 'border-white/[0.12]'
+                      : 'border-white/[0.05] hover:border-white/[0.1]'
+                }`}
+                style={{
+                  background: isActive
+                    ? `linear-gradient(135deg, ${intent.gradient.from}30, ${intent.gradient.to}12)`
+                    : 'rgba(255,255,255,0.02)',
+                }}
+              >
+                <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} />
+                <span className={`relative z-10 text-[12px] font-medium leading-tight ${isActive ? 'text-white' : 'text-white/75'}`}>
+                  {intent.label}
+                </span>
+                {isSecondaryActive && (
+                  <div className="absolute top-1.5 right-1.5 z-10">
+                    <Blend className="w-3 h-3 text-white/40" />
                   </div>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>
-      </div>
-
-      {/* ═══ INTENT SPECTRUM ═══ */}
-      <div className="px-6">
-        <button
-          onClick={() => setShowSpectrum(!showSpectrum)}
-          className="flex items-center gap-2 text-[11px] text-white/25 uppercase tracking-wider mb-3 hover:text-white/40 transition-colors"
-        >
-          <span>Fine-tune</span>
-          <ChevronRight className={`w-3 h-3 transition-transform ${showSpectrum ? 'rotate-90' : ''}`} />
-        </button>
-        {showSpectrum && (
-          <div className="space-y-5 animate-fade-in">
-            <SpectrumSlider
-              left="Calm"
-              right="Energized"
-              value={spectrumValues.energy}
-              onChange={(v) => setSpectrumValues(s => ({ ...s, energy: v }))}
-            />
-            <SpectrumSlider
-              left="Internal"
-              right="Social"
-              value={spectrumValues.social}
-              onChange={(v) => setSpectrumValues(s => ({ ...s, social: v }))}
-            />
-            <SpectrumSlider
-              left="Serious"
-              right="Playful"
-              value={spectrumValues.mood}
-              onChange={(v) => setSpectrumValues(s => ({ ...s, mood: v }))}
-            />
-          </div>
-        )}
+        <p className="text-[10px] text-white/20 mt-3 text-center">Tap one to select · tap a second to blend</p>
       </div>
 
       {/* ═══ BLEND STATUS + CONFIRM ═══ */}
