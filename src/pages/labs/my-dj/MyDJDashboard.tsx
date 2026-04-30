@@ -7,7 +7,6 @@ import { MusicSource } from './useMyDJ';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocations, useCreateLocation, DJLocation } from '@/hooks/useMyDJScenes';
 import { IntentDef, getBlendLabel } from './intentData';
-import MusicVisualizer from './MusicVisualizer';
 
 // ─── State-driven copy & color ───────────────────────
 const STATE_NARRATIVES: Record<PhysioState, { verb: string; description: string }> = {
@@ -512,15 +511,6 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
               </div>
               <span className="text-[11px] text-white/25 tabular-nums">{formatTime(stats.durationSec)}</span>
             </div>
-
-            {/* Music-reactive visualization */}
-            <MusicVisualizer
-              params={musicParams}
-              isPlaying={isPlaying}
-              color={stateColor}
-              alignment={state.alignment}
-              height={88}
-            />
 
             {/* Adaptive params — ambient bars */}
             <div className="flex items-end gap-1 h-8">
