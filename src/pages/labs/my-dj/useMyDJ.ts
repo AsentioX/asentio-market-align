@@ -177,7 +177,7 @@ export function useMyDJ() {
         url: '',
       });
     } else {
-      const track = selectTrack(params, currentMode);
+      const track = selectTrack(params, currentMode, intentFlavorRef.current ?? undefined);
       elapsedRef.current = 0;
       setNowPlaying({
         title: track.title,
