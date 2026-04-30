@@ -48,6 +48,7 @@ export function useMyDJ() {
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
   useEffect(() => { intentFlavorRef.current = intentFlavor; }, [intentFlavor]);
+  useEffect(() => { nowPlayingRef.current = nowPlaying; }, [nowPlaying]);
 
   // Sync volume to both engines
   useEffect(() => {
