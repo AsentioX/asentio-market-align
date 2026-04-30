@@ -180,6 +180,11 @@ export function useMyDJ() {
     } else {
       const track = selectTrack(params, currentMode, intentFlavorRef.current ?? undefined);
       elapsedRef.current = 0;
+      // push current track to history before swapping
+      const current = nowPlayingRef.current;
+      if (current?.url) trackHistoryRef.current.push(current.url);
+      // cap history to last 30
+      if (trackHistoryRef.current.length > 30) trackHistoryRef.current.shift();
       setNowPlaying({
         title: track.title,
         artist: track.artist,
