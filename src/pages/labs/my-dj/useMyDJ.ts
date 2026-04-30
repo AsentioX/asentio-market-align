@@ -54,19 +54,33 @@ export function useMyDJ() {
   const musicSourceRef = useRef(musicSource);
   const [intentFlavor, setIntentFlavor] = useState<SelectionFlavor | null>(null);
   const intentFlavorRef = useRef<SelectionFlavor | null>(null);
+  const [genrePreference, setGenrePreferenceState] = useState<string | null>(null);
+  const genrePreferenceRef = useRef<string | null>(null);
   const trackHistoryRef = useRef<string[]>([]); // urls of previously played recorded tracks
   const ytHistoryRef = useRef<YouTubeTrack[]>([]);
   const ytSeedRef = useRef<YouTubeSeed | null>(null);
   const nowPlayingRef = useRef<NowPlaying | null>(null);
-  const lastTrackChangeRef = useRef<number>(0);
-  const MIN_TRACK_DWELL_MS = 45_000; // don't auto-swap tracks more often than this
 
   // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
   useEffect(() => { intentFlavorRef.current = intentFlavor; }, [intentFlavor]);
+  useEffect(() => { genrePreferenceRef.current = genrePreference; }, [genrePreference]);
   useEffect(() => { nowPlayingRef.current = nowPlaying; }, [nowPlaying]);
   useEffect(() => { ytSeedRef.current = ytSeed; }, [ytSeed]);
+
+  // Merge intent flavor with the user's chosen genre style (genre wins)
+  const getFlavor = useCallback((): SelectionFlavor | undefined => {
+    const base = intentFlavorRef.current;
+    const genre = genrePreferenceRef.current;
+    if (!genre) return base ?? undefined;
+    return {
+      vocals: base?.vocals ?? 'any',
+      bpmBias: base?.bpmBias,
+      energyBias: base?.energyBias,
+      genres: [genre],
+    };
+  }, []);
 
   // Sync volume to all engines
   useEffect(() => {
@@ -122,7 +136,7 @@ export function useMyDJ() {
       });
     } else if (source === 'recorded') {
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
-      const track = selectTrack(params, modeRef.current, intentFlavorRef.current ?? undefined);
+      const track = selectTrack(params, modeRef.current, getFlavor());
       elapsedRef.current = 0;
       setNowPlaying({
         title: track.title, artist: track.artist, genre: track.genre,
@@ -134,7 +148,7 @@ export function useMyDJ() {
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
       youtubeEngine.current.start();
       setYtLoading(true);
-      selectYouTubeTrack(params, modeRef.current, intentFlavorRef.current, ytSeedRef.current, true)
+      selectYouTubeTrack(params, modeRef.current, getFlavor() ?? null, ytSeedRef.current, true)
         .then(track => {
           if (track) {
             ytHistoryRef.current = [];
@@ -153,7 +167,7 @@ export function useMyDJ() {
     audioEngine.current.setOnTrackEnd(() => {
       if (musicSourceRef.current !== 'recorded') return;
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
-      const track = selectTrack(params, modeRef.current, intentFlavorRef.current ?? undefined);
+      const track = selectTrack(params, modeRef.current, getFlavor());
       elapsedRef.current = 0;
       setNowPlaying({
         title: track.title, artist: track.artist, genre: track.genre,
@@ -166,7 +180,7 @@ export function useMyDJ() {
     youtubeEngine.current.setOnTrackEnd(() => {
       if (musicSourceRef.current !== 'youtube') return;
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
-      selectYouTubeTrack(params, modeRef.current, intentFlavorRef.current, ytSeedRef.current)
+      selectYouTubeTrack(params, modeRef.current, getFlavor() ?? null, ytSeedRef.current)
         .then(track => {
           if (track) {
             const cur = nowPlayingRef.current;
@@ -225,7 +239,7 @@ export function useMyDJ() {
         duration: 0, elapsed: elapsedRef.current, params, url: '',
       });
     } else if (musicSourceRef.current === 'recorded') {
-      const track = selectTrack(params, currentMode, intentFlavorRef.current ?? undefined);
+      const track = selectTrack(params, currentMode, getFlavor());
       elapsedRef.current = 0;
       const current = nowPlayingRef.current;
       if (current?.url) trackHistoryRef.current.push(current.url);
@@ -237,7 +251,7 @@ export function useMyDJ() {
       audioEngine.current.loadAndPlay(track.url);
     } else if (musicSourceRef.current === 'youtube') {
       setYtLoading(true);
-      selectYouTubeTrack(params, currentMode, intentFlavorRef.current, ytSeedRef.current)
+      selectYouTubeTrack(params, currentMode, getFlavor() ?? null, ytSeedRef.current)
         .then(track => {
           if (track) {
             const cur = nowPlayingRef.current;
@@ -261,22 +275,16 @@ export function useMyDJ() {
     setMusicParams(newParams);
 
     if (isPlaying) {
+      // Generative engine smoothly retunes with bio drift; recorded/youtube tracks play through.
       if (musicSource === 'generative') {
         generativeEngine.current.setParams(newParams);
         setNowPlaying(np => np ? { ...np, params: newParams } : null);
       }
 
-      if (newState.current !== prevPhysioState.current) {
-        prevPhysioState.current = newState.current;
-        if (musicSource === 'recorded' || musicSource === 'youtube') {
-          const now = Date.now();
-          if (now - lastTrackChangeRef.current >= MIN_TRACK_DWELL_MS) {
-            lastTrackChangeRef.current = now;
-            playTrack(newParams, mode);
-            setStats(s => ({ ...s, tracksPlayed: s.tracksPlayed + 1 }));
-          }
-        }
-      }
+      // NOTE: We intentionally do NOT auto-swap recorded/YouTube tracks on bio-driven
+      // physio-state changes. Tracks play to completion unless the user changes
+      // mode, intent, source, genre, or hits skip / next.
+      prevPhysioState.current = newState.current;
 
       alignmentSumRef.current += newState.alignment;
       alignmentCountRef.current += 1;
@@ -286,7 +294,7 @@ export function useMyDJ() {
         alignmentHistory: [...s.alignmentHistory.slice(-59), { t: Date.now(), v: newState.alignment }],
       }));
     }
-  }, [bio, mode, intensity, isPlaying, musicSource, playTrack]);
+  }, [bio, mode, intensity, isPlaying, musicSource]);
 
   // Elapsed time ticker
   useEffect(() => {
@@ -306,7 +314,6 @@ export function useMyDJ() {
     alignmentSumRef.current = 0;
     alignmentCountRef.current = 0;
     elapsedRef.current = 0;
-    lastTrackChangeRef.current = Date.now();
     setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 1, likes: 0, skips: 0, alignmentHistory: [] });
 
     if (musicSourceRef.current === 'generative') {
@@ -324,7 +331,7 @@ export function useMyDJ() {
     } else if (musicSourceRef.current === 'youtube') {
       youtubeEngine.current.start();
       setYtLoading(true);
-      selectYouTubeTrack(musicParams, mode, intentFlavorRef.current, ytSeedRef.current, true)
+      selectYouTubeTrack(musicParams, mode, getFlavor() ?? null, ytSeedRef.current, true)
         .then(track => {
           if (track) playYouTube(track, musicParams);
           else setYtError('No videos found');
@@ -345,7 +352,7 @@ export function useMyDJ() {
   const skip = useCallback(() => {
     setStats(s => ({ ...s, skips: s.skips + 1, tracksPlayed: s.tracksPlayed + 1 }));
     if (musicSourceRef.current === 'recorded' || musicSourceRef.current === 'youtube') {
-      lastTrackChangeRef.current = Date.now();
+      
       playTrack(musicParams, mode);
     }
   }, [musicParams, mode, playTrack]);
@@ -455,6 +462,18 @@ export function useMyDJ() {
     resetYouTubeCache();
   }, []);
 
+  // Genre style preference — null = let the engine pick freely
+  const setGenrePreference = useCallback((genre: string | null) => {
+    setGenrePreferenceState(genre);
+    genrePreferenceRef.current = genre;
+    // Reset YouTube cache so fresh queries reflect the new genre
+    resetYouTubeCache();
+    // If actively playing a non-generative source, jump to a track that fits the new genre
+    if (isPlaying && (musicSourceRef.current === 'recorded' || musicSourceRef.current === 'youtube')) {
+      playTrack(musicParams, modeRef.current);
+    }
+  }, [isPlaying, musicParams, playTrack]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -473,5 +492,6 @@ export function useMyDJ() {
     musicSource, setMusicSource,
     intentFlavor, setIntentFlavor,
     ytSeed, setYoutubeSeed, clearYoutubeSeed, ytLoading, ytError,
+    genrePreference, setGenrePreference,
   };
 }

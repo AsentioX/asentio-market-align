@@ -77,6 +77,21 @@ const LOCATION_NAME_ICON_MAP: Record<string, string> = {
   'Patio': '☀️', 'Balcony': '🌅', 'Basement': '🎮', 'Library': '📚',
 };
 
+// Music style options. Values match TRACK_DB genres so recorded selection biases correctly;
+// for YouTube the value is fed straight into the adaptive search query.
+const GENRE_OPTIONS: { label: string; value: string | null }[] = [
+  { label: 'Auto',       value: null },
+  { label: 'Ambient',    value: 'Ambient Drift' },
+  { label: 'Lo-Fi',      value: 'Activities Lo-Fi' },
+  { label: 'Zen',        value: 'Zen Lo-Fi' },
+  { label: 'Chillhop',   value: 'Chillhop' },
+  { label: 'Jazz',       value: 'Jazz Lounge' },
+  { label: 'Soul',       value: 'Soul Lo-Fi' },
+  { label: 'Funk',       value: 'Funk Bounce' },
+  { label: 'Late Night', value: 'Late Night' },
+  { label: 'Vocals',     value: 'Indie Vocal' },
+];
+
 // ─── Breathing Orb ───────────────────────────────────
 const BreathingOrb = ({
   color,
@@ -358,6 +373,7 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
     stats, skip, previous, like, dislike, timeOfDay,
     musicSource, setMusicSource,
     ytSeed, setYoutubeSeed, clearYoutubeSeed, ytLoading, ytError,
+    genrePreference, setGenrePreference,
   } = djState;
   const [seedInput, setSeedInput] = useState('');
 
@@ -563,6 +579,28 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
                 </button>
               </div>
             </div>
+
+            {/* Music style picker — biases track selection (recorded + YouTube) */}
+            {musicSource !== 'generative' && (
+              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none -mx-1 px-1">
+                {GENRE_OPTIONS.map(opt => {
+                  const isActive = genrePreference === opt.value;
+                  return (
+                    <button
+                      key={opt.label}
+                      onClick={() => setGenrePreference(opt.value)}
+                      className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] border transition-all ${
+                        isActive
+                          ? 'bg-white/[0.12] border-white/[0.2] text-white/85'
+                          : 'bg-white/[0.02] border-white/[0.06] text-white/35 hover:text-white/60 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* YouTube seed search — only when YT is the active source */}
             {musicSource === 'youtube' && (
