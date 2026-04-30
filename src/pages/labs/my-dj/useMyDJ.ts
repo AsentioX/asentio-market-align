@@ -306,6 +306,7 @@ export function useMyDJ() {
     alignmentSumRef.current = 0;
     alignmentCountRef.current = 0;
     elapsedRef.current = 0;
+    lastTrackChangeRef.current = Date.now();
     setStats({ startedAt: new Date(), durationSec: 0, avgAlignment: 0, tracksPlayed: 1, likes: 0, skips: 0, alignmentHistory: [] });
 
     if (musicSourceRef.current === 'generative') {
