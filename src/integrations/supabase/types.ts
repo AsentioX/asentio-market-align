@@ -2445,6 +2445,57 @@ export type Database = {
         }
         Relationships: []
       }
+      mydj_yt_quota: {
+        Row: {
+          day: string
+          search_count: number
+          user_id: string
+        }
+        Insert: {
+          day?: string
+          search_count?: number
+          user_id: string
+        }
+        Update: {
+          day?: string
+          search_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mydj_yt_seeds: {
+        Row: {
+          created_at: string
+          id: string
+          mode: string
+          query: string
+          user_id: string
+          video_channel: string | null
+          video_id: string | null
+          video_title: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mode: string
+          query: string
+          user_id: string
+          video_channel?: string | null
+          video_id?: string | null
+          video_title?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mode?: string
+          query?: string
+          user_id?: string
+          video_channel?: string | null
+          video_id?: string | null
+          video_title?: string | null
+        }
+        Relationships: []
+      }
       pp_memberships: {
         Row: {
           base_rate: number
