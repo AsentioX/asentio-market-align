@@ -77,6 +77,21 @@ const LOCATION_NAME_ICON_MAP: Record<string, string> = {
   'Patio': '☀️', 'Balcony': '🌅', 'Basement': '🎮', 'Library': '📚',
 };
 
+// Music style options. Values match TRACK_DB genres so recorded selection biases correctly;
+// for YouTube the value is fed straight into the adaptive search query.
+const GENRE_OPTIONS: { label: string; value: string | null }[] = [
+  { label: 'Auto',       value: null },
+  { label: 'Ambient',    value: 'Ambient Drift' },
+  { label: 'Lo-Fi',      value: 'Activities Lo-Fi' },
+  { label: 'Zen',        value: 'Zen Lo-Fi' },
+  { label: 'Chillhop',   value: 'Chillhop' },
+  { label: 'Jazz',       value: 'Jazz Lounge' },
+  { label: 'Soul',       value: 'Soul Lo-Fi' },
+  { label: 'Funk',       value: 'Funk Bounce' },
+  { label: 'Late Night', value: 'Late Night' },
+  { label: 'Vocals',     value: 'Indie Vocal' },
+];
+
 // ─── Breathing Orb ───────────────────────────────────
 const BreathingOrb = ({
   color,
