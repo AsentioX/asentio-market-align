@@ -462,6 +462,18 @@ export function useMyDJ() {
     resetYouTubeCache();
   }, []);
 
+  // Genre style preference — null = let the engine pick freely
+  const setGenrePreference = useCallback((genre: string | null) => {
+    setGenrePreferenceState(genre);
+    genrePreferenceRef.current = genre;
+    // Reset YouTube cache so fresh queries reflect the new genre
+    resetYouTubeCache();
+    // If actively playing a non-generative source, jump to a track that fits the new genre
+    if (isPlaying && (musicSourceRef.current === 'recorded' || musicSourceRef.current === 'youtube')) {
+      playTrack(musicParams, modeRef.current);
+    }
+  }, [isPlaying, musicParams, playTrack]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
