@@ -580,6 +580,28 @@ const MyDJDashboard = ({ djState, activeIntent, onChangeIntent }: DashboardProps
               </div>
             </div>
 
+            {/* Music style picker — biases track selection (recorded + YouTube) */}
+            {musicSource !== 'generative' && (
+              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none -mx-1 px-1">
+                {GENRE_OPTIONS.map(opt => {
+                  const isActive = genrePreference === opt.value;
+                  return (
+                    <button
+                      key={opt.label}
+                      onClick={() => setGenrePreference(opt.value)}
+                      className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] border transition-all ${
+                        isActive
+                          ? 'bg-white/[0.12] border-white/[0.2] text-white/85'
+                          : 'bg-white/[0.02] border-white/[0.06] text-white/35 hover:text-white/60 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             {/* YouTube seed search — only when YT is the active source */}
             {musicSource === 'youtube' && (
               <div className="flex items-center gap-2">
