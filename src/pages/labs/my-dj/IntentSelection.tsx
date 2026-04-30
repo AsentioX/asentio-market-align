@@ -67,59 +67,6 @@ const IntentCardCanvas = ({ gradient, isSelected, size = 'md' }: {
   );
 };
 
-// ─── Spectrum Slider ──────────────────────────────────
-const SpectrumSlider = ({ left, right, value, onChange }: {
-  left: string; right: string; value: number; onChange: (v: number) => void;
-}) => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef(false);
-
-  const handleMove = useCallback((clientX: number) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const rect = track.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    onChange(pct);
-  }, [onChange]);
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    dragging.current = true;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    handleMove(e.clientX);
-  };
-  const onPointerMove = (e: React.PointerEvent) => { if (dragging.current) handleMove(e.clientX); };
-  const onPointerUp = () => { dragging.current = false; };
-
-  return (
-    <div className="space-y-1.5">
-      <div
-        ref={trackRef}
-        className="relative h-8 rounded-full bg-white/[0.04] cursor-pointer touch-none"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-      >
-        {/* Fill */}
-        <div
-          className="absolute inset-y-0 left-0 rounded-full transition-all duration-150"
-          style={{
-            width: `${value * 100}%`,
-            background: `linear-gradient(90deg, rgba(99,102,241,0.3), rgba(249,115,22,0.3))`,
-          }}
-        />
-        {/* Thumb */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/90 shadow-lg shadow-black/30 transition-[left] duration-75"
-          style={{ left: `calc(${value * 100}% - 10px)` }}
-        />
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[10px] text-white/25">{left}</span>
-        <span className="text-[10px] text-white/25">{right}</span>
-      </div>
-    </div>
-  );
-};
 
 // ─── Mood ordering: top = party/uplifted, bottom = ambient/chill ──
 // Arranged in a 4-column grid (read left→right, top→bottom)
