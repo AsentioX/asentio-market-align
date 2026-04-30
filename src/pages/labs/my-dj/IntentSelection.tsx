@@ -274,113 +274,47 @@ const IntentSelection = ({
         </div>
       </div>
 
-      {/* ═══ EXPLORE BY DIMENSION ═══ */}
+      {/* ═══ ALL INTENTS — 4-COLUMN GRID, SORTED BY MOOD ═══ */}
+      {/* Top: party/dance/uplifted   →   Bottom: ambient/pensive/chill */}
       <div className="px-6">
-        <p className="text-[11px] text-white/25 uppercase tracking-wider mb-3">Explore</p>
-        <div className="space-y-1.5">
-          {(Object.keys(DIMENSION_META) as IntentDef['dimension'][]).map((dim) => {
-            const meta = DIMENSION_META[dim];
-            const dimIntents = INTENTS.filter(i => i.dimension === dim);
-            const isExpanded = expandedDim === dim;
-
+        <p className="text-[11px] text-white/25 uppercase tracking-wider mb-3">All moods</p>
+        <div className="grid grid-cols-4 gap-2">
+          {MOOD_ORDER.map((id) => {
+            const intent = INTENTS.find(i => i.id === id);
+            if (!intent) return null;
+            const isActive = primary?.id === intent.id;
+            const isSecondaryActive = secondary?.id === intent.id;
             return (
-              <div key={dim}>
-                <button
-                  onClick={() => setExpandedDim(isExpanded ? null : dim)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
-                    isExpanded
-                      ? 'bg-white/[0.06] border border-white/[0.08]'
-                      : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.04]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">{meta.emoji}</span>
-                    <span className={`text-sm ${isExpanded ? 'text-white/80' : 'text-white/50'}`}>{meta.label}</span>
-                    <span className="text-[10px] text-white/20">{dimIntents.length}</span>
-                  </div>
-                  <ChevronRight
-                    className={`w-3.5 h-3.5 text-white/20 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`}
-                  />
-                </button>
-
-                {isExpanded && (
-                  <div className="grid grid-cols-2 gap-2 mt-2 pl-2 animate-fade-in">
-                    {dimIntents.map((intent) => {
-                      const isActive = primary?.id === intent.id;
-                      const isSecondaryActive = secondary?.id === intent.id;
-                      return (
-                        <button
-                          key={intent.id}
-                          onClick={() => handleSelect(intent)}
-                          className={`relative overflow-hidden rounded-xl p-3.5 text-left transition-all duration-400 border ${
-                            isActive
-                              ? 'border-white/[0.15]'
-                              : isSecondaryActive
-                                ? 'border-white/[0.1]'
-                                : 'border-white/[0.04] hover:border-white/[0.08]'
-                          }`}
-                          style={{
-                            background: isActive
-                              ? `linear-gradient(135deg, ${intent.gradient.from}25, ${intent.gradient.to}10)`
-                              : 'rgba(255,255,255,0.02)',
-                          }}
-                        >
-                          <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} />
-                          <div className="relative z-10">
-                            <p className={`text-sm font-medium ${isActive ? 'text-white' : 'text-white/70'}`}>
-                              {intent.label}
-                            </p>
-                            <p className="text-[10px] text-white/30 mt-0.5 leading-snug line-clamp-2">
-                              {intent.descriptor}
-                            </p>
-                          </div>
-                          {isSecondaryActive && (
-                            <div className="absolute top-2 right-2 z-10">
-                              <Blend className="w-3 h-3 text-white/30" />
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
+              <button
+                key={intent.id}
+                onClick={() => handleSelect(intent)}
+                className={`relative overflow-hidden rounded-xl px-2 py-3 text-center transition-all duration-300 border aspect-[1/0.85] flex items-center justify-center ${
+                  isActive
+                    ? 'border-white/[0.18] scale-[1.02]'
+                    : isSecondaryActive
+                      ? 'border-white/[0.12]'
+                      : 'border-white/[0.05] hover:border-white/[0.1]'
+                }`}
+                style={{
+                  background: isActive
+                    ? `linear-gradient(135deg, ${intent.gradient.from}30, ${intent.gradient.to}12)`
+                    : 'rgba(255,255,255,0.02)',
+                }}
+              >
+                <IntentCardCanvas gradient={intent.gradient} isSelected={isActive || isSecondaryActive} />
+                <span className={`relative z-10 text-[12px] font-medium leading-tight ${isActive ? 'text-white' : 'text-white/75'}`}>
+                  {intent.label}
+                </span>
+                {isSecondaryActive && (
+                  <div className="absolute top-1.5 right-1.5 z-10">
+                    <Blend className="w-3 h-3 text-white/40" />
                   </div>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>
-      </div>
-
-      {/* ═══ INTENT SPECTRUM ═══ */}
-      <div className="px-6">
-        <button
-          onClick={() => setShowSpectrum(!showSpectrum)}
-          className="flex items-center gap-2 text-[11px] text-white/25 uppercase tracking-wider mb-3 hover:text-white/40 transition-colors"
-        >
-          <span>Fine-tune</span>
-          <ChevronRight className={`w-3 h-3 transition-transform ${showSpectrum ? 'rotate-90' : ''}`} />
-        </button>
-        {showSpectrum && (
-          <div className="space-y-5 animate-fade-in">
-            <SpectrumSlider
-              left="Calm"
-              right="Energized"
-              value={spectrumValues.energy}
-              onChange={(v) => setSpectrumValues(s => ({ ...s, energy: v }))}
-            />
-            <SpectrumSlider
-              left="Internal"
-              right="Social"
-              value={spectrumValues.social}
-              onChange={(v) => setSpectrumValues(s => ({ ...s, social: v }))}
-            />
-            <SpectrumSlider
-              left="Serious"
-              right="Playful"
-              value={spectrumValues.mood}
-              onChange={(v) => setSpectrumValues(s => ({ ...s, mood: v }))}
-            />
-          </div>
-        )}
+        <p className="text-[10px] text-white/20 mt-3 text-center">Tap one to select · tap a second to blend</p>
       </div>
 
       {/* ═══ BLEND STATUS + CONFIRM ═══ */}
