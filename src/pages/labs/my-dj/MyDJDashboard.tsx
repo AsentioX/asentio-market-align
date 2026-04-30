@@ -7,6 +7,7 @@ import { MusicSource } from './useMyDJ';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocations, useCreateLocation, DJLocation } from '@/hooks/useMyDJScenes';
 import { IntentDef, getBlendLabel } from './intentData';
+import MusicVisualizer from './MusicVisualizer';
 
 // ─── State-driven copy & color ───────────────────────
 const STATE_NARRATIVES: Record<PhysioState, { verb: string; description: string }> = {
