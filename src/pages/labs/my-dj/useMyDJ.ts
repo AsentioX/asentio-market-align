@@ -136,7 +136,7 @@ export function useMyDJ() {
       });
     } else if (source === 'recorded') {
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
-      const track = selectTrack(params, modeRef.current, intentFlavorRef.current ?? undefined);
+      const track = selectTrack(params, modeRef.current, getFlavor());
       elapsedRef.current = 0;
       setNowPlaying({
         title: track.title, artist: track.artist, genre: track.genre,
@@ -148,7 +148,7 @@ export function useMyDJ() {
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
       youtubeEngine.current.start();
       setYtLoading(true);
-      selectYouTubeTrack(params, modeRef.current, intentFlavorRef.current, ytSeedRef.current, true)
+      selectYouTubeTrack(params, modeRef.current, getFlavor() ?? null, ytSeedRef.current, true)
         .then(track => {
           if (track) {
             ytHistoryRef.current = [];
@@ -167,7 +167,7 @@ export function useMyDJ() {
     audioEngine.current.setOnTrackEnd(() => {
       if (musicSourceRef.current !== 'recorded') return;
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
-      const track = selectTrack(params, modeRef.current, intentFlavorRef.current ?? undefined);
+      const track = selectTrack(params, modeRef.current, getFlavor());
       elapsedRef.current = 0;
       setNowPlaying({
         title: track.title, artist: track.artist, genre: track.genre,
@@ -180,7 +180,7 @@ export function useMyDJ() {
     youtubeEngine.current.setOnTrackEnd(() => {
       if (musicSourceRef.current !== 'youtube') return;
       const params = computeMusicParams(computeState(bio, modeRef.current), bio, modeRef.current, intensity);
-      selectYouTubeTrack(params, modeRef.current, intentFlavorRef.current, ytSeedRef.current)
+      selectYouTubeTrack(params, modeRef.current, getFlavor() ?? null, ytSeedRef.current)
         .then(track => {
           if (track) {
             const cur = nowPlayingRef.current;
@@ -239,7 +239,7 @@ export function useMyDJ() {
         duration: 0, elapsed: elapsedRef.current, params, url: '',
       });
     } else if (musicSourceRef.current === 'recorded') {
-      const track = selectTrack(params, currentMode, intentFlavorRef.current ?? undefined);
+      const track = selectTrack(params, currentMode, getFlavor());
       elapsedRef.current = 0;
       const current = nowPlayingRef.current;
       if (current?.url) trackHistoryRef.current.push(current.url);
@@ -251,7 +251,7 @@ export function useMyDJ() {
       audioEngine.current.loadAndPlay(track.url);
     } else if (musicSourceRef.current === 'youtube') {
       setYtLoading(true);
-      selectYouTubeTrack(params, currentMode, intentFlavorRef.current, ytSeedRef.current)
+      selectYouTubeTrack(params, currentMode, getFlavor() ?? null, ytSeedRef.current)
         .then(track => {
           if (track) {
             const cur = nowPlayingRef.current;
@@ -331,7 +331,7 @@ export function useMyDJ() {
     } else if (musicSourceRef.current === 'youtube') {
       youtubeEngine.current.start();
       setYtLoading(true);
-      selectYouTubeTrack(musicParams, mode, intentFlavorRef.current, ytSeedRef.current, true)
+      selectYouTubeTrack(musicParams, mode, getFlavor() ?? null, ytSeedRef.current, true)
         .then(track => {
           if (track) playYouTube(track, musicParams);
           else setYtError('No videos found');
