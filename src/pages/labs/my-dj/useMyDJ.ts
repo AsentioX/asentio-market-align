@@ -54,12 +54,12 @@ export function useMyDJ() {
   const musicSourceRef = useRef(musicSource);
   const [intentFlavor, setIntentFlavor] = useState<SelectionFlavor | null>(null);
   const intentFlavorRef = useRef<SelectionFlavor | null>(null);
+  const [genrePreference, setGenrePreferenceState] = useState<string | null>(null);
+  const genrePreferenceRef = useRef<string | null>(null);
   const trackHistoryRef = useRef<string[]>([]); // urls of previously played recorded tracks
   const ytHistoryRef = useRef<YouTubeTrack[]>([]);
   const ytSeedRef = useRef<YouTubeSeed | null>(null);
   const nowPlayingRef = useRef<NowPlaying | null>(null);
-  const lastTrackChangeRef = useRef<number>(0);
-  const MIN_TRACK_DWELL_MS = 45_000; // don't auto-swap tracks more often than this
 
   // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
