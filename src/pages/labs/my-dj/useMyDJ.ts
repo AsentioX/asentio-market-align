@@ -65,8 +65,22 @@ export function useMyDJ() {
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
   useEffect(() => { intentFlavorRef.current = intentFlavor; }, [intentFlavor]);
+  useEffect(() => { genrePreferenceRef.current = genrePreference; }, [genrePreference]);
   useEffect(() => { nowPlayingRef.current = nowPlaying; }, [nowPlaying]);
   useEffect(() => { ytSeedRef.current = ytSeed; }, [ytSeed]);
+
+  // Merge intent flavor with the user's chosen genre style (genre wins)
+  const getFlavor = useCallback((): SelectionFlavor | undefined => {
+    const base = intentFlavorRef.current;
+    const genre = genrePreferenceRef.current;
+    if (!genre) return base ?? undefined;
+    return {
+      vocals: base?.vocals ?? 'any',
+      bpmBias: base?.bpmBias,
+      energyBias: base?.energyBias,
+      genres: [genre],
+    };
+  }, []);
 
   // Sync volume to all engines
   useEffect(() => {
