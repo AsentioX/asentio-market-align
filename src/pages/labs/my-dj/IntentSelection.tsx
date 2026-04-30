@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronRight, Sparkles, Blend } from 'lucide-react';
+import { Sparkles, Blend } from 'lucide-react';
 import {
-  IntentDef, INTENTS, DIMENSION_META, getSuggestions, getContextLine, getBlendLabel,
+  IntentDef, INTENTS, getSuggestions, getContextLine, getBlendLabel,
 } from './intentData';
 import { PhysioState } from './stateEngine';
 
