@@ -120,23 +120,23 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+          className="flex items-center gap-1.5 text-xs text-stone-900/40 hover:text-stone-900/70 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back
         </button>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/40">
           Quick Log
         </span>
       </div>
 
       <div>
-        <h2 className="text-base font-semibold text-white">Log an exercise</h2>
-        <p className="text-xs text-white/40 mt-0.5">Just the essentials — name it and add a number.</p>
+        <h2 className="text-base font-semibold text-stone-900">Log an exercise</h2>
+        <p className="text-xs text-stone-900/40 mt-0.5">Just the essentials — name it and add a number.</p>
       </div>
 
       {/* Type */}
       <div>
-        <label className="text-[10px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/40 block mb-1.5">
           Type
         </label>
         <div className="grid grid-cols-4 gap-1.5">
@@ -147,7 +147,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
               className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border text-[11px] transition-all ${
                 state.type === opt.value
                   ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                  : 'bg-white/[0.03] border-white/[0.06] text-white/50 hover:bg-white/[0.06]'
+                  : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/50 hover:bg-stone-900/[0.06]'
               }`}
             >
               <span className="text-base">{opt.emoji}</span>
@@ -159,7 +159,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
 
       {/* Name */}
       <div>
-        <label className="text-[10px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/40 block mb-1.5">
           What will you do?
         </label>
         <div className="relative">
@@ -169,7 +169,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
             onChange={e => update({ name: e.target.value })}
             placeholder="e.g. Row, Push Ups, Squats"
             maxLength={60}
-            className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-3 pr-11 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-emerald-500/40"
+            className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-xl pl-3 pr-11 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/25 focus:outline-none focus:border-emerald-500/40"
             autoFocus
           />
           <button
@@ -246,35 +246,35 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
       {/* Quick Presets Modal */}
       {presetsOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-stone-900/30 backdrop-blur-sm p-4"
           onClick={() => setPresetsOpen(false)}
         >
           <div
-            className="w-full max-w-sm bg-neutral-900 border border-white/10 rounded-2xl p-4 shadow-2xl"
+            className="w-full max-w-sm bg-neutral-900 border border-stone-900/10 rounded-2xl p-4 shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white">
-                Quick presets <span className="text-white/40 font-normal">· {typeMeta.label}</span>
+              <h3 className="text-sm font-semibold text-stone-900">
+                Quick presets <span className="text-stone-900/40 font-normal">· {typeMeta.label}</span>
               </h3>
               <button
                 onClick={() => setPresetsOpen(false)}
-                className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60"
+                className="w-7 h-7 rounded-lg bg-stone-900/5 hover:bg-stone-900/10 flex items-center justify-center text-stone-900/60"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-xs text-white/40 mb-3">Pick one to fill in the form.</p>
+            <p className="text-xs text-stone-900/40 mb-3">Pick one to fill in the form.</p>
             <div className="grid grid-cols-2 gap-1.5 max-h-[60vh] overflow-y-auto pr-0.5">
               {QUICK_PRESETS.filter(p => p.type === state.type).map(p => (
                 <button
                   key={p.label}
                   onClick={() => applyPreset(p)}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-left transition-all"
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-stone-900/[0.04] border border-stone-900/10 hover:bg-stone-900/[0.06] text-left transition-all"
                 >
                   <span className="text-base">{p.emoji}</span>
-                  <span className="text-xs text-white/80 font-medium truncate">{p.label}</span>
+                  <span className="text-xs text-stone-900/80 font-medium truncate">{p.label}</span>
                 </button>
               ))}
             </div>
@@ -289,8 +289,8 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
         disabled={!canSave}
         className={`w-full flex items-center justify-center gap-2 font-semibold py-3.5 rounded-2xl transition-all ${
           canSave
-            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white active:scale-[0.98] shadow-lg shadow-emerald-500/20'
-            : 'bg-white/[0.04] text-white/30 cursor-not-allowed'
+            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-stone-900 active:scale-[0.98] shadow-lg shadow-emerald-500/20'
+            : 'bg-stone-900/[0.05] text-stone-900/30 cursor-not-allowed'
         }`}
       >
         <Check className="w-4 h-4" />
@@ -315,15 +315,15 @@ const NumberField = ({ label, icon, value, onChange, min = 0, max = 999, step = 
   const dec = () => onChange(Math.max(min, +(value - step).toFixed(decimals)));
   const inc = () => onChange(Math.min(max, +(value + step).toFixed(decimals)));
   return (
-    <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5">
-      <div className="flex items-center gap-1 text-[10px] text-white/40 font-medium mb-1.5">
+    <div className="rounded-xl border border-stone-900/10 bg-stone-900/[0.04] p-2.5">
+      <div className="flex items-center gap-1 text-[10px] text-stone-900/40 font-medium mb-1.5">
         {icon}
         <span>{label}</span>
       </div>
       <div className="flex items-center gap-1.5">
         <button
           onClick={dec}
-          className="w-7 h-7 rounded-lg bg-white/5 text-white/60 text-sm font-bold hover:bg-white/10 transition-colors"
+          className="w-7 h-7 rounded-lg bg-stone-900/5 text-stone-900/60 text-sm font-bold hover:bg-stone-900/10 transition-colors"
           aria-label={`Decrease ${label}`}
         >−</button>
         <input
@@ -335,11 +335,11 @@ const NumberField = ({ label, icon, value, onChange, min = 0, max = 999, step = 
             else onChange(0);
           }}
           step={step}
-          className="flex-1 min-w-0 bg-transparent text-center text-base font-bold text-white tabular-nums focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="flex-1 min-w-0 bg-transparent text-center text-base font-bold text-stone-900 tabular-nums focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <button
           onClick={inc}
-          className="w-7 h-7 rounded-lg bg-white/5 text-white/60 text-sm font-bold hover:bg-white/10 transition-colors"
+          className="w-7 h-7 rounded-lg bg-stone-900/5 text-stone-900/60 text-sm font-bold hover:bg-stone-900/10 transition-colors"
           aria-label={`Increase ${label}`}
         >+</button>
       </div>

@@ -196,16 +196,16 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           {weather && weather.code >= 61 && weather.code <= 82 && (
             <>
               {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="absolute w-px bg-white/40 animate-[fall_1s_linear_infinite]" style={{ left: `${(i / 20) * 100}%`, top: '-10%', height: '15%', animationDelay: `${i * 0.05}s`, animationDuration: `${0.6 + Math.random() * 0.4}s` }} />
+                <div key={i} className="absolute w-px bg-stone-900/20 animate-[fall_1s_linear_infinite]" style={{ left: `${(i / 20) * 100}%`, top: '-10%', height: '15%', animationDelay: `${i * 0.05}s`, animationDuration: `${0.6 + Math.random() * 0.4}s` }} />
               ))}
             </>
           )}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-stone-900/20 via-stone-900/10 to-transparent" />
 
         <div className="relative z-10 px-6 py-5">
           {/* Top row: greeting */}
-          <p className="text-white/60 text-xs uppercase tracking-[0.2em]">{greeting}</p>
+          <p className="text-stone-900/60 text-xs uppercase tracking-[0.2em]">{greeting}</p>
           <h2 className="text-2xl font-bold mt-0.5">{displayName}</h2>
 
           {/* Main weather row */}
@@ -217,10 +217,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
               <div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-light tracking-tight">{weather?.temp ?? '--'}</span>
-                  <span className="text-lg text-white/60">°F</span>
+                  <span className="text-lg text-stone-900/60">°F</span>
                 </div>
                 {weather && (
-                  <p className="text-sm text-white/50 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
+                  <p className="text-sm text-stone-900/50 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
                 )}
               </div>
             </div>
@@ -229,8 +229,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <div className="text-right">
               {weather && (
                 <>
-                  <p className="text-base font-medium text-white/90">{getWeatherDescription(weather.code)}</p>
-                  <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-white/50">
+                  <p className="text-base font-medium text-stone-900/90">{getWeatherDescription(weather.code)}</p>
+                  <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-stone-900/50">
                     <span className="flex items-center gap-1"><Droplets className="w-3 h-3" />{weather.humidity}%</span>
                     <span className="flex items-center gap-1"><Wind className="w-3 h-3" />{Math.round(weather.windSpeed)} mph</span>
                   </div>
@@ -240,9 +240,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           </div>
 
           {/* Bottom row: location + sunset/sunrise */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/10">
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-900/10">
             {weather && (
-              <div className="flex items-center gap-1.5 text-xs text-white/50">
+              <div className="flex items-center gap-1.5 text-xs text-stone-900/50">
                 <MapPin className="w-3 h-3" />
                 <span>{weather.city}</span>
               </div>
@@ -254,10 +254,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 ) : (
                   <Sunrise className="w-3.5 h-3.5 text-amber-300" />
                 )}
-                <span className="text-xs text-white/50">
+                <span className="text-xs text-stone-900/50">
                   {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
                 </span>
-                <span className="text-xs text-white/80 font-mono font-medium">{sunCountdown}</span>
+                <span className="text-xs text-stone-900/80 font-mono font-medium">{sunCountdown}</span>
               </div>
             )}
           </div>
@@ -284,29 +284,29 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
               {/* Dismiss button */}
               <button
                 onClick={() => setFunFactDismissed(true)}
-                className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-20"
+                className="absolute top-3 right-3 w-6 h-6 rounded-full bg-stone-900/10 hover:bg-stone-900/15 flex items-center justify-center transition-colors z-20"
               >
-                <X className="w-3.5 h-3.5 text-white/50" />
+                <X className="w-3.5 h-3.5 text-stone-900/50" />
               </button>
               <div className="flex items-start gap-4 pr-6">
                 <div className="text-5xl shrink-0 animate-[pulse_3s_ease-in-out_infinite]">{milestone.emoji}</div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="text-base">{cat.icon}</span>
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">{cat.label} Milestone</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/40">{cat.label} Milestone</span>
                   </div>
                   <h4 className={`text-lg font-bold ${milestone.accent}`}>{milestone.title}</h4>
-                  <p className="text-sm text-white/70 mt-0.5 leading-snug">{milestone.desc}</p>
-                  <p className="text-[10px] text-white/30 mt-2">{typeof value === 'number' && value >= 1000 ? formatNum(value) : value.toFixed(1)} {cat.unit} total</p>
+                  <p className="text-sm text-stone-900/70 mt-0.5 leading-snug">{milestone.desc}</p>
+                  <p className="text-[10px] text-stone-900/30 mt-2">{typeof value === 'number' && value >= 1000 ? formatNum(value) : value.toFixed(1)} {cat.unit} total</p>
                 </div>
               </div>
               {next && (
-                <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                <div className="mt-4 pt-3 border-t border-stone-900/10">
                   <div className="flex items-center justify-between text-[10px] mb-1.5">
-                    <span className="text-white/40">Next: {next.emoji} {next.title}</span>
-                    <span className="text-white/30">{formatNum(Math.round(next.threshold - value))} {cat.unit} to go</span>
+                    <span className="text-stone-900/40">Next: {next.emoji} {next.title}</span>
+                    <span className="text-stone-900/30">{formatNum(Math.round(next.threshold - value))} {cat.unit} to go</span>
                   </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-stone-900/5 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full bg-gradient-to-r ${milestone.gradientBar} transition-all`}
                       style={{ width: `${Math.min((value / next.threshold) * 100, 100)}%` }}
@@ -320,7 +320,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                     <button
                       key={i}
                       onClick={() => setMilestoneIdx(i)}
-                      className={`w-2 h-2 rounded-full transition-all ${i === activeMilestoneIdx ? `${milestone.accent.replace('text-', 'bg-')} scale-125` : 'bg-white/20 hover:bg-white/40'}`}
+                      className={`w-2 h-2 rounded-full transition-all ${i === activeMilestoneIdx ? `${milestone.accent.replace('text-', 'bg-')} scale-125` : 'bg-stone-900/15 hover:bg-stone-900/20'}`}
                     />
                   ))}
                 </div>
@@ -332,18 +332,18 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       {/* Coaching Insights */}
       {goals.length > 0 && (
-        <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Coaching</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Coaching</span>
             </div>
             <button onClick={() => onNavigate('goals')} className="text-xs text-emerald-400 flex items-center gap-0.5 font-medium">
               Goals <ChevronRight className="w-3 h-3" />
             </button>
           </div>
           {insights.slice(0, 2).map((insight, i) => (
-            <p key={i} className="text-[12px] text-white/60 leading-relaxed">{insight}</p>
+            <p key={i} className="text-[12px] text-stone-900/60 leading-relaxed">{insight}</p>
           ))}
         </div>
       )}
@@ -353,23 +353,23 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Target className="w-4 h-4 text-emerald-400" />
-            <span className="text-sm font-semibold text-white">Goal Progress</span>
+            <span className="text-sm font-semibold text-stone-900">Goal Progress</span>
           </div>
           <div className="space-y-2">
             {goals.filter(g => g.status === 'active').map(g => {
               const pct = g.target_value > 0 ? Math.min(100, Math.round(((g.current_value ?? 0) / g.target_value) * 100)) : 0;
               return (
-                <div key={g.id} className="bg-white/[0.03] rounded-xl border border-white/[0.06] p-3">
+                <div key={g.id} className="bg-stone-900/[0.04] rounded-xl border border-stone-900/10 p-3">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-medium text-white/70 truncate">{g.name}</span>
+                    <span className="text-xs font-medium text-stone-900/70 truncate">{g.name}</span>
                     <span className="text-xs font-bold text-emerald-400">{pct}%</span>
                   </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-stone-900/5 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
                   <div className="flex justify-between mt-1">
-                    <span className="text-[9px] text-white/25">{g.current_value ?? 0} / {g.target_value} {g.metric}</span>
-                    {g.deadline && <span className="text-[9px] text-white/20">Due {new Date(g.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                    <span className="text-[9px] text-stone-900/25">{g.current_value ?? 0} / {g.target_value} {g.metric}</span>
+                    {g.deadline && <span className="text-[9px] text-stone-900/20">Due {new Date(g.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                   </div>
                 </div>
               );
@@ -379,7 +379,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       )}
 
       {/* This Week + Daily Goal combined */}
-      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
         <div className="flex items-center gap-2 mb-3">
           <Calendar className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">This Week</span>
@@ -407,13 +407,13 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                           ? isToday
                             ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]'
                             : 'bg-emerald-500/40'
-                          : 'bg-white/[0.06]'
+                          : 'bg-stone-900/[0.06]'
                       }`}
                       style={{ height: hasData ? barH : 8 }}
                     />
                   </div>
-                  <span className={`text-[9px] ${isToday ? 'text-white/70 font-medium' : 'text-white/30'}`}>{day}</span>
-                  <span className={`text-[9px] ${hasData ? 'text-emerald-400/70' : 'text-white/15'}`}>
+                  <span className={`text-[9px] ${isToday ? 'text-stone-900/70 font-medium' : 'text-stone-900/30'}`}>{day}</span>
+                  <span className={`text-[9px] ${hasData ? 'text-emerald-400/70' : 'text-stone-900/15'}`}>
                     {hasData ? `${mins}m` : ''}
                   </span>
                 </div>
@@ -424,11 +424,11 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Target className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Daily Goal</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Daily Goal</span>
           </div>
-          <span className="text-xs text-white/30">{todayScore} / {profile.dailyGoal} pts</span>
+          <span className="text-xs text-stone-900/30">{todayScore} / {profile.dailyGoal} pts</span>
         </div>
-        <div className="h-3 bg-white/5 rounded-full overflow-hidden">
+        <div className="h-3 bg-stone-900/5 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all shadow-[0_0_12px_rgba(52,211,153,0.4)]"
             style={{ width: `${Math.min((todayScore / Math.max(profile.dailyGoal, 1)) * 100, 100)}%` }}
@@ -439,10 +439,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       <ProgressAnalytics />
 
-      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl border border-white/[0.08] overflow-hidden">
+      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl border border-stone-900/10 overflow-hidden">
         {/* Period tabs */}
-        <div className="px-4 pt-4 pb-3 border-b border-white/[0.06]">
-          <div className="flex items-center gap-1.5 bg-white/[0.04] rounded-xl p-1 border border-white/[0.06]">
+        <div className="px-4 pt-4 pb-3 border-b border-stone-900/10">
+          <div className="flex items-center gap-1.5 bg-stone-900/[0.05] rounded-xl p-1 border border-stone-900/10">
             {(['week', 'month', 'all'] as Period[]).map(p => (
               <button
                 key={p}
@@ -450,7 +450,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${
                   period === p
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 shadow-sm'
-                    : 'text-white/40 hover:text-white/60'
+                    : 'text-stone-900/40 hover:text-stone-900/60'
                 }`}
               >
                 {p === 'week' ? 'This Week' : p === 'month' ? 'This Month' : 'All Time'}
@@ -462,7 +462,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         <div className="p-4 space-y-5">
       {/* Overview Stats */}
       <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">{periodLabel} Overview</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50 mb-3">{periodLabel} Overview</h3>
         <div className="grid grid-cols-3 gap-3">
           {[
             { icon: <Dumbbell className="w-4 h-4" />, value: overview.workouts, label: 'Workouts', color: 'text-blue-400', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10' },
@@ -473,11 +473,11 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             { icon: <Target className="w-4 h-4" />, value: formatNum(overview.totalReps), label: 'Total Reps', color: 'text-emerald-400', bg: 'from-emerald-500/20 to-emerald-600/5', border: 'border-emerald-500/10' },
           ].map((stat, i) => (
             <div key={i} className={`bg-gradient-to-b ${stat.bg} backdrop-blur-sm rounded-2xl p-3.5 border ${stat.border}`}>
-              <div className={`w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center ${stat.color} mb-2`}>
+              <div className={`w-8 h-8 rounded-xl bg-stone-900/5 flex items-center justify-center ${stat.color} mb-2`}>
                 {stat.icon}
               </div>
               <p className="text-xl font-bold">{stat.value}</p>
-              <p className="text-[10px] text-white/40 mt-0.5">{stat.label}</p>
+              <p className="text-[10px] text-stone-900/40 mt-0.5">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -485,22 +485,22 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       {/* Exercise Breakdowns */}
       <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Exercise Totals — {periodLabel}</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50 mb-3">Exercise Totals — {periodLabel}</h3>
         <div className="space-y-2">
           {exerciseStats.length === 0 && (
-            <p className="text-xs text-white/40 text-center py-6">No exercises logged yet. Start a workout to see your totals here.</p>
+            <p className="text-xs text-stone-900/40 text-center py-6">No exercises logged yet. Start a workout to see your totals here.</p>
           )}
           {exerciseStats.map((ex) => {
             const stat = period === 'all' ? ex.allTime : period === 'month' ? ex.month : ex.week;
             return (
-              <div key={ex.name} className="flex items-center gap-3 bg-gradient-to-r from-white/[0.05] to-white/[0.02] rounded-2xl p-3.5 border border-white/[0.06]">
+              <div key={ex.name} className="flex items-center gap-3 bg-gradient-to-r from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-3.5 border border-stone-900/10">
                 <span className="text-2xl w-10 text-center">{ex.icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{ex.name}</p>
-                  <p className="text-[10px] text-white/40">{ex.type === 'cardio' ? 'Distance' : ex.type === 'strength' ? 'Volume lifted' : 'Reps completed'}</p>
+                  <p className="text-[10px] text-stone-900/40">{ex.type === 'cardio' ? 'Distance' : ex.type === 'strength' ? 'Volume lifted' : 'Reps completed'}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold">{typeof stat.value === 'number' && stat.value >= 1000 ? formatNum(stat.value) : stat.value} <span className="text-[10px] text-white/40 font-normal">{stat.unit}</span></p>
+                  <p className="text-sm font-bold">{typeof stat.value === 'number' && stat.value >= 1000 ? formatNum(stat.value) : stat.value} <span className="text-[10px] text-stone-900/40 font-normal">{stat.unit}</span></p>
                   {ex.pr && <p className="text-[9px] text-amber-400">PR: {ex.pr}</p>}
                 </div>
               </div>
@@ -511,7 +511,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       {/* Body Composition Trends */}
       <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Body Composition</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50 mb-3">Body Composition</h3>
         <div className="grid grid-cols-3 gap-3 mb-3">
           {[
             { label: 'Weight', value: `${bodyLatest.weight}`, unit: 'kg', delta: weightDelta, color: 'text-blue-400', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10', invertGood: true },
@@ -522,9 +522,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             const isNeutral = m.delta === 0;
             return (
               <div key={i} className={`bg-gradient-to-b ${m.bg} rounded-2xl p-3.5 border ${m.border}`}>
-                <p className="text-[10px] text-white/40 mb-1">{m.label}</p>
-                <p className="text-xl font-bold">{m.value}<span className="text-[10px] text-white/40 font-normal ml-0.5">{m.unit}</span></p>
-                <div className={`flex items-center gap-0.5 mt-1 text-[10px] font-medium ${isNeutral ? 'text-white/30' : isGood ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <p className="text-[10px] text-stone-900/40 mb-1">{m.label}</p>
+                <p className="text-xl font-bold">{m.value}<span className="text-[10px] text-stone-900/40 font-normal ml-0.5">{m.unit}</span></p>
+                <div className={`flex items-center gap-0.5 mt-1 text-[10px] font-medium ${isNeutral ? 'text-stone-900/30' : isGood ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {isNeutral ? <Minus className="w-3 h-3" /> : isGood ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
                   {Math.abs(m.delta).toFixed(1)} {m.unit}
                 </div>
@@ -533,12 +533,12 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           })}
         </div>
         {/* Trend placeholder — we don't yet track historical body composition */}
-        <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
-          <div className="flex items-center justify-between text-[10px] text-white/30 mb-2">
+        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
+          <div className="flex items-center justify-between text-[10px] text-stone-900/30 mb-2">
             <span>Weight trend</span>
             <span>Coming soon</span>
           </div>
-          <p className="text-xs text-white/40">Update your weight in Settings to start tracking body composition over time.</p>
+          <p className="text-xs text-stone-900/40">Update your weight in Settings to start tracking body composition over time.</p>
         </div>
       </div>
         </div>
