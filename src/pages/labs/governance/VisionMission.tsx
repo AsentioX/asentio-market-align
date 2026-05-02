@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import RichTextEditor from '@/components/governance/RichTextEditor';
+import DOMPurify from 'dompurify';
 
 // ─── Helpers ───
 // Convert plain-text (with \n) to HTML paragraphs for backward compat
@@ -248,7 +249,7 @@ function RichContent({ html }: { html: string }) {
         prose-ol:my-2 prose-ol:list-decimal prose-ol:pl-5
         prose-li:my-0.5 prose-li:marker:text-gray-400
         prose-p:mb-3 prose-p:last:mb-0"
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
     />
   );
 }

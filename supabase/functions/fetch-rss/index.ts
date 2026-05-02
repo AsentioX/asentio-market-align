@@ -88,6 +88,49 @@ Deno.serve(async (req) => {
       );
     }
 
+    // SSRF protection: only allow http(s) URLs to public hosts that match
+    // configured RSS feeds in the database. This blocks arbitrary URLs,
+    // private IP ranges, and cloud metadata endpoints.
+    const PRIVATE_HOST_RE = /^(localhost$|127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|::1$|fc|fd|\[)/i;
+
+    let allowedUrls: Set<string> = new Set();
+    try {
+      const supaUrl = Deno.env.get('SUPABASE_URL');
+      const supaKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_ANON_KEY');
+      if (supaUrl && supaKey) {
+        const r = await fetch(`${supaUrl}/rest/v1/rss_feeds?select=url&is_active=eq.true`, {
+          headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}` },
+        });
+        if (r.ok) {
+          const rows = await r.json();
+          allowedUrls = new Set((rows ?? []).map((x: { url: string }) => x.url));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load allowlist:', e);
+    }
+
+    const isSafeUrl = (raw: string): boolean => {
+      try {
+        const u = new URL(raw);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') return false;
+        if (PRIVATE_HOST_RE.test(u.hostname)) return false;
+        // Must be in DB allowlist (when available)
+        if (allowedUrls.size > 0 && !allowedUrls.has(raw)) return false;
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const safeFeeds: string[] = (feeds as string[]).filter(isSafeUrl);
+    if (safeFeeds.length === 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'no allowed feed URLs' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Fetch all feeds in parallel, then interleave: feed1[0], feed2[0], feed3[0], feed1[1], ...
     const fetchFeed = async (feedUrl: string): Promise<RssItem[]> => {
       try {

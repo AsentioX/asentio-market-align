@@ -278,7 +278,6 @@ const AdminLogin = () => {
               
               {isSignUp && (
                 <div className="text-center text-xs text-muted-foreground mt-4 space-y-1">
-                  <p>Use <strong>admin@asentio.com</strong> to get admin privileges.</p>
                   <p className="text-warning">You'll need to verify your email before signing in.</p>
                 </div>
               )}
