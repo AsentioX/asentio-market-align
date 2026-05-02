@@ -60,52 +60,52 @@ const ProgressAnalytics = () => {
   );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
 
-      {/* Consistency streak */}
-      <div className="bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 rounded-2xl p-4 border border-emerald-500/10">
-        <div className="flex items-center justify-between">
+      {/* Consistency streak — minimal, no box */}
+      <div>
+        <div className="flex items-end justify-between">
           <div>
-            <p className="text-[10px] text-stone-900/65 uppercase tracking-wider">Current Streak</p>
-            <p className="text-3xl font-bold mt-0.5">
-              {consistency.currentStreak} <span className="text-base text-stone-900/65">days</span>
+            <p className="text-[11px] text-stone-500 uppercase tracking-widest">Current Streak</p>
+            <p className="text-4xl font-semibold text-stone-900 mt-1 tracking-tight">
+              {consistency.currentStreak} <span className="text-base text-stone-500 font-normal">days</span>
             </p>
           </div>
-          <Flame className="w-8 h-8 text-emerald-400/60" />
+          <Flame className="w-8 h-8 text-emerald-500" />
         </div>
-        <div className="flex gap-4 mt-3">
+        <div className="flex gap-8 mt-4">
           <div>
-            <p className="text-[10px] text-stone-900/55">Longest</p>
-            <p className="text-sm font-semibold text-stone-900/70">{consistency.longestStreak}d</p>
+            <p className="text-[11px] text-stone-500">Longest</p>
+            <p className="text-sm font-semibold text-stone-800">{consistency.longestStreak}d</p>
           </div>
           <div>
-            <p className="text-[10px] text-stone-900/55">This Month</p>
-            <p className="text-sm font-semibold text-stone-900/70">{consistency.thisMonth} sessions</p>
+            <p className="text-[11px] text-stone-500">This Month</p>
+            <p className="text-sm font-semibold text-stone-800">{consistency.thisMonth} sessions</p>
           </div>
           <div>
-            <p className="text-[10px] text-stone-900/55">Avg/Week</p>
-            <p className="text-sm font-semibold text-stone-900/70">{consistency.avgPerWeek}</p>
+            <p className="text-[11px] text-stone-500">Avg/Week</p>
+            <p className="text-sm font-semibold text-stone-800">{consistency.avgPerWeek}</p>
           </div>
         </div>
       </div>
 
-      {/* Trend charts */}
-      <div className="bg-stone-900/[0.04] rounded-2xl border border-stone-900/10 p-4">
+      {/* Trend charts — borderless */}
+      <div>
         <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-blue-400" />
+          <TrendingUp className="w-4 h-4 text-blue-500" />
           <span className="text-sm font-semibold text-stone-900">Performance Trends</span>
         </div>
 
         {exerciseTrends.length === 0 ? (
           <div className="py-10 text-center">
-            <TrendingUp className="w-8 h-8 text-stone-900/15 mx-auto mb-2" />
-            <p className="text-xs text-stone-900/65">
+            <TrendingUp className="w-8 h-8 text-stone-300 mx-auto mb-2" />
+            <p className="text-xs text-stone-500">
               {loading ? 'Loading…' : 'Log workouts across at least two weeks to see trends.'}
             </p>
           </div>
         ) : (
           <>
-            {/* Selector – one pill per real exercise */}
+            {/* Selector pills */}
             <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
               {exerciseTrends.map(t => {
                 const isActive = chartName === t.meta.name;
@@ -115,8 +115,8 @@ const ProgressAnalytics = () => {
                     onClick={() => setChartName(t.meta.name)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
                       isActive
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                        : 'bg-stone-900/5 text-stone-900/65 border border-stone-900/10'
+                        ? 'bg-blue-500/10 text-blue-600 border border-blue-500/30'
+                        : 'bg-transparent text-stone-500 border border-stone-900/10 hover:text-stone-700'
                     }`}
                   >
                     <TypeIcon type={t.meta.type} className="w-3 h-3" />
