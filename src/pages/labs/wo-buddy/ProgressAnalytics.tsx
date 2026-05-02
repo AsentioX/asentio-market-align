@@ -182,9 +182,9 @@ function TrendChart({ meta, points }: { meta: ExerciseTrendMeta; points: { week:
     return (
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={points}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-          <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+          <XAxis dataKey="week" tick={{ fill: 'rgba(28,25,23,0.55)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: 'rgba(28,25,23,0.55)', fontSize: 10 }} axisLine={false} tickLine={false} />
           <Tooltip {...chartTooltipStyle} formatter={tooltipFormatter} />
           <Line type="monotone" dataKey="value" stroke="#f97316" strokeWidth={2} dot={{ r: 3, fill: '#f97316' }} />
         </LineChart>
@@ -201,9 +201,9 @@ function TrendChart({ meta, points }: { meta: ExerciseTrendMeta; points: { week:
               <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-          <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+          <XAxis dataKey="week" tick={{ fill: 'rgba(28,25,23,0.55)', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: 'rgba(28,25,23,0.55)', fontSize: 10 }} axisLine={false} tickLine={false} />
           <Tooltip {...chartTooltipStyle} formatter={tooltipFormatter} />
           <Area type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} fill="url(#strengthGrad)" dot={{ r: 3, fill: '#3b82f6' }} />
         </AreaChart>
@@ -213,9 +213,9 @@ function TrendChart({ meta, points }: { meta: ExerciseTrendMeta; points: { week:
   return (
     <ResponsiveContainer width="100%" height={200}>
       <BarChart data={points}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-        <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+        <XAxis dataKey="week" tick={{ fill: 'rgba(28,25,23,0.55)', fontSize: 10 }} axisLine={false} tickLine={false} />
+        <YAxis tick={{ fill: 'rgba(28,25,23,0.55)', fontSize: 10 }} axisLine={false} tickLine={false} />
         <Tooltip {...chartTooltipStyle} formatter={tooltipFormatter} />
         <Bar dataKey="value" fill="#a855f7" radius={[6, 6, 0, 0]} />
       </BarChart>
