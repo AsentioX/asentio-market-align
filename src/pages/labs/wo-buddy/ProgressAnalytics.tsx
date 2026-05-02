@@ -9,8 +9,8 @@ import {
 import { useWOBuddyStats, type PersonalRecord, type ExerciseTrendMeta } from '@/hooks/useWOBuddyStats';
 
 const chartTooltipStyle = {
-  contentStyle: { background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 },
-  labelStyle: { color: 'rgba(255,255,255,0.5)' },
+  contentStyle: { background: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 12, fontSize: 12, color: '#1c1917', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' },
+  labelStyle: { color: 'rgba(28,25,23,0.55)' },
 };
 
 const PR_PALETTE = [
