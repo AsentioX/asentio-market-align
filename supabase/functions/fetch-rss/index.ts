@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
       }
     };
 
-    const results = await Promise.allSettled(feeds.map(fetchFeed));
+    const results = await Promise.allSettled(safeFeeds.map(fetchFeed));
     const perFeed: RssItem[][] = results.map(r => r.status === 'fulfilled' ? r.value : []);
 
     const interleaved: RssItem[] = [];
