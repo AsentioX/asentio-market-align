@@ -144,7 +144,7 @@ const ProfilePage = () => {
           {profile.backgroundUrl ? (
             <div className="absolute inset-0">
               <img src={profile.backgroundUrl} alt="" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-[#faf8f5]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-stone-900/10 via-stone-900/5 to-[#faf8f5]" />
             </div>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/30 via-emerald-500/10 to-transparent" />

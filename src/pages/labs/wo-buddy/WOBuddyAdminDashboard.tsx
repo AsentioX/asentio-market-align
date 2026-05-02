@@ -227,7 +227,7 @@ const WOBuddyAdminDashboard = () => {
                       {openMenu === u.id && (
                         <>
                           <div className="fixed inset-0 z-40" onClick={() => setOpenMenu(null)} />
-                          <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a24] rounded-xl border border-stone-900/10 shadow-xl py-1">
+                          <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-white rounded-xl border border-stone-900/10 shadow-xl py-1">
                             <button
                               onClick={() => toggleUserActive(u.id, u.is_active)}
                               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-900/60 hover:bg-stone-900/[0.06] hover:text-stone-900 transition-colors"
