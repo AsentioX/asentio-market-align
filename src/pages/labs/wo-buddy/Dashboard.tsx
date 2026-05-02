@@ -439,111 +439,101 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       <ProgressAnalytics />
 
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl border border-stone-900/10 overflow-hidden">
-        {/* Period tabs */}
-        <div className="px-4 pt-4 pb-3 border-b border-stone-900/10">
-          <div className="flex items-center gap-1.5 bg-stone-900/[0.05] rounded-xl p-1 border border-stone-900/10">
-            {(['week', 'month', 'all'] as Period[]).map(p => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${
-                  period === p
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 shadow-sm'
-                    : 'text-stone-900/65 hover:text-stone-900/75'
-                }`}
-              >
-                {p === 'week' ? 'This Week' : p === 'month' ? 'This Month' : 'All Time'}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-4 space-y-5">
-      {/* Overview Stats */}
       <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70 mb-3">{periodLabel} Overview</h3>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { icon: <Dumbbell className="w-4 h-4" />, value: overview.workouts, label: 'Workouts', color: 'text-blue-400', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10' },
-            { icon: <Flame className="w-4 h-4" />, value: formatNum(overview.caloriesBurned), label: 'Calories', color: 'text-orange-400', bg: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/10' },
-            { icon: <Zap className="w-4 h-4" />, value: `${overview.avgDuration}m`, label: 'Avg Duration', color: 'text-purple-400', bg: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/10' },
-            { icon: <Activity className="w-4 h-4" />, value: formatNum(overview.totalVolume), label: 'Volume (lbs)', color: 'text-cyan-400', bg: 'from-cyan-500/20 to-cyan-600/5', border: 'border-cyan-500/10' },
-            { icon: <Star className="w-4 h-4" />, value: `${overview.totalDistance}`, label: 'Miles', color: 'text-amber-400', bg: 'from-amber-500/20 to-amber-600/5', border: 'border-amber-500/10' },
-            { icon: <Target className="w-4 h-4" />, value: formatNum(overview.totalReps), label: 'Total Reps', color: 'text-emerald-400', bg: 'from-emerald-500/20 to-emerald-600/5', border: 'border-emerald-500/10' },
-          ].map((stat, i) => (
-            <div key={i} className={`bg-gradient-to-b ${stat.bg} backdrop-blur-sm rounded-2xl p-3.5 border ${stat.border}`}>
-              <div className={`w-8 h-8 rounded-xl bg-stone-900/5 flex items-center justify-center ${stat.color} mb-2`}>
-                {stat.icon}
-              </div>
-              <p className="text-xl font-bold">{stat.value}</p>
-              <p className="text-[10px] text-stone-900/65 mt-0.5">{stat.label}</p>
-            </div>
+        {/* Period tabs — minimal underline style */}
+        <div className="flex items-center gap-6 border-b border-stone-900/10 mb-6">
+          {(['week', 'month', 'all'] as Period[]).map(p => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`relative text-sm font-medium pb-3 transition-colors ${
+                period === p
+                  ? 'text-emerald-600'
+                  : 'text-stone-500 hover:text-stone-700'
+              }`}
+            >
+              {p === 'week' ? 'This Week' : p === 'month' ? 'This Month' : 'All Time'}
+              {period === p && <span className="absolute left-0 right-0 -bottom-px h-0.5 bg-emerald-500 rounded-full" />}
+            </button>
           ))}
         </div>
-      </div>
 
-      {/* Exercise Breakdowns */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70 mb-3">Exercise Totals — {periodLabel}</h3>
-        <div className="space-y-2">
-          {exerciseStats.length === 0 && (
-            <p className="text-xs text-stone-900/65 text-center py-6">No exercises logged yet. Start a workout to see your totals here.</p>
-          )}
-          {exerciseStats.map((ex) => {
-            const stat = period === 'all' ? ex.allTime : period === 'month' ? ex.month : ex.week;
-            return (
-              <div key={ex.name} className="flex items-center gap-3 bg-gradient-to-r from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-3.5 border border-stone-900/10">
-                <span className="text-2xl w-10 text-center">{ex.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{ex.name}</p>
-                  <p className="text-[10px] text-stone-900/65">{ex.type === 'cardio' ? 'Distance' : ex.type === 'strength' ? 'Volume lifted' : 'Reps completed'}</p>
+        <div className="space-y-8">
+          {/* Overview Stats — borderless tiles */}
+          <div>
+            <h3 className="text-[11px] font-semibold uppercase tracking-widest text-stone-500 mb-4">{periodLabel} Overview</h3>
+            <div className="grid grid-cols-3 gap-x-6 gap-y-6">
+              {[
+                { icon: <Dumbbell className="w-4 h-4" />, value: overview.workouts, label: 'Workouts', color: 'text-blue-500' },
+                { icon: <Flame className="w-4 h-4" />, value: formatNum(overview.caloriesBurned), label: 'Calories', color: 'text-orange-500' },
+                { icon: <Zap className="w-4 h-4" />, value: `${overview.avgDuration}m`, label: 'Avg Duration', color: 'text-purple-500' },
+                { icon: <Activity className="w-4 h-4" />, value: formatNum(overview.totalVolume), label: 'Volume (lbs)', color: 'text-cyan-600' },
+                { icon: <Star className="w-4 h-4" />, value: `${overview.totalDistance}`, label: 'Miles', color: 'text-amber-500' },
+                { icon: <Target className="w-4 h-4" />, value: formatNum(overview.totalReps), label: 'Total Reps', color: 'text-emerald-600' },
+              ].map((stat, i) => (
+                <div key={i}>
+                  <div className={`${stat.color} mb-1.5`}>{stat.icon}</div>
+                  <p className="text-2xl font-semibold text-stone-900 tracking-tight">{stat.value}</p>
+                  <p className="text-[11px] text-stone-500 mt-0.5">{stat.label}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold">{typeof stat.value === 'number' && stat.value >= 1000 ? formatNum(stat.value) : stat.value} <span className="text-[10px] text-stone-900/65 font-normal">{stat.unit}</span></p>
-                  {ex.pr && <p className="text-[9px] text-amber-400">PR: {ex.pr}</p>}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Body Composition Trends */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70 mb-3">Body Composition</h3>
-        <div className="grid grid-cols-3 gap-3 mb-3">
-          {[
-            { label: 'Weight', value: `${bodyLatest.weight}`, unit: 'kg', delta: weightDelta, color: 'text-blue-400', bg: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/10', invertGood: true },
-            { label: 'Body Fat', value: `${bodyLatest.bodyFat}`, unit: '%', delta: fatDelta, color: 'text-rose-400', bg: 'from-rose-500/20 to-rose-600/5', border: 'border-rose-500/10', invertGood: true },
-            { label: 'Muscle', value: `${bodyLatest.muscleMass}`, unit: 'kg', delta: muscleDelta, color: 'text-emerald-400', bg: 'from-emerald-500/20 to-emerald-600/5', border: 'border-emerald-500/10', invertGood: false },
-          ].map((m, i) => {
-            const isGood = m.invertGood ? m.delta < 0 : m.delta > 0;
-            const isNeutral = m.delta === 0;
-            return (
-              <div key={i} className={`bg-gradient-to-b ${m.bg} rounded-2xl p-3.5 border ${m.border}`}>
-                <p className="text-[10px] text-stone-900/65 mb-1">{m.label}</p>
-                <p className="text-xl font-bold">{m.value}<span className="text-[10px] text-stone-900/65 font-normal ml-0.5">{m.unit}</span></p>
-                <div className={`flex items-center gap-0.5 mt-1 text-[10px] font-medium ${isNeutral ? 'text-stone-900/55' : isGood ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {isNeutral ? <Minus className="w-3 h-3" /> : isGood ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
-                  {Math.abs(m.delta).toFixed(1)} {m.unit}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        {/* Trend placeholder — we don't yet track historical body composition */}
-        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
-          <div className="flex items-center justify-between text-[10px] text-stone-900/55 mb-2">
-            <span>Weight trend</span>
-            <span>Coming soon</span>
+              ))}
+            </div>
           </div>
-          <p className="text-xs text-stone-900/65">Update your weight in Settings to start tracking body composition over time.</p>
-        </div>
-      </div>
-        </div>
-      </div>
 
+          {/* Exercise Breakdowns — minimal list with hairline rule */}
+          <div>
+            <h3 className="text-[11px] font-semibold uppercase tracking-widest text-stone-500 mb-3">Exercise Totals — {periodLabel}</h3>
+            {exerciseStats.length === 0 ? (
+              <p className="text-xs text-stone-500 py-6">No exercises logged yet. Start a workout to see your totals here.</p>
+            ) : (
+              <div className="divide-y divide-stone-900/10">
+                {exerciseStats.map((ex) => {
+                  const stat = period === 'all' ? ex.allTime : period === 'month' ? ex.month : ex.week;
+                  return (
+                    <div key={ex.name} className="flex items-center gap-3 py-3">
+                      <span className="text-2xl w-8 text-center">{ex.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-stone-900">{ex.name}</p>
+                        <p className="text-[11px] text-stone-500">{ex.type === 'cardio' ? 'Distance' : ex.type === 'strength' ? 'Volume lifted' : 'Reps completed'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-stone-900">{typeof stat.value === 'number' && stat.value >= 1000 ? formatNum(stat.value) : stat.value} <span className="text-[11px] text-stone-500 font-normal">{stat.unit}</span></p>
+                        {ex.pr && <p className="text-[10px] text-amber-600">PR: {ex.pr}</p>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Body Composition — borderless */}
+          <div>
+            <h3 className="text-[11px] font-semibold uppercase tracking-widest text-stone-500 mb-4">Body Composition</h3>
+            <div className="grid grid-cols-3 gap-x-6 gap-y-4 mb-4">
+              {[
+                { label: 'Weight', value: `${bodyLatest.weight}`, unit: 'kg', delta: weightDelta, color: 'text-blue-500', invertGood: true },
+                { label: 'Body Fat', value: `${bodyLatest.bodyFat}`, unit: '%', delta: fatDelta, color: 'text-rose-500', invertGood: true },
+                { label: 'Muscle', value: `${bodyLatest.muscleMass}`, unit: 'kg', delta: muscleDelta, color: 'text-emerald-600', invertGood: false },
+              ].map((m, i) => {
+                const isGood = m.invertGood ? m.delta < 0 : m.delta > 0;
+                const isNeutral = m.delta === 0;
+                return (
+                  <div key={i}>
+                    <p className="text-[11px] text-stone-500 mb-1">{m.label}</p>
+                    <p className={`text-2xl font-semibold tracking-tight ${m.color}`}>{m.value}<span className="text-[11px] text-stone-500 font-normal ml-0.5">{m.unit}</span></p>
+                    <div className={`flex items-center gap-0.5 mt-1 text-[10px] font-medium ${isNeutral ? 'text-stone-400' : isGood ? 'text-emerald-600' : 'text-rose-500'}`}>
+                      {isNeutral ? <Minus className="w-3 h-3" /> : isGood ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
+                      {Math.abs(m.delta).toFixed(1)} {m.unit}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-xs text-stone-500">Update your weight in Settings to start tracking body composition over time.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
