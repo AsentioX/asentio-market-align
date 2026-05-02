@@ -201,7 +201,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             </>
           )}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-stone-900/20 via-stone-900/10 to-transparent" />
 
         <div className="relative z-10 px-6 py-5">
           {/* Top row: greeting */}
