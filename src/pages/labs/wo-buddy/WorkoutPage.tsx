@@ -888,32 +888,32 @@ const WorkoutPage = () => {
               {(() => {
                 const hrZone = getHRZone(wearableData.heartRate);
                 return (
-                  <div className="bg-[#0f1023] p-3 text-center">
+                  <div className="bg-stone-100 p-3 text-center">
                     <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">❤️ HR</p>
                     <p className={`text-lg font-bold tabular-nums ${hrZone.color}`}>{wearableData.heartRate}</p>
                     <p className={`text-[8px] font-medium mt-0.5 ${hrZone.color}`}>{hrZone.label}</p>
                   </div>
                 );
               })()}
-              <div className="bg-[#0f1023] p-3 text-center">
+              <div className="bg-stone-100 p-3 text-center">
                 <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">🔥 Cal</p>
                 <p className="text-lg font-bold tabular-nums text-orange-400">{wearableData.calories}</p>
                 <p className="text-[8px] text-stone-900/20 mt-0.5">active</p>
               </div>
               {activeWearable.type === 'watch' && wearableData.cadence ? (
-                <div className="bg-[#0f1023] p-3 text-center">
+                <div className="bg-stone-100 p-3 text-center">
                   <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">🦶 Cadence</p>
                   <p className="text-lg font-bold tabular-nums text-blue-400">{wearableData.cadence}</p>
                   <p className="text-[8px] text-stone-900/20 mt-0.5">spm</p>
                 </div>
               ) : (
-                <div className="bg-[#0f1023] p-3 text-center">
+                <div className="bg-stone-100 p-3 text-center">
                   <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">🫁 SpO₂</p>
                   <p className="text-lg font-bold tabular-nums text-cyan-400">{wearableData.bloodOxygen}%</p>
                   <p className="text-[8px] text-stone-900/20 mt-0.5">oxygen</p>
                 </div>
               )}
-              <div className="bg-[#0f1023] p-3 text-center">
+              <div className="bg-stone-100 p-3 text-center">
                 <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">😰 Stress</p>
                 <p className="text-lg font-bold tabular-nums text-purple-400">{wearableData.stress}</p>
                 <p className="text-[8px] text-stone-900/20 mt-0.5">score</p>
@@ -1695,7 +1695,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
               </div>
 
               {/* Exercises — always visible */}
-              <div className="px-3 pb-3 pt-1 space-y-1.5 bg-black/20">
+              <div className="px-3 pb-3 pt-1 space-y-1.5 bg-stone-900/10">
                 {session.exercises.map((ex, ei) => {
                   const key = `${si}-${ei}`;
                   const action = exerciseActions[key] || 'pending';
@@ -1770,7 +1770,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                         </div>
 
                         {isExExpanded && !isDone && (
-                          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-stone-900/10">
+                          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-stone-900/40 backdrop-blur-sm border border-stone-900/10">
                             <button
                               onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'completed'); setExpandedExercise(null); }}
                               className="flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
@@ -2212,12 +2212,12 @@ function InputSelect({ label, value, options, onChange, grouped }: { label: stri
         className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none">
         {groupedOptions ? (
           Object.entries(groupedOptions).map(([cat, names]) => (
-            <optgroup key={cat} label={cat} className="bg-[#1a1a2e] text-stone-900/60">
-              {names.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)}
+            <optgroup key={cat} label={cat} className="bg-white text-stone-900/60">
+              {names.map(o => <option key={o} value={o} className="bg-white">{o}</option>)}
             </optgroup>
           ))
         ) : (
-          options.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)
+          options.map(o => <option key={o} value={o} className="bg-white">{o}</option>)
         )}
       </select>
     </div>

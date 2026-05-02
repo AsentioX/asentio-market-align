@@ -37,7 +37,7 @@ const CompetitionsPage = () => {
               <div className="relative h-36">
                 <img src={image} alt={comp.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" width={640} height={640} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#faf8f5] via-black/40 to-transparent" />
-                <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-md rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1 border border-stone-900/10">
+                <div className="absolute top-3 right-3 bg-stone-900/15 backdrop-blur-md rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1 border border-stone-900/10">
                   <Timer className="w-3 h-3" /> {comp.timeRemaining}
                 </div>
                 <div className="absolute top-3 left-3">

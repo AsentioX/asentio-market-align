@@ -59,14 +59,14 @@ const AvatarCropModal = ({ imageSrc, onCropDone, onCancel }: AvatarCropModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 backdrop-blur-sm p-4">
       <div className="bg-[#ffffff] rounded-2xl border border-stone-900/10 w-full max-w-md overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-stone-900/10">
           <span className="text-sm font-medium text-stone-900/80">Crop Profile Photo</span>
           <button onClick={onCancel} className="text-stone-900/40 hover:text-stone-900"><X className="w-4 h-4" /></button>
         </div>
 
-        <div className="relative w-full aspect-square bg-black">
+        <div className="relative w-full aspect-square bg-stone-200">
           <Cropper
             image={imageSrc}
             crop={crop}

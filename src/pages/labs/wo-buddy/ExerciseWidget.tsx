@@ -71,7 +71,7 @@ const ExerciseWidget = ({ exercise, onUpdate, onRemove, allExercises }: Exercise
             onChange={(e) => setEditName(e.target.value)}
             className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-base text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none"
           >
-            {allExercises.map(e => <option key={e} value={e} className="bg-[#1a1a2e]">{e}</option>)}
+            {allExercises.map(e => <option key={e} value={e} className="bg-white">{e}</option>)}
           </select>
           <div>
             <label className="text-[10px] text-stone-900/40 uppercase tracking-wider mb-1.5 block">Reps</label>

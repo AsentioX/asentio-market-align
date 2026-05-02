@@ -57,9 +57,9 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
   const detectedLabel = repCounter.getLabel();
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-stone-900/10 bg-black">
+    <div className="rounded-2xl overflow-hidden border border-stone-900/10 bg-stone-200">
       {/* Camera view */}
-      <div className="relative aspect-[4/3] bg-black overflow-hidden">
+      <div className="relative aspect-[4/3] bg-stone-200 overflow-hidden">
         {/* Video feed — always mounted so the ref is stable for getUserMedia */}
         <video
           ref={videoRef}
@@ -95,7 +95,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
         {/* Top HUD */}
         <div className="absolute top-0 left-0 right-0 p-3 flex items-start justify-between">
           {/* Detection label */}
-          <div className="bg-black/60 backdrop-blur-md rounded-xl px-3 py-2 border border-emerald-500/20">
+          <div className="bg-stone-900/25 backdrop-blur-md rounded-xl px-3 py-2 border border-emerald-500/20">
             <div className="flex items-center gap-1.5">
               <Eye className="w-3 h-3 text-emerald-400" />
               <span className="text-[10px] text-emerald-400 uppercase tracking-wider font-medium">Detected</span>
@@ -105,7 +105,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
           </div>
 
           {/* Heart rate */}
-          <div className="bg-black/60 backdrop-blur-md rounded-xl px-3 py-2 border border-red-500/20">
+          <div className="bg-stone-900/25 backdrop-blur-md rounded-xl px-3 py-2 border border-red-500/20">
             <div className="flex items-center gap-1.5">
               <Activity className="w-3 h-3 text-red-400 animate-pulse" />
               <span className="font-mono text-lg font-bold text-red-400">{heartRate}</span>
@@ -117,7 +117,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
 
         {/* Center rep counter */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-          <div className={`bg-black/70 backdrop-blur-xl rounded-2xl px-6 py-3 border transition-all ${
+          <div className={`bg-stone-900/30 backdrop-blur-xl rounded-2xl px-6 py-3 border transition-all ${
             repFlash ? 'border-emerald-400/60 shadow-lg shadow-emerald-500/30 scale-110' : 'border-stone-900/10'
           }`}>
             <div className="text-center">
@@ -142,7 +142,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
 
         {/* Form feedback */}
         <div className="absolute bottom-4 left-3">
-          <div className={`bg-black/60 backdrop-blur-md rounded-lg px-2.5 py-1.5 border text-[10px] font-medium ${
+          <div className={`bg-stone-900/25 backdrop-blur-md rounded-lg px-2.5 py-1.5 border text-[10px] font-medium ${
             formScore === 'Excellent' ? 'border-emerald-500/20 text-emerald-400' :
             formScore === 'Great' ? 'border-blue-500/20 text-blue-400' :
             formScore === 'Adjust depth' ? 'border-amber-500/20 text-amber-400' :

@@ -246,7 +246,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
       {/* Quick Presets Modal */}
       {presetsOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-stone-900/30 backdrop-blur-sm p-4"
           onClick={() => setPresetsOpen(false)}
         >
           <div

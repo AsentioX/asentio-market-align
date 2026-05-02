@@ -497,7 +497,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                     className="col-span-1 bg-stone-900/[0.05] border border-stone-900/10 rounded-lg px-2 py-1.5 text-[11px] text-stone-900 focus:outline-none focus:border-emerald-500/30"
                   >
                     {METRIC_TYPE_OPTIONS.map(o => (
-                      <option key={o.value} value={o.value} className="bg-zinc-900">{o.label}</option>
+                      <option key={o.value} value={o.value} className="bg-stone-100">{o.label}</option>
                     ))}
                   </select>
                   <input

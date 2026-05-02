@@ -238,7 +238,7 @@ const WOBuddyLogin = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
+            className="fixed inset-0 z-[60] bg-stone-900/25 backdrop-blur-sm flex items-end sm:items-center justify-center"
             onClick={() => setShowAuth(false)}
           >
             <motion.div
@@ -247,7 +247,7 @@ const WOBuddyLogin = () => {
               exit={{ y: 100, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-[#13131a] border border-stone-900/10 rounded-t-3xl sm:rounded-3xl p-6 pb-8 max-h-[90vh] overflow-y-auto"
+              className="w-full max-w-lg bg-[#faf8f5] border border-stone-900/10 rounded-t-3xl sm:rounded-3xl p-6 pb-8 max-h-[90vh] overflow-y-auto"
             >
               {/* Drag handle */}
               <div className="w-10 h-1 rounded-full bg-stone-900/10 mx-auto mb-6 sm:hidden" />

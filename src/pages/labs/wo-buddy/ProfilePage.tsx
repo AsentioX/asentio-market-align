@@ -154,7 +154,7 @@ const ProfilePage = () => {
           <button
             onClick={() => bgInputRef.current?.click()}
             disabled={uploadingBg}
-            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md border border-stone-900/10 text-stone-900/60 hover:text-stone-900 hover:bg-black/60 transition-all"
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-stone-900/15 backdrop-blur-md border border-stone-900/10 text-stone-900/60 hover:text-stone-900 hover:bg-stone-900/25 transition-all"
           >
             {uploadingBg ? (
               <div className="w-4 h-4 border-2 border-stone-900/20 border-t-white rounded-full animate-spin" />
@@ -179,7 +179,7 @@ const ProfilePage = () => {
                 <button
                   onClick={() => avatarInputRef.current?.click()}
                   disabled={uploadingAvatar}
-                  className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                  className="absolute inset-0 rounded-full bg-stone-900/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
                 >
                   {uploadingAvatar ? (
                     <div className="w-6 h-6 border-2 border-stone-900/20 border-t-white rounded-full animate-spin" />

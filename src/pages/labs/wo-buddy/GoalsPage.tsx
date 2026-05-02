@@ -423,7 +423,7 @@ const GoalsPage = () => {
               <label className="text-[10px] text-stone-900/40 uppercase tracking-wider mb-1.5 block">Metric</label>
               <select value={newMetric} onChange={e => setNewMetric(e.target.value)}
                 className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none">
-                {METRICS.map(m => <option key={m.id} value={m.id} className="bg-[#1a1a2e]">{m.label} ({m.unit})</option>)}
+                {METRICS.map(m => <option key={m.id} value={m.id} className="bg-white">{m.label} ({m.unit})</option>)}
               </select>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -461,7 +461,7 @@ const GoalsPage = () => {
                     {newDeadline ? format(newDeadline, "PPP") : "Pick a target date"}
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-[#1a1a2e] border-stone-900/10" align="start">
+                <PopoverContent className="w-auto p-0 bg-white border-stone-900/10" align="start">
                   <Calendar
                     mode="single"
                     selected={newDeadline}
@@ -838,7 +838,7 @@ const GoalsPage = () => {
 
       {/* Exercise Library Dialog */}
       <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#0a0a0a] border-stone-900/10 rounded-xl p-4">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#faf8f5] border-stone-900/10 rounded-xl p-4">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-stone-900">
               <BookOpen className="w-5 h-5 text-emerald-400" />
