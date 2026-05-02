@@ -74,12 +74,12 @@ const WearableSettings = () => {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold">Wearable Devices</h2>
-        <p className="text-xs text-stone-900/40 mt-1">Pair your watch, ring, or fitness band to sync data automatically.</p>
+        <p className="text-xs text-stone-900/65 mt-1">Pair your watch, ring, or fitness band to sync data automatically.</p>
       </div>
 
       {/* Connected / saved devices */}
       <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50 mb-3">Your Devices</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70 mb-3">Your Devices</h3>
         <div className="space-y-2">
           {devices.map((device) => (
             <div key={device.id} className={`rounded-2xl border overflow-hidden transition-all ${
@@ -91,7 +91,7 @@ const WearableSettings = () => {
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                   device.connected
                     ? 'bg-emerald-500/15 text-emerald-400'
-                    : 'bg-stone-900/5 text-stone-900/30'
+                    : 'bg-stone-900/5 text-stone-900/55'
                 }`}>
                   {deviceIcons[device.type]}
                 </div>
@@ -106,7 +106,7 @@ const WearableSettings = () => {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-0.5 text-[10px] text-stone-900/40">
+                  <div className="flex items-center gap-3 mt-0.5 text-[10px] text-stone-900/65">
                     {device.battery !== undefined && device.connected && (
                       <span className="flex items-center gap-0.5">
                         🔋 {device.battery}%
@@ -123,14 +123,14 @@ const WearableSettings = () => {
                     onClick={() => toggleConnect(device.id)}
                     className={`text-[10px] font-medium px-3 py-1.5 rounded-lg transition-colors ${
                       device.connected
-                        ? 'bg-stone-900/5 text-stone-900/40 hover:text-stone-900/60'
+                        ? 'bg-stone-900/5 text-stone-900/65 hover:text-stone-900/75'
                         : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
                     }`}
                   >
                     {device.connected ? 'Disconnect' : 'Connect'}
                   </button>
                   {!device.connected && (
-                    <button onClick={() => removeDevice(device.id)} className="w-7 h-7 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-900/20 hover:text-red-400 transition-colors">
+                    <button onClick={() => removeDevice(device.id)} className="w-7 h-7 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-900/45 hover:text-red-400 transition-colors">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   )}
@@ -141,7 +141,7 @@ const WearableSettings = () => {
               {device.connected && (
                 <div className="px-4 pb-3 flex gap-2 flex-wrap">
                   {['Heart Rate', 'Steps', 'Sleep', 'Calories'].map(metric => (
-                    <span key={metric} className="text-[9px] bg-stone-900/5 text-stone-900/40 px-2 py-1 rounded-full border border-stone-900/10">
+                    <span key={metric} className="text-[9px] bg-stone-900/5 text-stone-900/65 px-2 py-1 rounded-full border border-stone-900/10">
                       {metric} ✓
                     </span>
                   ))}
@@ -159,7 +159,7 @@ const WearableSettings = () => {
         className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border text-sm font-medium transition-all ${
           scanning
             ? 'bg-blue-500/10 border-blue-500/20 text-blue-400'
-            : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/50 hover:text-stone-900/70 hover:bg-stone-900/[0.06]'
+            : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/70 hover:text-stone-900/70 hover:bg-stone-900/[0.06]'
         }`}
       >
         {scanning ? (
@@ -178,7 +178,7 @@ const WearableSettings = () => {
       {/* Available devices */}
       {showAvailable && (
         <div className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Available Nearby</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Available Nearby</h3>
           {availableDevices
             .filter(ad => !devices.some(d => d.name === ad.name))
             .map((ad) => (
@@ -187,14 +187,14 @@ const WearableSettings = () => {
                 onClick={() => handleAddDevice(ad.name, ad.type)}
                 className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-stone-900/[0.04] border border-stone-900/10 hover:bg-stone-900/[0.06] transition-colors text-left"
               >
-                <div className="w-10 h-10 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-900/30">
+                <div className="w-10 h-10 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-900/55">
                   {deviceIcons[ad.type as keyof typeof deviceIcons] || <Bluetooth className="w-5 h-5" />}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">{ad.name}</p>
-                  <p className="text-[10px] text-stone-900/30">Tap to pair</p>
+                  <p className="text-[10px] text-stone-900/55">Tap to pair</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-stone-900/20" />
+                <ChevronRight className="w-4 h-4 text-stone-900/45" />
               </button>
             ))}
         </div>
@@ -202,7 +202,7 @@ const WearableSettings = () => {
 
       {/* Health integrations */}
       <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50 mb-3">Health Integrations</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70 mb-3">Health Integrations</h3>
         <div className="space-y-2">
           {[
             { name: 'Apple Health', icon: '🍎', connected: true },
@@ -216,7 +216,7 @@ const WearableSettings = () => {
               <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${
                 integration.connected
                   ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                  : 'bg-stone-900/5 text-stone-900/40 border border-stone-900/10'
+                  : 'bg-stone-900/5 text-stone-900/65 border border-stone-900/10'
               }`}>
                 {integration.connected ? 'Connected' : 'Connect'}
               </span>

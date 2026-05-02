@@ -120,23 +120,23 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs text-stone-900/40 hover:text-stone-900/70 transition-colors"
+          className="flex items-center gap-1.5 text-xs text-stone-900/65 hover:text-stone-900/70 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back
         </button>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/40">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/65">
           Quick Log
         </span>
       </div>
 
       <div>
         <h2 className="text-base font-semibold text-stone-900">Log an exercise</h2>
-        <p className="text-xs text-stone-900/40 mt-0.5">Just the essentials — name it and add a number.</p>
+        <p className="text-xs text-stone-900/65 mt-0.5">Just the essentials — name it and add a number.</p>
       </div>
 
       {/* Type */}
       <div>
-        <label className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/40 block mb-1.5">
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/65 block mb-1.5">
           Type
         </label>
         <div className="grid grid-cols-4 gap-1.5">
@@ -147,7 +147,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
               className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border text-[11px] transition-all ${
                 state.type === opt.value
                   ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                  : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/50 hover:bg-stone-900/[0.06]'
+                  : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/70 hover:bg-stone-900/[0.06]'
               }`}
             >
               <span className="text-base">{opt.emoji}</span>
@@ -159,7 +159,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
 
       {/* Name */}
       <div>
-        <label className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/40 block mb-1.5">
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/65 block mb-1.5">
           What will you do?
         </label>
         <div className="relative">
@@ -169,7 +169,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
             onChange={e => update({ name: e.target.value })}
             placeholder="e.g. Row, Push Ups, Squats"
             maxLength={60}
-            className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-xl pl-3 pr-11 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/25 focus:outline-none focus:border-emerald-500/40"
+            className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-xl pl-3 pr-11 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/40"
             autoFocus
           />
           <button
@@ -255,17 +255,17 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
           >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-stone-900">
-                Quick presets <span className="text-stone-900/40 font-normal">· {typeMeta.label}</span>
+                Quick presets <span className="text-stone-900/65 font-normal">· {typeMeta.label}</span>
               </h3>
               <button
                 onClick={() => setPresetsOpen(false)}
-                className="w-7 h-7 rounded-lg bg-stone-900/5 hover:bg-stone-900/10 flex items-center justify-center text-stone-900/60"
+                className="w-7 h-7 rounded-lg bg-stone-900/5 hover:bg-stone-900/10 flex items-center justify-center text-stone-900/75"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-xs text-stone-900/40 mb-3">Pick one to fill in the form.</p>
+            <p className="text-xs text-stone-900/65 mb-3">Pick one to fill in the form.</p>
             <div className="grid grid-cols-2 gap-1.5 max-h-[60vh] overflow-y-auto pr-0.5">
               {QUICK_PRESETS.filter(p => p.type === state.type).map(p => (
                 <button
@@ -290,7 +290,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
         className={`w-full flex items-center justify-center gap-2 font-semibold py-3.5 rounded-2xl transition-all ${
           canSave
             ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-stone-900 active:scale-[0.98] shadow-lg shadow-emerald-500/20'
-            : 'bg-stone-900/[0.05] text-stone-900/30 cursor-not-allowed'
+            : 'bg-stone-900/[0.05] text-stone-900/55 cursor-not-allowed'
         }`}
       >
         <Check className="w-4 h-4" />
@@ -316,14 +316,14 @@ const NumberField = ({ label, icon, value, onChange, min = 0, max = 999, step = 
   const inc = () => onChange(Math.min(max, +(value + step).toFixed(decimals)));
   return (
     <div className="rounded-xl border border-stone-900/10 bg-stone-900/[0.04] p-2.5">
-      <div className="flex items-center gap-1 text-[10px] text-stone-900/40 font-medium mb-1.5">
+      <div className="flex items-center gap-1 text-[10px] text-stone-900/65 font-medium mb-1.5">
         {icon}
         <span>{label}</span>
       </div>
       <div className="flex items-center gap-1.5">
         <button
           onClick={dec}
-          className="w-7 h-7 rounded-lg bg-stone-900/5 text-stone-900/60 text-sm font-bold hover:bg-stone-900/10 transition-colors"
+          className="w-7 h-7 rounded-lg bg-stone-900/5 text-stone-900/75 text-sm font-bold hover:bg-stone-900/10 transition-colors"
           aria-label={`Decrease ${label}`}
         >−</button>
         <input
@@ -339,7 +339,7 @@ const NumberField = ({ label, icon, value, onChange, min = 0, max = 999, step = 
         />
         <button
           onClick={inc}
-          className="w-7 h-7 rounded-lg bg-stone-900/5 text-stone-900/60 text-sm font-bold hover:bg-stone-900/10 transition-colors"
+          className="w-7 h-7 rounded-lg bg-stone-900/5 text-stone-900/75 text-sm font-bold hover:bg-stone-900/10 transition-colors"
           aria-label={`Increase ${label}`}
         >+</button>
       </div>

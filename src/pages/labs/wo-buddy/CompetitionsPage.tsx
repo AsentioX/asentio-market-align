@@ -60,8 +60,8 @@ const CompetitionsPage = () => {
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] text-stone-900/40">
-                  <span className="font-medium text-stone-900/60">{comp.progress} / {comp.target}</span>
+                <div className="flex items-center justify-between text-[10px] text-stone-900/65">
+                  <span className="font-medium text-stone-900/75">{comp.progress} / {comp.target}</span>
                   <span className="flex items-center gap-1"><Users className="w-3 h-3" />{comp.participants} players</span>
                 </div>
 
@@ -70,7 +70,7 @@ const CompetitionsPage = () => {
                     onClick={() => toggleJoin(comp.id)}
                     className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all ${
                       comp.joined
-                        ? 'bg-stone-900/5 text-stone-900/40 border border-stone-900/10'
+                        ? 'bg-stone-900/5 text-stone-900/65 border border-stone-900/10'
                         : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
                     }`}
                   >
@@ -78,7 +78,7 @@ const CompetitionsPage = () => {
                   </button>
                   <button
                     onClick={() => setActiveLeaderboard(activeLeaderboard === comp.id ? null : comp.id)}
-                    className="p-2.5 rounded-xl bg-stone-900/5 text-stone-900/40 hover:text-stone-900/60 border border-stone-900/10 transition-colors"
+                    className="p-2.5 rounded-xl bg-stone-900/5 text-stone-900/65 hover:text-stone-900/75 border border-stone-900/10 transition-colors"
                   >
                     <ChevronUp className={`w-4 h-4 transition-transform ${activeLeaderboard === comp.id ? '' : 'rotate-180'}`} />
                   </button>
@@ -88,7 +88,7 @@ const CompetitionsPage = () => {
               {/* Leaderboard */}
               {activeLeaderboard === comp.id && (
                 <div className="border-t border-stone-900/10 p-4 space-y-1.5 bg-stone-900/[0.03]">
-                  <p className="text-[10px] text-stone-900/30 uppercase tracking-wider mb-2">Leaderboard</p>
+                  <p className="text-[10px] text-stone-900/55 uppercase tracking-wider mb-2">Leaderboard</p>
                   {mockLeaderboard.map((entry) => (
                     <div
                       key={entry.rank}
@@ -97,7 +97,7 @@ const CompetitionsPage = () => {
                       }`}
                     >
                       <span className={`w-6 text-center text-xs font-bold ${
-                        entry.rank <= 3 ? 'text-amber-400' : 'text-stone-900/30'
+                        entry.rank <= 3 ? 'text-amber-400' : 'text-stone-900/55'
                       }`}>
                         {entry.rank <= 3 ? ['🥇', '🥈', '🥉'][entry.rank - 1] : entry.rank}
                       </span>
@@ -109,7 +109,7 @@ const CompetitionsPage = () => {
                       <span className={`flex-1 text-sm ${entry.isCurrentUser ? 'text-emerald-400 font-semibold' : 'text-stone-900/70'}`}>
                         {entry.name} {entry.isCurrentUser && '(You)'}
                       </span>
-                      <span className="text-sm font-mono text-stone-900/50">{entry.score.toLocaleString()}</span>
+                      <span className="text-sm font-mono text-stone-900/70">{entry.score.toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -122,8 +122,8 @@ const CompetitionsPage = () => {
       {/* Achievements */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Achievements</h3>
-          <span className="text-[10px] text-stone-900/30">{mockAchievements.filter(a => a.unlocked).length}/{mockAchievements.length} unlocked</span>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Achievements</h3>
+          <span className="text-[10px] text-stone-900/55">{mockAchievements.filter(a => a.unlocked).length}/{mockAchievements.length} unlocked</span>
         </div>
         <div className="grid grid-cols-3 gap-2.5">
           {mockAchievements.map((ach) => (
@@ -137,11 +137,11 @@ const CompetitionsPage = () => {
             >
               <span className="text-3xl block mb-1.5">{ach.icon}</span>
               <p className="text-[10px] font-medium leading-tight">{ach.title}</p>
-              {ach.unlocked && ach.date && <p className="text-[9px] text-stone-900/30 mt-0.5">{ach.date}</p>}
+              {ach.unlocked && ach.date && <p className="text-[9px] text-stone-900/55 mt-0.5">{ach.date}</p>}
               {ach.unlocked && (
                 <button
                   onClick={(e) => { e.stopPropagation(); shareContent(buildAchievementShareText(ach.title, ach.icon)); }}
-                  className="mt-1.5 text-stone-900/30 hover:text-emerald-400 transition-colors"
+                  className="mt-1.5 text-stone-900/55 hover:text-emerald-400 transition-colors"
                 >
                   <Share2 className="w-3 h-3 mx-auto" />
                 </button>

@@ -90,7 +90,7 @@ const WOBuddyLogin = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-900/10">
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
-          <Link to="/labs" className="flex items-center gap-2 text-stone-900/60 hover:text-stone-900 transition-colors">
+          <Link to="/labs" className="flex items-center gap-2 text-stone-900/75 hover:text-stone-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-xs">Labs</span>
           </Link>
@@ -123,7 +123,7 @@ const WOBuddyLogin = () => {
             <span className="text-emerald-400">Your Way.</span>
           </h2>
 
-          <p className="text-sm text-stone-900/50 leading-relaxed max-w-xs mx-auto mb-8">
+          <p className="text-sm text-stone-900/70 leading-relaxed max-w-xs mx-auto mb-8">
             W.O.Buddy is a smart fitness companion that adapts to your goals, tracks your progress, and keeps you motivated with social competitions.
           </p>
 
@@ -147,7 +147,7 @@ const WOBuddyLogin = () => {
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-xl font-bold text-emerald-400">{stat.value}</div>
-                <div className="text-[10px] text-stone-900/40 uppercase tracking-wider mt-0.5">{stat.label}</div>
+                <div className="text-[10px] text-stone-900/65 uppercase tracking-wider mt-0.5">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -160,12 +160,12 @@ const WOBuddyLogin = () => {
           transition={{ delay: 0.8 }}
           className="flex justify-center mb-8"
         >
-          <ChevronDown className="w-5 h-5 text-stone-900/20 animate-bounce" />
+          <ChevronDown className="w-5 h-5 text-stone-900/45 animate-bounce" />
         </motion.div>
 
         {/* Features */}
         <section className="space-y-4 mb-12">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/30 mb-4">What You Get</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/55 mb-4">What You Get</h3>
           {features.map((feature, i) => (
             <motion.div
               key={feature.title}
@@ -179,7 +179,7 @@ const WOBuddyLogin = () => {
               </div>
               <div>
                 <h4 className="text-sm font-semibold mb-1">{feature.title}</h4>
-                <p className="text-xs text-stone-900/40 leading-relaxed">{feature.description}</p>
+                <p className="text-xs text-stone-900/65 leading-relaxed">{feature.description}</p>
               </div>
             </motion.div>
           ))}
@@ -187,7 +187,7 @@ const WOBuddyLogin = () => {
 
         {/* How it works */}
         <section className="mb-12">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/30 mb-4">How It Works</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/55 mb-4">How It Works</h3>
           <div className="space-y-3">
             {[
               { step: '1', text: 'Tell us your fitness goals — lose weight, build muscle, improve endurance, or just stay active.' },
@@ -204,7 +204,7 @@ const WOBuddyLogin = () => {
                 <span className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                   {item.step}
                 </span>
-                <p className="text-sm text-stone-900/50 leading-relaxed">{item.text}</p>
+                <p className="text-sm text-stone-900/70 leading-relaxed">{item.text}</p>
               </motion.div>
             ))}
           </div>
@@ -220,7 +220,7 @@ const WOBuddyLogin = () => {
           <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-700/5 border border-emerald-500/15">
             <Users className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
             <h3 className="text-lg font-bold mb-2">Ready to Start?</h3>
-            <p className="text-xs text-stone-900/40 mb-4">Join W.O.Buddy and transform how you train. It's free.</p>
+            <p className="text-xs text-stone-900/65 mb-4">Join W.O.Buddy and transform how you train. It's free.</p>
             <button
               onClick={() => { setShowAuth(true); setMode('signup'); }}
               className="h-11 px-8 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 font-semibold text-sm hover:from-emerald-400 hover:to-emerald-500 transition-all shadow-lg shadow-emerald-500/20"
@@ -255,7 +255,7 @@ const WOBuddyLogin = () => {
               <h2 className="text-xl font-bold text-center mb-1">
                 {mode === 'login' ? 'Welcome Back' : 'Join W.O.Buddy'}
               </h2>
-              <p className="text-sm text-stone-900/40 text-center mb-6">
+              <p className="text-sm text-stone-900/65 text-center mb-6">
                 {mode === 'login'
                   ? 'Sign in to continue your fitness journey'
                   : 'Create an account to start training'}
@@ -300,7 +300,7 @@ const WOBuddyLogin = () => {
               {/* Divider */}
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex-1 h-px bg-stone-900/[0.08]" />
-                <span className="text-xs text-stone-900/30">or</span>
+                <span className="text-xs text-stone-900/55">or</span>
                 <div className="flex-1 h-px bg-stone-900/[0.08]" />
               </div>
 
@@ -308,31 +308,31 @@ const WOBuddyLogin = () => {
               <form onSubmit={handleSubmit} className="space-y-3">
                 {mode === 'signup' && (
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/30" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/55" />
                     <input
                       type="text"
                       placeholder="Display name"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-stone-900/[0.06] border border-stone-900/10 text-sm placeholder:text-stone-900/30 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-stone-900/[0.06] border border-stone-900/10 text-sm placeholder:text-stone-900/55 focus:outline-none focus:border-emerald-500/50 transition-colors"
                     />
                   </div>
                 )}
 
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/30" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/55" />
                   <input
                     type="email"
                     placeholder="Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-stone-900/[0.06] border border-stone-900/10 text-sm placeholder:text-stone-900/30 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-stone-900/[0.06] border border-stone-900/10 text-sm placeholder:text-stone-900/55 focus:outline-none focus:border-emerald-500/50 transition-colors"
                   />
                 </div>
 
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/30" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/55" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Password"
@@ -340,12 +340,12 @@ const WOBuddyLogin = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full h-12 pl-10 pr-12 rounded-xl bg-stone-900/[0.06] border border-stone-900/10 text-sm placeholder:text-stone-900/30 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full h-12 pl-10 pr-12 rounded-xl bg-stone-900/[0.06] border border-stone-900/10 text-sm placeholder:text-stone-900/55 focus:outline-none focus:border-emerald-500/50 transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-900/30 hover:text-stone-900/60"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-900/55 hover:text-stone-900/75"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -366,7 +366,7 @@ const WOBuddyLogin = () => {
                 </button>
               </form>
 
-              <p className="mt-5 text-sm text-stone-900/40 text-center">
+              <p className="mt-5 text-sm text-stone-900/65 text-center">
                 {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
                 <button
                   onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
