@@ -57,7 +57,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
   const detectedLabel = repCounter.getLabel();
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black">
+    <div className="rounded-2xl overflow-hidden border border-stone-900/10 bg-black">
       {/* Camera view */}
       <div className="relative aspect-[4/3] bg-black overflow-hidden">
         {/* Video feed — always mounted so the ref is stable for getUserMedia */}
@@ -73,8 +73,8 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
         {!cameraActive && (
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
             <div className="text-center space-y-2">
-              <Camera className="w-10 h-10 text-white/20 mx-auto" />
-              <p className="text-xs text-white/30">
+              <Camera className="w-10 h-10 text-stone-900/20 mx-auto" />
+              <p className="text-xs text-stone-900/30">
                 {loading ? 'Loading pose model...' : error ?? 'Initializing camera...'}
               </p>
             </div>
@@ -100,8 +100,8 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
               <Eye className="w-3 h-3 text-emerald-400" />
               <span className="text-[10px] text-emerald-400 uppercase tracking-wider font-medium">Detected</span>
             </div>
-            <p className="text-sm font-bold text-white mt-0.5">{detectedLabel}</p>
-            <p className="text-[10px] text-white/40">{confidence}% visibility</p>
+            <p className="text-sm font-bold text-stone-900 mt-0.5">{detectedLabel}</p>
+            <p className="text-[10px] text-stone-900/40">{confidence}% visibility</p>
           </div>
 
           {/* Heart rate */}
@@ -118,11 +118,11 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
         {/* Center rep counter */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
           <div className={`bg-black/70 backdrop-blur-xl rounded-2xl px-6 py-3 border transition-all ${
-            repFlash ? 'border-emerald-400/60 shadow-lg shadow-emerald-500/30 scale-110' : 'border-white/10'
+            repFlash ? 'border-emerald-400/60 shadow-lg shadow-emerald-500/30 scale-110' : 'border-stone-900/10'
           }`}>
             <div className="text-center">
-              <p className="text-4xl font-black text-white tabular-nums">{repCount}</p>
-              <p className="text-[10px] text-white/40 uppercase tracking-widest">reps</p>
+              <p className="text-4xl font-black text-stone-900 tabular-nums">{repCount}</p>
+              <p className="text-[10px] text-stone-900/40 uppercase tracking-widest">reps</p>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
               ? 'bg-amber-500/20 border border-amber-500/30'
               : phase === 'up'
               ? 'bg-emerald-500/20 border border-emerald-500/30'
-              : 'bg-white/10 border border-white/10'
+              : 'bg-stone-900/10 border border-stone-900/10'
           }`}>
             {phase === 'down' ? '⬇️' : phase === 'up' ? '⬆️' : '👁️'}
           </div>
@@ -146,7 +146,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
             formScore === 'Excellent' ? 'border-emerald-500/20 text-emerald-400' :
             formScore === 'Great' ? 'border-blue-500/20 text-blue-400' :
             formScore === 'Adjust depth' ? 'border-amber-500/20 text-amber-400' :
-            'border-white/10 text-white/60'
+            'border-stone-900/10 text-stone-900/60'
           }`}>
             <Zap className="w-3 h-3 inline mr-1" />
             Form: {formScore}
@@ -165,8 +165,8 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
       </div>
 
       {/* Bottom bar */}
-      <div className="px-4 py-3 bg-white/[0.03] border-t border-white/[0.06]">
-        <p className="text-xs text-white/50 text-center">{intensity.msg}</p>
+      <div className="px-4 py-3 bg-stone-900/[0.04] border-t border-stone-900/10">
+        <p className="text-xs text-stone-900/50 text-center">{intensity.msg}</p>
       </div>
     </div>
   );

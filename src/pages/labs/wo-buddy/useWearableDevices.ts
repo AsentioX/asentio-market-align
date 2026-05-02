@@ -25,7 +25,7 @@ export interface WearableLiveData {
 }
 
 const HR_ZONES = [
-  { name: 'rest' as const, min: 0, max: 99, color: 'text-white/50', bg: 'bg-white/10', label: 'Resting' },
+  { name: 'rest' as const, min: 0, max: 99, color: 'text-stone-900/50', bg: 'bg-stone-900/10', label: 'Resting' },
   { name: 'warm_up' as const, min: 100, max: 119, color: 'text-blue-400', bg: 'bg-blue-500/15', label: 'Warm Up' },
   { name: 'fat_burn' as const, min: 120, max: 139, color: 'text-green-400', bg: 'bg-green-500/15', label: 'Fat Burn' },
   { name: 'cardio' as const, min: 140, max: 159, color: 'text-orange-400', bg: 'bg-orange-500/15', label: 'Cardio' },

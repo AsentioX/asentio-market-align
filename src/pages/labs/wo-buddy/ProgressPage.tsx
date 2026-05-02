@@ -39,9 +39,9 @@ const ProgressPage = () => {
       <div className="bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 rounded-2xl p-5 border border-emerald-500/10">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] text-white/40 uppercase tracking-wider">This Week</p>
+            <p className="text-[10px] text-stone-900/40 uppercase tracking-wider">This Week</p>
             <p className="text-3xl font-bold mt-1">{currentWeekScore.toLocaleString()}</p>
-            <p className="text-xs text-white/40 mt-0.5">total points</p>
+            <p className="text-xs text-stone-900/40 mt-0.5">total points</p>
           </div>
           {prevWeekScore > 0 && (
             <div className={`flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full ${
@@ -55,13 +55,13 @@ const ProgressPage = () => {
       </div>
 
       {/* Weekly score chart */}
-      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">Weekly Score Trend</span>
         </div>
         {weeklyTrend.length === 0 ? (
-          <p className="text-xs text-white/40 py-8 text-center">No workout history yet.</p>
+          <p className="text-xs text-stone-900/40 py-8 text-center">No workout history yet.</p>
         ) : (
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={weeklyTrend}>
@@ -78,19 +78,19 @@ const ProgressPage = () => {
                 contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
                 labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
               />
-              <Area type="monotone" dataKey="score" stroke="#34d399" strokeWidth={2} fill="url(#scoreGradient)" dot={{ r: 3, fill: '#34d399' }} activeDot={{ r: 5, strokeWidth: 2, stroke: '#0a0a0f' }} />
+              <Area type="monotone" dataKey="score" stroke="#34d399" strokeWidth={2} fill="url(#scoreGradient)" dot={{ r: 3, fill: '#34d399' }} activeDot={{ r: 5, strokeWidth: 2, stroke: '#faf8f5' }} />
             </AreaChart>
           </ResponsiveContainer>
         )}
       </div>
 
       {/* Daily breakdown bar chart */}
-      <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-medium">This Week Breakdown</span>
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1 text-[10px] text-white/40"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block" /> Strength</span>
-            <span className="flex items-center gap-1 text-[10px] text-white/40"><span className="w-2 h-2 rounded-full bg-orange-400 inline-block" /> Cardio</span>
+            <span className="flex items-center gap-1 text-[10px] text-stone-900/40"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block" /> Strength</span>
+            <span className="flex items-center gap-1 text-[10px] text-stone-900/40"><span className="w-2 h-2 rounded-full bg-orange-400 inline-block" /> Cardio</span>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={160}>
@@ -116,11 +116,11 @@ const ProgressPage = () => {
         </div>
 
         {loading ? (
-          <p className="text-xs text-white/40">Loading…</p>
+          <p className="text-xs text-stone-900/40">Loading…</p>
         ) : personalRecords.length === 0 ? (
-          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-6 border border-white/[0.08] text-center">
-            <Trophy className="w-8 h-8 text-white/20 mx-auto mb-2" />
-            <p className="text-xs text-white/40">Log a workout to set your first personal best.</p>
+          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-6 border border-stone-900/10 text-center">
+            <Trophy className="w-8 h-8 text-stone-900/20 mx-auto mb-2" />
+            <p className="text-xs text-stone-900/40">Log a workout to set your first personal best.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">
@@ -133,9 +133,9 @@ const ProgressPage = () => {
                 >
                   <PRIcon pr={pr} className={`w-7 h-7 mx-auto mb-2 ${palette.iconColor}`} />
                   <p className="text-lg font-bold leading-tight">{pr.value}</p>
-                  <p className="text-[11px] text-white/70 mt-1 truncate">{pr.exerciseName}</p>
-                  <p className="text-[10px] text-white/40 mt-0.5">{pr.label}</p>
-                  <p className="text-[10px] text-white/35 mt-1">{formatDate(pr.achievedAt)}</p>
+                  <p className="text-[11px] text-stone-900/70 mt-1 truncate">{pr.exerciseName}</p>
+                  <p className="text-[10px] text-stone-900/40 mt-0.5">{pr.label}</p>
+                  <p className="text-[10px] text-stone-900/35 mt-1">{formatDate(pr.achievedAt)}</p>
                 </div>
               );
             })}

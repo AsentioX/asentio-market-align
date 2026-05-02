@@ -664,20 +664,20 @@ const WorkoutPage = () => {
               <Check className="w-12 h-12 text-emerald-400" />
             </div>
             <div className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-sm shadow-lg shadow-amber-500/30">
-              <Sparkles className="w-4 h-4 text-white" />
+              <Sparkles className="w-4 h-4 text-stone-900" />
             </div>
           </div>
           <div>
             <h2 className="text-2xl font-bold mb-1">Workout Complete!</h2>
-            <p className="text-white/40 text-sm">
-              {elapsedSeconds > 0 && <span className="text-white/60">{formatTimer(elapsedSeconds)} · </span>}
+            <p className="text-stone-900/40 text-sm">
+              {elapsedSeconds > 0 && <span className="text-stone-900/60">{formatTimer(elapsedSeconds)} · </span>}
               Great effort on your {cfg.label.toLowerCase()} session.
             </p>
           </div>
-          <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-2xl p-6 border border-white/[0.08] w-full max-w-xs">
+          <div className="bg-gradient-to-br from-stone-900/[0.06] to-stone-900/[0.03] rounded-2xl p-6 border border-stone-900/10 w-full max-w-xs">
             <p className="text-5xl font-bold text-emerald-400">+{score}</p>
-            <p className="text-xs text-white/40 mt-1">points earned</p>
-            <div className="mt-4 flex items-start gap-1.5 text-[11px] text-white/30 bg-white/[0.03] rounded-xl p-3">
+            <p className="text-xs text-stone-900/40 mt-1">points earned</p>
+            <div className="mt-4 flex items-start gap-1.5 text-[11px] text-stone-900/30 bg-stone-900/[0.04] rounded-xl p-3">
               <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
               <span>Score = effort across reps, weight, distance, and time.</span>
             </div>
@@ -685,20 +685,20 @@ const WorkoutPage = () => {
         </div>
 
         {impact.drivers.length > 0 && (
-          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-4 border border-white/[0.08]">
+          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="w-4 h-4 text-blue-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Drivers Activated</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Drivers Activated</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {impact.drivers.map(d => {
                 const info = PERFORMANCE_DRIVERS.find(p => p.name === d);
                 return (
-                  <div key={d} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/[0.08]">
+                  <div key={d} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900/5 border border-stone-900/10">
                     <span className="text-base">{info?.icon || '⚡'}</span>
                     <div>
-                      <p className="text-xs font-medium text-white/80">{d}</p>
-                      <p className="text-[9px] text-white/30">{info?.description || ''}</p>
+                      <p className="text-xs font-medium text-stone-900/80">{d}</p>
+                      <p className="text-[9px] text-stone-900/30">{info?.description || ''}</p>
                     </div>
                   </div>
                 );
@@ -711,7 +711,7 @@ const WorkoutPage = () => {
           <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-600/[0.02] rounded-2xl p-4 border border-emerald-500/10">
             <div className="flex items-center gap-2 mb-3">
               <Target className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Goal Impact</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Goal Impact</span>
             </div>
             <div className="space-y-3">
               {impact.goals.map(g => {
@@ -719,13 +719,13 @@ const WorkoutPage = () => {
                 const statusCfg = getGoalStatusColor(g.status);
                 const catCfg = getCategoryConfig(g.category);
                 return (
-                  <div key={g.id} className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+                  <div key={g.id} className="bg-stone-900/[0.04] rounded-xl p-3 border border-stone-900/10">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-base">{catCfg.icon}</span>
                         <div>
                           <p className="text-sm font-medium">{g.name}</p>
-                          <p className="text-[10px] text-white/30">{g.drivers.join(', ')}</p>
+                          <p className="text-[10px] text-stone-900/30">{g.drivers.join(', ')}</p>
                         </div>
                       </div>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.text} font-medium`}>
@@ -734,11 +734,11 @@ const WorkoutPage = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="flex-1">
-                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-2 bg-stone-900/5 rounded-full overflow-hidden">
                           <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%` }} />
                         </div>
                       </div>
-                      <span className="text-xs text-white/50 font-medium tabular-nums">{pct}%</span>
+                      <span className="text-xs text-stone-900/50 font-medium tabular-nums">{pct}%</span>
                     </div>
                     <p className="text-[11px] text-emerald-400/70 mt-2">
                       ✅ This workout contributed to your {g.drivers.filter(d => impact.drivers.includes(d)).join(' & ')} development
@@ -753,20 +753,20 @@ const WorkoutPage = () => {
         {impact.goals.length === 0 && (
           <div className="bg-gradient-to-br from-amber-500/5 to-amber-600/[0.02] rounded-2xl p-4 border border-amber-500/10 text-center">
             <Target className="w-6 h-6 text-amber-400/60 mx-auto mb-2" />
-            <p className="text-xs text-white/50">No goals connected to this workout yet.</p>
+            <p className="text-xs text-stone-900/50">No goals connected to this workout yet.</p>
             <p className="text-[11px] text-amber-400/60 mt-1">Set goals to see how each workout drives your progress.</p>
           </div>
         )}
 
         {trackedExercises.length > 0 && (
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Session Exercises</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/50 mb-3">Session Exercises</h3>
             <div className="space-y-2">
               {trackedExercises.map(ex => (
                 <ExerciseWidget key={ex.id} exercise={ex} onUpdate={handleUpdateExercise} onRemove={handleRemoveExercise} allExercises={allExerciseNames} />
               ))}
             </div>
-            <div className="mt-3 text-center text-xs text-white/30">
+            <div className="mt-3 text-center text-xs text-stone-900/30">
               {trackedExercises.length} exercises · {trackedExercises.reduce((sum, e) => sum + e.reps, 0)} total reps
             </div>
           </div>
@@ -781,7 +781,7 @@ const WorkoutPage = () => {
               mode === 'strength' ? exercise : mode === 'cardio' ? cardioActivity : bwExercise,
               score, mode
             ))}
-            className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-sm text-stone-900/50 hover:text-stone-900 transition-colors"
           >
             <Share2 className="w-4 h-4" />
             Share
@@ -819,15 +819,15 @@ const WorkoutPage = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => { setWorkoutStarted(false); setWorkoutPaused(false); setElapsedSeconds(0); setActiveExerciseKey(null); setIsResting(false); }}
-              className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+              className="w-8 h-8 rounded-lg bg-stone-900/5 flex items-center justify-center hover:bg-stone-900/10 transition-colors"
             >
-              <ArrowRight className="w-4 h-4 text-white/60 rotate-180" />
+              <ArrowRight className="w-4 h-4 text-stone-900/60 rotate-180" />
             </button>
-            <h2 className="text-sm font-semibold text-white">Workout in Progress</h2>
+            <h2 className="text-sm font-semibold text-stone-900">Workout in Progress</h2>
           </div>
           <div className="flex items-center gap-2">
-            <Timer className="w-3.5 h-3.5 text-white/40" />
-            <span className="text-sm font-bold tabular-nums text-white/70">{formatTimer(elapsedSeconds)}</span>
+            <Timer className="w-3.5 h-3.5 text-stone-900/40" />
+            <span className="text-sm font-bold tabular-nums text-stone-900/70">{formatTimer(elapsedSeconds)}</span>
             <button
               onClick={handlePauseWorkout}
               className={`ml-1 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
@@ -841,12 +841,12 @@ const WorkoutPage = () => {
 
         {/* Wearable live data strip */}
         {hasWearable && activeWearable && (
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
+          <div className="rounded-2xl border border-stone-900/10 bg-stone-900/[0.04] overflow-hidden">
             {/* Device selector header */}
             <div className="flex items-center justify-between px-3.5 pt-3 pb-1.5">
               <button
                 onClick={() => setShowDevicePicker(!showDevicePicker)}
-                className="flex items-center gap-1.5 text-[10px] text-white/40 hover:text-white/60 transition-colors"
+                className="flex items-center gap-1.5 text-[10px] text-stone-900/40 hover:text-stone-900/60 transition-colors"
               >
                 <span className="text-sm">
                   {activeWearable.type === 'watch' ? '⌚' : activeWearable.type === 'ring' ? '💍' : '📱'}
@@ -872,51 +872,51 @@ const WorkoutPage = () => {
                     className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs transition-colors ${
                       d.id === selectedWearableId
                         ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20'
-                        : 'bg-white/[0.03] text-white/60 border border-white/[0.06] hover:bg-white/[0.06]'
+                        : 'bg-stone-900/[0.04] text-stone-900/60 border border-stone-900/10 hover:bg-stone-900/[0.06]'
                     }`}
                   >
                     <span>{d.type === 'watch' ? '⌚' : d.type === 'ring' ? '💍' : '📱'}</span>
                     <span className="font-medium">{d.name}</span>
-                    {d.battery && <span className="ml-auto text-[9px] text-white/30">🔋 {d.battery}%</span>}
+                    {d.battery && <span className="ml-auto text-[9px] text-stone-900/30">🔋 {d.battery}%</span>}
                   </button>
                 ))}
               </div>
             )}
 
             {/* Live metrics */}
-            <div className="grid grid-cols-4 gap-px bg-white/[0.04]">
+            <div className="grid grid-cols-4 gap-px bg-stone-900/[0.05]">
               {(() => {
                 const hrZone = getHRZone(wearableData.heartRate);
                 return (
                   <div className="bg-[#0f1023] p-3 text-center">
-                    <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">❤️ HR</p>
+                    <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">❤️ HR</p>
                     <p className={`text-lg font-bold tabular-nums ${hrZone.color}`}>{wearableData.heartRate}</p>
                     <p className={`text-[8px] font-medium mt-0.5 ${hrZone.color}`}>{hrZone.label}</p>
                   </div>
                 );
               })()}
               <div className="bg-[#0f1023] p-3 text-center">
-                <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">🔥 Cal</p>
+                <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">🔥 Cal</p>
                 <p className="text-lg font-bold tabular-nums text-orange-400">{wearableData.calories}</p>
-                <p className="text-[8px] text-white/20 mt-0.5">active</p>
+                <p className="text-[8px] text-stone-900/20 mt-0.5">active</p>
               </div>
               {activeWearable.type === 'watch' && wearableData.cadence ? (
                 <div className="bg-[#0f1023] p-3 text-center">
-                  <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">🦶 Cadence</p>
+                  <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">🦶 Cadence</p>
                   <p className="text-lg font-bold tabular-nums text-blue-400">{wearableData.cadence}</p>
-                  <p className="text-[8px] text-white/20 mt-0.5">spm</p>
+                  <p className="text-[8px] text-stone-900/20 mt-0.5">spm</p>
                 </div>
               ) : (
                 <div className="bg-[#0f1023] p-3 text-center">
-                  <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">🫁 SpO₂</p>
+                  <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">🫁 SpO₂</p>
                   <p className="text-lg font-bold tabular-nums text-cyan-400">{wearableData.bloodOxygen}%</p>
-                  <p className="text-[8px] text-white/20 mt-0.5">oxygen</p>
+                  <p className="text-[8px] text-stone-900/20 mt-0.5">oxygen</p>
                 </div>
               )}
               <div className="bg-[#0f1023] p-3 text-center">
-                <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">😰 Stress</p>
+                <p className="text-[9px] text-stone-900/30 uppercase tracking-wider mb-1">😰 Stress</p>
                 <p className="text-lg font-bold tabular-nums text-purple-400">{wearableData.stress}</p>
-                <p className="text-[8px] text-white/20 mt-0.5">score</p>
+                <p className="text-[8px] text-stone-900/20 mt-0.5">score</p>
               </div>
             </div>
           </div>
@@ -924,9 +924,9 @@ const WorkoutPage = () => {
 
         {/* No wearable connected hint */}
         {!hasWearable && connectedDevices.length === 0 && (
-          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-stone-900/[0.03] border border-stone-900/[0.08]">
             <span className="text-sm">⌚</span>
-            <p className="text-[10px] text-white/30">Connect a wearable in Settings to see live biometrics here</p>
+            <p className="text-[10px] text-stone-900/30">Connect a wearable in Settings to see live biometrics here</p>
           </div>
         )}
 
@@ -935,8 +935,8 @@ const WorkoutPage = () => {
         {/* "Next Exercise?" confirmation overlay */}
         {showNextConfirm && (
           <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-amber-600/5 p-4">
-            <p className="text-sm font-semibold text-white mb-1">Skip to next exercise?</p>
-            <p className="text-xs text-white/40 mb-3">Your current exercise will be marked as done.</p>
+            <p className="text-sm font-semibold text-stone-900 mb-1">Skip to next exercise?</p>
+            <p className="text-xs text-stone-900/40 mb-3">Your current exercise will be marked as done.</p>
             <div className="flex gap-2">
               <button
                 onClick={() => {
@@ -956,7 +956,7 @@ const WorkoutPage = () => {
               </button>
               <button
                 onClick={() => setShowNextConfirm(null)}
-                className="px-4 py-2.5 rounded-xl bg-white/5 text-white/50 text-xs font-semibold hover:bg-white/10 transition-colors"
+                className="px-4 py-2.5 rounded-xl bg-stone-900/5 text-stone-900/50 text-xs font-semibold hover:bg-stone-900/10 transition-colors"
               >
                 Cancel
               </button>
@@ -996,12 +996,12 @@ const WorkoutPage = () => {
                   <div key={key} className="space-y-2">
                     <div className={`rounded-2xl border overflow-hidden transition-all ${
                       isActive ? 'border-emerald-500/30 shadow-lg shadow-emerald-500/10' :
-                      action === 'completed' ? 'border-emerald-500/15 opacity-50' : 'border-white/[0.08]'
+                      action === 'completed' ? 'border-emerald-500/15 opacity-50' : 'border-stone-900/10'
                     }`}>
                       <div
                         className={`p-4 transition-all ${
                           isActive ? 'bg-gradient-to-r from-emerald-500/15 to-emerald-600/5' :
-                          isDone ? 'bg-white/[0.02]' : 'bg-white/[0.03]'
+                          isDone ? 'bg-stone-900/[0.03]' : 'bg-stone-900/[0.04]'
                         }`}
                         onClick={() => {
                           if (!isDone && !isActive) {
@@ -1018,8 +1018,8 @@ const WorkoutPage = () => {
                             {action === 'completed' ? '✅' : exTypeIcon.emoji}
                           </span>
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-semibold ${isDone ? 'text-white/40 line-through' : isActive ? 'text-emerald-300' : 'text-white'}`}>{ex.name}</p>
-                            <p className="text-xs text-white/40">
+                            <p className={`text-sm font-semibold ${isDone ? 'text-stone-900/40 line-through' : isActive ? 'text-emerald-300' : 'text-stone-900'}`}>{ex.name}</p>
+                            <p className="text-xs text-stone-900/40">
                               {ex.duration || (ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : '10 min')}
                             </p>
                           </div>
@@ -1034,7 +1034,7 @@ const WorkoutPage = () => {
                         </div>
 
                         {isActive && ex.note && (
-                          <p className="text-xs text-white/40 mt-3 ml-11 leading-relaxed">{ex.note}</p>
+                          <p className="text-xs text-stone-900/40 mt-3 ml-11 leading-relaxed">{ex.note}</p>
                         )}
                       </div>
 
@@ -1044,24 +1044,24 @@ const WorkoutPage = () => {
                             <div className="grid grid-cols-3 gap-2 pt-2">
                               <button
                                 onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'camera' }))}
-                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all"
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-stone-900/[0.05] border border-stone-900/10 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all"
                               >
                                 <Camera className="w-5 h-5 text-emerald-400" />
-                                <span className="text-[10px] text-white/60 font-medium">Camera</span>
+                                <span className="text-[10px] text-stone-900/60 font-medium">Camera</span>
                               </button>
                               <button
                                 onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'photo' }))}
-                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] hover:bg-blue-500/10 hover:border-blue-500/20 transition-all"
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-stone-900/[0.05] border border-stone-900/10 hover:bg-blue-500/10 hover:border-blue-500/20 transition-all"
                               >
                                 <ImageIcon className="w-5 h-5 text-blue-400" />
-                                <span className="text-[10px] text-white/60 font-medium">Photo</span>
+                                <span className="text-[10px] text-stone-900/60 font-medium">Photo</span>
                               </button>
                               <button
                                 onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'reps' }))}
-                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] hover:bg-purple-500/10 hover:border-purple-500/20 transition-all"
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-stone-900/[0.05] border border-stone-900/10 hover:bg-purple-500/10 hover:border-purple-500/20 transition-all"
                               >
                                 <Hash className="w-5 h-5 text-purple-400" />
-                                <span className="text-[10px] text-white/60 font-medium">Manual</span>
+                                <span className="text-[10px] text-stone-900/60 font-medium">Manual</span>
                               </button>
                             </div>
                           )}
@@ -1070,7 +1070,7 @@ const WorkoutPage = () => {
                             <div className="space-y-2 pt-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-emerald-400 font-medium flex items-center gap-1"><Camera className="w-3 h-3" /> Camera Tracking</span>
-                                <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
+                                <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-stone-900/30 hover:text-stone-900/50">Back</button>
                               </div>
                               <CameraTrackingView
                                 exercise={ex.name}
@@ -1086,11 +1086,11 @@ const WorkoutPage = () => {
                             <div className="space-y-2 pt-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-blue-400 font-medium flex items-center gap-1"><ImageIcon className="w-3 h-3" /> Take Photo</span>
-                                <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
+                                <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-stone-900/30 hover:text-stone-900/50">Back</button>
                               </div>
-                              <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-6 text-center">
-                                <ImageIcon className="w-10 h-10 text-white/15 mx-auto mb-2" />
-                                <p className="text-xs text-white/40">Take a photo of your exercise machine or setup</p>
+                              <div className="rounded-xl border border-stone-900/10 bg-stone-900/[0.04] p-6 text-center">
+                                <ImageIcon className="w-10 h-10 text-stone-900/15 mx-auto mb-2" />
+                                <p className="text-xs text-stone-900/40">Take a photo of your exercise machine or setup</p>
                                 <button className="mt-3 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-semibold hover:bg-blue-500/30 transition-colors">
                                   📸 Open Camera
                                 </button>
@@ -1102,7 +1102,7 @@ const WorkoutPage = () => {
                             <div className="space-y-3 pt-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-purple-400 font-medium flex items-center gap-1"><Hash className="w-3 h-3" /> Manual Entry</span>
-                                <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-white/30 hover:text-white/50">Back</button>
+                                <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-stone-900/30 hover:text-stone-900/50">Back</button>
                               </div>
                               {(() => {
                                 const libEx = findExercise(ex.name);
@@ -1116,23 +1116,23 @@ const WorkoutPage = () => {
                                   return (
                                     <div className={`grid ${hasWeight ? 'grid-cols-3' : 'grid-cols-2'} gap-2`}>
                                       <div className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">Sets</label>
                                         <input type="number" value={manualSets[key] || ex.sets || 3}
                                           onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                       <div className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">{repsLabel}</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">{repsLabel}</label>
                                         <input type="number" value={manualReps[key] || ex.reps || 10}
                                           onChange={e => setManualReps(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                       {hasWeight && (
                                         <div className="space-y-1">
-                                          <label className="text-[10px] text-white/40 uppercase tracking-wider">Weight</label>
+                                          <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">Weight</label>
                                           <input type="number" value={manualWeight[key] || 0}
                                             onChange={e => setManualWeight(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                            className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                            className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                             placeholder="lbs" />
                                         </div>
                                       )}
@@ -1145,24 +1145,24 @@ const WorkoutPage = () => {
                                   return (
                                     <div className="grid grid-cols-3 gap-2">
                                       <div className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Distance</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">Distance</label>
                                         <input type="number" value={manualDistance[key] || 0}
                                           onChange={e => setManualDistance(prev => ({ ...prev, [key]: parseFloat(e.target.value) || 0 }))}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder={metrics.find(m => m.key === 'distance' || m.key === 'interval_distance')?.unit || 'm'} />
                                       </div>
                                       <div className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Time</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">Time</label>
                                         <input type="number" value={manualTime[key] || 0}
                                           onChange={e => setManualTime(prev => ({ ...prev, [key]: parseFloat(e.target.value) || 0 }))}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder="min" />
                                       </div>
                                       <div className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">Sets</label>
                                         <input type="number" value={manualSets[key] || 1}
                                           onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                     </div>
                                   );
@@ -1173,17 +1173,17 @@ const WorkoutPage = () => {
                                   return (
                                     <div className="grid grid-cols-2 gap-2">
                                       <div className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Duration</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">Duration</label>
                                         <input type="number" value={manualDuration[key] || 60}
                                           onChange={e => setManualDuration(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder="sec" />
                                       </div>
                                       <div className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">Sets</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">Sets</label>
                                         <input type="number" value={manualSets[key] || 3}
                                           onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                     </div>
                                   );
@@ -1194,7 +1194,7 @@ const WorkoutPage = () => {
                                   <div className="grid grid-cols-2 gap-2">
                                     {metrics.filter(m => m.required).map(m => (
                                       <div key={m.key} className="space-y-1">
-                                        <label className="text-[10px] text-white/40 uppercase tracking-wider">{m.label}{m.unit ? ` (${m.unit})` : ''}</label>
+                                        <label className="text-[10px] text-stone-900/40 uppercase tracking-wider">{m.label}{m.unit ? ` (${m.unit})` : ''}</label>
                                         <input type="number"
                                           value={
                                             m.key === 'distance' ? (manualDistance[key] || '') :
@@ -1209,7 +1209,7 @@ const WorkoutPage = () => {
                                             else if (m.key === 'duration') setManualDuration(prev => ({ ...prev, [key]: val }));
                                             else setManualReps(prev => ({ ...prev, [key]: val }));
                                           }}
-                                          className="w-full bg-white/5 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder={m.unit || '0'} />
                                       </div>
                                     ))}
@@ -1237,32 +1237,32 @@ const WorkoutPage = () => {
                             <span className="text-xl">😮‍💨</span>
                             <div>
                               <p className="text-sm font-semibold text-amber-300">Rest</p>
-                              <p className="text-[10px] text-white/40">Recover before next exercise</p>
+                              <p className="text-[10px] text-stone-900/40">Recover before next exercise</p>
                             </div>
                           </div>
                           <span className="text-2xl font-bold tabular-nums text-amber-400">
                             {formatTimer(restElapsed)}
-                            <span className="text-xs text-white/40 font-normal"> / {formatTimer(restTargetSec)}</span>
+                            <span className="text-xs text-stone-900/40 font-normal"> / {formatTimer(restTargetSec)}</span>
                           </span>
                         </div>
 
                         {/* Editable target rest time */}
-                        <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/[0.06] px-3 py-2">
-                          <span className="text-[10px] uppercase tracking-widest text-white/40 font-semibold">Target rest</span>
+                        <div className="flex items-center justify-between rounded-xl bg-stone-900/5 border border-stone-900/10 px-3 py-2">
+                          <span className="text-[10px] uppercase tracking-widest text-stone-900/40 font-semibold">Target rest</span>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
                               onClick={() => setRestTargetSec(s => Math.max(10, s - 15))}
-                              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 text-sm font-bold transition-colors"
+                              className="w-7 h-7 rounded-lg bg-stone-900/5 hover:bg-stone-900/10 text-stone-900/70 text-sm font-bold transition-colors"
                               aria-label="Decrease rest"
                             >−</button>
-                            <span className="text-sm font-semibold text-white tabular-nums min-w-[3rem] text-center">
+                            <span className="text-sm font-semibold text-stone-900 tabular-nums min-w-[3rem] text-center">
                               {restTargetSec}s
                             </span>
                             <button
                               type="button"
                               onClick={() => setRestTargetSec(s => Math.min(600, s + 15))}
-                              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 text-sm font-bold transition-colors"
+                              className="w-7 h-7 rounded-lg bg-stone-900/5 hover:bg-stone-900/10 text-stone-900/70 text-sm font-bold transition-colors"
                               aria-label="Increase rest"
                             >+</button>
                           </div>
@@ -1287,23 +1287,23 @@ const WorkoutPage = () => {
         {!showAddExercise ? (
           <button
             onClick={() => setShowAddExercise(true)}
-            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3.5 transition-all"
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-stone-900/10 bg-stone-900/[0.05] hover:bg-stone-900/[0.06] p-3.5 transition-all"
           >
-            <Plus className="w-4 h-4 text-white/50" />
-            <span className="text-sm font-medium text-white/70">Add Exercise</span>
+            <Plus className="w-4 h-4 text-stone-900/50" />
+            <span className="text-sm font-medium text-stone-900/70">Add Exercise</span>
           </button>
         ) : (
-          <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-white/[0.05] to-white/[0.02] p-4 space-y-3">
+          <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Add Exercise</span>
-              <button onClick={() => { setShowAddExercise(false); setAddExerciseSearch(''); }} className="text-[10px] text-white/30 hover:text-white/50">Cancel</button>
+              <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Add Exercise</span>
+              <button onClick={() => { setShowAddExercise(false); setAddExerciseSearch(''); }} className="text-[10px] text-stone-900/30 hover:text-stone-900/50">Cancel</button>
             </div>
             <input
               type="text"
               value={addExerciseSearch}
               onChange={(e) => setAddExerciseSearch(e.target.value)}
               placeholder="Search exercises..."
-              className="w-full bg-white/5 border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-emerald-500/30"
+              className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/30 focus:outline-none focus:border-emerald-500/30"
               autoFocus
             />
             <div className="max-h-48 overflow-y-auto space-y-1">
@@ -1315,10 +1315,10 @@ const WorkoutPage = () => {
                   if (!grouped[cat]) grouped[cat] = [];
                   grouped[cat].push(ex);
                 });
-                if (filtered.length === 0) return <p className="text-xs text-white/30 text-center py-3">No exercises found</p>;
+                if (filtered.length === 0) return <p className="text-xs text-stone-900/30 text-center py-3">No exercises found</p>;
                 return Object.entries(grouped).map(([cat, exercises]) => (
                   <div key={cat}>
-                    <p className="text-[10px] text-white/30 uppercase tracking-wider font-semibold px-1 pt-2 pb-1">{cat}</p>
+                    <p className="text-[10px] text-stone-900/30 uppercase tracking-wider font-semibold px-1 pt-2 pb-1">{cat}</p>
                     {exercises.slice(0, 8).map(ex => {
                       const icon = EXERCISE_TYPE_ICONS[ex.category === 'endurance' ? 'cardio' : ex.category === 'strength' ? 'strength' : 'bodyweight'];
                       return (
@@ -1342,12 +1342,12 @@ const WorkoutPage = () => {
                             setShowAddExercise(false);
                             setAddExerciseSearch('');
                           }}
-                          className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06] transition-all text-left"
+                          className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-stone-900/[0.04] border border-stone-900/[0.08] hover:bg-stone-900/[0.06] transition-all text-left"
                         >
                           <span className="text-lg w-7 text-center">{icon?.emoji || '⚡'}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-white/80 truncate">{ex.name}</p>
-                            <p className="text-[10px] text-white/30 capitalize">{ex.category}</p>
+                            <p className="text-xs font-medium text-stone-900/80 truncate">{ex.name}</p>
+                            <p className="text-[10px] text-stone-900/30 capitalize">{ex.category}</p>
                           </div>
                           <Plus className="w-3.5 h-3.5 text-emerald-400/60 shrink-0" />
                         </button>
@@ -1363,7 +1363,7 @@ const WorkoutPage = () => {
         {/* Finish Workout */}
         <button
           onClick={() => handleSubmit()}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-red-500/20"
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-stone-900 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-red-500/20"
         >
           <Check className="w-5 h-5" />
           <span>Finish Workout</span>
@@ -1384,9 +1384,9 @@ const WorkoutPage = () => {
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-600/5">
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4 text-emerald-400" />
-                      <p className="text-sm font-semibold text-white">Today's Plan</p>
+                      <p className="text-sm font-semibold text-stone-900">Today's Plan</p>
                     </div>
-                    <p className="text-xs text-white/50">
+                    <p className="text-xs text-stone-900/50">
                       {todayPlan!.sessions.reduce((t, s) => t + s.exercises.length, 0)} exercises
                     </p>
                   </div>
@@ -1394,7 +1394,7 @@ const WorkoutPage = () => {
                   {/* Estimated finish time */}
                   {workoutDuration > 0 && (
                     <div className="px-4 pt-3 -mb-1 flex items-center justify-between">
-                      <span className="text-[10px] text-white/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                      <span className="text-[10px] text-stone-900/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
                         <Clock className="w-3 h-3" /> Estimated Finish
                       </span>
                       <span className="text-xs font-semibold text-emerald-300 tabular-nums">
@@ -1406,13 +1406,13 @@ const WorkoutPage = () => {
                   {/* Duration picker */}
                   <div className="px-4 pt-3 pb-1">
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-[10px] text-white/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                      <label className="text-[10px] text-stone-900/40 uppercase tracking-wider font-semibold flex items-center gap-1.5">
                         <Timer className="w-3 h-3" /> Workout Duration
                       </label>
                       <span className="text-sm font-bold text-emerald-400 tabular-nums">{workoutDuration} min</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] text-white/30">15</span>
+                      <span className="text-[10px] text-stone-900/30">15</span>
                       <input
                         type="range"
                         min={15}
@@ -1423,9 +1423,9 @@ const WorkoutPage = () => {
                           setWorkoutDuration(parseInt(e.target.value));
                           setExerciseActions({});
                         }}
-                        className="flex-1 h-1.5 rounded-full appearance-none bg-white/10 accent-emerald-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-400 [&::-webkit-slider-thumb]:shadow-lg"
+                        className="flex-1 h-1.5 rounded-full appearance-none bg-stone-900/10 accent-emerald-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-400 [&::-webkit-slider-thumb]:shadow-lg"
                       />
-                      <span className="text-[10px] text-white/30">120</span>
+                      <span className="text-[10px] text-stone-900/30">120</span>
                     </div>
                     {workoutDuration < defaultDuration && (
                       <p className="text-[10px] text-amber-400/60 mt-1.5">
@@ -1452,14 +1452,14 @@ const WorkoutPage = () => {
                   <div className="px-3 pb-3 grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setWorkoutPath('new')}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] p-3 transition-all"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-stone-900/10 bg-stone-900/[0.05] hover:bg-stone-900/[0.06] p-3 transition-all"
                     >
-                      <Plus className="w-4 h-4 text-white/50" />
-                      <span className="text-sm font-medium text-white/70">Add Exercise</span>
+                      <Plus className="w-4 h-4 text-stone-900/50" />
+                      <span className="text-sm font-medium text-stone-900/70">Add Exercise</span>
                     </button>
                     <button
                       onClick={handleStartWorkout}
-                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-3 rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-stone-900 font-semibold py-3 rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
                     >
                       <Play className="w-5 h-5" />
                       <span>Start Workout</span>
@@ -1470,22 +1470,22 @@ const WorkoutPage = () => {
 
               {/* Rest day */}
               {todayPlan?.isRest && todayPlan.sessions.length === 0 && (
-                <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+                <div className="rounded-2xl bg-stone-900/[0.04] border border-stone-900/10 p-4 text-center">
                   <span className="text-2xl">😴</span>
-                  <p className="text-sm text-white/50 mt-2">Today is a rest day</p>
-                  <p className="text-[11px] text-white/30 mt-1">{todayPlan.restReason}</p>
+                  <p className="text-sm text-stone-900/50 mt-2">Today is a rest day</p>
+                  <p className="text-[11px] text-stone-900/30 mt-1">{todayPlan.restReason}</p>
                 </div>
               )}
 
               {/* No plan empty state — still allow logging a freeform workout */}
               {!hasSessions && !todayPlan?.isRest && (
-                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 text-center space-y-3">
-                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06]">
-                    <CalendarDays className="w-4 h-4 text-white/40" />
+                <div className="rounded-2xl border border-stone-900/10 bg-stone-900/[0.04] p-5 text-center space-y-3">
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-stone-900/[0.05] border border-stone-900/10">
+                    <CalendarDays className="w-4 h-4 text-stone-900/40" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">No plan for today</p>
-                    <p className="text-[11px] text-white/40 mt-1 max-w-xs mx-auto">
+                    <p className="text-sm font-semibold text-stone-900">No plan for today</p>
+                    <p className="text-[11px] text-stone-900/40 mt-1 max-w-xs mx-auto">
                       Add a goal to generate a training plan, or log a freeform workout below.
                     </p>
                   </div>
@@ -1514,7 +1514,7 @@ const WorkoutPage = () => {
                 </button>
                 <button
                   onClick={() => toast.info('Connect Strava, Apple Health, or Garmin to import workouts.', { description: 'Coming soon — no third-party connection set up yet.' })}
-                  className="w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white/80 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  className="w-full flex items-center justify-center gap-2 bg-stone-900/[0.05] border border-stone-900/10 hover:bg-stone-900/[0.08] text-stone-900/80 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
                   title="Import workout from Strava, Apple Health, Garmin, etc."
                 >
                   <Download className="w-5 h-5" />
@@ -1551,13 +1551,13 @@ const WorkoutPage = () => {
                 <div className="flex items-center justify-between gap-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 p-3">
                   <div className="flex flex-col">
                     <span className="text-[11px] uppercase tracking-widest text-blue-200/70">Logging Workout</span>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-sm font-semibold text-stone-900">
                       {loggingAddedNames.length === 0
                         ? 'No exercises added yet'
                         : `${loggingAddedNames.length} exercise${loggingAddedNames.length === 1 ? '' : 's'} added`}
                     </span>
                     {loggingAddedNames.length > 0 && (
-                      <span className="text-[11px] text-white/50 mt-0.5 line-clamp-1">
+                      <span className="text-[11px] text-stone-900/50 mt-0.5 line-clamp-1">
                         {loggingAddedNames.join(' · ')}
                       </span>
                     )}
@@ -1568,7 +1568,7 @@ const WorkoutPage = () => {
                         setLoggingAddedNames([]);
                         setWorkoutPath('choose');
                       }}
-                      className="px-3 py-2 rounded-xl text-xs font-medium text-white/60 hover:text-white/90 hover:bg-white/5 transition"
+                      className="px-3 py-2 rounded-xl text-xs font-medium text-stone-900/60 hover:text-stone-900/90 hover:bg-stone-900/5 transition"
                     >
                       Cancel
                     </button>
@@ -1587,7 +1587,7 @@ const WorkoutPage = () => {
                         }
                       }}
                       disabled={loggingAddedNames.length === 0 && !hasSessions}
-                      className="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-500 hover:bg-blue-400 text-white disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5"
+                      className="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-500 hover:bg-blue-400 text-stone-900 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5"
                     >
                       <Check className="w-4 h-4" />
                       Finished
@@ -1620,7 +1620,7 @@ const SESSION_TYPE_STYLES: Record<string, { emoji: string; color: string; gradie
   cardio: { emoji: '🏃', color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/20', activeGradient: 'from-orange-500/30 to-orange-600/10' },
   bodyweight: { emoji: '💪', color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', activeGradient: 'from-purple-500/30 to-purple-600/10' },
   active_recovery: { emoji: '🧘', color: 'text-teal-400', gradient: 'from-teal-500/20 to-teal-600/5', border: 'border-teal-500/20', activeGradient: 'from-teal-500/30 to-teal-600/10' },
-  rest: { emoji: '😴', color: 'text-white/40', gradient: 'from-white/5 to-white/[0.02]', border: 'border-white/[0.06]', activeGradient: 'from-white/10 to-white/5' },
+  rest: { emoji: '😴', color: 'text-stone-900/40', gradient: 'from-stone-900/5 to-stone-900/[0.03]', border: 'border-stone-900/10', activeGradient: 'from-stone-900/10 to-stone-900/5' },
 };
 
 interface PlanSessionCardsProps {
@@ -1665,14 +1665,14 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
             <div key={si} className={`rounded-2xl border overflow-hidden transition-all ${style.border} ${sessionAllDone ? 'opacity-60' : ''}`}>
               {/* Session header — no longer a button */}
               <div className={`flex items-center gap-3 p-3.5 bg-gradient-to-r ${style.gradient}`}>
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-stone-900/5 flex items-center justify-center text-2xl flex-shrink-0">
                   {style.emoji}
                 </div>
                 <div className="flex-1 min-w-0 text-left">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-white truncate">{session.label}</p>
+                    <p className="text-sm font-semibold text-stone-900 truncate">{session.label}</p>
                     {todayPlan.sessions.length > 1 && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 shrink-0">Session {si + 1}</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-900/5 text-stone-900/40 shrink-0">Session {si + 1}</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 mt-1">
@@ -1681,7 +1681,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                         <span key={t} className="text-xs" title={t}>{EXERCISE_TYPE_ICONS[t]?.emoji || '⚡'}</span>
                       ))}
                     </div>
-                    <span className="text-[10px] text-white/30">{sessionExCount} exercise{sessionExCount !== 1 ? 's' : ''}</span>
+                    <span className="text-[10px] text-stone-900/30">{sessionExCount} exercise{sessionExCount !== 1 ? 's' : ''}</span>
                     {sessionCompleted > 0 && (
                       <span className="text-[10px] text-emerald-400">{sessionCompleted}/{sessionExCount} done</span>
                     )}
@@ -1710,9 +1710,9 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                     <div key={ei}>
                       {showRestBefore && (
                         <div className="flex items-center gap-2 py-1 px-2">
-                          <div className="flex-1 h-px bg-white/[0.06]" />
-                          <span className="text-[9px] text-white/20 flex items-center gap-1">😮‍💨 ~1.5 min rest</span>
-                          <div className="flex-1 h-px bg-white/[0.06]" />
+                          <div className="flex-1 h-px bg-stone-900/[0.06]" />
+                          <span className="text-[9px] text-stone-900/20 flex items-center gap-1">😮‍💨 ~1.5 min rest</span>
+                          <div className="flex-1 h-px bg-stone-900/[0.06]" />
                         </div>
                       )}
                       <div className="relative">
@@ -1720,7 +1720,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                           className={`w-full flex items-center gap-2 p-2.5 rounded-xl transition-all ${
                             action === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/15'
                             : action === 'dismissed' ? 'bg-red-500/5 border border-red-500/10 opacity-50'
-                            : 'bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06]'
+                            : 'bg-stone-900/[0.04] border border-stone-900/[0.08] hover:bg-stone-900/[0.06]'
                           }`}
                         >
                           <button
@@ -1731,8 +1731,8 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                               {action === 'completed' ? '✅' : action === 'dismissed' ? '⛔' : exTypeIcon.emoji}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-xs font-medium truncate ${isDone ? 'text-white/40' : 'text-white/80'}`}>{ex.name}</p>
-                              <p className="text-[10px] text-white/30">
+                              <p className={`text-xs font-medium truncate ${isDone ? 'text-stone-900/40' : 'text-stone-900/80'}`}>{ex.name}</p>
+                              <p className="text-[10px] text-stone-900/30">
                                 {ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.duration || ''}
                               </p>
                             </div>
@@ -1745,7 +1745,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                                 onClick={(e) => { e.stopPropagation(); onMoveExercise?.(ei, -1); }}
                                 disabled={ei === 0}
                                 aria-label="Move exercise up"
-                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-white/70 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-stone-900/30 hover:text-stone-900/70 hover:bg-stone-900/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
                               >
                                 <ChevronUp className="w-3.5 h-3.5" />
                               </button>
@@ -1753,24 +1753,24 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                                 onClick={(e) => { e.stopPropagation(); onMoveExercise?.(ei, 1); }}
                                 disabled={ei === session.exercises.length - 1}
                                 aria-label="Move exercise down"
-                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-white/70 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-stone-900/30 hover:text-stone-900/70 hover:bg-stone-900/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
                               >
                                 <ChevronDown className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); onRemoveExercise?.(ei); setExpandedExercise(null); }}
                                 aria-label="Delete exercise"
-                                className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-stone-900/30 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           )}
-                          {!isDone && !editable && <ChevronRight className="w-3.5 h-3.5 text-white/15 shrink-0" />}
+                          {!isDone && !editable && <ChevronRight className="w-3.5 h-3.5 text-stone-900/15 shrink-0" />}
                         </div>
 
                         {isExExpanded && !isDone && (
-                          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-white/10">
+                          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-black/80 backdrop-blur-sm border border-stone-900/10">
                             <button
                               onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'completed'); setExpandedExercise(null); }}
                               className="flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
@@ -1779,13 +1779,13 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'dismissed'); setExpandedExercise(null); }}
-                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
+                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-stone-900/5 text-stone-900/40 text-[11px] font-semibold hover:bg-red-500/15 hover:text-red-400 transition-colors"
                             >
                               ✕ Skip
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); setExpandedExercise(null); }}
-                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold hover:bg-white/10 transition-colors"
+                              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-stone-900/5 text-stone-900/40 text-[11px] font-semibold hover:bg-stone-900/10 transition-colors"
                             >
                               Cancel
                             </button>
@@ -1894,27 +1894,27 @@ const PastWorkoutsList = ({ completedWorkouts, workouts, onDeleteLocal, onDelete
 
   return (
     <div className="space-y-3 pt-2">
-      <p className="text-xs font-semibold text-white/50 text-center">Past Workouts</p>
+      <p className="text-xs font-semibold text-stone-900/50 text-center">Past Workouts</p>
       {allItems.slice(0, 10).map(item => {
         const isExpanded = expandedId === item.id;
         const durationMin = Math.round(item.duration / 60);
         const cfg = modeConfig[item.mode as Mode] || modeConfig.strength;
 
         return (
-          <div key={item.id} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] overflow-hidden">
+          <div key={item.id} className="rounded-2xl border border-stone-900/10 bg-stone-900/[0.04] overflow-hidden">
             <button
               onClick={() => setExpandedId(isExpanded ? null : item.id)}
-              className="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.02] transition-colors"
+              className="w-full flex items-center justify-between p-3.5 hover:bg-stone-900/[0.03] transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-stone-900/5 flex items-center justify-center text-lg flex-shrink-0">
                   {cfg.emoji}
                 </div>
                 <div className="text-left">
-                  <p className="text-sm font-medium text-white/80">
+                  <p className="text-sm font-medium text-stone-900/80">
                     {new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
-                  <p className="text-[10px] text-white/40">
+                  <p className="text-[10px] text-stone-900/40">
                     {item.exercises.length} exercise{item.exercises.length !== 1 ? 's' : ''} · {durationMin > 0 ? `${durationMin} min` : '<1 min'}
                   </p>
                 </div>
@@ -1931,25 +1931,25 @@ const PastWorkoutsList = ({ completedWorkouts, workouts, onDeleteLocal, onDelete
                       onDeleteLocal(item.id);
                     }
                   }}
-                  className="p-1.5 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="p-1.5 rounded-lg text-stone-900/40 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                   aria-label="Delete workout"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
-                <ChevronDown className={`w-4 h-4 text-white/30 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-stone-900/30 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
               </div>
             </button>
 
             {isExpanded && (
-              <div className="px-3.5 pb-3.5 space-y-1.5 border-t border-white/[0.06] pt-3">
+              <div className="px-3.5 pb-3.5 space-y-1.5 border-t border-stone-900/10 pt-3">
                 {item.exercises.map((ex, i) => {
                   const exIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
                   return (
-                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
+                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-stone-900/[0.04] border border-stone-900/[0.08]">
                       <span className="text-base w-6 text-center">{exIcon.emoji}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-white/70">{ex.name}</p>
-                        <p className="text-[10px] text-white/30">
+                        <p className="text-xs font-medium text-stone-900/70">{ex.name}</p>
+                        <p className="text-[10px] text-stone-900/30">
                           {[
                             ex.sets && ex.reps ? `${ex.sets} × ${ex.reps} reps` : ex.reps ? `${ex.reps} reps` : null,
                             ex.weight ? `${ex.weight} lbs` : null,
@@ -1961,7 +1961,7 @@ const PastWorkoutsList = ({ completedWorkouts, workouts, onDeleteLocal, onDelete
                   );
                 })}
                 {item.exercises.length === 0 && (
-                  <p className="text-xs text-white/30 text-center py-2">No exercise details recorded</p>
+                  <p className="text-xs text-stone-900/30 text-center py-2">No exercise details recorded</p>
                 )}
               </div>
             )}
@@ -2028,11 +2028,11 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
   if (workouts.length === 0 && activeGoals.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
-          <History className="w-8 h-8 text-white/20" />
+        <div className="w-16 h-16 rounded-2xl bg-stone-900/5 flex items-center justify-center mb-4">
+          <History className="w-8 h-8 text-stone-900/20" />
         </div>
-        <p className="text-sm text-white/40">No workouts logged yet</p>
-        <p className="text-xs text-white/25 mt-1">Complete a workout to see your history here.</p>
+        <p className="text-sm text-stone-900/40">No workouts logged yet</p>
+        <p className="text-xs text-stone-900/25 mt-1">Complete a workout to see your history here.</p>
       </div>
     );
   }
@@ -2056,40 +2056,40 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-2">
-        <div className="bg-gradient-to-b from-white/[0.05] to-white/[0.02] rounded-xl p-3 border border-white/[0.06] text-center">
+        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-900/10 text-center">
           <p className="text-xl font-bold">{workouts.length}</p>
-          <p className="text-[10px] text-white/40 mt-0.5">Total</p>
+          <p className="text-[10px] text-stone-900/40 mt-0.5">Total</p>
         </div>
-        <div className="bg-gradient-to-b from-white/[0.05] to-white/[0.02] rounded-xl p-3 border border-white/[0.06] text-center">
+        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-900/10 text-center">
           <p className="text-xl font-bold text-emerald-400">{workouts.reduce((s, w) => s + w.score, 0).toLocaleString()}</p>
-          <p className="text-[10px] text-white/40 mt-0.5">Points</p>
+          <p className="text-[10px] text-stone-900/40 mt-0.5">Points</p>
         </div>
-        <div className="bg-gradient-to-b from-white/[0.05] to-white/[0.02] rounded-xl p-3 border border-white/[0.06] text-center">
+        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-900/10 text-center">
           <p className="text-xl font-bold">{Object.keys(grouped).length}</p>
-          <p className="text-[10px] text-white/40 mt-0.5">Days</p>
+          <p className="text-[10px] text-stone-900/40 mt-0.5">Days</p>
         </div>
       </div>
 
       {activeGoals.length > 0 && (
-        <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-2xl border border-white/[0.08] overflow-hidden">
+        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.02] rounded-2xl border border-stone-900/10 overflow-hidden">
           <div className="p-4 pb-2">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="w-4 h-4 text-blue-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Goal Burndown</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/50">Goal Burndown</span>
             </div>
             {activeGoals.length > 1 && (
               <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
                 {activeGoals.map(g => (
                   <button key={g.id} onClick={() => setSelectedGoalId(g.id)}
                     className={`shrink-0 text-[11px] px-2.5 py-1 rounded-lg border transition-colors ${
-                      (selectedGoal?.id === g.id) ? 'bg-blue-500/15 border-blue-500/20 text-blue-400' : 'bg-white/[0.03] border-white/[0.06] text-white/40 hover:bg-white/[0.06]'
+                      (selectedGoal?.id === g.id) ? 'bg-blue-500/15 border-blue-500/20 text-blue-400' : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/40 hover:bg-stone-900/[0.06]'
                     }`}>{g.name}</button>
                 ))}
               </div>
             )}
             {selectedGoal && (
-              <div className="mt-2 flex items-center gap-3 text-[10px] text-white/30">
-                <span className="flex items-center gap-1"><span className="w-2 h-0.5 bg-white/20 rounded" /> Ideal</span>
+              <div className="mt-2 flex items-center gap-3 text-[10px] text-stone-900/30">
+                <span className="flex items-center gap-1"><span className="w-2 h-0.5 bg-stone-900/15 rounded" /> Ideal</span>
                 <span className="flex items-center gap-1"><span className="w-2 h-0.5 bg-emerald-400 rounded" /> Actual</span>
                 {skippedDays > 0 && (
                   <span className="flex items-center gap-1 text-amber-400/60"><AlertTriangle className="w-2.5 h-2.5" /> {skippedDays} skipped</span>
@@ -2129,7 +2129,7 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
               <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
               <div>
                 <p className="text-xs font-medium text-amber-400">Behind schedule</p>
-                <p className="text-[11px] text-white/40 mt-0.5">
+                <p className="text-[11px] text-stone-900/40 mt-0.5">
                   You have <span className="text-amber-400 font-medium">{drift} {selectedGoal.metric}</span> more remaining than planned.
                   {skippedDays > 0 && ` ${skippedDays} skipped day${skippedDays > 1 ? 's' : ''} contributed to this drift.`}
                 </p>
@@ -2141,7 +2141,7 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
               <Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
               <div>
                 <p className="text-xs font-medium text-emerald-400">On track or ahead</p>
-                <p className="text-[11px] text-white/40 mt-0.5">
+                <p className="text-[11px] text-stone-900/40 mt-0.5">
                   You're {drift === 0 ? 'right on' : `${Math.abs(drift)} ${selectedGoal.metric} ahead of`} schedule. Keep it up!
                 </p>
               </div>
@@ -2153,19 +2153,19 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
       {Object.entries(grouped).map(([date, dayWorkouts]) => (
         <div key={date}>
           <div className="flex items-center gap-2 mb-2">
-            <Calendar className="w-3 h-3 text-white/30" />
-            <span className="text-xs font-semibold text-white/50">{formatDate(date)}</span>
-            <span className="text-[10px] text-white/25">· {dayWorkouts.reduce((s, w) => s + w.score, 0)} pts</span>
+            <Calendar className="w-3 h-3 text-stone-900/30" />
+            <span className="text-xs font-semibold text-stone-900/50">{formatDate(date)}</span>
+            <span className="text-[10px] text-stone-900/25">· {dayWorkouts.reduce((s, w) => s + w.score, 0)} pts</span>
           </div>
           <div className="space-y-2">
             {dayWorkouts.map(w => {
               const cfg = modeConfig[w.type] || modeConfig.strength;
               return (
                 <div key={w.id} className={`flex items-center gap-3 bg-gradient-to-r ${cfg.gradient} rounded-2xl p-3.5 border ${cfg.border}`}>
-                  <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-lg flex-shrink-0">{cfg.emoji}</div>
+                  <div className="w-11 h-11 rounded-xl bg-stone-900/5 flex items-center justify-center text-lg flex-shrink-0">{cfg.emoji}</div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{w.exercise}</p>
-                    <p className="text-[10px] text-white/40 capitalize">{w.type}</p>
+                    <p className="text-[10px] text-stone-900/40 capitalize">{w.type}</p>
                   </div>
                   <span className="text-sm font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">+{w.score}</span>
                 </div>
@@ -2181,12 +2181,12 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
 function NumberInput({ label, value, onChange, step = 1 }: { label: string; value: number; onChange: (v: number) => void; step?: number }) {
   return (
     <div className="min-w-0">
-      <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
+      <label className="text-[10px] text-stone-900/40 uppercase tracking-wider mb-1 block">{label}</label>
       <div className="flex items-center gap-0.5">
-        <button onClick={() => onChange(Math.max(0, value - step))} className="w-7 h-8 shrink-0 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-sm transition-colors">−</button>
+        <button onClick={() => onChange(Math.max(0, value - step))} className="w-7 h-8 shrink-0 rounded-lg bg-stone-900/5 text-stone-900/60 hover:bg-stone-900/10 flex items-center justify-center text-sm transition-colors">−</button>
         <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))}
-          className="min-w-0 flex-1 bg-white/5 border border-white/5 rounded-lg px-1 py-1.5 text-center text-sm font-medium text-white focus:outline-none focus:border-emerald-500/30" />
-        <button onClick={() => onChange(value + step)} className="w-7 h-8 shrink-0 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 flex items-center justify-center text-sm transition-colors">+</button>
+          className="min-w-0 flex-1 bg-stone-900/5 border border-stone-900/10 rounded-lg px-1 py-1.5 text-center text-sm font-medium text-stone-900 focus:outline-none focus:border-emerald-500/30" />
+        <button onClick={() => onChange(value + step)} className="w-7 h-8 shrink-0 rounded-lg bg-stone-900/5 text-stone-900/60 hover:bg-stone-900/10 flex items-center justify-center text-sm transition-colors">+</button>
       </div>
     </div>
   );
@@ -2207,12 +2207,12 @@ function InputSelect({ label, value, options, onChange, grouped }: { label: stri
 
   return (
     <div>
-      <label className="text-[10px] text-white/40 uppercase tracking-wider mb-1 block">{label}</label>
+      <label className="text-[10px] text-stone-900/40 uppercase tracking-wider mb-1 block">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/30 appearance-none">
+        className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none">
         {groupedOptions ? (
           Object.entries(groupedOptions).map(([cat, names]) => (
-            <optgroup key={cat} label={cat} className="bg-[#1a1a2e] text-white/60">
+            <optgroup key={cat} label={cat} className="bg-[#1a1a2e] text-stone-900/60">
               {names.map(o => <option key={o} value={o} className="bg-[#1a1a2e]">{o}</option>)}
             </optgroup>
           ))

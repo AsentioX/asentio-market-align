@@ -119,8 +119,8 @@ export function getGoalStatusColor(status: string) {
     case 'active': return { text: 'text-emerald-400', bg: 'bg-emerald-500/15', label: 'Active' };
     case 'paused': return { text: 'text-amber-400', bg: 'bg-amber-500/15', label: 'Paused' };
     case 'completed': return { text: 'text-blue-400', bg: 'bg-blue-500/15', label: 'Completed' };
-    case 'archived': return { text: 'text-white/40', bg: 'bg-white/5', label: 'Archived' };
-    default: return { text: 'text-white/40', bg: 'bg-white/5', label: status };
+    case 'archived': return { text: 'text-stone-900/40', bg: 'bg-stone-900/5', label: 'Archived' };
+    default: return { text: 'text-stone-900/40', bg: 'bg-stone-900/5', label: status };
   }
 }
 
