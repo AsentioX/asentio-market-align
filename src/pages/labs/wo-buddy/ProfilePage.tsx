@@ -154,7 +154,7 @@ const ProfilePage = () => {
           <button
             onClick={() => bgInputRef.current?.click()}
             disabled={uploadingBg}
-            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-stone-900/15 backdrop-blur-md border border-stone-900/10 text-stone-900/60 hover:text-stone-900 hover:bg-stone-900/25 transition-all"
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-stone-900/15 backdrop-blur-md border border-stone-900/10 text-stone-900/75 hover:text-stone-900 hover:bg-stone-900/25 transition-all"
           >
             {uploadingBg ? (
               <div className="w-4 h-4 border-2 border-stone-900/20 border-t-white rounded-full animate-spin" />
@@ -200,7 +200,7 @@ const ProfilePage = () => {
                       onKeyDown={(e) => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') setEditingName(false); }}
                     />
                     <button onClick={saveName} className="text-emerald-400 hover:text-emerald-300"><Check className="w-4 h-4" /></button>
-                    <button onClick={() => setEditingName(false)} className="text-stone-900/40 hover:text-red-400"><X className="w-4 h-4" /></button>
+                    <button onClick={() => setEditingName(false)} className="text-stone-900/65 hover:text-red-400"><X className="w-4 h-4" /></button>
                   </div>
                 ) : (
                   <h2 className="text-xl font-bold group/name cursor-pointer" onClick={startEditingName}>
@@ -208,7 +208,7 @@ const ProfilePage = () => {
                     <Pencil className="w-3 h-3 inline ml-1.5 opacity-0 group-hover/name:opacity-60 transition-opacity" />
                   </h2>
                 )}
-                <p className="text-xs text-stone-900/40">Member since {memberSince}</p>
+                <p className="text-xs text-stone-900/65">Member since {memberSince}</p>
                 <div className="flex items-center justify-center gap-2 mt-1.5">
                   <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium border border-emerald-500/20">Level {level}</span>
                   <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full font-medium border border-amber-500/20">🏋️ {workoutCount} workouts</span>
@@ -227,13 +227,13 @@ const ProfilePage = () => {
             <span className="text-sm font-medium">Body Metrics</span>
           </div>
           {!editingProfile ? (
-            <button onClick={() => { setDraft({ ...profile }); setEditingProfile(true); }} className="text-stone-900/40 hover:text-stone-900 transition-colors">
+            <button onClick={() => { setDraft({ ...profile }); setEditingProfile(true); }} className="text-stone-900/65 hover:text-stone-900 transition-colors">
               <Pencil className="w-3.5 h-3.5" />
             </button>
           ) : (
             <div className="flex gap-2">
-              <button onClick={cancelEdit} className="text-stone-900/40 hover:text-red-400 transition-colors"><X className="w-4 h-4" /></button>
-              <button onClick={saveProfile} className="text-stone-900/40 hover:text-emerald-400 transition-colors"><Check className="w-4 h-4" /></button>
+              <button onClick={cancelEdit} className="text-stone-900/65 hover:text-red-400 transition-colors"><X className="w-4 h-4" /></button>
+              <button onClick={saveProfile} className="text-stone-900/65 hover:text-emerald-400 transition-colors"><Check className="w-4 h-4" /></button>
             </div>
           )}
         </div>
@@ -251,9 +251,9 @@ const ProfilePage = () => {
             ].map((m, i) => (
               <div key={i} className={`bg-gradient-to-b ${m.bg} rounded-xl p-3 border ${m.border}`}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  {m.icon}<span className="text-[10px] text-stone-900/40">{m.label}</span>
+                  {m.icon}<span className="text-[10px] text-stone-900/65">{m.label}</span>
                   {'measured' in m && m.measured && (
-                    <span className="text-[8px] bg-stone-900/5 text-stone-900/30 px-1.5 py-0.5 rounded-full ml-auto">measured</span>
+                    <span className="text-[8px] bg-stone-900/5 text-stone-900/55 px-1.5 py-0.5 rounded-full ml-auto">measured</span>
                   )}
                 </div>
                 <p className="text-sm font-semibold">{m.value}</p>
@@ -268,7 +268,7 @@ const ProfilePage = () => {
               { label: 'Goal Weight (kg)', key: 'goalWeight' as const, type: 'number' },
             ].map((field) => (
               <div key={field.key} className="bg-stone-900/[0.04] rounded-xl p-3 border border-stone-900/10">
-                <label className="text-[10px] text-stone-900/40 block mb-1">{field.label}</label>
+                <label className="text-[10px] text-stone-900/65 block mb-1">{field.label}</label>
                 <input
                   type="number"
                   value={draft[field.key]}
@@ -278,7 +278,7 @@ const ProfilePage = () => {
               </div>
             ))}
             <div className="bg-stone-900/[0.04] rounded-xl p-3 border border-stone-900/10">
-              <label className="text-[10px] text-stone-900/40 block mb-1">Birthdate</label>
+              <label className="text-[10px] text-stone-900/65 block mb-1">Birthdate</label>
               <input
                 type="date"
                 value={draft.birthdate}
@@ -287,29 +287,29 @@ const ProfilePage = () => {
               />
             </div>
             <div className="bg-stone-900/[0.04] rounded-xl p-3 border border-stone-900/10 col-span-2">
-              <label className="text-[10px] text-stone-900/40 block mb-1">Gender</label>
+              <label className="text-[10px] text-stone-900/65 block mb-1">Gender</label>
               <div className="flex gap-2">
                 {['Male', 'Female', 'Other'].map(g => (
                   <button key={g} onClick={() => setDraft(prev => ({ ...prev, gender: g }))}
-                    className={`flex-1 text-xs py-1.5 rounded-lg border transition-all ${draft.gender === g ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-stone-900/[0.03] border-stone-900/10 text-stone-900/40'}`}>
+                    className={`flex-1 text-xs py-1.5 rounded-lg border transition-all ${draft.gender === g ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-stone-900/[0.03] border-stone-900/10 text-stone-900/65'}`}>
                     {g}
                   </button>
                 ))}
               </div>
             </div>
             <div className="bg-stone-900/[0.04] rounded-xl p-3 border border-stone-900/10 col-span-2">
-              <label className="text-[10px] text-stone-900/40 block mb-1">Ethnicity</label>
+              <label className="text-[10px] text-stone-900/65 block mb-1">Ethnicity</label>
               <div className="flex gap-2 flex-wrap">
                 {['Asian', 'Black', 'Hispanic', 'White', 'Mixed', 'Other'].map(e => (
                   <button key={e} onClick={() => setDraft(prev => ({ ...prev, ethnicity: e }))}
-                    className={`text-xs py-1.5 px-3 rounded-lg border transition-all ${draft.ethnicity === e ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-stone-900/[0.03] border-stone-900/10 text-stone-900/40'}`}>
+                    className={`text-xs py-1.5 px-3 rounded-lg border transition-all ${draft.ethnicity === e ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-stone-900/[0.03] border-stone-900/10 text-stone-900/65'}`}>
                     {e}
                   </button>
                 ))}
               </div>
             </div>
             <div className="col-span-2 bg-stone-900/[0.03] rounded-xl p-3 border border-dashed border-stone-900/10">
-              <p className="text-[10px] text-stone-900/30 text-center">💡 Resting HR and Body Fat % are measured from your wearable device and cannot be edited manually.</p>
+              <p className="text-[10px] text-stone-900/55 text-center">💡 Resting HR and Body Fat % are measured from your wearable device and cannot be edited manually.</p>
             </div>
           </div>
         )}
@@ -317,7 +317,7 @@ const ProfilePage = () => {
       {/* Delete Account */}
       <div className="bg-red-500/5 rounded-2xl p-4 border border-red-500/10">
         <h3 className="text-sm font-semibold text-red-400 mb-1">Danger Zone</h3>
-        <p className="text-[11px] text-stone-900/40 mb-3">Permanently delete your account and all associated data. This action cannot be undone.</p>
+        <p className="text-[11px] text-stone-900/65 mb-3">Permanently delete your account and all associated data. This action cannot be undone.</p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button className="flex items-center gap-1.5 text-xs py-2 px-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors">
@@ -327,12 +327,12 @@ const ProfilePage = () => {
           <AlertDialogContent className="bg-[#ffffff] border-stone-900/10">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-stone-900">Delete your account?</AlertDialogTitle>
-              <AlertDialogDescription className="text-stone-900/50">
+              <AlertDialogDescription className="text-stone-900/70">
                 This will permanently delete your W.O.Buddy profile, all workouts, goals, and progress data. This cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-stone-900/5 border-stone-900/10 text-stone-900/60 hover:bg-stone-900/10 hover:text-stone-900">Cancel</AlertDialogCancel>
+              <AlertDialogCancel className="bg-stone-900/5 border-stone-900/10 text-stone-900/75 hover:bg-stone-900/10 hover:text-stone-900">Cancel</AlertDialogCancel>
               <AlertDialogAction
                 disabled={deletingAccount}
                 onClick={async (e) => {

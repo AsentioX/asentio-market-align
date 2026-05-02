@@ -63,7 +63,7 @@ const AvatarCropModal = ({ imageSrc, onCropDone, onCancel }: AvatarCropModalProp
       <div className="bg-[#ffffff] rounded-2xl border border-stone-900/10 w-full max-w-md overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-stone-900/10">
           <span className="text-sm font-medium text-stone-900/80">Crop Profile Photo</span>
-          <button onClick={onCancel} className="text-stone-900/40 hover:text-stone-900"><X className="w-4 h-4" /></button>
+          <button onClick={onCancel} className="text-stone-900/65 hover:text-stone-900"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="relative w-full aspect-square bg-stone-200">
@@ -81,7 +81,7 @@ const AvatarCropModal = ({ imageSrc, onCropDone, onCancel }: AvatarCropModalProp
         </div>
 
         <div className="px-4 py-3 flex items-center gap-3">
-          <ZoomOut className="w-4 h-4 text-stone-900/40" />
+          <ZoomOut className="w-4 h-4 text-stone-900/65" />
           <input
             type="range"
             min={1}
@@ -91,11 +91,11 @@ const AvatarCropModal = ({ imageSrc, onCropDone, onCancel }: AvatarCropModalProp
             onChange={(e) => setZoom(Number(e.target.value))}
             className="flex-1 accent-emerald-500 h-1"
           />
-          <ZoomIn className="w-4 h-4 text-stone-900/40" />
+          <ZoomIn className="w-4 h-4 text-stone-900/65" />
         </div>
 
         <div className="flex gap-2 px-4 pb-4">
-          <button onClick={onCancel} className="flex-1 text-sm py-2.5 rounded-xl border border-stone-900/10 text-stone-900/60 hover:bg-stone-900/5 transition-colors">
+          <button onClick={onCancel} className="flex-1 text-sm py-2.5 rounded-xl border border-stone-900/10 text-stone-900/75 hover:bg-stone-900/5 transition-colors">
             Cancel
           </button>
           <button

@@ -73,8 +73,8 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
         {!cameraActive && (
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
             <div className="text-center space-y-2">
-              <Camera className="w-10 h-10 text-stone-900/20 mx-auto" />
-              <p className="text-xs text-stone-900/30">
+              <Camera className="w-10 h-10 text-stone-900/45 mx-auto" />
+              <p className="text-xs text-stone-900/55">
                 {loading ? 'Loading pose model...' : error ?? 'Initializing camera...'}
               </p>
             </div>
@@ -101,7 +101,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
               <span className="text-[10px] text-emerald-400 uppercase tracking-wider font-medium">Detected</span>
             </div>
             <p className="text-sm font-bold text-stone-900 mt-0.5">{detectedLabel}</p>
-            <p className="text-[10px] text-stone-900/40">{confidence}% visibility</p>
+            <p className="text-[10px] text-stone-900/65">{confidence}% visibility</p>
           </div>
 
           {/* Heart rate */}
@@ -122,7 +122,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
           }`}>
             <div className="text-center">
               <p className="text-4xl font-black text-stone-900 tabular-nums">{repCount}</p>
-              <p className="text-[10px] text-stone-900/40 uppercase tracking-widest">reps</p>
+              <p className="text-[10px] text-stone-900/65 uppercase tracking-widest">reps</p>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
             formScore === 'Excellent' ? 'border-emerald-500/20 text-emerald-400' :
             formScore === 'Great' ? 'border-blue-500/20 text-blue-400' :
             formScore === 'Adjust depth' ? 'border-amber-500/20 text-amber-400' :
-            'border-stone-900/10 text-stone-900/60'
+            'border-stone-900/10 text-stone-900/75'
           }`}>
             <Zap className="w-3 h-3 inline mr-1" />
             Form: {formScore}
@@ -166,7 +166,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
 
       {/* Bottom bar */}
       <div className="px-4 py-3 bg-stone-900/[0.04] border-t border-stone-900/10">
-        <p className="text-xs text-stone-900/50 text-center">{intensity.msg}</p>
+        <p className="text-xs text-stone-900/70 text-center">{intensity.msg}</p>
       </div>
     </div>
   );

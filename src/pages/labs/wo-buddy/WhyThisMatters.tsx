@@ -34,10 +34,10 @@ const WhyThisMatters = ({ activityName, compact = false }: WhyThisMattersProps) 
         <div className="flex-1 min-w-0">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-400/80">Why This Matters</span>
           {primary && !expanded && (
-            <p className="text-[11px] text-stone-900/50 truncate mt-0.5">{primary.training_purpose}</p>
+            <p className="text-[11px] text-stone-900/70 truncate mt-0.5">{primary.training_purpose}</p>
           )}
         </div>
-        {expanded ? <ChevronUp className="w-3 h-3 text-stone-900/20" /> : <ChevronDown className="w-3 h-3 text-stone-900/20" />}
+        {expanded ? <ChevronUp className="w-3 h-3 text-stone-900/45" /> : <ChevronDown className="w-3 h-3 text-stone-900/45" />}
       </button>
 
       {expanded && (
@@ -45,17 +45,17 @@ const WhyThisMatters = ({ activityName, compact = false }: WhyThisMattersProps) 
           {primary && (
             <>
               <div>
-                <span className="text-[9px] text-stone-900/30 uppercase tracking-wider">Purpose</span>
-                <p className="text-xs text-stone-900/60 mt-0.5">{primary.training_purpose}</p>
+                <span className="text-[9px] text-stone-900/55 uppercase tracking-wider">Purpose</span>
+                <p className="text-xs text-stone-900/75 mt-0.5">{primary.training_purpose}</p>
               </div>
               <div>
-                <span className="text-[9px] text-stone-900/30 uppercase tracking-wider">How it helps</span>
-                <p className="text-xs text-stone-900/60 mt-0.5">{primary.explanation}</p>
+                <span className="text-[9px] text-stone-900/55 uppercase tracking-wider">How it helps</span>
+                <p className="text-xs text-stone-900/75 mt-0.5">{primary.explanation}</p>
               </div>
               {primary.target_suggestion && (
                 <div>
-                  <span className="text-[9px] text-stone-900/30 uppercase tracking-wider">Today's focus</span>
-                  <p className="text-xs text-stone-900/60 mt-0.5">{primary.target_suggestion}</p>
+                  <span className="text-[9px] text-stone-900/55 uppercase tracking-wider">Today's focus</span>
+                  <p className="text-xs text-stone-900/75 mt-0.5">{primary.target_suggestion}</p>
                 </div>
               )}
             </>
@@ -67,7 +67,7 @@ const WhyThisMatters = ({ activityName, compact = false }: WhyThisMattersProps) 
               {drivers.map(d => {
                 const info = PERFORMANCE_DRIVERS.find(p => p.name === d);
                 return (
-                  <span key={d} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-900/5 text-[9px] text-stone-900/40 border border-stone-900/10">
+                  <span key={d} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-900/5 text-[9px] text-stone-900/65 border border-stone-900/10">
                     {info?.icon} {d}
                   </span>
                 );
@@ -78,7 +78,7 @@ const WhyThisMatters = ({ activityName, compact = false }: WhyThisMattersProps) 
           {/* Connected goals */}
           {connectedGoals.length > 0 && (
             <div>
-              <span className="text-[9px] text-stone-900/30 uppercase tracking-wider">Goal connection</span>
+              <span className="text-[9px] text-stone-900/55 uppercase tracking-wider">Goal connection</span>
               {connectedGoals.map(g => (
                 <div key={g.id} className="flex items-center gap-1.5 mt-1">
                   <Target className="w-3 h-3 text-emerald-400/60" />
