@@ -14,12 +14,12 @@ const chartTooltipStyle = {
 };
 
 const PR_PALETTE = [
-  { color: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/15', iconColor: 'text-blue-300' },
-  { color: 'from-orange-500/15 to-orange-600/5', border: 'border-orange-500/15', iconColor: 'text-orange-300' },
-  { color: 'from-purple-500/15 to-purple-600/5', border: 'border-purple-500/15', iconColor: 'text-purple-300' },
-  { color: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/15', iconColor: 'text-amber-300' },
-  { color: 'from-emerald-500/15 to-emerald-600/5', border: 'border-emerald-500/15', iconColor: 'text-emerald-300' },
-  { color: 'from-pink-500/15 to-pink-600/5', border: 'border-pink-500/15', iconColor: 'text-pink-300' },
+  { color: 'from-blue-500/15 to-blue-500/5', border: 'border-blue-500/20', iconColor: 'text-blue-600' },
+  { color: 'from-orange-500/15 to-orange-500/5', border: 'border-orange-500/20', iconColor: 'text-orange-600' },
+  { color: 'from-purple-500/15 to-purple-500/5', border: 'border-purple-500/20', iconColor: 'text-purple-600' },
+  { color: 'from-amber-500/15 to-amber-500/5', border: 'border-amber-500/20', iconColor: 'text-amber-600' },
+  { color: 'from-emerald-500/15 to-emerald-500/5', border: 'border-emerald-500/20', iconColor: 'text-emerald-600' },
+  { color: 'from-pink-500/15 to-pink-500/5', border: 'border-pink-500/20', iconColor: 'text-pink-600' },
 ];
 
 function TypeIcon({ type, className }: { type: PersonalRecord['type']; className?: string }) {
