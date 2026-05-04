@@ -8,3 +8,15 @@ verify_jwt = false
 
 [functions.contractor-ai]
 verify_jwt = false
+
+[functions.tastudio-render]
+verify_jwt = false
+
+[functions.cf-discover-websites]
+verify_jwt = false
+
+[functions.cf-extract-emails]
+verify_jwt = false
+
+[functions.pp-scrape-offers]
+verify_jwt = false

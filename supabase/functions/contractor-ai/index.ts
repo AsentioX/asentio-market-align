@@ -1,5 +1,6 @@
 // Lovable AI: NL segment builder + AI profile summary
 // Two modes via { mode: 'segment' | 'summary' }
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -92,6 +93,31 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Require admin auth (this is an internal admin tool)
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userData, error: userErr } = await userClient.auth.getUser(authHeader.replace('Bearer ', ''));
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const admin = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    const { data: profile } = await admin.from('profiles').select('role').eq('id', userData.user.id).maybeSingle();
+    if (profile?.role !== 'admin') {
+      return new Response(JSON.stringify({ error: 'Admin access required' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
