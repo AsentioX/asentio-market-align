@@ -23,7 +23,7 @@ const WORKOUT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; color: string
   strength: { icon: <Dumbbell className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-500/15' },
   cardio: { icon: <Wind className="w-4 h-4" />, color: 'text-blue-400', bg: 'bg-blue-500/15' },
   bodyweight: { icon: <Flame className="w-4 h-4" />, color: 'text-orange-400', bg: 'bg-orange-500/15' },
-  rest: { icon: <CalendarDays className="w-4 h-4" />, color: 'text-stone-900/65', bg: 'bg-stone-900/5' },
+  rest: { icon: <CalendarDays className="w-4 h-4" />, color: 'text-stone-700', bg: 'bg-stone-900/5' },
   active_recovery: { icon: <RotateCcw className="w-4 h-4" />, color: 'text-emerald-400', bg: 'bg-emerald-500/15' },
 };
 
@@ -63,7 +63,7 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-bold text-stone-900">Training Plan</h2>
-        <p className="text-xs text-stone-900/65 mt-0.5">
+        <p className="text-xs text-stone-700 mt-0.5">
           {deadlineDate
             ? `${totalWeeks}-week periodized plan · Target: ${format(deadlineDate, 'MMM d, yyyy')}`
             : 'Your overall strategy to achieve your goals'}
@@ -72,24 +72,24 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
 
       {/* Summary metrics */}
       <div className="flex gap-2">
-        <div className="flex-1 rounded-xl bg-stone-900/[0.04] border border-stone-900/10 p-3 text-center">
+        <div className="flex-1 rounded-xl bg-transparent border border-stone-200/70 p-3 text-center">
           <p className="text-lg font-bold text-stone-900">{activeGoals.length}</p>
-          <p className="text-[10px] text-stone-900/65">Active Goals</p>
+          <p className="text-[10px] text-stone-700">Active Goals</p>
         </div>
-        <div className="flex-1 rounded-xl bg-stone-900/[0.04] border border-stone-900/10 p-3 text-center">
+        <div className="flex-1 rounded-xl bg-transparent border border-stone-200/70 p-3 text-center">
           <p className="text-lg font-bold text-stone-900">{totalWeeks}</p>
-          <p className="text-[10px] text-stone-900/65">Total Weeks</p>
+          <p className="text-[10px] text-stone-700">Total Weeks</p>
         </div>
-        <div className="flex-1 rounded-xl bg-stone-900/[0.04] border border-stone-900/10 p-3 text-center">
+        <div className="flex-1 rounded-xl bg-transparent border border-stone-200/70 p-3 text-center">
           <p className="text-lg font-bold text-emerald-400">{weeksRemaining}</p>
-          <p className="text-[10px] text-stone-900/65">Weeks Left</p>
+          <p className="text-[10px] text-stone-700">Weeks Left</p>
         </div>
       </div>
 
       {/* Driver Priority */}
       {sortedDrivers.length > 0 && (
-        <div className="rounded-2xl bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] border border-stone-900/10 p-4 space-y-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Driver Priority</h3>
+        <div className="rounded-2xl bg-white border border-stone-200/70 p-4 space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700">Driver Priority</h3>
           <div className="space-y-2">
             {sortedDrivers.map(([name, count]) => {
               const driverInfo = PERFORMANCE_DRIVERS.find(d => d.name === name);
@@ -97,10 +97,10 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
               return (
                 <div key={name} className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-xs text-stone-900/70">
+                    <span className="flex items-center gap-1.5 text-xs text-stone-700">
                       <span>{driverInfo?.icon || '⚡'}</span> {name}
                     </span>
-                    <span className="text-[10px] text-stone-900/65 font-mono">{pct}%</span>
+                    <span className="text-[10px] text-stone-700 font-mono">{pct}%</span>
                   </div>
                   <div className="h-1.5 bg-stone-900/5 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
@@ -115,10 +115,10 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
       {/* Training Phases */}
       {/* Training Phases */}
       <div className="space-y-3">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Training Phases</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700">Training Phases</h3>
         <div className="relative">
           {/* Vertical connector */}
-          <div className="absolute left-[18px] top-4 bottom-4 w-px bg-stone-900/[0.06]" />
+          <div className="absolute left-[18px] top-4 bottom-4 w-px bg-transparent" />
           <div className="space-y-2">
             {phases.map((phase, i) => {
               const isCurrent = i === currentPhaseIdx;
@@ -129,22 +129,22 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
               
               return (
                 <div key={i} className={`relative flex items-start gap-3 rounded-xl ${phase.bg} border ${isCurrent ? 'border-emerald-500/40 ring-1 ring-emerald-500/20' : phase.border} p-3`}>
-                  <div className={`w-9 h-9 rounded-lg ${isCurrent ? 'bg-emerald-500/20' : 'bg-stone-900/[0.06]'} flex items-center justify-center text-base shrink-0 z-10`}>
+                  <div className={`w-9 h-9 rounded-lg ${isCurrent ? 'bg-emerald-500/20' : 'bg-transparent'} flex items-center justify-center text-base shrink-0 z-10`}>
                     {phase.icon}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-sm font-medium ${phase.color}`}>{phase.name}</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-900/5 text-stone-900/65 font-mono">{weekLabel}</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-900/5 text-stone-700 font-mono">{weekLabel}</span>
                       {isCurrent && (
                         <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">NOW</span>
                       )}
                     </div>
-                    <p className="text-[11px] text-stone-900/65 mt-0.5">{phase.focus}</p>
+                    <p className="text-[11px] text-stone-700 mt-0.5">{phase.focus}</p>
                     <div className="flex items-center gap-3 mt-1.5">
-                      <span className="text-[9px] text-stone-900/55">Intensity: <span className="text-stone-900/70">{intensityLabel}</span></span>
+                      <span className="text-[9px] text-stone-600">Intensity: <span className="text-stone-700">{intensityLabel}</span></span>
                       {phase.goalNames.length > 0 && (
-                        <span className="text-[9px] text-stone-900/55">→ {phase.goalNames.slice(0, 2).join(', ')}</span>
+                        <span className="text-[9px] text-stone-600">→ {phase.goalNames.slice(0, 2).join(', ')}</span>
                       )}
                     </div>
                   </div>
@@ -157,20 +157,20 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
 
       {/* Goal-to-Driver Mapping */}
       {activeGoals.length > 0 && (
-        <div className="rounded-2xl bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] border border-stone-900/10 p-4 space-y-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Goal Connections</h3>
+        <div className="rounded-2xl bg-white border border-stone-200/70 p-4 space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700">Goal Connections</h3>
           {activeGoals.map(g => {
             const cat = getCategoryConfig(g.category);
             const pct = g.target_value > 0 ? Math.round((g.current_value / g.target_value) * 100) : 0;
             return (
-              <div key={g.id} className="flex items-center gap-3 bg-stone-900/[0.04] rounded-xl p-2.5">
+              <div key={g.id} className="flex items-center gap-3 bg-transparent rounded-xl p-2.5">
                 <span className="text-base">{cat.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-stone-900/80 truncate">{g.name}</p>
+                  <p className="text-xs font-medium text-stone-800 truncate">{g.name}</p>
                   <div className="flex items-center gap-1.5 mt-1">
                     {g.drivers.map(d => {
                       const di = PERFORMANCE_DRIVERS.find(pd => pd.name === d);
-                      return <span key={d} className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-900/5 text-stone-900/65">{di?.icon} {d}</span>;
+                      return <span key={d} className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-900/5 text-stone-700">{di?.icon} {d}</span>;
                     })}
                   </div>
                 </div>
@@ -182,8 +182,8 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
       )}
 
       {/* Weekly volume breakdown */}
-      <div className="rounded-2xl bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] border border-stone-900/10 p-4 space-y-3">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Weekly Volume</h3>
+      <div className="rounded-2xl bg-white border border-stone-200/70 p-4 space-y-3">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700">Weekly Volume</h3>
         <div className="grid grid-cols-2 gap-2">
           {Object.entries(sessionsByType).map(([type, count]) => {
             const config = WORKOUT_TYPE_CONFIG[type] || WORKOUT_TYPE_CONFIG.rest;
@@ -191,8 +191,8 @@ const TrainingPlanView = ({ goals, activeGoals, plan, onSwitchToWeekly }: {
               <div key={type} className={`flex items-center gap-2 ${config.bg} rounded-xl p-2.5`}>
                 <span className={config.color}>{config.icon}</span>
                 <div>
-                  <p className="text-xs font-medium text-stone-900/70 capitalize">{type.replace('_', ' ')}</p>
-                  <p className="text-[10px] text-stone-900/65">{count} session{count > 1 ? 's' : ''}/week</p>
+                  <p className="text-xs font-medium text-stone-700 capitalize">{type.replace('_', ' ')}</p>
+                  <p className="text-[10px] text-stone-700">{count} session{count > 1 ? 's' : ''}/week</p>
                 </div>
               </div>
             );
@@ -304,9 +304,9 @@ const GoalsPage = () => {
   if (!isAuthenticated) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4">
-        <Target className="w-12 h-12 text-stone-900/45" />
+        <Target className="w-12 h-12 text-stone-600" />
         <h2 className="text-lg font-bold">Sign in to set goals</h2>
-        <p className="text-sm text-stone-900/65">Create an account to track your goals and get coaching insights.</p>
+        <p className="text-sm text-stone-700">Create an account to track your goals and get coaching insights.</p>
       </div>
     );
   }
@@ -321,11 +321,11 @@ const GoalsPage = () => {
           <h2 className="text-xl font-bold">Goals</h2>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowLibrary(true)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors bg-stone-900/5 text-stone-900/65 hover:bg-stone-900/10 hover:text-stone-900/75">
+              className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors bg-stone-900/5 text-stone-700 hover:bg-stone-900/10 hover:text-stone-800">
               <BookOpen className="w-4 h-4" />
             </button>
             <button onClick={() => setShowTree(!showTree)}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${showTree ? 'bg-emerald-500/20 text-emerald-400' : 'bg-stone-900/5 text-stone-900/65'}`}>
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${showTree ? 'bg-emerald-500/20 text-emerald-400' : 'bg-stone-900/5 text-stone-700'}`}>
               <TreePine className="w-4 h-4" />
             </button>
             <button onClick={() => setShowCreate(!showCreate)}
@@ -337,21 +337,21 @@ const GoalsPage = () => {
 
         {/* Smart Insights */}
         {goals.length > 0 && (
-          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10 space-y-2">
+          <div className="bg-white rounded-2xl p-4 border border-stone-200/70 space-y-2">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Coaching Insights</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-stone-700">Coaching Insights</span>
             </div>
             {insights.slice(0, 3).map((insight, i) => (
-              <p key={i} className="text-sm text-stone-900/70">{insight}</p>
+              <p key={i} className="text-sm text-stone-700">{insight}</p>
             ))}
           </div>
         )}
 
         {/* Goal Tree */}
         {showTree && goals.length > 0 && (
-          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.02] rounded-2xl p-4 border border-stone-900/10 space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70 flex items-center gap-1.5">
+          <div className="bg-white rounded-2xl p-4 border border-stone-200/70 space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700 flex items-center gap-1.5">
               <TreePine className="w-3.5 h-3.5" /> Goal Tree
             </h3>
             {goals.map(goal => {
@@ -369,7 +369,7 @@ const GoalsPage = () => {
                       {goal.drivers.map(d => {
                         const driverInfo = PERFORMANCE_DRIVERS.find(pd => pd.name === d);
                         return (
-                          <div key={d} className="flex items-center gap-1.5 text-[11px] text-stone-900/65">
+                          <div key={d} className="flex items-center gap-1.5 text-[11px] text-stone-700">
                             <div className="w-3 h-px bg-stone-900/10" />
                             <span>{driverInfo?.icon || '⚡'}</span>
                             <span>{d}</span>
@@ -386,32 +386,32 @@ const GoalsPage = () => {
 
         {/* Create Goal Form */}
         {showCreate && (
-          <div className="bg-gradient-to-br from-stone-900/[0.06] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10 space-y-4">
+          <div className="bg-white rounded-2xl p-4 border border-stone-200/70 space-y-4">
             <h3 className="text-sm font-semibold">Create Goal</h3>
             <div>
-              <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-2 block">Quick Start</label>
+              <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-2 block">Quick Start</label>
               <div className="flex flex-wrap gap-1.5">
                 {GOAL_TEMPLATES.slice(0, 4).map((t, i) => (
                   <button key={i} onClick={() => handleTemplate(t)}
-                    className="text-[10px] px-2.5 py-1.5 rounded-lg bg-stone-900/5 text-stone-900/70 hover:bg-stone-900/10 hover:text-stone-900/70 transition-colors border border-stone-900/10">
+                    className="text-[10px] px-2.5 py-1.5 rounded-lg bg-stone-900/5 text-stone-700 hover:bg-stone-900/10 hover:text-stone-700 transition-colors border border-stone-200/70">
                     {t.name}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Goal Name</label>
+              <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Goal Name</label>
               <input value={newName} onChange={e => setNewName(e.target.value)}
                 placeholder="e.g. Run 5K in under 25 min"
-                className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-900/45 focus:outline-none focus:border-emerald-500/30" />
+                className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30" />
             </div>
             <div>
-              <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Category</label>
+              <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Category</label>
               <div className="grid grid-cols-5 gap-1.5">
                 {GOAL_CATEGORIES.map(c => (
                   <button key={c.id} onClick={() => setNewCategory(c.id)}
                     className={`flex flex-col items-center gap-1 py-2.5 rounded-xl text-[10px] font-medium transition-all border ${
-                      newCategory === c.id ? `bg-gradient-to-b ${c.bg} ${c.border} ${c.color}` : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/55'
+                      newCategory === c.id ? `bg-gradient-to-b ${c.bg} ${c.border} ${c.color}` : 'bg-transparent border-stone-200/70 text-stone-600'
                     }`}>
                     <span className="text-base">{c.icon}</span>
                     <span>{c.label}</span>
@@ -420,15 +420,15 @@ const GoalsPage = () => {
               </div>
             </div>
             <div>
-              <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Metric</label>
+              <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Metric</label>
               <select value={newMetric} onChange={e => setNewMetric(e.target.value)}
-                className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none">
+                className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none">
                 {METRICS.map(m => <option key={m.id} value={m.id} className="bg-white">{m.label} ({m.unit})</option>)}
               </select>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">
+                <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">
                   Current ({metricUnit}) <span className="text-amber-400/80 normal-case tracking-normal">*required</span>
                 </label>
                 <input
@@ -436,32 +436,32 @@ const GoalsPage = () => {
                   value={newCurrent === '' ? '' : newCurrent}
                   onChange={e => setNewCurrent(e.target.value === '' ? '' : Number(e.target.value))}
                   placeholder="Where you are now"
-                  className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-900/45 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
               <div>
-                <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Target ({metricUnit})</label>
+                <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Target ({metricUnit})</label>
                 <input type="number" value={newTarget || ''} onChange={e => setNewTarget(Number(e.target.value))}
                   placeholder="Where you want to be"
-                  className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-900/45 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
+                  className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
             </div>
-            <p className="text-[11px] text-stone-900/65 -mt-2">
+            <p className="text-[11px] text-stone-700 -mt-2">
               Tell us your starting point so we can build a realistic plan from where you are today to where you want to go.
             </p>
             <div>
-              <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Target Date (optional)</label>
+              <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Target Date (optional)</label>
               <Popover>
                 <PopoverTrigger asChild>
                   <button className={cn(
-                    "w-full flex items-center gap-2 bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-sm text-left transition-colors focus:outline-none focus:border-emerald-500/30",
-                    newDeadline ? "text-stone-900" : "text-stone-900/45"
+                    "w-full flex items-center gap-2 bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-sm text-left transition-colors focus:outline-none focus:border-emerald-500/30",
+                    newDeadline ? "text-stone-900" : "text-stone-600"
                   )}>
-                    <CalendarIcon className="w-4 h-4 text-stone-900/55" />
+                    <CalendarIcon className="w-4 h-4 text-stone-600" />
                     {newDeadline ? format(newDeadline, "PPP") : "Pick a target date"}
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-white border-stone-900/10" align="start">
+                <PopoverContent className="w-auto p-0 bg-white border-stone-200/70" align="start">
                   <Calendar
                     mode="single"
                     selected={newDeadline}
@@ -474,18 +474,18 @@ const GoalsPage = () => {
               </Popover>
             </div>
             <div>
-              <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Timeframe (optional)</label>
+              <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Timeframe (optional)</label>
               <input value={newTimeframe} onChange={e => setNewTimeframe(e.target.value)}
                 placeholder="e.g. 12 weeks"
-                className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-900/45 focus:outline-none focus:border-emerald-500/30" />
+                className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30" />
             </div>
             <div>
-              <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Performance Drivers</label>
+              <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Performance Drivers</label>
               <div className="flex flex-wrap gap-1.5">
                 {PERFORMANCE_DRIVERS.map(d => (
                   <button key={d.name} onClick={() => toggleDriver(d.name)}
                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
-                      newDrivers.includes(d.name) ? 'bg-emerald-500/15 border-emerald-500/20 text-emerald-400' : 'bg-stone-900/5 border-stone-900/10 text-stone-900/65'
+                      newDrivers.includes(d.name) ? 'bg-emerald-500/15 border-emerald-500/20 text-emerald-400' : 'bg-stone-900/5 border-stone-200/70 text-stone-700'
                     }`}>
                     <span>{d.icon}</span> {d.name}
                   </button>
@@ -501,13 +501,13 @@ const GoalsPage = () => {
 
         {/* Goals List */}
         {loading ? (
-          <div className="text-center text-stone-900/55 py-10 text-sm">Loading goals...</div>
+          <div className="text-center text-stone-600 py-10 text-sm">Loading goals...</div>
         ) : goals.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center space-y-3">
             <div className="w-16 h-16 rounded-2xl bg-stone-900/5 flex items-center justify-center">
-              <Target className="w-8 h-8 text-stone-900/15" />
+              <Target className="w-8 h-8 text-stone-400" />
             </div>
-            <p className="text-sm text-stone-900/65">No goals yet</p>
+            <p className="text-sm text-stone-700">No goals yet</p>
             <button onClick={() => setShowCreate(true)} className="text-xs text-emerald-400 font-medium">
               Create your first goal →
             </button>
@@ -523,7 +523,7 @@ const GoalsPage = () => {
 
               return (
                 <div key={goal.id}
-                  className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl border border-stone-900/10 overflow-hidden transition-all">
+                  className="bg-white rounded-2xl border border-stone-200/70 overflow-hidden transition-all">
                   <button onClick={() => setExpandedGoal(isExp ? null : goal.id)}
                     className="w-full p-4 flex items-center gap-3 text-left">
                     <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${cat.bg} flex items-center justify-center text-lg flex-shrink-0 border ${cat.border}`}>
@@ -541,22 +541,22 @@ const GoalsPage = () => {
                           <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
                             style={{ width: `${pct}%` }} />
                         </div>
-                        <span className="text-[10px] text-stone-900/65 font-mono w-8 text-right">{pct}%</span>
+                        <span className="text-[10px] text-stone-700 font-mono w-8 text-right">{pct}%</span>
                       </div>
                       {goal.deadline && (
-                        <p className="text-[10px] text-stone-900/55 flex items-center gap-1 mt-1">
+                        <p className="text-[10px] text-stone-600 flex items-center gap-1 mt-1">
                           <CalendarIcon className="w-3 h-3" /> {format(new Date(goal.deadline), 'MMM d, yyyy')}
                         </p>
                       )}
                     </div>
-                    {isExp ? <ChevronUp className="w-4 h-4 text-stone-900/45" /> : <ChevronDown className="w-4 h-4 text-stone-900/45" />}
+                    {isExp ? <ChevronUp className="w-4 h-4 text-stone-600" /> : <ChevronDown className="w-4 h-4 text-stone-600" />}
                   </button>
 
                   {isExp && (
-                    <div className="px-4 pb-4 space-y-3 border-t border-stone-900/10 pt-3">
+                    <div className="px-4 pb-4 space-y-3 border-t border-stone-200/70 pt-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-stone-900/65 uppercase tracking-wider">Progress</span>
-                        <span className="text-xs text-stone-900/75 font-medium">
+                        <span className="text-[10px] text-stone-700 uppercase tracking-wider">Progress</span>
+                        <span className="text-xs text-stone-800 font-medium">
                           {goal.current_value} / {goal.target_value} {metric?.unit || ''}
                         </span>
                       </div>
@@ -568,17 +568,17 @@ const GoalsPage = () => {
                             const newStatus = val >= goal.target_value ? 'completed' : 'active';
                             updateGoal(goal.id, { current_value: val, status: newStatus });
                           }}
-                          className="flex-1 bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
-                        <span className="text-xs text-stone-900/55">{metric?.unit}</span>
+                          className="flex-1 bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none" />
+                        <span className="text-xs text-stone-600">{metric?.unit}</span>
                       </div>
                       {goal.drivers.length > 0 && (
                         <div>
-                          <span className="text-[10px] text-stone-900/65 uppercase tracking-wider block mb-1.5">Performance Drivers</span>
+                          <span className="text-[10px] text-stone-700 uppercase tracking-wider block mb-1.5">Performance Drivers</span>
                           <div className="flex flex-wrap gap-1.5">
                             {goal.drivers.map(d => {
                               const driverInfo = PERFORMANCE_DRIVERS.find(pd => pd.name === d);
                               return (
-                                <span key={d} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-stone-900/5 text-[10px] text-stone-900/70 border border-stone-900/10">
+                                <span key={d} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-stone-900/5 text-[10px] text-stone-700 border border-stone-200/70">
                                   {driverInfo?.icon} {d}
                                 </span>
                               );
@@ -586,7 +586,7 @@ const GoalsPage = () => {
                           </div>
                         </div>
                       )}
-                      {goal.timeframe && <p className="text-[10px] text-stone-900/55">Timeframe: {goal.timeframe}</p>}
+                      {goal.timeframe && <p className="text-[10px] text-stone-600">Timeframe: {goal.timeframe}</p>}
 
                       {/* 4-week checkpoint panel — measures progress and adapts the plan */}
                       <GoalCheckpointPanel
@@ -614,19 +614,19 @@ const GoalsPage = () => {
 
       {/* =================== TRAINING / WEEKLY PLAN =================== */}
       {activeGoals.length === 0 ? (
-        <div className="rounded-2xl border border-stone-900/10 bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.02] p-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-stone-900/[0.05] border border-stone-900/10 mb-3">
-            <Target className="w-5 h-5 text-stone-900/65" />
+        <div className="rounded-2xl border border-stone-200/70 bg-white p-8 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-transparent border border-stone-200/70 mb-3">
+            <Target className="w-5 h-5 text-stone-700" />
           </div>
           <h2 className="text-base font-semibold text-stone-900 mb-1">No training plan yet</h2>
-          <p className="text-xs text-stone-900/70 max-w-xs mx-auto">
+          <p className="text-xs text-stone-700 max-w-xs mx-auto">
             Add an active goal above and we'll generate a personalized training plan and weekly schedule for you.
           </p>
         </div>
       ) : (
-      <div className="rounded-2xl border border-stone-900/10 bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.02] overflow-hidden">
+      <div className="rounded-2xl border border-stone-200/70 bg-white overflow-hidden">
         {/* Tabs */}
-        <div className="flex border-b border-stone-900/10">
+        <div className="flex border-b border-stone-200/70">
           {([
             { id: 'training' as const, label: 'Training Plan', icon: <ListChecks className="w-3.5 h-3.5" /> },
             { id: 'plan' as const, label: 'Weekly Plan', icon: <CalendarDays className="w-3.5 h-3.5" /> },
@@ -636,7 +636,7 @@ const GoalsPage = () => {
               className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium transition-all relative ${
                 view === tab.id
                   ? 'text-emerald-400'
-                  : 'text-stone-900/65 hover:text-stone-900/75'
+                  : 'text-stone-700 hover:text-stone-800'
               }`}
             >
               {tab.icon}
@@ -665,7 +665,7 @@ const GoalsPage = () => {
               Intensify: 'text-amber-400 bg-amber-500/10 border-amber-500/15',
               Peak: 'text-purple-400 bg-purple-500/10 border-purple-500/15',
               Test: 'text-rose-400 bg-rose-500/10 border-rose-500/15',
-              Deload: 'text-slate-300 bg-stone-900/[0.05] border-stone-900/10',
+              Deload: 'text-slate-300 bg-transparent border-stone-200/70',
             };
             const phaseClass = phaseColors[currentWeek?.phase ?? 'Foundation'] ?? phaseColors.Foundation;
             return (
@@ -675,7 +675,7 @@ const GoalsPage = () => {
                     <h2 className="text-lg font-bold text-stone-900">
                       {isCurrentWeek ? "This Week's Plan" : `Week ${currentWeek?.weekNumber ?? safeWeekIdx + 1} Plan`}
                     </h2>
-                    <p className="text-xs text-stone-900/65 mt-0.5">
+                    <p className="text-xs text-stone-700 mt-0.5">
                       {multiWeekPlan.totalWeeks}-week periodized plan · {multiWeekPlan.generationReason.split('.')[0]}.
                     </p>
                   </div>
@@ -697,7 +697,7 @@ const GoalsPage = () => {
                             className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg border text-[10px] font-medium transition-all ${
                               isSel
                                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                                : 'bg-stone-900/[0.03] border-stone-900/10 text-stone-900/70 hover:bg-stone-900/[0.06]'
+                                : 'bg-transparent border-stone-200/70 text-stone-700 hover:bg-transparent'
                             }`}>
                             <div className="font-mono">Wk {w.weekNumber}</div>
                             <div className="text-[9px] opacity-70 mt-0.5">{w.phase}</div>
@@ -713,26 +713,26 @@ const GoalsPage = () => {
                   <div className={`rounded-xl border ${phaseClass} p-3`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-[10px] font-bold uppercase tracking-widest opacity-90">{currentWeek.phase} Phase</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-900/10 text-stone-900/75 font-mono uppercase">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-stone-900/10 text-stone-800 font-mono uppercase">
                         {currentWeek.intensityLevel} intensity · {currentWeek.volumeLevel} volume
                       </span>
                     </div>
-                    <p className="text-[11px] text-stone-900/70">{currentWeek.weeklyFocus}</p>
+                    <p className="text-[11px] text-stone-700">{currentWeek.weeklyFocus}</p>
                   </div>
                 )}
 
                 <div className="flex gap-2">
-                  <div className="flex-1 rounded-xl bg-stone-900/[0.04] border border-stone-900/10 p-3 text-center">
+                  <div className="flex-1 rounded-xl bg-transparent border border-stone-200/70 p-3 text-center">
                     <p className="text-lg font-bold text-stone-900">{weekDays.filter(p => !p.isRest).length}</p>
-                    <p className="text-[10px] text-stone-900/65">Training</p>
+                    <p className="text-[10px] text-stone-700">Training</p>
                   </div>
-                  <div className="flex-1 rounded-xl bg-stone-900/[0.04] border border-stone-900/10 p-3 text-center">
+                  <div className="flex-1 rounded-xl bg-transparent border border-stone-200/70 p-3 text-center">
                     <p className="text-lg font-bold text-stone-900">{weekDays.filter(p => p.isRest).length}</p>
-                    <p className="text-[10px] text-stone-900/65">Rest</p>
+                    <p className="text-[10px] text-stone-700">Rest</p>
                   </div>
-                  <div className="flex-1 rounded-xl bg-stone-900/[0.04] border border-stone-900/10 p-3 text-center">
+                  <div className="flex-1 rounded-xl bg-transparent border border-stone-200/70 p-3 text-center">
                     <p className="text-lg font-bold text-emerald-400">{activeGoals.length}</p>
-                    <p className="text-[10px] text-stone-900/65">Active Goals</p>
+                    <p className="text-[10px] text-stone-700">Active Goals</p>
                   </div>
                 </div>
 
@@ -741,10 +741,10 @@ const GoalsPage = () => {
                     <div className="flex items-start gap-2">
                       <Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-xs font-medium text-stone-900/80">Plan optimized for:</p>
+                        <p className="text-xs font-medium text-stone-800">Plan optimized for:</p>
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {activeGoals.slice(0, 3).map(g => (
-                            <span key={g.id} className="text-[10px] px-2 py-0.5 rounded-full bg-stone-900/5 text-stone-900/75">{g.name}</span>
+                            <span key={g.id} className="text-[10px] px-2 py-0.5 rounded-full bg-stone-900/5 text-stone-800">{g.name}</span>
                           ))}
                         </div>
                       </div>
@@ -769,7 +769,7 @@ const GoalsPage = () => {
                       <button key={day.dayOfWeek}
                         onClick={() => setExpandedDay(isDayExpanded ? null : day.dayOfWeek)}
                         className={`w-full text-left rounded-xl border transition-all ${
-                          isToday ? 'bg-emerald-500/[0.07] border-emerald-500/20' : 'bg-stone-900/[0.03] border-stone-900/10 hover:bg-stone-900/[0.05]'
+                          isToday ? 'bg-emerald-500/[0.07] border-emerald-500/20' : 'bg-transparent border-stone-200/70 hover:bg-transparent'
                         }`}>
                         <div className="flex items-center gap-3 p-3">
                           <div className={`w-9 h-9 rounded-lg ${config.bg} flex items-center justify-center shrink-0`}>
@@ -781,7 +781,7 @@ const GoalsPage = () => {
                               {isToday && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">TODAY</span>}
                               {day.sessions.length > 1 && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">{day.sessions.length} sessions</span>}
                             </div>
-                            <p className="text-[11px] text-stone-900/65 capitalize mt-0.5 truncate">
+                            <p className="text-[11px] text-stone-700 capitalize mt-0.5 truncate">
                               {day.isRest ? (day.restReason || 'Rest day') : day.sessions.map(s => s.label).join(' + ')}
                             </p>
                             {!day.isRest && dayGoalNames.length > 0 && (
@@ -790,16 +790,16 @@ const GoalsPage = () => {
                               </p>
                             )}
                           </div>
-                          <div className="text-stone-900/45">
+                          <div className="text-stone-600">
                             {isDayExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </div>
                         </div>
                         {isDayExpanded && (
-                          <div className="px-3 pb-3 border-t border-stone-900/[0.08] pt-2 space-y-3">
+                          <div className="px-3 pb-3 border-t border-stone-200/70 pt-2 space-y-3">
                             {day.sessions.map((session, si) => (
                               <div key={si}>
                                 {day.sessions.length > 1 && (
-                                  <p className="text-[10px] text-stone-900/70 font-semibold uppercase tracking-wider mb-1.5">{session.label}</p>
+                                  <p className="text-[10px] text-stone-700 font-semibold uppercase tracking-wider mb-1.5">{session.label}</p>
                                 )}
                                 {session.reason && (
                                   <p className="text-[11px] text-emerald-400/80 flex items-start gap-1 mb-1.5"><Sparkles className="w-3 h-3 mt-0.5 shrink-0" /><span>{session.reason}</span></p>
@@ -807,19 +807,19 @@ const GoalsPage = () => {
                                 {session.exercises.length > 0 ? (
                                   <div className="space-y-1.5">
                                     {session.exercises.map((ex, i) => (
-                                      <div key={i} className="flex items-center justify-between bg-stone-900/[0.04] rounded-lg px-2.5 py-2">
-                                        <span className="text-xs text-stone-900/70">{ex.name}</span>
-                                        <span className="text-[10px] text-stone-900/65">{ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}</span>
+                                      <div key={i} className="flex items-center justify-between bg-transparent rounded-lg px-2.5 py-2">
+                                        <span className="text-xs text-stone-700">{ex.name}</span>
+                                        <span className="text-[10px] text-stone-700">{ex.sets && ex.reps ? `${ex.sets}×${ex.reps}` : ex.duration || ''}</span>
                                       </div>
                                     ))}
                                   </div>
                                 ) : (
-                                  <p className="text-[11px] text-stone-900/55 italic">No exercises — enjoy the rest!</p>
+                                  <p className="text-[11px] text-stone-600 italic">No exercises — enjoy the rest!</p>
                                 )}
                               </div>
                             ))}
                             {day.isRest && day.sessions.length === 0 && (
-                              <p className="text-[11px] text-stone-900/55 italic">No exercises — enjoy the rest!</p>
+                              <p className="text-[11px] text-stone-600 italic">No exercises — enjoy the rest!</p>
                             )}
                           </div>
                         )}
@@ -838,7 +838,7 @@ const GoalsPage = () => {
 
       {/* Exercise Library Dialog */}
       <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#faf8f5] border-stone-900/10 rounded-xl p-4">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#faf8f5] border-stone-200/70 rounded-xl p-4">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-stone-900">
               <BookOpen className="w-5 h-5 text-emerald-400" />

@@ -39,9 +39,9 @@ const ProgressPage = () => {
       <div className="bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 rounded-2xl p-5 border border-emerald-500/10">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] text-stone-900/65 uppercase tracking-wider">This Week</p>
+            <p className="text-[10px] text-stone-700 uppercase tracking-wider">This Week</p>
             <p className="text-3xl font-bold mt-1">{currentWeekScore.toLocaleString()}</p>
-            <p className="text-xs text-stone-900/65 mt-0.5">total points</p>
+            <p className="text-xs text-stone-700 mt-0.5">total points</p>
           </div>
           {prevWeekScore > 0 && (
             <div className={`flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full ${
@@ -55,13 +55,13 @@ const ProgressPage = () => {
       </div>
 
       {/* Weekly score chart */}
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">Weekly Score Trend</span>
         </div>
         {weeklyTrend.length === 0 ? (
-          <p className="text-xs text-stone-900/65 py-8 text-center">No workout history yet.</p>
+          <p className="text-xs text-stone-700 py-8 text-center">No workout history yet.</p>
         ) : (
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={weeklyTrend}>
@@ -85,12 +85,12 @@ const ProgressPage = () => {
       </div>
 
       {/* Daily breakdown bar chart */}
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-medium">This Week Breakdown</span>
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1 text-[10px] text-stone-900/65"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block" /> Strength</span>
-            <span className="flex items-center gap-1 text-[10px] text-stone-900/65"><span className="w-2 h-2 rounded-full bg-orange-400 inline-block" /> Cardio</span>
+            <span className="flex items-center gap-1 text-[10px] text-stone-700"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block" /> Strength</span>
+            <span className="flex items-center gap-1 text-[10px] text-stone-700"><span className="w-2 h-2 rounded-full bg-orange-400 inline-block" /> Cardio</span>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={160}>
@@ -116,11 +116,11 @@ const ProgressPage = () => {
         </div>
 
         {loading ? (
-          <p className="text-xs text-stone-900/65">Loading…</p>
+          <p className="text-xs text-stone-700">Loading…</p>
         ) : personalRecords.length === 0 ? (
-          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-6 border border-stone-900/10 text-center">
-            <Trophy className="w-8 h-8 text-stone-900/45 mx-auto mb-2" />
-            <p className="text-xs text-stone-900/65">Log a workout to set your first personal best.</p>
+          <div className="bg-white rounded-2xl p-6 border border-stone-200/70 text-center">
+            <Trophy className="w-8 h-8 text-stone-600 mx-auto mb-2" />
+            <p className="text-xs text-stone-700">Log a workout to set your first personal best.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">
@@ -133,9 +133,9 @@ const ProgressPage = () => {
                 >
                   <PRIcon pr={pr} className={`w-7 h-7 mx-auto mb-2 ${palette.iconColor}`} />
                   <p className="text-lg font-bold leading-tight">{pr.value}</p>
-                  <p className="text-[11px] text-stone-900/70 mt-1 truncate">{pr.exerciseName}</p>
-                  <p className="text-[10px] text-stone-900/65 mt-0.5">{pr.label}</p>
-                  <p className="text-[10px] text-stone-900/75 mt-1">{formatDate(pr.achievedAt)}</p>
+                  <p className="text-[11px] text-stone-700 mt-1 truncate">{pr.exerciseName}</p>
+                  <p className="text-[10px] text-stone-700 mt-0.5">{pr.label}</p>
+                  <p className="text-[10px] text-stone-800 mt-1">{formatDate(pr.achievedAt)}</p>
                 </div>
               );
             })}

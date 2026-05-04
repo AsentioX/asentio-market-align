@@ -233,11 +233,11 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
         <div className="flex items-center justify-between">
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 text-xs text-stone-900/65 hover:text-stone-900/70 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-stone-700 hover:text-stone-700 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back
           </button>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/65">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-700">
             Step {step} of {STEPS.length}
           </span>
         </div>
@@ -253,7 +253,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                   'bg-stone-900/10'
                 }`}
               />
-              <div className={`text-[9px] mt-1 text-center font-medium ${s.id === step ? 'text-emerald-300' : 'text-stone-900/55'}`}>
+              <div className={`text-[9px] mt-1 text-center font-medium ${s.id === step ? 'text-emerald-300' : 'text-stone-600'}`}>
                 {s.label}
               </div>
             </div>
@@ -266,7 +266,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
         <div className="space-y-4">
           <div>
             <h2 className="text-base font-semibold text-stone-900">Tell us about the exercise</h2>
-            <p className="text-xs text-stone-900/65 mt-0.5">The basics help us file it correctly.</p>
+            <p className="text-xs text-stone-700 mt-0.5">The basics help us file it correctly.</p>
           </div>
 
           <Field label="Exercise name" required error={errors.name}>
@@ -276,14 +276,14 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="e.g. Bulgarian Split Squat"
-                className="flex-1 bg-stone-900/[0.05] border border-stone-900/10 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/40"
+                className="flex-1 bg-transparent border border-stone-200/70 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/40"
                 maxLength={80}
               />
               <input
                 type="text"
                 value={icon}
                 onChange={e => setIcon(e.target.value.slice(0, 2))}
-                className="w-14 text-center bg-stone-900/[0.05] border border-stone-900/10 rounded-xl px-2 py-2.5 text-xl"
+                className="w-14 text-center bg-transparent border border-stone-200/70 rounded-xl px-2 py-2.5 text-xl"
                 aria-label="Icon emoji"
               />
             </div>
@@ -298,7 +298,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                   className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border text-[11px] transition-all ${
                     category === opt.value
                       ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                      : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/70 hover:bg-stone-900/[0.06]'
+                      : 'bg-transparent border-stone-200/70 text-stone-700 hover:bg-transparent'
                   }`}
                 >
                   <span className="text-lg">{opt.emoji}</span>
@@ -315,7 +315,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                   key={opt.value}
                   onClick={() => setDifficulty(opt.value)}
                   className={`py-2 rounded-xl border text-[11px] font-medium transition-all ${
-                    difficulty === opt.value ? opt.color : 'bg-stone-900/[0.04] border-stone-900/10 text-stone-900/65'
+                    difficulty === opt.value ? opt.color : 'bg-transparent border-stone-200/70 text-stone-700'
                   }`}
                 >
                   {opt.label}
@@ -331,7 +331,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
               placeholder="A short note on form, setup, or intent."
               rows={2}
               maxLength={240}
-              className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/40 resize-none"
+              className="w-full bg-transparent border border-stone-200/70 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/40 resize-none"
             />
           </Field>
 
@@ -342,7 +342,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
               onChange={e => setEquipment(e.target.value)}
               placeholder="e.g. dumbbells, bench"
               maxLength={120}
-              className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/40"
+              className="w-full bg-transparent border border-stone-200/70 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/40"
             />
           </Field>
         </div>
@@ -353,7 +353,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
         <div className="space-y-4">
           <div>
             <h2 className="text-base font-semibold text-stone-900">Which drivers does it train?</h2>
-            <p className="text-xs text-stone-900/65 mt-0.5">Drivers connect this exercise to your goals.</p>
+            <p className="text-xs text-stone-700 mt-0.5">Drivers connect this exercise to your goals.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-1.5">
@@ -366,12 +366,12 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left transition-all ${
                     selected
                       ? 'bg-emerald-500/15 border-emerald-500/40'
-                      : 'bg-stone-900/[0.04] border-stone-900/10 hover:bg-stone-900/[0.06]'
+                      : 'bg-transparent border-stone-200/70 hover:bg-transparent'
                   }`}
                 >
                   <span className="text-base">{d.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <div className={`text-xs font-semibold ${selected ? 'text-emerald-300' : 'text-stone-900/80'}`}>{d.name}</div>
+                    <div className={`text-xs font-semibold ${selected ? 'text-emerald-300' : 'text-stone-800'}`}>{d.name}</div>
                   </div>
                   {selected && <Check className="w-3.5 h-3.5 text-emerald-400" />}
                 </button>
@@ -384,13 +384,13 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
           {/* Driver detail cards */}
           {drivers.length > 0 && (
             <div className="space-y-2.5">
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/65">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-stone-700">
                 Tune each driver
               </div>
               {drivers.map(d => {
                 const meta = PERFORMANCE_DRIVERS.find(p => p.name === d.driver);
                 return (
-                  <div key={d.driver} className="rounded-xl border border-stone-900/10 bg-stone-900/[0.04] p-3 space-y-2.5">
+                  <div key={d.driver} className="rounded-xl border border-stone-200/70 bg-transparent p-3 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-base">{meta?.icon}</span>
@@ -401,7 +401,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                         className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${
                           d.isPrimary
                             ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                            : 'bg-stone-900/5 text-stone-900/65 border border-stone-900/10 hover:text-stone-900/70'
+                            : 'bg-stone-900/5 text-stone-700 border border-stone-200/70 hover:text-stone-700'
                         }`}
                       >
                         {d.isPrimary ? '★ Primary' : 'Make primary'}
@@ -410,7 +410,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
 
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] uppercase tracking-wider text-stone-900/65">Contribution</span>
+                        <span className="text-[10px] uppercase tracking-wider text-stone-700">Contribution</span>
                         <span className="text-xs font-semibold text-emerald-300">{d.contribution} / 10</span>
                       </div>
                       <input
@@ -429,7 +429,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                       onChange={e => updateDriver(d.driver, { explanation: e.target.value })}
                       placeholder={`Why does this support ${d.driver.toLowerCase()}? (optional)`}
                       maxLength={140}
-                      className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-lg px-2.5 py-1.5 text-[11px] text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/30"
+                      className="w-full bg-transparent border border-stone-200/70 rounded-lg px-2.5 py-1.5 text-[11px] text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/30"
                     />
                   </div>
                 );
@@ -444,21 +444,21 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
         <div className="space-y-4">
           <div>
             <h2 className="text-base font-semibold text-stone-900">How will you measure it?</h2>
-            <p className="text-xs text-stone-900/65 mt-0.5">Pick a preset or add metrics yourself.</p>
+            <p className="text-xs text-stone-700 mt-0.5">Pick a preset or add metrics yourself.</p>
           </div>
 
           {/* Presets */}
           <div className="rounded-xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.06] to-stone-900/[0.03] p-3 space-y-2">
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-emerald-400" />
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/70">Quick presets</span>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-700">Quick presets</span>
             </div>
             <div className="grid grid-cols-2 gap-1.5">
               {(Object.keys(METRIC_PRESETS) as (keyof typeof METRIC_PRESETS)[]).map(key => (
                 <button
                   key={key}
                   onClick={() => applyPreset(key)}
-                  className="text-[11px] py-2 rounded-lg bg-stone-900/[0.05] border border-stone-900/10 text-stone-900/70 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-300 transition-all capitalize"
+                  className="text-[11px] py-2 rounded-lg bg-transparent border border-stone-200/70 text-stone-700 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-300 transition-all capitalize"
                 >
                   {key}
                 </button>
@@ -469,18 +469,18 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
           {/* Metrics list */}
           <div className="space-y-2">
             {metrics.map(m => (
-              <div key={m.id} className="rounded-xl border border-stone-900/10 bg-stone-900/[0.04] p-2.5 space-y-2">
+              <div key={m.id} className="rounded-xl border border-stone-200/70 bg-transparent p-2.5 space-y-2">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={m.name}
                     onChange={e => updateMetric(m.id, { name: e.target.value })}
                     placeholder="Metric name"
-                    className="flex-1 bg-stone-900/[0.05] border border-stone-900/10 rounded-lg px-2.5 py-1.5 text-xs text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/30"
+                    className="flex-1 bg-transparent border border-stone-200/70 rounded-lg px-2.5 py-1.5 text-xs text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/30"
                   />
                   <button
                     onClick={() => removeMetric(m.id)}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg text-stone-900/55 hover:text-red-400 hover:bg-red-500/10"
+                    className="w-7 h-7 flex items-center justify-center rounded-lg text-stone-600 hover:text-red-400 hover:bg-red-500/10"
                     aria-label="Remove metric"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -494,7 +494,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                       const def = METRIC_TYPE_OPTIONS.find(o => o.value === newType);
                       updateMetric(m.id, { type: newType, unit: def?.defaultUnit ?? m.unit });
                     }}
-                    className="col-span-1 bg-stone-900/[0.05] border border-stone-900/10 rounded-lg px-2 py-1.5 text-[11px] text-stone-900 focus:outline-none focus:border-emerald-500/30"
+                    className="col-span-1 bg-transparent border border-stone-200/70 rounded-lg px-2 py-1.5 text-[11px] text-stone-900 focus:outline-none focus:border-emerald-500/30"
                   >
                     {METRIC_TYPE_OPTIONS.map(o => (
                       <option key={o.value} value={o.value} className="bg-stone-100">{o.label}</option>
@@ -505,14 +505,14 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                     value={m.unit}
                     onChange={e => updateMetric(m.id, { unit: e.target.value })}
                     placeholder="Unit"
-                    className="col-span-1 bg-stone-900/[0.05] border border-stone-900/10 rounded-lg px-2 py-1.5 text-[11px] text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/30"
+                    className="col-span-1 bg-transparent border border-stone-200/70 rounded-lg px-2 py-1.5 text-[11px] text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/30"
                   />
                   <button
                     onClick={() => updateMetric(m.id, { required: !m.required })}
                     className={`col-span-1 rounded-lg px-2 py-1.5 text-[10px] font-medium border transition-all ${
                       m.required
                         ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                        : 'bg-stone-900/[0.05] border-stone-900/10 text-stone-900/65'
+                        : 'bg-transparent border-stone-200/70 text-stone-700'
                     }`}
                   >
                     {m.required ? '● Required' : '○ Optional'}
@@ -523,7 +523,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
 
             <button
               onClick={() => addMetric()}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-stone-900/15 text-xs text-stone-900/70 hover:text-emerald-300 hover:border-emerald-500/40 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-stone-900/15 text-xs text-stone-700 hover:text-emerald-300 hover:border-emerald-500/40 transition-all"
             >
               <Plus className="w-3.5 h-3.5" /> Add metric
             </button>
@@ -538,21 +538,21 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
         <div className="space-y-4">
           <div>
             <h2 className="text-base font-semibold text-stone-900">Connect to your goals</h2>
-            <p className="text-xs text-stone-900/65 mt-0.5">Optional — tells us why this exercise matters to you.</p>
+            <p className="text-xs text-stone-700 mt-0.5">Optional — tells us why this exercise matters to you.</p>
           </div>
 
           {goals.length === 0 ? (
-            <div className="rounded-xl border border-stone-900/10 bg-stone-900/[0.04] p-5 text-center space-y-2">
-              <Target className="w-5 h-5 text-stone-900/55 mx-auto" />
-              <p className="text-xs text-stone-900/70">No active goals yet.</p>
-              <p className="text-[11px] text-stone-900/55">Add a goal in the Goals tab to link exercises.</p>
+            <div className="rounded-xl border border-stone-200/70 bg-transparent p-5 text-center space-y-2">
+              <Target className="w-5 h-5 text-stone-600 mx-auto" />
+              <p className="text-xs text-stone-700">No active goals yet.</p>
+              <p className="text-[11px] text-stone-600">Add a goal in the Goals tab to link exercises.</p>
             </div>
           ) : (
             <div className="space-y-2">
               {goals.map(g => {
                 const selected = goalContributions.find(gc => gc.goalId === g.id);
                 return (
-                  <div key={g.id} className={`rounded-xl border transition-all ${selected ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-stone-900/[0.04] border-stone-900/10'}`}>
+                  <div key={g.id} className={`rounded-xl border transition-all ${selected ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-transparent border-stone-200/70'}`}>
                     <button
                       onClick={() => toggleGoal(g.id)}
                       className="w-full flex items-center gap-2 px-3 py-2.5 text-left"
@@ -560,8 +560,8 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                       <div className={`w-4 h-4 rounded-md flex items-center justify-center border ${selected ? 'bg-emerald-500 border-emerald-500' : 'border-stone-900/15'}`}>
                         {selected && <Check className="w-3 h-3 text-stone-900" />}
                       </div>
-                      <Target className="w-3.5 h-3.5 text-stone-900/65" />
-                      <span className={`text-xs font-medium flex-1 truncate ${selected ? 'text-emerald-200' : 'text-stone-900/70'}`}>{g.name}</span>
+                      <Target className="w-3.5 h-3.5 text-stone-700" />
+                      <span className={`text-xs font-medium flex-1 truncate ${selected ? 'text-emerald-200' : 'text-stone-700'}`}>{g.name}</span>
                     </button>
                     {selected && (
                       <div className="px-3 pb-2.5">
@@ -571,7 +571,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                           onChange={e => updateGoalExplanation(g.id, e.target.value)}
                           placeholder="How does this exercise help this goal?"
                           maxLength={160}
-                          className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-lg px-2.5 py-1.5 text-[11px] text-stone-900 placeholder:text-stone-900/70 focus:outline-none focus:border-emerald-500/30"
+                          className="w-full bg-transparent border border-stone-200/70 rounded-lg px-2.5 py-1.5 text-[11px] text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/30"
                         />
                       </div>
                     )}
@@ -588,28 +588,28 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
         <div className="space-y-4">
           <div>
             <h2 className="text-base font-semibold text-stone-900">Looks good?</h2>
-            <p className="text-xs text-stone-900/65 mt-0.5">Review and add to your workout.</p>
+            <p className="text-xs text-stone-700 mt-0.5">Review and add to your workout.</p>
           </div>
 
-          <div className="rounded-2xl border border-stone-900/10 bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] p-4 space-y-3">
+          <div className="rounded-2xl border border-stone-200/70 bg-white p-4 space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-stone-900/5 flex items-center justify-center text-2xl">{icon}</div>
               <div className="flex-1 min-w-0">
                 <div className="text-base font-bold text-stone-900 truncate">{name}</div>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-900/5 text-stone-900/70 capitalize">{category}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-900/5 text-stone-900/70 capitalize">{difficulty}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-900/5 text-stone-700 capitalize">{category}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-900/5 text-stone-700 capitalize">{difficulty}</span>
                 </div>
               </div>
             </div>
 
-            {description && <p className="text-xs text-stone-900/70 leading-relaxed">{description}</p>}
+            {description && <p className="text-xs text-stone-700 leading-relaxed">{description}</p>}
 
             <Section title="Drivers">
               <div className="flex flex-wrap gap-1.5">
                 {drivers.map(d => (
                   <span key={d.driver} className={`text-[10px] px-2 py-0.5 rounded-full border ${
-                    d.isPrimary ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-stone-900/5 text-stone-900/75 border-stone-900/10'
+                    d.isPrimary ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-stone-900/5 text-stone-800 border-stone-200/70'
                   }`}>
                     {d.isPrimary && '★ '}{d.driver} · {d.contribution}/10
                   </span>
@@ -620,7 +620,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
             <Section title="Metrics">
               <div className="flex flex-wrap gap-1.5">
                 {metrics.map(m => (
-                  <span key={m.id} className="text-[10px] px-2 py-0.5 rounded-full bg-stone-900/5 text-stone-900/75 border border-stone-900/10">
+                  <span key={m.id} className="text-[10px] px-2 py-0.5 rounded-full bg-stone-900/5 text-stone-800 border border-stone-200/70">
                     {m.name}{m.unit ? ` (${m.unit})` : ''}{m.required ? ' •' : ''}
                   </span>
                 ))}
@@ -650,7 +650,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
                 <Zap className="w-3 h-3 text-amber-400" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80">Why it matters</span>
               </div>
-              <p className="text-[11px] text-stone-900/75 leading-relaxed">
+              <p className="text-[11px] text-stone-800 leading-relaxed">
                 {drivers.length
                   ? `Trains ${drivers.map(d => d.driver).join(', ')}${
                       goalContributions.length
@@ -669,7 +669,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
         {step > 1 && (
           <button
             onClick={() => setStep(s => s - 1)}
-            className="flex-1 py-3 rounded-xl bg-stone-900/[0.05] border border-stone-900/10 text-sm font-medium text-stone-900/70 hover:bg-stone-900/[0.07] transition-colors"
+            className="flex-1 py-3 rounded-xl bg-transparent border border-stone-200/70 text-sm font-medium text-stone-700 hover:bg-transparent transition-colors"
           >
             Back
           </button>
@@ -681,7 +681,7 @@ const AddExerciseWizard = ({ onBack, onSave, goals = [] }: AddExerciseWizardProp
             className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl text-sm font-semibold transition-all ${
               canAdvance
                 ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-stone-900 shadow-lg shadow-emerald-500/20 active:scale-[0.98]'
-                : 'bg-stone-900/[0.05] text-stone-900/55 cursor-not-allowed'
+                : 'bg-transparent text-stone-600 cursor-not-allowed'
             }`}
           >
             Continue <ArrowRight className="w-3.5 h-3.5" />
@@ -707,7 +707,7 @@ const Field = ({
 }: { label: string; required?: boolean; error?: string; children: React.ReactNode }) => (
   <div className="space-y-1.5">
     <div className="flex items-center justify-between">
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/70">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-700">
         {label}{required && <span className="text-emerald-400 ml-0.5">*</span>}
       </span>
       {error && <span className="text-[10px] text-red-400">{error}</span>}
@@ -718,7 +718,7 @@ const Field = ({
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="space-y-1.5">
-    <div className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/65">{title}</div>
+    <div className="text-[10px] font-semibold uppercase tracking-widest text-stone-700">{title}</div>
     {children}
   </div>
 );

@@ -32,27 +32,27 @@ const CompetitionsPage = () => {
           const pct = Math.round((comp.progress / comp.target) * 100);
 
           return (
-            <div key={comp.id} className="rounded-2xl border border-stone-900/10 overflow-hidden shadow-lg shadow-black/10">
+            <div key={comp.id} className="rounded-2xl border border-stone-200/70 overflow-hidden shadow-lg shadow-black/10">
               {/* Visual header with image */}
               <div className="relative h-36">
                 <img src={image} alt={comp.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" width={640} height={640} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#faf8f5] via-stone-900/20 to-transparent" />
-                <div className="absolute top-3 right-3 bg-stone-900/15 backdrop-blur-md rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1 border border-stone-900/10">
+                <div className="absolute top-3 right-3 bg-stone-900/15 backdrop-blur-md rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1 border border-stone-200/70">
                   <Timer className="w-3 h-3" /> {comp.timeRemaining}
                 </div>
                 <div className="absolute top-3 left-3">
-                  <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium backdrop-blur-md border border-stone-900/10 ${
+                  <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium backdrop-blur-md border border-stone-200/70 ${
                     comp.type === 'daily' ? 'bg-orange-500/30 text-orange-300' : 'bg-emerald-500/30 text-emerald-300'
                   }`}>{comp.type === 'daily' ? 'Daily' : 'Weekly'}</span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <h3 className="text-base font-bold drop-shadow-lg">{comp.title}</h3>
-                  <p className="text-[11px] text-stone-900/70 mt-0.5">{comp.description}</p>
+                  <p className="text-[11px] text-stone-700 mt-0.5">{comp.description}</p>
                 </div>
               </div>
 
               {/* Stats + actions */}
-              <div className="bg-stone-900/[0.04] p-4 space-y-3">
+              <div className="bg-transparent p-4 space-y-3">
                 <div className="h-2 bg-stone-900/5 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all shadow-[0_0_8px_rgba(52,211,153,0.3)] ${comp.type === 'daily' ? 'bg-gradient-to-r from-orange-400 to-orange-500' : 'bg-gradient-to-r from-emerald-400 to-emerald-500'}`}
@@ -60,8 +60,8 @@ const CompetitionsPage = () => {
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] text-stone-900/65">
-                  <span className="font-medium text-stone-900/75">{comp.progress} / {comp.target}</span>
+                <div className="flex items-center justify-between text-[10px] text-stone-700">
+                  <span className="font-medium text-stone-800">{comp.progress} / {comp.target}</span>
                   <span className="flex items-center gap-1"><Users className="w-3 h-3" />{comp.participants} players</span>
                 </div>
 
@@ -70,7 +70,7 @@ const CompetitionsPage = () => {
                     onClick={() => toggleJoin(comp.id)}
                     className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all ${
                       comp.joined
-                        ? 'bg-stone-900/5 text-stone-900/65 border border-stone-900/10'
+                        ? 'bg-stone-900/5 text-stone-700 border border-stone-200/70'
                         : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
                     }`}
                   >
@@ -78,7 +78,7 @@ const CompetitionsPage = () => {
                   </button>
                   <button
                     onClick={() => setActiveLeaderboard(activeLeaderboard === comp.id ? null : comp.id)}
-                    className="p-2.5 rounded-xl bg-stone-900/5 text-stone-900/65 hover:text-stone-900/75 border border-stone-900/10 transition-colors"
+                    className="p-2.5 rounded-xl bg-stone-900/5 text-stone-700 hover:text-stone-800 border border-stone-200/70 transition-colors"
                   >
                     <ChevronUp className={`w-4 h-4 transition-transform ${activeLeaderboard === comp.id ? '' : 'rotate-180'}`} />
                   </button>
@@ -87,17 +87,17 @@ const CompetitionsPage = () => {
 
               {/* Leaderboard */}
               {activeLeaderboard === comp.id && (
-                <div className="border-t border-stone-900/10 p-4 space-y-1.5 bg-stone-900/[0.03]">
-                  <p className="text-[10px] text-stone-900/55 uppercase tracking-wider mb-2">Leaderboard</p>
+                <div className="border-t border-stone-200/70 p-4 space-y-1.5 bg-transparent">
+                  <p className="text-[10px] text-stone-600 uppercase tracking-wider mb-2">Leaderboard</p>
                   {mockLeaderboard.map((entry) => (
                     <div
                       key={entry.rank}
                       className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors ${
-                        entry.isCurrentUser ? 'bg-emerald-500/10 border border-emerald-500/20' : 'hover:bg-stone-900/[0.04]'
+                        entry.isCurrentUser ? 'bg-emerald-500/10 border border-emerald-500/20' : 'hover:bg-transparent'
                       }`}
                     >
                       <span className={`w-6 text-center text-xs font-bold ${
-                        entry.rank <= 3 ? 'text-amber-400' : 'text-stone-900/55'
+                        entry.rank <= 3 ? 'text-amber-400' : 'text-stone-600'
                       }`}>
                         {entry.rank <= 3 ? ['🥇', '🥈', '🥉'][entry.rank - 1] : entry.rank}
                       </span>
@@ -106,10 +106,10 @@ const CompetitionsPage = () => {
                       }`}>
                         {entry.avatar}
                       </div>
-                      <span className={`flex-1 text-sm ${entry.isCurrentUser ? 'text-emerald-400 font-semibold' : 'text-stone-900/70'}`}>
+                      <span className={`flex-1 text-sm ${entry.isCurrentUser ? 'text-emerald-400 font-semibold' : 'text-stone-700'}`}>
                         {entry.name} {entry.isCurrentUser && '(You)'}
                       </span>
-                      <span className="text-sm font-mono text-stone-900/70">{entry.score.toLocaleString()}</span>
+                      <span className="text-sm font-mono text-stone-700">{entry.score.toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -122,8 +122,8 @@ const CompetitionsPage = () => {
       {/* Achievements */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Achievements</h3>
-          <span className="text-[10px] text-stone-900/55">{mockAchievements.filter(a => a.unlocked).length}/{mockAchievements.length} unlocked</span>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700">Achievements</h3>
+          <span className="text-[10px] text-stone-600">{mockAchievements.filter(a => a.unlocked).length}/{mockAchievements.length} unlocked</span>
         </div>
         <div className="grid grid-cols-3 gap-2.5">
           {mockAchievements.map((ach) => (
@@ -131,17 +131,17 @@ const CompetitionsPage = () => {
               key={ach.id}
               className={`rounded-2xl p-3.5 border text-center transition-all ${
                 ach.unlocked
-                  ? 'bg-gradient-to-b from-stone-900/[0.06] to-stone-900/[0.03] border-stone-900/10 hover:border-stone-900/15'
-                  : 'bg-stone-900/[0.02] border-stone-900/[0.06] opacity-40 grayscale'
+                  ? 'bg-gradient-to-b from-stone-900/[0.06] to-stone-900/[0.03] border-stone-200/70 hover:border-stone-900/15'
+                  : 'bg-transparent border-stone-200/70 opacity-40 grayscale'
               }`}
             >
               <span className="text-3xl block mb-1.5">{ach.icon}</span>
               <p className="text-[10px] font-medium leading-tight">{ach.title}</p>
-              {ach.unlocked && ach.date && <p className="text-[9px] text-stone-900/55 mt-0.5">{ach.date}</p>}
+              {ach.unlocked && ach.date && <p className="text-[9px] text-stone-600 mt-0.5">{ach.date}</p>}
               {ach.unlocked && (
                 <button
                   onClick={(e) => { e.stopPropagation(); shareContent(buildAchievementShareText(ach.title, ach.icon)); }}
-                  className="mt-1.5 text-stone-900/55 hover:text-emerald-400 transition-colors"
+                  className="mt-1.5 text-stone-600 hover:text-emerald-400 transition-colors"
                 >
                   <Share2 className="w-3 h-3 mx-auto" />
                 </button>

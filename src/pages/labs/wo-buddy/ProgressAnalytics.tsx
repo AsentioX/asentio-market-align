@@ -116,7 +116,7 @@ const ProgressAnalytics = () => {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
                       isActive
                         ? 'bg-blue-500/10 text-blue-600 border border-blue-500/30'
-                        : 'bg-transparent text-stone-500 border border-stone-900/10 hover:text-stone-700'
+                        : 'bg-transparent text-stone-500 border border-stone-200/70 hover:text-stone-700'
                     }`}
                   >
                     <TypeIcon type={t.meta.type} className="w-3 h-3" />
@@ -139,11 +139,11 @@ const ProgressAnalytics = () => {
         </div>
 
         {loading ? (
-          <p className="text-xs text-stone-900/65">Loading…</p>
+          <p className="text-xs text-stone-700">Loading…</p>
         ) : personalRecords.length === 0 ? (
-          <div className="bg-stone-900/[0.04] rounded-2xl border border-stone-900/10 p-6 text-center">
-            <Trophy className="w-8 h-8 text-stone-900/15 mx-auto mb-2" />
-            <p className="text-xs text-stone-900/65">Log a workout to set your first personal best.</p>
+          <div className="bg-transparent rounded-2xl border border-stone-200/70 p-6 text-center">
+            <Trophy className="w-8 h-8 text-stone-400 mx-auto mb-2" />
+            <p className="text-xs text-stone-700">Log a workout to set your first personal best.</p>
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-2">
@@ -157,8 +157,8 @@ const ProgressAnalytics = () => {
                 >
                   <TypeIcon type={pb.type} className={`w-5 h-5 mx-auto ${palette.iconColor}`} />
                   <p className="text-sm font-bold text-stone-900 mt-1.5 leading-tight">{pb.value}</p>
-                  <p className="text-[10px] text-stone-900/75 mt-0.5 truncate">{pb.exerciseName}</p>
-                  <p className="text-[9px] text-stone-900/55 mt-0.5">{formatDate(pb.achievedAt)}</p>
+                  <p className="text-[10px] text-stone-800 mt-0.5 truncate">{pb.exerciseName}</p>
+                  <p className="text-[9px] text-stone-600 mt-0.5">{formatDate(pb.achievedAt)}</p>
                   {trendText && (
                     <span className="inline-block mt-1 text-[10px] font-medium text-emerald-400">
                       {trendText}

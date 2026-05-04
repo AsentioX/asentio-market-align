@@ -56,9 +56,9 @@ const ExerciseWidget = ({ exercise, onUpdate, onRemove, allExercises }: Exercise
       {editing ? (
         <div className="p-3 space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-stone-900/65 uppercase tracking-wider">Edit Exercise</span>
+            <span className="text-[10px] text-stone-700 uppercase tracking-wider">Edit Exercise</span>
             <div className="flex items-center gap-2">
-              <button onClick={handleCancel} className="w-10 h-10 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-900/65 active:bg-stone-900/10 transition-colors">
+              <button onClick={handleCancel} className="w-10 h-10 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-700 active:bg-stone-900/10 transition-colors">
                 <X className="w-4 h-4" />
               </button>
               <button onClick={handleSave} className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 active:bg-emerald-500/30 transition-colors">
@@ -69,17 +69,17 @@ const ExerciseWidget = ({ exercise, onUpdate, onRemove, allExercises }: Exercise
           <select
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            className="w-full bg-stone-900/5 border border-stone-900/10 rounded-xl px-3 py-3 text-base text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none"
+            className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-base text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none"
           >
             {allExercises.map(e => <option key={e} value={e} className="bg-white">{e}</option>)}
           </select>
           <div>
-            <label className="text-[10px] text-stone-900/65 uppercase tracking-wider mb-1.5 block">Reps</label>
+            <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1.5 block">Reps</label>
             <div className="flex items-center gap-2">
-              <button onClick={() => setEditReps(Math.max(0, editReps - 1))} className="w-12 h-12 rounded-xl bg-stone-900/5 text-stone-900/75 active:bg-stone-900/10 flex items-center justify-center text-xl font-medium select-none">−</button>
+              <button onClick={() => setEditReps(Math.max(0, editReps - 1))} className="w-12 h-12 rounded-xl bg-stone-900/5 text-stone-800 active:bg-stone-900/10 flex items-center justify-center text-xl font-medium select-none">−</button>
               <input type="number" value={editReps} onChange={(e) => setEditReps(Number(e.target.value))}
-                className="w-16 bg-stone-900/5 border border-stone-900/10 rounded-xl px-2 py-3 text-center text-lg font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
-              <button onClick={() => setEditReps(editReps + 1)} className="w-12 h-12 rounded-xl bg-stone-900/5 text-stone-900/75 active:bg-stone-900/10 flex items-center justify-center text-xl font-medium select-none">+</button>
+                className="w-16 bg-stone-900/5 border border-stone-200/70 rounded-xl px-2 py-3 text-center text-lg font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+              <button onClick={() => setEditReps(editReps + 1)} className="w-12 h-12 rounded-xl bg-stone-900/5 text-stone-800 active:bg-stone-900/10 flex items-center justify-center text-xl font-medium select-none">+</button>
             </div>
           </div>
         </div>
@@ -98,9 +98,9 @@ const ExerciseWidget = ({ exercise, onUpdate, onRemove, allExercises }: Exercise
                 {exercise.confidence}%
               </span>
             </div>
-            <div className="flex items-center gap-3 mt-1 text-[10px] text-stone-900/65">
+            <div className="flex items-center gap-3 mt-1 text-[10px] text-stone-700">
               <span className="flex items-center gap-0.5">
-                <span className="font-bold text-stone-900/70 text-xs">{exercise.reps}</span> reps
+                <span className="font-bold text-stone-700 text-xs">{exercise.reps}</span> reps
               </span>
               <span className="flex items-center gap-0.5">
                 <Timer className="w-2.5 h-2.5" />
@@ -116,7 +116,7 @@ const ExerciseWidget = ({ exercise, onUpdate, onRemove, allExercises }: Exercise
           {/* Edit button */}
           <button
             onClick={() => setEditing(true)}
-            className="w-8 h-8 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-900/55 hover:text-stone-900/75 hover:bg-stone-900/10 transition-colors flex-shrink-0"
+            className="w-8 h-8 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-600 hover:text-stone-800 hover:bg-stone-900/10 transition-colors flex-shrink-0"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
