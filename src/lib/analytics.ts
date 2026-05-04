@@ -154,23 +154,22 @@ async function addIntent(points: number) {
   const sid = sessionId || getSessionId();
   if (!sid) return;
 
-  await supabase
-    .from('analytics_sessions')
-    .update({
-      intent_score: currentScore,
-      intent_level: intentLevel(currentScore),
-      last_seen_at: new Date().toISOString(),
-    })
-    .eq('id', sid);
+  await supabase.rpc('analytics_touch_session', {
+    _session_id: sid,
+    _visitor_id: getVisitorId(),
+    _intent_score: currentScore,
+    _intent_level: intentLevel(currentScore),
+  });
 }
 
 async function markConverted() {
   const sid = sessionId || getSessionId();
   if (!sid) return;
-  await supabase
-    .from('analytics_sessions')
-    .update({ converted: true, last_seen_at: new Date().toISOString() })
-    .eq('id', sid);
+  await supabase.rpc('analytics_touch_session', {
+    _session_id: sid,
+    _visitor_id: getVisitorId(),
+    _converted: true,
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
