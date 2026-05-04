@@ -196,17 +196,17 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           {weather && weather.code >= 61 && weather.code <= 82 && (
             <>
               {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="absolute w-px bg-stone-900/20 animate-[fall_1s_linear_infinite]" style={{ left: `${(i / 20) * 100}%`, top: '-10%', height: '15%', animationDelay: `${i * 0.05}s`, animationDuration: `${0.6 + Math.random() * 0.4}s` }} />
+                <div key={i} className="absolute w-px bg-white/40 animate-[fall_1s_linear_infinite]" style={{ left: `${(i / 20) * 100}%`, top: '-10%', height: '15%', animationDelay: `${i * 0.05}s`, animationDuration: `${0.6 + Math.random() * 0.4}s` }} />
               ))}
             </>
           )}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-stone-900/20 via-stone-900/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/15 to-transparent" />
 
-        <div className="relative z-10 px-6 py-5">
+        <div className="relative z-10 px-6 py-5 text-white drop-shadow-sm">
           {/* Top row: greeting */}
-          <p className="text-stone-800 text-xs uppercase tracking-[0.2em]">{greeting}</p>
-          <h2 className="text-2xl font-bold mt-0.5">{displayName}</h2>
+          <p className="text-white/85 text-xs uppercase tracking-[0.2em]">{greeting}</p>
+          <h2 className="text-2xl font-bold mt-0.5 text-white">{displayName}</h2>
 
           {/* Main weather row */}
           <div className="flex items-center justify-between mt-4">
@@ -216,11 +216,11 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
               )}
               <div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-light tracking-tight">{weather?.temp ?? '--'}</span>
-                  <span className="text-lg text-stone-800">°F</span>
+                  <span className="text-5xl font-light tracking-tight text-white">{weather?.temp ?? '--'}</span>
+                  <span className="text-lg text-white/85">°F</span>
                 </div>
                 {weather && (
-                  <p className="text-sm text-stone-700 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
+                  <p className="text-sm text-white/85 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
                 )}
               </div>
             </div>
@@ -229,8 +229,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <div className="text-right">
               {weather && (
                 <>
-                  <p className="text-base font-medium text-stone-900">{getWeatherDescription(weather.code)}</p>
-                  <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-stone-700">
+                  <p className="text-base font-medium text-white">{getWeatherDescription(weather.code)}</p>
+                  <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-white/85">
                     <span className="flex items-center gap-1"><Droplets className="w-3 h-3" />{weather.humidity}%</span>
                     <span className="flex items-center gap-1"><Wind className="w-3 h-3" />{Math.round(weather.windSpeed)} mph</span>
                   </div>
@@ -240,9 +240,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           </div>
 
           {/* Bottom row: location + sunset/sunrise */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-200/70">
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/25">
             {weather && (
-              <div className="flex items-center gap-1.5 text-xs text-stone-700">
+              <div className="flex items-center gap-1.5 text-xs text-white/85">
                 <MapPin className="w-3 h-3" />
                 <span>{weather.city}</span>
               </div>
@@ -250,14 +250,14 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             {sunCountdown && (
               <div className="flex items-center gap-1.5">
                 {sunLabel === 'sunset' ? (
-                  <Sunset className="w-3.5 h-3.5 text-orange-400" />
+                  <Sunset className="w-3.5 h-3.5 text-orange-200" />
                 ) : (
-                  <Sunrise className="w-3.5 h-3.5 text-amber-300" />
+                  <Sunrise className="w-3.5 h-3.5 text-amber-200" />
                 )}
-                <span className="text-xs text-stone-700">
+                <span className="text-xs text-white/85">
                   {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
                 </span>
-                <span className="text-xs text-stone-800 font-mono font-medium">{sunCountdown}</span>
+                <span className="text-xs text-white font-mono font-medium">{sunCountdown}</span>
               </div>
             )}
           </div>
