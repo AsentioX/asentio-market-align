@@ -155,20 +155,42 @@ Deno.serve(async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 
-  // Determine target users: caller (if authed) or all users when run by cron
+  // Determine target users: caller (if authed) or all users when run by trusted cron
   const body = await req.json().catch(() => ({} as any));
   const triggeredBy: string = body?.triggered_by ?? 'manual';
 
   let targetUserIds: string[] = [];
   const authHeader = req.headers.get('Authorization');
+  const cronSecret = req.headers.get('x-cron-secret');
+  const expectedCronSecret = Deno.env.get('PP_CRON_SECRET');
+
+  let isCronAuthorized = false;
+  if (cronSecret && expectedCronSecret && cronSecret === expectedCronSecret) {
+    isCronAuthorized = true;
+  }
+
   if (authHeader?.startsWith('Bearer ')) {
     const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: userData } = await userClient.auth.getUser();
-    if (userData?.user?.id) targetUserIds = [userData.user.id];
+    if (userData?.user?.id) {
+      // If admin AND requesting all-users, allow it; otherwise scope to self
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', userData.user.id).maybeSingle();
+      if (profile?.role === 'admin' && body?.all_users === true) {
+        isCronAuthorized = true;
+      } else {
+        targetUserIds = [userData.user.id];
+      }
+    }
   }
+
   if (targetUserIds.length === 0) {
+    if (!isCronAuthorized) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     const { data: users } = await supabase.from('pp_memberships').select('user_id').eq('is_active', true);
     targetUserIds = Array.from(new Set((users ?? []).map((u: any) => u.user_id)));
   }
