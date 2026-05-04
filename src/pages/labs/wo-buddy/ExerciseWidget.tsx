@@ -69,7 +69,7 @@ const ExerciseWidget = ({ exercise, onUpdate, onRemove, allExercises }: Exercise
           <select
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            className="w-full bg-stone-900/5 border border-stone-200 rounded-xl px-3 py-3 text-base text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none"
+            className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-3 text-base text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none"
           >
             {allExercises.map(e => <option key={e} value={e} className="bg-white">{e}</option>)}
           </select>
@@ -78,7 +78,7 @@ const ExerciseWidget = ({ exercise, onUpdate, onRemove, allExercises }: Exercise
             <div className="flex items-center gap-2">
               <button onClick={() => setEditReps(Math.max(0, editReps - 1))} className="w-12 h-12 rounded-xl bg-stone-900/5 text-stone-800 active:bg-stone-900/10 flex items-center justify-center text-xl font-medium select-none">−</button>
               <input type="number" value={editReps} onChange={(e) => setEditReps(Number(e.target.value))}
-                className="w-16 bg-stone-900/5 border border-stone-200 rounded-xl px-2 py-3 text-center text-lg font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                className="w-16 bg-stone-900/5 border border-stone-200/70 rounded-xl px-2 py-3 text-center text-lg font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
               <button onClick={() => setEditReps(editReps + 1)} className="w-12 h-12 rounded-xl bg-stone-900/5 text-stone-800 active:bg-stone-900/10 flex items-center justify-center text-xl font-medium select-none">+</button>
             </div>
           </div>

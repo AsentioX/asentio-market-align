@@ -57,7 +57,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
   const detectedLabel = repCounter.getLabel();
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-stone-200 bg-stone-200">
+    <div className="rounded-2xl overflow-hidden border border-stone-200/70 bg-stone-200">
       {/* Camera view */}
       <div className="relative aspect-[4/3] bg-stone-200 overflow-hidden">
         {/* Video feed — always mounted so the ref is stable for getUserMedia */}
@@ -118,7 +118,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
         {/* Center rep counter */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
           <div className={`bg-stone-900/30 backdrop-blur-xl rounded-2xl px-6 py-3 border transition-all ${
-            repFlash ? 'border-emerald-400/60 shadow-lg shadow-emerald-500/30 scale-110' : 'border-stone-200'
+            repFlash ? 'border-emerald-400/60 shadow-lg shadow-emerald-500/30 scale-110' : 'border-stone-200/70'
           }`}>
             <div className="text-center">
               <p className="text-4xl font-black text-stone-900 tabular-nums">{repCount}</p>
@@ -134,7 +134,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
               ? 'bg-amber-500/20 border border-amber-500/30'
               : phase === 'up'
               ? 'bg-emerald-500/20 border border-emerald-500/30'
-              : 'bg-stone-900/10 border border-stone-200'
+              : 'bg-stone-900/10 border border-stone-200/70'
           }`}>
             {phase === 'down' ? '⬇️' : phase === 'up' ? '⬆️' : '👁️'}
           </div>
@@ -146,7 +146,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
             formScore === 'Excellent' ? 'border-emerald-500/20 text-emerald-400' :
             formScore === 'Great' ? 'border-blue-500/20 text-blue-400' :
             formScore === 'Adjust depth' ? 'border-amber-500/20 text-amber-400' :
-            'border-stone-200 text-stone-800'
+            'border-stone-200/70 text-stone-800'
           }`}>
             <Zap className="w-3 h-3 inline mr-1" />
             Form: {formScore}
@@ -165,7 +165,7 @@ const CameraTrackingView = ({ exercise, repCount, onRepDetected, heartRate, inte
       </div>
 
       {/* Bottom bar */}
-      <div className="px-4 py-3 bg-transparent border-t border-stone-200">
+      <div className="px-4 py-3 bg-transparent border-t border-stone-200/70">
         <p className="text-xs text-stone-700 text-center">{intensity.msg}</p>
       </div>
     </div>

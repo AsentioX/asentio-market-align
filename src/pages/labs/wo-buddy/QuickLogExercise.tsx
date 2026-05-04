@@ -147,7 +147,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
               className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border text-[11px] transition-all ${
                 state.type === opt.value
                   ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                  : 'bg-transparent border-stone-200 text-stone-700 hover:bg-transparent'
+                  : 'bg-transparent border-stone-200/70 text-stone-700 hover:bg-transparent'
               }`}
             >
               <span className="text-base">{opt.emoji}</span>
@@ -169,7 +169,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
             onChange={e => update({ name: e.target.value })}
             placeholder="e.g. Row, Push Ups, Squats"
             maxLength={60}
-            className="w-full bg-transparent border border-stone-200 rounded-xl pl-3 pr-11 py-2.5 text-sm text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/40"
+            className="w-full bg-transparent border border-stone-200/70 rounded-xl pl-3 pr-11 py-2.5 text-sm text-stone-900 placeholder:text-stone-700 focus:outline-none focus:border-emerald-500/40"
             autoFocus
           />
           <button
@@ -250,7 +250,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
           onClick={() => setPresetsOpen(false)}
         >
           <div
-            className="w-full max-w-sm bg-neutral-900 border border-stone-200 rounded-2xl p-4 shadow-2xl"
+            className="w-full max-w-sm bg-neutral-900 border border-stone-200/70 rounded-2xl p-4 shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-3">
@@ -271,7 +271,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
                 <button
                   key={p.label}
                   onClick={() => applyPreset(p)}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-transparent border border-stone-200 hover:bg-transparent text-left transition-all"
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-transparent border border-stone-200/70 hover:bg-transparent text-left transition-all"
                 >
                   <span className="text-base">{p.emoji}</span>
                   <span className="text-xs text-stone-800 font-medium truncate">{p.label}</span>
@@ -315,7 +315,7 @@ const NumberField = ({ label, icon, value, onChange, min = 0, max = 999, step = 
   const dec = () => onChange(Math.max(min, +(value - step).toFixed(decimals)));
   const inc = () => onChange(Math.min(max, +(value + step).toFixed(decimals)));
   return (
-    <div className="rounded-xl border border-stone-200 bg-transparent p-2.5">
+    <div className="rounded-xl border border-stone-200/70 bg-transparent p-2.5">
       <div className="flex items-center gap-1 text-[10px] text-stone-700 font-medium mb-1.5">
         {icon}
         <span>{label}</span>

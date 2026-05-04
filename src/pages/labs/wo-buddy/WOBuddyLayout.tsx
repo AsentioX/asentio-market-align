@@ -56,7 +56,7 @@ const WOBuddyApp = () => {
           <ProfilePage />
           <WearableSettings />
           {/* Account section */}
-          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
+          <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
             <h3 className="text-sm font-medium mb-3">Account</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
@@ -87,7 +87,7 @@ const WOBuddyApp = () => {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col">
-      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200">
+      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200/70">
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/labs" className="flex items-center gap-2 text-stone-800 hover:text-stone-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -116,7 +116,7 @@ const WOBuddyApp = () => {
         {renderPage()}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#ffffff]/95 backdrop-blur-xl border-t border-stone-200">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#ffffff]/95 backdrop-blur-xl border-t border-stone-200/70">
         <div className="max-w-lg mx-auto flex">
           {tabs.map((tab) => (
             <button

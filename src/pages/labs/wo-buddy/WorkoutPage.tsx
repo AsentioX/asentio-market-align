@@ -674,7 +674,7 @@ const WorkoutPage = () => {
               Great effort on your {cfg.label.toLowerCase()} session.
             </p>
           </div>
-          <div className="bg-gradient-to-br from-stone-900/[0.06] to-stone-900/[0.03] rounded-2xl p-6 border border-stone-200 w-full max-w-xs">
+          <div className="bg-white rounded-2xl p-6 border border-stone-200/70 w-full max-w-xs">
             <p className="text-5xl font-bold text-emerald-400">+{score}</p>
             <p className="text-xs text-stone-700 mt-1">points earned</p>
             <div className="mt-4 flex items-start gap-1.5 text-[11px] text-stone-600 bg-transparent rounded-xl p-3">
@@ -685,7 +685,7 @@ const WorkoutPage = () => {
         </div>
 
         {impact.drivers.length > 0 && (
-          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
+          <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="w-4 h-4 text-blue-400" />
               <span className="text-xs font-semibold uppercase tracking-widest text-stone-700">Drivers Activated</span>
@@ -694,7 +694,7 @@ const WorkoutPage = () => {
               {impact.drivers.map(d => {
                 const info = PERFORMANCE_DRIVERS.find(p => p.name === d);
                 return (
-                  <div key={d} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900/5 border border-stone-200">
+                  <div key={d} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900/5 border border-stone-200/70">
                     <span className="text-base">{info?.icon || '⚡'}</span>
                     <div>
                       <p className="text-xs font-medium text-stone-800">{d}</p>
@@ -719,7 +719,7 @@ const WorkoutPage = () => {
                 const statusCfg = getGoalStatusColor(g.status);
                 const catCfg = getCategoryConfig(g.category);
                 return (
-                  <div key={g.id} className="bg-transparent rounded-xl p-3 border border-stone-200">
+                  <div key={g.id} className="bg-transparent rounded-xl p-3 border border-stone-200/70">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-base">{catCfg.icon}</span>
@@ -841,7 +841,7 @@ const WorkoutPage = () => {
 
         {/* Wearable live data strip */}
         {hasWearable && activeWearable && (
-          <div className="rounded-2xl border border-stone-200 bg-transparent overflow-hidden">
+          <div className="rounded-2xl border border-stone-200/70 bg-transparent overflow-hidden">
             {/* Device selector header */}
             <div className="flex items-center justify-between px-3.5 pt-3 pb-1.5">
               <button
@@ -872,7 +872,7 @@ const WorkoutPage = () => {
                     className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs transition-colors ${
                       d.id === selectedWearableId
                         ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20'
-                        : 'bg-transparent text-stone-800 border border-stone-200 hover:bg-transparent'
+                        : 'bg-transparent text-stone-800 border border-stone-200/70 hover:bg-transparent'
                     }`}
                   >
                     <span>{d.type === 'watch' ? '⌚' : d.type === 'ring' ? '💍' : '📱'}</span>
@@ -996,7 +996,7 @@ const WorkoutPage = () => {
                   <div key={key} className="space-y-2">
                     <div className={`rounded-2xl border overflow-hidden transition-all ${
                       isActive ? 'border-emerald-500/30 shadow-lg shadow-emerald-500/10' :
-                      action === 'completed' ? 'border-emerald-500/15 opacity-50' : 'border-stone-200'
+                      action === 'completed' ? 'border-emerald-500/15 opacity-50' : 'border-stone-200/70'
                     }`}>
                       <div
                         className={`p-4 transition-all ${
@@ -1044,21 +1044,21 @@ const WorkoutPage = () => {
                             <div className="grid grid-cols-3 gap-2 pt-2">
                               <button
                                 onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'camera' }))}
-                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-transparent border border-stone-200 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all"
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-transparent border border-stone-200/70 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all"
                               >
                                 <Camera className="w-5 h-5 text-emerald-400" />
                                 <span className="text-[10px] text-stone-800 font-medium">Camera</span>
                               </button>
                               <button
                                 onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'photo' }))}
-                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-transparent border border-stone-200 hover:bg-blue-500/10 hover:border-blue-500/20 transition-all"
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-transparent border border-stone-200/70 hover:bg-blue-500/10 hover:border-blue-500/20 transition-all"
                               >
                                 <ImageIcon className="w-5 h-5 text-blue-400" />
                                 <span className="text-[10px] text-stone-800 font-medium">Photo</span>
                               </button>
                               <button
                                 onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: 'reps' }))}
-                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-transparent border border-stone-200 hover:bg-purple-500/10 hover:border-purple-500/20 transition-all"
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-transparent border border-stone-200/70 hover:bg-purple-500/10 hover:border-purple-500/20 transition-all"
                               >
                                 <Hash className="w-5 h-5 text-purple-400" />
                                 <span className="text-[10px] text-stone-800 font-medium">Manual</span>
@@ -1088,7 +1088,7 @@ const WorkoutPage = () => {
                                 <span className="text-xs text-blue-400 font-medium flex items-center gap-1"><ImageIcon className="w-3 h-3" /> Take Photo</span>
                                 <button onClick={() => setExerciseInputMode(prev => ({ ...prev, [key]: null }))} className="text-[10px] text-stone-600 hover:text-stone-700">Back</button>
                               </div>
-                              <div className="rounded-xl border border-stone-200 bg-transparent p-6 text-center">
+                              <div className="rounded-xl border border-stone-200/70 bg-transparent p-6 text-center">
                                 <ImageIcon className="w-10 h-10 text-stone-400 mx-auto mb-2" />
                                 <p className="text-xs text-stone-700">Take a photo of your exercise machine or setup</p>
                                 <button className="mt-3 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-semibold hover:bg-blue-500/30 transition-colors">
@@ -1119,20 +1119,20 @@ const WorkoutPage = () => {
                                         <label className="text-[10px] text-stone-700 uppercase tracking-wider">Sets</label>
                                         <input type="number" value={manualSets[key] || ex.sets || 3}
                                           onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                       <div className="space-y-1">
                                         <label className="text-[10px] text-stone-700 uppercase tracking-wider">{repsLabel}</label>
                                         <input type="number" value={manualReps[key] || ex.reps || 10}
                                           onChange={e => setManualReps(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                       {hasWeight && (
                                         <div className="space-y-1">
                                           <label className="text-[10px] text-stone-700 uppercase tracking-wider">Weight</label>
                                           <input type="number" value={manualWeight[key] || 0}
                                             onChange={e => setManualWeight(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                            className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
+                                            className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                             placeholder="lbs" />
                                         </div>
                                       )}
@@ -1148,21 +1148,21 @@ const WorkoutPage = () => {
                                         <label className="text-[10px] text-stone-700 uppercase tracking-wider">Distance</label>
                                         <input type="number" value={manualDistance[key] || 0}
                                           onChange={e => setManualDistance(prev => ({ ...prev, [key]: parseFloat(e.target.value) || 0 }))}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder={metrics.find(m => m.key === 'distance' || m.key === 'interval_distance')?.unit || 'm'} />
                                       </div>
                                       <div className="space-y-1">
                                         <label className="text-[10px] text-stone-700 uppercase tracking-wider">Time</label>
                                         <input type="number" value={manualTime[key] || 0}
                                           onChange={e => setManualTime(prev => ({ ...prev, [key]: parseFloat(e.target.value) || 0 }))}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder="min" />
                                       </div>
                                       <div className="space-y-1">
                                         <label className="text-[10px] text-stone-700 uppercase tracking-wider">Sets</label>
                                         <input type="number" value={manualSets[key] || 1}
                                           onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                     </div>
                                   );
@@ -1176,14 +1176,14 @@ const WorkoutPage = () => {
                                         <label className="text-[10px] text-stone-700 uppercase tracking-wider">Duration</label>
                                         <input type="number" value={manualDuration[key] || 60}
                                           onChange={e => setManualDuration(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder="sec" />
                                       </div>
                                       <div className="space-y-1">
                                         <label className="text-[10px] text-stone-700 uppercase tracking-wider">Sets</label>
                                         <input type="number" value={manualSets[key] || 3}
                                           onChange={e => setManualSets(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30" />
                                       </div>
                                     </div>
                                   );
@@ -1209,7 +1209,7 @@ const WorkoutPage = () => {
                                             else if (m.key === 'duration') setManualDuration(prev => ({ ...prev, [key]: val }));
                                             else setManualReps(prev => ({ ...prev, [key]: val }));
                                           }}
-                                          className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
+                                          className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 text-center focus:outline-none focus:border-purple-500/30"
                                           placeholder={m.unit || '0'} />
                                       </div>
                                     ))}
@@ -1247,7 +1247,7 @@ const WorkoutPage = () => {
                         </div>
 
                         {/* Editable target rest time */}
-                        <div className="flex items-center justify-between rounded-xl bg-stone-900/5 border border-stone-200 px-3 py-2">
+                        <div className="flex items-center justify-between rounded-xl bg-stone-900/5 border border-stone-200/70 px-3 py-2">
                           <span className="text-[10px] uppercase tracking-widest text-stone-700 font-semibold">Target rest</span>
                           <div className="flex items-center gap-2">
                             <button
@@ -1287,13 +1287,13 @@ const WorkoutPage = () => {
         {!showAddExercise ? (
           <button
             onClick={() => setShowAddExercise(true)}
-            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-transparent hover:bg-transparent p-3.5 transition-all"
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-stone-200/70 bg-transparent hover:bg-transparent p-3.5 transition-all"
           >
             <Plus className="w-4 h-4 text-stone-700" />
             <span className="text-sm font-medium text-stone-700">Add Exercise</span>
           </button>
         ) : (
-          <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] p-4 space-y-3">
+          <div className="rounded-2xl border border-emerald-500/20 bg-white p-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-widest text-stone-700">Add Exercise</span>
               <button onClick={() => { setShowAddExercise(false); setAddExerciseSearch(''); }} className="text-[10px] text-stone-600 hover:text-stone-700">Cancel</button>
@@ -1303,7 +1303,7 @@ const WorkoutPage = () => {
               value={addExerciseSearch}
               onChange={(e) => setAddExerciseSearch(e.target.value)}
               placeholder="Search exercises..."
-              className="w-full bg-stone-900/5 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30"
+              className="w-full bg-stone-900/5 border border-stone-200/70 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30"
               autoFocus
             />
             <div className="max-h-48 overflow-y-auto space-y-1">
@@ -1452,7 +1452,7 @@ const WorkoutPage = () => {
                   <div className="px-3 pb-3 grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setWorkoutPath('new')}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-transparent hover:bg-transparent p-3 transition-all"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-stone-200/70 bg-transparent hover:bg-transparent p-3 transition-all"
                     >
                       <Plus className="w-4 h-4 text-stone-700" />
                       <span className="text-sm font-medium text-stone-700">Add Exercise</span>
@@ -1470,7 +1470,7 @@ const WorkoutPage = () => {
 
               {/* Rest day */}
               {todayPlan?.isRest && todayPlan.sessions.length === 0 && (
-                <div className="rounded-2xl bg-transparent border border-stone-200 p-4 text-center">
+                <div className="rounded-2xl bg-transparent border border-stone-200/70 p-4 text-center">
                   <span className="text-2xl">😴</span>
                   <p className="text-sm text-stone-700 mt-2">Today is a rest day</p>
                   <p className="text-[11px] text-stone-600 mt-1">{todayPlan.restReason}</p>
@@ -1479,8 +1479,8 @@ const WorkoutPage = () => {
 
               {/* No plan empty state — still allow logging a freeform workout */}
               {!hasSessions && !todayPlan?.isRest && (
-                <div className="rounded-2xl border border-stone-200 bg-transparent p-5 text-center space-y-3">
-                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-transparent border border-stone-200">
+                <div className="rounded-2xl border border-stone-200/70 bg-transparent p-5 text-center space-y-3">
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-transparent border border-stone-200/70">
                     <CalendarDays className="w-4 h-4 text-stone-700" />
                   </div>
                   <div>
@@ -1514,7 +1514,7 @@ const WorkoutPage = () => {
                 </button>
                 <button
                   onClick={() => toast.info('Connect Strava, Apple Health, or Garmin to import workouts.', { description: 'Coming soon — no third-party connection set up yet.' })}
-                  className="w-full flex items-center justify-center gap-2 bg-transparent border border-stone-200 hover:bg-transparent text-stone-800 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
+                  className="w-full flex items-center justify-center gap-2 bg-transparent border border-stone-200/70 hover:bg-transparent text-stone-800 font-semibold py-4 rounded-2xl transition-all active:scale-[0.98]"
                   title="Import workout from Strava, Apple Health, Garmin, etc."
                 >
                   <Download className="w-5 h-5" />
@@ -1620,7 +1620,7 @@ const SESSION_TYPE_STYLES: Record<string, { emoji: string; color: string; gradie
   cardio: { emoji: '🏃', color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-600/5', border: 'border-orange-500/20', activeGradient: 'from-orange-500/30 to-orange-600/10' },
   bodyweight: { emoji: '💪', color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', activeGradient: 'from-purple-500/30 to-purple-600/10' },
   active_recovery: { emoji: '🧘', color: 'text-teal-400', gradient: 'from-teal-500/20 to-teal-600/5', border: 'border-teal-500/20', activeGradient: 'from-teal-500/30 to-teal-600/10' },
-  rest: { emoji: '😴', color: 'text-stone-700', gradient: 'from-stone-900/5 to-stone-900/[0.03]', border: 'border-stone-200', activeGradient: 'from-stone-900/10 to-stone-900/5' },
+  rest: { emoji: '😴', color: 'text-stone-700', gradient: 'from-stone-900/5 to-stone-900/[0.03]', border: 'border-stone-200/70', activeGradient: 'from-stone-900/10 to-stone-900/5' },
 };
 
 interface PlanSessionCardsProps {
@@ -1770,7 +1770,7 @@ const PlanSessionCards = ({ todayPlan, exerciseActions, onExerciseAction, totalP
                         </div>
 
                         {isExExpanded && !isDone && (
-                          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-stone-900/40 backdrop-blur-sm border border-stone-200">
+                          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-stone-900/40 backdrop-blur-sm border border-stone-200/70">
                             <button
                               onClick={(e) => { e.stopPropagation(); onExerciseAction(si, ei, 'completed'); setExpandedExercise(null); }}
                               className="flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] font-semibold hover:bg-emerald-500/30 transition-colors"
@@ -1901,7 +1901,7 @@ const PastWorkoutsList = ({ completedWorkouts, workouts, onDeleteLocal, onDelete
         const cfg = modeConfig[item.mode as Mode] || modeConfig.strength;
 
         return (
-          <div key={item.id} className="rounded-2xl border border-stone-200 bg-transparent overflow-hidden">
+          <div key={item.id} className="rounded-2xl border border-stone-200/70 bg-transparent overflow-hidden">
             <button
               onClick={() => setExpandedId(isExpanded ? null : item.id)}
               className="w-full flex items-center justify-between p-3.5 hover:bg-transparent transition-colors"
@@ -1941,7 +1941,7 @@ const PastWorkoutsList = ({ completedWorkouts, workouts, onDeleteLocal, onDelete
             </button>
 
             {isExpanded && (
-              <div className="px-3.5 pb-3.5 space-y-1.5 border-t border-stone-200 pt-3">
+              <div className="px-3.5 pb-3.5 space-y-1.5 border-t border-stone-200/70 pt-3">
                 {item.exercises.map((ex, i) => {
                   const exIcon = EXERCISE_TYPE_ICONS[ex.type] || EXERCISE_TYPE_ICONS.strength;
                   return (
@@ -2056,22 +2056,22 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-2">
-        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-200 text-center">
+        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-200/70 text-center">
           <p className="text-xl font-bold">{workouts.length}</p>
           <p className="text-[10px] text-stone-700 mt-0.5">Total</p>
         </div>
-        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-200 text-center">
+        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-200/70 text-center">
           <p className="text-xl font-bold text-emerald-400">{workouts.reduce((s, w) => s + w.score, 0).toLocaleString()}</p>
           <p className="text-[10px] text-stone-700 mt-0.5">Points</p>
         </div>
-        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-200 text-center">
+        <div className="bg-gradient-to-b from-stone-900/[0.05] to-stone-900/[0.03] rounded-xl p-3 border border-stone-200/70 text-center">
           <p className="text-xl font-bold">{Object.keys(grouped).length}</p>
           <p className="text-[10px] text-stone-700 mt-0.5">Days</p>
         </div>
       </div>
 
       {activeGoals.length > 0 && (
-        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.02] rounded-2xl border border-stone-200 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-stone-200/70 overflow-hidden">
           <div className="p-4 pb-2">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="w-4 h-4 text-blue-400" />
@@ -2082,7 +2082,7 @@ const WorkoutHistory = ({ workouts }: WorkoutHistoryProps) => {
                 {activeGoals.map(g => (
                   <button key={g.id} onClick={() => setSelectedGoalId(g.id)}
                     className={`shrink-0 text-[11px] px-2.5 py-1 rounded-lg border transition-colors ${
-                      (selectedGoal?.id === g.id) ? 'bg-blue-500/15 border-blue-500/20 text-blue-400' : 'bg-transparent border-stone-200 text-stone-700 hover:bg-transparent'
+                      (selectedGoal?.id === g.id) ? 'bg-blue-500/15 border-blue-500/20 text-blue-400' : 'bg-transparent border-stone-200/70 text-stone-700 hover:bg-transparent'
                     }`}>{g.name}</button>
                 ))}
               </div>
@@ -2185,7 +2185,7 @@ function NumberInput({ label, value, onChange, step = 1 }: { label: string; valu
       <div className="flex items-center gap-0.5">
         <button onClick={() => onChange(Math.max(0, value - step))} className="w-7 h-8 shrink-0 rounded-lg bg-stone-900/5 text-stone-800 hover:bg-stone-900/10 flex items-center justify-center text-sm transition-colors">−</button>
         <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))}
-          className="min-w-0 flex-1 bg-stone-900/5 border border-stone-200 rounded-lg px-1 py-1.5 text-center text-sm font-medium text-stone-900 focus:outline-none focus:border-emerald-500/30" />
+          className="min-w-0 flex-1 bg-stone-900/5 border border-stone-200/70 rounded-lg px-1 py-1.5 text-center text-sm font-medium text-stone-900 focus:outline-none focus:border-emerald-500/30" />
         <button onClick={() => onChange(value + step)} className="w-7 h-8 shrink-0 rounded-lg bg-stone-900/5 text-stone-800 hover:bg-stone-900/10 flex items-center justify-center text-sm transition-colors">+</button>
       </div>
     </div>
@@ -2209,7 +2209,7 @@ function InputSelect({ label, value, options, onChange, grouped }: { label: stri
     <div>
       <label className="text-[10px] text-stone-700 uppercase tracking-wider mb-1 block">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none">
+        className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-emerald-500/30 appearance-none">
         {groupedOptions ? (
           Object.entries(groupedOptions).map(([cat, names]) => (
             <optgroup key={cat} label={cat} className="bg-white text-stone-800">

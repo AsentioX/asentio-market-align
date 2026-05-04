@@ -88,7 +88,7 @@ const WOBuddyLogin = () => {
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200">
+      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200/70">
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/labs" className="flex items-center gap-2 text-stone-800 hover:text-stone-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -136,7 +136,7 @@ const WOBuddyLogin = () => {
             </button>
             <button
               onClick={() => { setShowAuth(true); setMode('login'); }}
-              className="h-11 px-6 rounded-xl bg-transparent border border-stone-200 text-sm font-medium hover:bg-stone-900/10 transition-all"
+              className="h-11 px-6 rounded-xl bg-transparent border border-stone-200/70 text-sm font-medium hover:bg-stone-900/10 transition-all"
             >
               Sign In
             </button>
@@ -172,7 +172,7 @@ const WOBuddyLogin = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
-              className="flex gap-4 p-4 rounded-2xl bg-transparent border border-stone-200 hover:border-stone-900/15 transition-colors"
+              className="flex gap-4 p-4 rounded-2xl bg-transparent border border-stone-200/70 hover:border-stone-900/15 transition-colors"
             >
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center shrink-0`}>
                 <feature.icon className="w-5 h-5 text-stone-900" />
@@ -247,7 +247,7 @@ const WOBuddyLogin = () => {
               exit={{ y: 100, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-[#faf8f5] border border-stone-200 rounded-t-3xl sm:rounded-3xl p-6 pb-8 max-h-[90vh] overflow-y-auto"
+              className="w-full max-w-lg bg-[#faf8f5] border border-stone-200/70 rounded-t-3xl sm:rounded-3xl p-6 pb-8 max-h-[90vh] overflow-y-auto"
             >
               {/* Drag handle */}
               <div className="w-10 h-1 rounded-full bg-stone-900/10 mx-auto mb-6 sm:hidden" />
@@ -266,7 +266,7 @@ const WOBuddyLogin = () => {
                 <button
                   onClick={() => handleSSO('google')}
                   disabled={!!ssoLoading}
-                  className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-transparent border border-stone-200 hover:bg-stone-900/10 transition-all text-sm font-medium disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-transparent border border-stone-200/70 hover:bg-stone-900/10 transition-all text-sm font-medium disabled:opacity-50"
                 >
                   {ssoLoading === 'google' ? (
                     <div className="w-5 h-5 border-2 border-stone-900/20 border-t-white rounded-full animate-spin" />
@@ -284,7 +284,7 @@ const WOBuddyLogin = () => {
                 <button
                   onClick={() => handleSSO('apple')}
                   disabled={!!ssoLoading}
-                  className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-transparent border border-stone-200 hover:bg-stone-900/10 transition-all text-sm font-medium disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-transparent border border-stone-200/70 hover:bg-stone-900/10 transition-all text-sm font-medium disabled:opacity-50"
                 >
                   {ssoLoading === 'apple' ? (
                     <div className="w-5 h-5 border-2 border-stone-900/20 border-t-white rounded-full animate-spin" />
@@ -314,7 +314,7 @@ const WOBuddyLogin = () => {
                       placeholder="Display name"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-transparent border border-stone-200 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-transparent border border-stone-200/70 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
                     />
                   </div>
                 )}
@@ -327,7 +327,7 @@ const WOBuddyLogin = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-transparent border border-stone-200 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-transparent border border-stone-200/70 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
                   />
                 </div>
 
@@ -340,7 +340,7 @@ const WOBuddyLogin = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full h-12 pl-10 pr-12 rounded-xl bg-transparent border border-stone-200 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full h-12 pl-10 pr-12 rounded-xl bg-transparent border border-stone-200/70 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
                   />
                   <button
                     type="button"

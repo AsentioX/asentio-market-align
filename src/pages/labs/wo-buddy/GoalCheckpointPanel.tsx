@@ -62,7 +62,7 @@ const GoalCheckpointPanel = ({
 
   if (goalCheckpoints.length === 0) {
     return (
-      <div className="rounded-xl bg-transparent border border-stone-200 p-3 text-center">
+      <div className="rounded-xl bg-transparent border border-stone-200/70 p-3 text-center">
         <p className="text-[11px] text-stone-700">
           Checkpoints will be scheduled every 4 weeks once this goal is set up.
         </p>
@@ -101,7 +101,7 @@ const GoalCheckpointPanel = ({
         <div className={`rounded-xl border p-3 space-y-2.5 ${
           isDue
             ? 'bg-gradient-to-br from-amber-500/10 to-amber-500/[0.02] border-amber-500/20'
-            : 'bg-transparent border-stone-200'
+            : 'bg-transparent border-stone-200/70'
         }`}>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -126,7 +126,7 @@ const GoalCheckpointPanel = ({
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
                   placeholder={`Your current ${metricUnit || 'value'}`}
-                  className="flex-1 bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-amber-400/40 [&::-webkit-inner-spin-button]:appearance-none"
+                  className="flex-1 bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-amber-400/40 [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <span className="flex items-center text-[11px] text-stone-700 px-1">{metricUnit}</span>
               </div>
@@ -135,7 +135,7 @@ const GoalCheckpointPanel = ({
                 value={note}
                 onChange={e => setNote(e.target.value)}
                 placeholder="Optional note (how it felt, conditions…)"
-                className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2 text-[11px] text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-amber-400/40"
+                className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2 text-[11px] text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-amber-400/40"
               />
               <div className="flex gap-2">
                 <button

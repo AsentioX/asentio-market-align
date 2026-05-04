@@ -116,7 +116,7 @@ const ProgressAnalytics = () => {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
                       isActive
                         ? 'bg-blue-500/10 text-blue-600 border border-blue-500/30'
-                        : 'bg-transparent text-stone-500 border border-stone-200 hover:text-stone-700'
+                        : 'bg-transparent text-stone-500 border border-stone-200/70 hover:text-stone-700'
                     }`}
                   >
                     <TypeIcon type={t.meta.type} className="w-3 h-3" />
@@ -141,7 +141,7 @@ const ProgressAnalytics = () => {
         {loading ? (
           <p className="text-xs text-stone-700">Loading…</p>
         ) : personalRecords.length === 0 ? (
-          <div className="bg-transparent rounded-2xl border border-stone-200 p-6 text-center">
+          <div className="bg-transparent rounded-2xl border border-stone-200/70 p-6 text-center">
             <Trophy className="w-8 h-8 text-stone-400 mx-auto mb-2" />
             <p className="text-xs text-stone-700">Log a workout to set your first personal best.</p>
           </div>

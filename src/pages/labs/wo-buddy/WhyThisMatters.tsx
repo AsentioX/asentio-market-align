@@ -67,7 +67,7 @@ const WhyThisMatters = ({ activityName, compact = false }: WhyThisMattersProps) 
               {drivers.map(d => {
                 const info = PERFORMANCE_DRIVERS.find(p => p.name === d);
                 return (
-                  <span key={d} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-900/5 text-[9px] text-stone-700 border border-stone-200">
+                  <span key={d} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-900/5 text-[9px] text-stone-700 border border-stone-200/70">
                     {info?.icon} {d}
                   </span>
                 );

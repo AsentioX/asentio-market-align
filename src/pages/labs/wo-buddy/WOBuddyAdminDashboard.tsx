@@ -105,7 +105,7 @@ const WOBuddyAdminDashboard = () => {
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200">
+      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200/70">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/labs/wo-buddy" className="flex items-center gap-2 text-stone-800 hover:text-stone-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -138,7 +138,7 @@ const WOBuddyAdminDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-transparent rounded-xl p-1 border border-stone-200">
+        <div className="flex gap-1 mb-6 bg-transparent rounded-xl p-1 border border-stone-200/70">
           {([
             { id: 'users' as const, label: 'Users', icon: <Users className="w-4 h-4" /> },
             { id: 'analytics' as const, label: 'Analytics', icon: <BarChart3 className="w-4 h-4" /> },
@@ -168,7 +168,7 @@ const WOBuddyAdminDashboard = () => {
                 placeholder="Search users..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 rounded-xl bg-transparent border border-stone-200 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50"
+                className="w-full h-10 pl-10 pr-4 rounded-xl bg-transparent border border-stone-200/70 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50"
               />
             </div>
 
@@ -179,7 +179,7 @@ const WOBuddyAdminDashboard = () => {
             ) : (
               <div className="space-y-2">
                 {filteredUsers.map((u) => (
-                  <div key={u.id} className="flex items-center gap-3 bg-transparent rounded-xl p-3 border border-stone-200 hover:bg-transparent transition-colors">
+                  <div key={u.id} className="flex items-center gap-3 bg-transparent rounded-xl p-3 border border-stone-200/70 hover:bg-transparent transition-colors">
                     {/* Avatar */}
                     {u.avatar_url ? (
                       <img src={u.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" />
@@ -227,7 +227,7 @@ const WOBuddyAdminDashboard = () => {
                       {openMenu === u.id && (
                         <>
                           <div className="fixed inset-0 z-40" onClick={() => setOpenMenu(null)} />
-                          <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-white rounded-xl border border-stone-200 shadow-xl py-1">
+                          <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-white rounded-xl border border-stone-200/70 shadow-xl py-1">
                             <button
                               onClick={() => toggleUserActive(u.id, u.is_active)}
                               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-800 hover:bg-transparent hover:text-stone-900 transition-colors"
@@ -264,7 +264,7 @@ const WOBuddyAdminDashboard = () => {
         {/* Analytics Tab */}
         {tab === 'analytics' && (
           <div className="space-y-4">
-            <div className="bg-transparent rounded-xl p-6 border border-stone-200 text-center">
+            <div className="bg-transparent rounded-xl p-6 border border-stone-200/70 text-center">
               <BarChart3 className="w-10 h-10 text-stone-600 mx-auto mb-3" />
               <p className="text-sm text-stone-700 mb-1">Analytics Dashboard</p>
               <p className="text-xs text-stone-600">
@@ -294,7 +294,7 @@ const WOBuddyAdminDashboard = () => {
         {/* Settings Tab */}
         {tab === 'settings' && (
           <div className="space-y-4">
-            <div className="bg-transparent rounded-xl p-6 border border-stone-200">
+            <div className="bg-transparent rounded-xl p-6 border border-stone-200/70">
               <h3 className="text-sm font-medium mb-4">App Settings</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -319,7 +319,7 @@ const WOBuddyAdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-transparent rounded-xl p-6 border border-stone-200">
+            <div className="bg-transparent rounded-xl p-6 border border-stone-200/70">
               <h3 className="text-sm font-medium mb-2">Portability</h3>
               <p className="text-xs text-stone-600 mb-4">
                 This admin dashboard is designed to be portable. All WO.Buddy data lives in its own namespace (wobuddy_users, wobuddy_* tables)

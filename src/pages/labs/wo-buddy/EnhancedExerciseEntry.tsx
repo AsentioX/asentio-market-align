@@ -118,7 +118,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
           <p className="text-xs text-stone-700 leading-relaxed">{exercise.whyItMatters}</p>
           <div className="flex flex-wrap gap-1">
             {exercise.linkedDrivers.map(d => (
-              <span key={d} className="text-[9px] px-2 py-0.5 rounded-md bg-stone-900/5 text-stone-800 border border-stone-200">{d}</span>
+              <span key={d} className="text-[9px] px-2 py-0.5 rounded-md bg-stone-900/5 text-stone-800 border border-stone-200/70">{d}</span>
             ))}
           </div>
         </div>
@@ -137,7 +137,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
           </div>
 
           {sets.map((set, idx) => (
-            <div key={idx} className="flex items-center gap-2 bg-transparent rounded-xl border border-stone-200 p-2">
+            <div key={idx} className="flex items-center gap-2 bg-transparent rounded-xl border border-stone-200/70 p-2">
               <span className="w-8 text-center text-xs font-bold text-stone-700">{set.setNumber}</span>
               {exercise.defaultMetrics.filter(m => m.key !== 'sets').map(m => (
                 <div key={m.key} className="flex-1">
@@ -146,7 +146,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
                     value={set[m.key] as number || ''}
                     onChange={e => updateSet(idx, m.key, Number(e.target.value))}
                     placeholder={m.label}
-                    className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </div>
               ))}
@@ -156,7 +156,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
             </div>
           ))}
 
-          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-200 text-xs text-stone-600 hover:text-stone-700 hover:border-stone-900/15 transition-colors">
+          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-200/70 text-xs text-stone-600 hover:text-stone-700 hover:border-stone-900/15 transition-colors">
             <Plus className="w-3.5 h-3.5" /> Add Set
           </button>
         </div>
@@ -174,7 +174,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
           </div>
 
           {sets.map((set, idx) => (
-            <div key={idx} className="flex items-center gap-2 bg-transparent rounded-xl border border-stone-200 p-2">
+            <div key={idx} className="flex items-center gap-2 bg-transparent rounded-xl border border-stone-200/70 p-2">
               <span className="w-8 text-center text-xs font-bold text-stone-700">{set.setNumber}</span>
               {exercise.defaultMetrics.filter(m => m.key !== 'total_sets').map(m => (
                 <div key={m.key} className="flex-1">
@@ -183,7 +183,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
                     value={set[m.key.replace('interval_', '').replace('rest_time', 'rest').replace('rest_intervals', 'rest')] as number || ''}
                     onChange={e => updateSet(idx, m.key.replace('interval_', '').replace('rest_time', 'rest').replace('rest_intervals', 'rest'), Number(e.target.value))}
                     placeholder={m.unit || ''}
-                    className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </div>
               ))}
@@ -193,7 +193,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
             </div>
           ))}
 
-          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-200 text-xs text-stone-600 hover:text-stone-700 transition-colors">
+          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-200/70 text-xs text-stone-600 hover:text-stone-700 transition-colors">
             <Plus className="w-3.5 h-3.5" /> Add Interval
           </button>
         </div>
@@ -203,14 +203,14 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       {(exercise.entryType === 'simple' || exercise.entryType === 'duration') && (
         <div className="grid grid-cols-2 gap-2">
           {exercise.defaultMetrics.map(m => (
-            <div key={m.key} className="bg-transparent rounded-xl border border-stone-200 p-3">
+            <div key={m.key} className="bg-transparent rounded-xl border border-stone-200/70 p-3">
               <label className="text-[9px] text-stone-600 uppercase tracking-wider block mb-1.5">{m.label}{m.unit ? ` (${m.unit})` : ''}</label>
               <input
                 type="number"
                 value={simpleValues[m.key] || ''}
                 onChange={e => setSimpleValues(prev => ({ ...prev, [m.key]: Number(e.target.value) }))}
                 placeholder="0"
-                className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2.5 text-lg font-bold text-stone-900 text-center focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-full bg-stone-900/5 border border-stone-200/70 rounded-lg px-3 py-2.5 text-lg font-bold text-stone-900 text-center focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
             </div>
           ))}
@@ -218,7 +218,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       )}
 
       {/* RPE slider */}
-      <div className="bg-transparent rounded-xl border border-stone-200 p-3.5">
+      <div className="bg-transparent rounded-xl border border-stone-200/70 p-3.5">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] text-stone-600 uppercase tracking-wider">Perceived Effort (RPE)</span>
           <span className={`text-sm font-bold ${rpeInfo.color}`}>{rpe}/10</span>
@@ -252,7 +252,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
           onChange={e => setNotes(e.target.value)}
           placeholder="How did this feel? Any observations…"
           rows={3}
-          className="w-full bg-transparent border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30 resize-none"
+          className="w-full bg-transparent border border-stone-200/70 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30 resize-none"
         />
       )}
 

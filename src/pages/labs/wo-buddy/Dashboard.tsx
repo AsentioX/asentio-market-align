@@ -240,7 +240,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           </div>
 
           {/* Bottom row: location + sunset/sunrise */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-200">
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-200/70">
             {weather && (
               <div className="flex items-center gap-1.5 text-xs text-stone-700">
                 <MapPin className="w-3 h-3" />
@@ -301,7 +301,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 </div>
               </div>
               {next && (
-                <div className="mt-4 pt-3 border-t border-stone-200">
+                <div className="mt-4 pt-3 border-t border-stone-200/70">
                   <div className="flex items-center justify-between text-[10px] mb-1.5">
                     <span className="text-stone-700">Next: {next.emoji} {next.title}</span>
                     <span className="text-stone-600">{formatNum(Math.round(next.threshold - value))} {cat.unit} to go</span>
@@ -332,7 +332,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       {/* Coaching Insights */}
       {goals.length > 0 && (
-        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
+        <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
@@ -359,7 +359,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             {goals.filter(g => g.status === 'active').map(g => {
               const pct = g.target_value > 0 ? Math.min(100, Math.round(((g.current_value ?? 0) / g.target_value) * 100)) : 0;
               return (
-                <div key={g.id} className="bg-transparent rounded-xl border border-stone-200 p-3">
+                <div key={g.id} className="bg-transparent rounded-xl border border-stone-200/70 p-3">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-xs font-medium text-stone-700 truncate">{g.name}</span>
                     <span className="text-xs font-bold text-emerald-400">{pct}%</span>
@@ -379,7 +379,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       )}
 
       {/* This Week + Daily Goal combined */}
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center gap-2 mb-3">
           <Calendar className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">This Week</span>
@@ -441,7 +441,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       <div>
         {/* Period tabs — minimal underline style */}
-        <div className="flex items-center gap-6 border-b border-stone-200 mb-6">
+        <div className="flex items-center gap-6 border-b border-stone-200/70 mb-6">
           {(['week', 'month', 'all'] as Period[]).map(p => (
             <button
               key={p}

@@ -154,7 +154,7 @@ const ProfilePage = () => {
           <button
             onClick={() => bgInputRef.current?.click()}
             disabled={uploadingBg}
-            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-stone-900/15 backdrop-blur-md border border-stone-200 text-stone-800 hover:text-stone-900 hover:bg-stone-900/25 transition-all"
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-stone-900/15 backdrop-blur-md border border-stone-200/70 text-stone-800 hover:text-stone-900 hover:bg-stone-900/25 transition-all"
           >
             {uploadingBg ? (
               <div className="w-4 h-4 border-2 border-stone-900/20 border-t-white rounded-full animate-spin" />
@@ -220,7 +220,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Body Metrics */}
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <User className="w-4 h-4 text-violet-400" />
@@ -267,48 +267,48 @@ const ProfilePage = () => {
               { label: 'Weight (kg)', key: 'weight' as const, type: 'number' },
               { label: 'Goal Weight (kg)', key: 'goalWeight' as const, type: 'number' },
             ].map((field) => (
-              <div key={field.key} className="bg-transparent rounded-xl p-3 border border-stone-200">
+              <div key={field.key} className="bg-transparent rounded-xl p-3 border border-stone-200/70">
                 <label className="text-[10px] text-stone-700 block mb-1">{field.label}</label>
                 <input
                   type="number"
                   value={draft[field.key]}
                   onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: Number(e.target.value) }))}
-                  className="w-full bg-transparent text-sm font-semibold outline-none border-b border-stone-200 focus:border-emerald-400/50 pb-0.5 transition-colors"
+                  className="w-full bg-transparent text-sm font-semibold outline-none border-b border-stone-200/70 focus:border-emerald-400/50 pb-0.5 transition-colors"
                 />
               </div>
             ))}
-            <div className="bg-transparent rounded-xl p-3 border border-stone-200">
+            <div className="bg-transparent rounded-xl p-3 border border-stone-200/70">
               <label className="text-[10px] text-stone-700 block mb-1">Birthdate</label>
               <input
                 type="date"
                 value={draft.birthdate}
                 onChange={(e) => setDraft(prev => ({ ...prev, birthdate: e.target.value }))}
-                className="w-full bg-transparent text-sm font-semibold outline-none border-b border-stone-200 focus:border-emerald-400/50 pb-0.5 transition-colors [color-scheme:dark]"
+                className="w-full bg-transparent text-sm font-semibold outline-none border-b border-stone-200/70 focus:border-emerald-400/50 pb-0.5 transition-colors [color-scheme:dark]"
               />
             </div>
-            <div className="bg-transparent rounded-xl p-3 border border-stone-200 col-span-2">
+            <div className="bg-transparent rounded-xl p-3 border border-stone-200/70 col-span-2">
               <label className="text-[10px] text-stone-700 block mb-1">Gender</label>
               <div className="flex gap-2">
                 {['Male', 'Female', 'Other'].map(g => (
                   <button key={g} onClick={() => setDraft(prev => ({ ...prev, gender: g }))}
-                    className={`flex-1 text-xs py-1.5 rounded-lg border transition-all ${draft.gender === g ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-transparent border-stone-200 text-stone-700'}`}>
+                    className={`flex-1 text-xs py-1.5 rounded-lg border transition-all ${draft.gender === g ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-transparent border-stone-200/70 text-stone-700'}`}>
                     {g}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="bg-transparent rounded-xl p-3 border border-stone-200 col-span-2">
+            <div className="bg-transparent rounded-xl p-3 border border-stone-200/70 col-span-2">
               <label className="text-[10px] text-stone-700 block mb-1">Ethnicity</label>
               <div className="flex gap-2 flex-wrap">
                 {['Asian', 'Black', 'Hispanic', 'White', 'Mixed', 'Other'].map(e => (
                   <button key={e} onClick={() => setDraft(prev => ({ ...prev, ethnicity: e }))}
-                    className={`text-xs py-1.5 px-3 rounded-lg border transition-all ${draft.ethnicity === e ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-transparent border-stone-200 text-stone-700'}`}>
+                    className={`text-xs py-1.5 px-3 rounded-lg border transition-all ${draft.ethnicity === e ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-transparent border-stone-200/70 text-stone-700'}`}>
                     {e}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="col-span-2 bg-transparent rounded-xl p-3 border border-dashed border-stone-200">
+            <div className="col-span-2 bg-transparent rounded-xl p-3 border border-dashed border-stone-200/70">
               <p className="text-[10px] text-stone-600 text-center">💡 Resting HR and Body Fat % are measured from your wearable device and cannot be edited manually.</p>
             </div>
           </div>
@@ -324,7 +324,7 @@ const ProfilePage = () => {
               <Trash2 className="w-3.5 h-3.5" /> Delete Account
             </button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="bg-[#ffffff] border-stone-200">
+          <AlertDialogContent className="bg-[#ffffff] border-stone-200/70">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-stone-900">Delete your account?</AlertDialogTitle>
               <AlertDialogDescription className="text-stone-700">
@@ -332,7 +332,7 @@ const ProfilePage = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-stone-900/5 border-stone-200 text-stone-800 hover:bg-stone-900/10 hover:text-stone-900">Cancel</AlertDialogCancel>
+              <AlertDialogCancel className="bg-stone-900/5 border-stone-200/70 text-stone-800 hover:bg-stone-900/10 hover:text-stone-900">Cancel</AlertDialogCancel>
               <AlertDialogAction
                 disabled={deletingAccount}
                 onClick={async (e) => {

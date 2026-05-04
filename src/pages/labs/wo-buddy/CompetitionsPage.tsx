@@ -32,16 +32,16 @@ const CompetitionsPage = () => {
           const pct = Math.round((comp.progress / comp.target) * 100);
 
           return (
-            <div key={comp.id} className="rounded-2xl border border-stone-200 overflow-hidden shadow-lg shadow-black/10">
+            <div key={comp.id} className="rounded-2xl border border-stone-200/70 overflow-hidden shadow-lg shadow-black/10">
               {/* Visual header with image */}
               <div className="relative h-36">
                 <img src={image} alt={comp.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" width={640} height={640} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#faf8f5] via-stone-900/20 to-transparent" />
-                <div className="absolute top-3 right-3 bg-stone-900/15 backdrop-blur-md rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1 border border-stone-200">
+                <div className="absolute top-3 right-3 bg-stone-900/15 backdrop-blur-md rounded-full px-2.5 py-1 text-[10px] font-medium flex items-center gap-1 border border-stone-200/70">
                   <Timer className="w-3 h-3" /> {comp.timeRemaining}
                 </div>
                 <div className="absolute top-3 left-3">
-                  <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium backdrop-blur-md border border-stone-200 ${
+                  <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium backdrop-blur-md border border-stone-200/70 ${
                     comp.type === 'daily' ? 'bg-orange-500/30 text-orange-300' : 'bg-emerald-500/30 text-emerald-300'
                   }`}>{comp.type === 'daily' ? 'Daily' : 'Weekly'}</span>
                 </div>
@@ -70,7 +70,7 @@ const CompetitionsPage = () => {
                     onClick={() => toggleJoin(comp.id)}
                     className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all ${
                       comp.joined
-                        ? 'bg-stone-900/5 text-stone-700 border border-stone-200'
+                        ? 'bg-stone-900/5 text-stone-700 border border-stone-200/70'
                         : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
                     }`}
                   >
@@ -78,7 +78,7 @@ const CompetitionsPage = () => {
                   </button>
                   <button
                     onClick={() => setActiveLeaderboard(activeLeaderboard === comp.id ? null : comp.id)}
-                    className="p-2.5 rounded-xl bg-stone-900/5 text-stone-700 hover:text-stone-800 border border-stone-200 transition-colors"
+                    className="p-2.5 rounded-xl bg-stone-900/5 text-stone-700 hover:text-stone-800 border border-stone-200/70 transition-colors"
                   >
                     <ChevronUp className={`w-4 h-4 transition-transform ${activeLeaderboard === comp.id ? '' : 'rotate-180'}`} />
                   </button>
@@ -87,7 +87,7 @@ const CompetitionsPage = () => {
 
               {/* Leaderboard */}
               {activeLeaderboard === comp.id && (
-                <div className="border-t border-stone-200 p-4 space-y-1.5 bg-transparent">
+                <div className="border-t border-stone-200/70 p-4 space-y-1.5 bg-transparent">
                   <p className="text-[10px] text-stone-600 uppercase tracking-wider mb-2">Leaderboard</p>
                   {mockLeaderboard.map((entry) => (
                     <div
@@ -131,7 +131,7 @@ const CompetitionsPage = () => {
               key={ach.id}
               className={`rounded-2xl p-3.5 border text-center transition-all ${
                 ach.unlocked
-                  ? 'bg-gradient-to-b from-stone-900/[0.06] to-stone-900/[0.03] border-stone-200 hover:border-stone-900/15'
+                  ? 'bg-gradient-to-b from-stone-900/[0.06] to-stone-900/[0.03] border-stone-200/70 hover:border-stone-900/15'
                   : 'bg-transparent border-stone-200/70 opacity-40 grayscale'
               }`}
             >

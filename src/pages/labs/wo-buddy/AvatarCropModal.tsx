@@ -60,8 +60,8 @@ const AvatarCropModal = ({ imageSrc, onCropDone, onCancel }: AvatarCropModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 backdrop-blur-sm p-4">
-      <div className="bg-[#ffffff] rounded-2xl border border-stone-200 w-full max-w-md overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200">
+      <div className="bg-[#ffffff] rounded-2xl border border-stone-200/70 w-full max-w-md overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200/70">
           <span className="text-sm font-medium text-stone-800">Crop Profile Photo</span>
           <button onClick={onCancel} className="text-stone-700 hover:text-stone-900"><X className="w-4 h-4" /></button>
         </div>
@@ -95,7 +95,7 @@ const AvatarCropModal = ({ imageSrc, onCropDone, onCancel }: AvatarCropModalProp
         </div>
 
         <div className="flex gap-2 px-4 pb-4">
-          <button onClick={onCancel} className="flex-1 text-sm py-2.5 rounded-xl border border-stone-200 text-stone-800 hover:bg-stone-900/5 transition-colors">
+          <button onClick={onCancel} className="flex-1 text-sm py-2.5 rounded-xl border border-stone-200/70 text-stone-800 hover:bg-stone-900/5 transition-colors">
             Cancel
           </button>
           <button

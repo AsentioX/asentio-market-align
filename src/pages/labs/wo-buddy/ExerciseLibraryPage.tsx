@@ -82,7 +82,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
           <span className="text-[10px] text-stone-600 uppercase tracking-wider">Performance Drivers</span>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {ex.linkedDrivers.map(d => (
-              <span key={d} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-900/5 text-[11px] text-stone-700 border border-stone-200">
+              <span key={d} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-900/5 text-[11px] text-stone-700 border border-stone-200/70">
                 {d}
               </span>
             ))}
@@ -119,7 +119,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
           <span className="text-[10px] text-stone-600 uppercase tracking-wider">Tracking Metrics</span>
           <div className="grid grid-cols-2 gap-2 mt-2">
             {ex.defaultMetrics.map(m => (
-              <div key={m.key} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-transparent border border-stone-200">
+              <div key={m.key} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-transparent border border-stone-200/70">
                 <span className="text-xs text-stone-800">{m.label}</span>
                 {m.unit && <span className="text-[10px] text-stone-700 ml-auto">{m.unit}</span>}
                 {m.required && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60" />}
@@ -208,7 +208,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
           placeholder="Search exercises, categories, purposes…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full bg-transparent border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30"
+          className="w-full bg-transparent border border-stone-200/70 rounded-xl pl-10 pr-4 py-3 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30"
         />
         {search && (
           <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-600">
@@ -224,7 +224,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
           className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
             activeCategory === 'all'
               ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-              : 'bg-stone-900/5 text-stone-700 border border-stone-200'
+              : 'bg-stone-900/5 text-stone-700 border border-stone-200/70'
           }`}
         >
           All ({EXERCISE_LIBRARY.length})
@@ -239,7 +239,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
               className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
                 activeCategory === key
                   ? `${cfg.bg} ${cfg.color} border ${cfg.border}`
-                  : 'bg-stone-900/5 text-stone-700 border border-stone-200'
+                  : 'bg-stone-900/5 text-stone-700 border border-stone-200/70'
               }`}
             >
               {cfg.icon} {cfg.label} ({count})

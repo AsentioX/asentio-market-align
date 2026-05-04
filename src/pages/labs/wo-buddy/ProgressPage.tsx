@@ -55,7 +55,7 @@ const ProgressPage = () => {
       </div>
 
       {/* Weekly score chart */}
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">Weekly Score Trend</span>
@@ -85,7 +85,7 @@ const ProgressPage = () => {
       </div>
 
       {/* Daily breakdown bar chart */}
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-medium">This Week Breakdown</span>
           <div className="flex items-center gap-3">
@@ -118,7 +118,7 @@ const ProgressPage = () => {
         {loading ? (
           <p className="text-xs text-stone-700">Loading…</p>
         ) : personalRecords.length === 0 ? (
-          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-6 border border-stone-200 text-center">
+          <div className="bg-white rounded-2xl p-6 border border-stone-200/70 text-center">
             <Trophy className="w-8 h-8 text-stone-600 mx-auto mb-2" />
             <p className="text-xs text-stone-700">Log a workout to set your first personal best.</p>
           </div>
