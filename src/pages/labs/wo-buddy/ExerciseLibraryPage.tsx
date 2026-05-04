@@ -42,21 +42,21 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
       <div className="space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <button onClick={() => setSelectedExercise(null)} className="w-9 h-9 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-900/65 hover:text-stone-900/75">
+          <button onClick={() => setSelectedExercise(null)} className="w-9 h-9 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-700 hover:text-stone-800">
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="flex-1">
             <h2 className="text-lg font-bold text-stone-900">{ex.name}</h2>
             <div className="flex items-center gap-2 mt-0.5">
               <span className={`text-[10px] px-2 py-0.5 rounded-full ${cat.bg} ${cat.color} font-medium`}>{cat.label}</span>
-              <span className="text-[10px] text-stone-900/55">{ex.subcategory}</span>
+              <span className="text-[10px] text-stone-600">{ex.subcategory}</span>
             </div>
           </div>
           <span className="text-3xl">{ex.icon}</span>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-stone-900/70 leading-relaxed">{ex.description}</p>
+        <p className="text-sm text-stone-700 leading-relaxed">{ex.description}</p>
 
         {/* Why This Matters */}
         <div className="bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-xl border border-amber-500/15 p-4 space-y-3">
@@ -64,25 +64,25 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
             <Lightbulb className="w-4 h-4 text-amber-400" />
             <span className="text-sm font-semibold text-amber-400">Why This Matters</span>
           </div>
-          <p className="text-xs text-stone-900/75 leading-relaxed">{ex.whyItMatters}</p>
+          <p className="text-xs text-stone-800 leading-relaxed">{ex.whyItMatters}</p>
           <div className="grid grid-cols-2 gap-3 mt-2">
             <div>
-              <span className="text-[9px] text-stone-900/55 uppercase tracking-wider">Short-Term</span>
-              <p className="text-[11px] text-stone-900/70 mt-0.5 leading-relaxed">{ex.shortTermBenefit}</p>
+              <span className="text-[9px] text-stone-600 uppercase tracking-wider">Short-Term</span>
+              <p className="text-[11px] text-stone-700 mt-0.5 leading-relaxed">{ex.shortTermBenefit}</p>
             </div>
             <div>
-              <span className="text-[9px] text-stone-900/55 uppercase tracking-wider">Long-Term</span>
-              <p className="text-[11px] text-stone-900/70 mt-0.5 leading-relaxed">{ex.longTermBenefit}</p>
+              <span className="text-[9px] text-stone-600 uppercase tracking-wider">Long-Term</span>
+              <p className="text-[11px] text-stone-700 mt-0.5 leading-relaxed">{ex.longTermBenefit}</p>
             </div>
           </div>
         </div>
 
         {/* Performance Drivers */}
         <div>
-          <span className="text-[10px] text-stone-900/55 uppercase tracking-wider">Performance Drivers</span>
+          <span className="text-[10px] text-stone-600 uppercase tracking-wider">Performance Drivers</span>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {ex.linkedDrivers.map(d => (
-              <span key={d} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-900/5 text-[11px] text-stone-900/70 border border-stone-900/10">
+              <span key={d} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-900/5 text-[11px] text-stone-700 border border-stone-200">
                 {d}
               </span>
             ))}
@@ -91,7 +91,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
 
         {/* Purpose Tags */}
         <div>
-          <span className="text-[10px] text-stone-900/55 uppercase tracking-wider">Purpose Tags</span>
+          <span className="text-[10px] text-stone-600 uppercase tracking-wider">Purpose Tags</span>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {ex.purposeTags.map(t => (
               <span key={t} className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-[11px] text-emerald-400/70 border border-emerald-500/10">
@@ -103,10 +103,10 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
 
         {/* Linked Outcomes */}
         <div>
-          <span className="text-[10px] text-stone-900/55 uppercase tracking-wider">Linked Outcomes</span>
+          <span className="text-[10px] text-stone-600 uppercase tracking-wider">Linked Outcomes</span>
           <div className="space-y-1 mt-2">
             {ex.linkedOutcomes.map(o => (
-              <div key={o} className="flex items-center gap-2 text-xs text-stone-900/65">
+              <div key={o} className="flex items-center gap-2 text-xs text-stone-700">
                 <span className="w-1 h-1 rounded-full bg-blue-400/60" />
                 {o}
               </div>
@@ -116,19 +116,19 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
 
         {/* Default Metrics */}
         <div>
-          <span className="text-[10px] text-stone-900/55 uppercase tracking-wider">Tracking Metrics</span>
+          <span className="text-[10px] text-stone-600 uppercase tracking-wider">Tracking Metrics</span>
           <div className="grid grid-cols-2 gap-2 mt-2">
             {ex.defaultMetrics.map(m => (
-              <div key={m.key} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-900/[0.04] border border-stone-900/10">
-                <span className="text-xs text-stone-900/75">{m.label}</span>
-                {m.unit && <span className="text-[10px] text-stone-900/70 ml-auto">{m.unit}</span>}
+              <div key={m.key} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-transparent border border-stone-200">
+                <span className="text-xs text-stone-800">{m.label}</span>
+                {m.unit && <span className="text-[10px] text-stone-700 ml-auto">{m.unit}</span>}
                 {m.required && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60" />}
               </div>
             ))}
             {ex.optionalMetrics.map(m => (
-              <div key={m.key} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-900/[0.03] border border-stone-900/[0.08]">
-                <span className="text-xs text-stone-900/65">{m.label}</span>
-                {m.unit && <span className="text-[10px] text-stone-900/45 ml-auto">{m.unit}</span>}
+              <div key={m.key} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-transparent border border-stone-200/70">
+                <span className="text-xs text-stone-700">{m.label}</span>
+                {m.unit && <span className="text-[10px] text-stone-600 ml-auto">{m.unit}</span>}
               </div>
             ))}
           </div>
@@ -137,7 +137,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
         {/* Connected Goals */}
         {linked.length > 0 && (
           <div>
-            <span className="text-[10px] text-stone-900/55 uppercase tracking-wider">Connected to Your Goals</span>
+            <span className="text-[10px] text-stone-600 uppercase tracking-wider">Connected to Your Goals</span>
             <div className="space-y-1.5 mt-2">
               {linked.map(g => (
                 <div key={g.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
@@ -183,13 +183,13 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         {onBack && (
-          <button onClick={onBack} className="w-9 h-9 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-900/65 hover:text-stone-900/75">
+          <button onClick={onBack} className="w-9 h-9 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-700 hover:text-stone-800">
             <ArrowLeft className="w-4 h-4" />
           </button>
         )}
         <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-stone-900">Exercise Library</h2>
-          <p className="text-xs text-stone-900/65">{EXERCISE_LIBRARY.length} exercises across {categories.length} categories</p>
+          <p className="text-xs text-stone-700">{EXERCISE_LIBRARY.length} exercises across {categories.length} categories</p>
         </div>
         <button
           onClick={() => setShowWizard(true)}
@@ -202,16 +202,16 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/55" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-600" />
         <input
           type="text"
           placeholder="Search exercises, categories, purposes…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full bg-stone-900/[0.05] border border-stone-900/10 rounded-xl pl-10 pr-4 py-3 text-sm text-stone-900 placeholder:text-stone-900/55 focus:outline-none focus:border-emerald-500/30"
+          className="w-full bg-transparent border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30"
         />
         {search && (
-          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-900/55">
+          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-600">
             <X className="w-4 h-4" />
           </button>
         )}
@@ -224,7 +224,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
           className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
             activeCategory === 'all'
               ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-              : 'bg-stone-900/5 text-stone-900/65 border border-stone-900/10'
+              : 'bg-stone-900/5 text-stone-700 border border-stone-200'
           }`}
         >
           All ({EXERCISE_LIBRARY.length})
@@ -239,7 +239,7 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
               className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
                 activeCategory === key
                   ? `${cfg.bg} ${cfg.color} border ${cfg.border}`
-                  : 'bg-stone-900/5 text-stone-900/65 border border-stone-900/10'
+                  : 'bg-stone-900/5 text-stone-700 border border-stone-200'
               }`}
             >
               {cfg.icon} {cfg.label} ({count})
@@ -273,16 +273,16 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className={`text-[10px] ${cat.color}`}>{cat.label}</span>
-                  <span className="text-[10px] text-stone-900/45">•</span>
-                  <span className="text-[10px] text-stone-900/55">{ex.subcategory}</span>
+                  <span className="text-[10px] text-stone-600">•</span>
+                  <span className="text-[10px] text-stone-600">{ex.subcategory}</span>
                 </div>
                 <div className="flex flex-wrap gap-1 mt-1.5">
                   {ex.linkedDrivers.slice(0, 3).map(d => (
-                    <span key={d} className="text-[9px] px-1.5 py-0.5 rounded bg-stone-900/5 text-stone-900/75">{d}</span>
+                    <span key={d} className="text-[9px] px-1.5 py-0.5 rounded bg-stone-900/5 text-stone-800">{d}</span>
                   ))}
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-stone-900/45 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-stone-600 flex-shrink-0" />
             </button>
           );
         })}
@@ -290,8 +290,8 @@ const ExerciseLibraryPage = ({ onSelectExercise, onBack }: ExerciseLibraryPagePr
 
       {filtered.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-sm text-stone-900/55">No exercises found</p>
-          <p className="text-xs text-stone-900/45 mt-1">Try a different search or category</p>
+          <p className="text-sm text-stone-600">No exercises found</p>
+          <p className="text-xs text-stone-600 mt-1">Try a different search or category</p>
         </div>
       )}
     </div>

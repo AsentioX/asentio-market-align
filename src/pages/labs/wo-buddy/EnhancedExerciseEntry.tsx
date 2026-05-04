@@ -100,7 +100,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
         </div>
         <div className="flex-1">
           <h3 className="text-base font-bold text-stone-900">{exercise.name}</h3>
-          <p className="text-[11px] text-stone-900/65">{exercise.subcategory} • {exercise.entryType === 'sets' ? `${sets.length} sets` : exercise.entryType}</p>
+          <p className="text-[11px] text-stone-700">{exercise.subcategory} • {exercise.entryType === 'sets' ? `${sets.length} sets` : exercise.entryType}</p>
         </div>
       </div>
 
@@ -111,14 +111,14 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       >
         <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
         <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-400/80 flex-1">Why This Matters</span>
-        {showWhy ? <ChevronUp className="w-3 h-3 text-stone-900/45" /> : <ChevronDown className="w-3 h-3 text-stone-900/45" />}
+        {showWhy ? <ChevronUp className="w-3 h-3 text-stone-600" /> : <ChevronDown className="w-3 h-3 text-stone-600" />}
       </button>
       {showWhy && (
         <div className="px-3 pb-1 space-y-2">
-          <p className="text-xs text-stone-900/70 leading-relaxed">{exercise.whyItMatters}</p>
+          <p className="text-xs text-stone-700 leading-relaxed">{exercise.whyItMatters}</p>
           <div className="flex flex-wrap gap-1">
             {exercise.linkedDrivers.map(d => (
-              <span key={d} className="text-[9px] px-2 py-0.5 rounded-md bg-stone-900/5 text-stone-900/75 border border-stone-900/10">{d}</span>
+              <span key={d} className="text-[9px] px-2 py-0.5 rounded-md bg-stone-900/5 text-stone-800 border border-stone-200">{d}</span>
             ))}
           </div>
         </div>
@@ -128,7 +128,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       {exercise.entryType === 'sets' && (
         <div className="space-y-2">
           {/* Column headers */}
-          <div className="flex items-center gap-2 px-2 text-[9px] text-stone-900/55 uppercase tracking-wider">
+          <div className="flex items-center gap-2 px-2 text-[9px] text-stone-600 uppercase tracking-wider">
             <span className="w-8 text-center">Set</span>
             {exercise.defaultMetrics.filter(m => m.key !== 'sets').map(m => (
               <span key={m.key} className="flex-1 text-center">{m.label}{m.unit ? ` (${m.unit})` : ''}</span>
@@ -137,8 +137,8 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
           </div>
 
           {sets.map((set, idx) => (
-            <div key={idx} className="flex items-center gap-2 bg-stone-900/[0.04] rounded-xl border border-stone-900/10 p-2">
-              <span className="w-8 text-center text-xs font-bold text-stone-900/65">{set.setNumber}</span>
+            <div key={idx} className="flex items-center gap-2 bg-transparent rounded-xl border border-stone-200 p-2">
+              <span className="w-8 text-center text-xs font-bold text-stone-700">{set.setNumber}</span>
               {exercise.defaultMetrics.filter(m => m.key !== 'sets').map(m => (
                 <div key={m.key} className="flex-1">
                   <input
@@ -146,17 +146,17 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
                     value={set[m.key] as number || ''}
                     onChange={e => updateSet(idx, m.key, Number(e.target.value))}
                     placeholder={m.label}
-                    className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </div>
               ))}
-              <button onClick={() => removeSet(idx)} className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-900/45 hover:text-red-400 transition-colors">
+              <button onClick={() => removeSet(idx)} className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-600 hover:text-red-400 transition-colors">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           ))}
 
-          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-900/10 text-xs text-stone-900/55 hover:text-stone-900/70 hover:border-stone-900/15 transition-colors">
+          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-200 text-xs text-stone-600 hover:text-stone-700 hover:border-stone-900/15 transition-colors">
             <Plus className="w-3.5 h-3.5" /> Add Set
           </button>
         </div>
@@ -165,7 +165,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       {/* ── INTERVALS ENTRY ── */}
       {exercise.entryType === 'intervals' && (
         <div className="space-y-2">
-          <div className="flex items-center gap-2 px-2 text-[9px] text-stone-900/55 uppercase tracking-wider">
+          <div className="flex items-center gap-2 px-2 text-[9px] text-stone-600 uppercase tracking-wider">
             <span className="w-8 text-center">#</span>
             {exercise.defaultMetrics.filter(m => m.key !== 'total_sets').map(m => (
               <span key={m.key} className="flex-1 text-center">{m.label}</span>
@@ -174,8 +174,8 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
           </div>
 
           {sets.map((set, idx) => (
-            <div key={idx} className="flex items-center gap-2 bg-stone-900/[0.04] rounded-xl border border-stone-900/10 p-2">
-              <span className="w-8 text-center text-xs font-bold text-stone-900/65">{set.setNumber}</span>
+            <div key={idx} className="flex items-center gap-2 bg-transparent rounded-xl border border-stone-200 p-2">
+              <span className="w-8 text-center text-xs font-bold text-stone-700">{set.setNumber}</span>
               {exercise.defaultMetrics.filter(m => m.key !== 'total_sets').map(m => (
                 <div key={m.key} className="flex-1">
                   <input
@@ -183,17 +183,17 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
                     value={set[m.key.replace('interval_', '').replace('rest_time', 'rest').replace('rest_intervals', 'rest')] as number || ''}
                     onChange={e => updateSet(idx, m.key.replace('interval_', '').replace('rest_time', 'rest').replace('rest_intervals', 'rest'), Number(e.target.value))}
                     placeholder={m.unit || ''}
-                    className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-2 py-2 text-center text-sm font-semibold text-stone-900 focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </div>
               ))}
-              <button onClick={() => removeSet(idx)} className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-900/45 hover:text-red-400 transition-colors">
+              <button onClick={() => removeSet(idx)} className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-600 hover:text-red-400 transition-colors">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           ))}
 
-          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-900/10 text-xs text-stone-900/55 hover:text-stone-900/70 transition-colors">
+          <button onClick={addSet} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-stone-200 text-xs text-stone-600 hover:text-stone-700 transition-colors">
             <Plus className="w-3.5 h-3.5" /> Add Interval
           </button>
         </div>
@@ -203,14 +203,14 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       {(exercise.entryType === 'simple' || exercise.entryType === 'duration') && (
         <div className="grid grid-cols-2 gap-2">
           {exercise.defaultMetrics.map(m => (
-            <div key={m.key} className="bg-stone-900/[0.04] rounded-xl border border-stone-900/10 p-3">
-              <label className="text-[9px] text-stone-900/55 uppercase tracking-wider block mb-1.5">{m.label}{m.unit ? ` (${m.unit})` : ''}</label>
+            <div key={m.key} className="bg-transparent rounded-xl border border-stone-200 p-3">
+              <label className="text-[9px] text-stone-600 uppercase tracking-wider block mb-1.5">{m.label}{m.unit ? ` (${m.unit})` : ''}</label>
               <input
                 type="number"
                 value={simpleValues[m.key] || ''}
                 onChange={e => setSimpleValues(prev => ({ ...prev, [m.key]: Number(e.target.value) }))}
                 placeholder="0"
-                className="w-full bg-stone-900/5 border border-stone-900/10 rounded-lg px-3 py-2.5 text-lg font-bold text-stone-900 text-center focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-full bg-stone-900/5 border border-stone-200 rounded-lg px-3 py-2.5 text-lg font-bold text-stone-900 text-center focus:outline-none focus:border-emerald-500/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
             </div>
           ))}
@@ -218,9 +218,9 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       )}
 
       {/* RPE slider */}
-      <div className="bg-stone-900/[0.04] rounded-xl border border-stone-900/10 p-3.5">
+      <div className="bg-transparent rounded-xl border border-stone-200 p-3.5">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] text-stone-900/55 uppercase tracking-wider">Perceived Effort (RPE)</span>
+          <span className="text-[10px] text-stone-600 uppercase tracking-wider">Perceived Effort (RPE)</span>
           <span className={`text-sm font-bold ${rpeInfo.color}`}>{rpe}/10</span>
         </div>
         <input
@@ -241,7 +241,7 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
       {/* Notes toggle */}
       <button
         onClick={() => setShowNotes(!showNotes)}
-        className="flex items-center gap-2 text-xs text-stone-900/55 hover:text-stone-900/70 transition-colors"
+        className="flex items-center gap-2 text-xs text-stone-600 hover:text-stone-700 transition-colors"
       >
         <MessageSquare className="w-3.5 h-3.5" />
         {showNotes ? 'Hide Notes' : 'Add Notes'}
@@ -252,13 +252,13 @@ const EnhancedExerciseEntry = ({ exercise, onSave, onCancel }: EnhancedExerciseE
           onChange={e => setNotes(e.target.value)}
           placeholder="How did this feel? Any observations…"
           rows={3}
-          className="w-full bg-stone-900/[0.04] border border-stone-900/10 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-900/45 focus:outline-none focus:border-emerald-500/30 resize-none"
+          className="w-full bg-transparent border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/30 resize-none"
         />
       )}
 
       {/* Action buttons */}
       <div className="flex gap-2">
-        <button onClick={onCancel} className="flex-1 py-3 rounded-xl bg-stone-900/5 text-stone-900/70 text-sm font-medium active:bg-stone-900/10 transition-colors">
+        <button onClick={onCancel} className="flex-1 py-3 rounded-xl bg-stone-900/5 text-stone-700 text-sm font-medium active:bg-stone-900/10 transition-colors">
           Cancel
         </button>
         <button onClick={handleSave} className="flex-1 py-3 rounded-xl bg-emerald-500 text-stone-900 text-sm font-semibold active:bg-emerald-600 transition-colors flex items-center justify-center gap-1.5">

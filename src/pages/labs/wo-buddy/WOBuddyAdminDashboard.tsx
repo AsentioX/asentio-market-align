@@ -79,8 +79,8 @@ const WOBuddyAdminDashboard = () => {
     return (
       <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex items-center justify-center">
         <div className="text-center">
-          <Shield className="w-12 h-12 text-stone-900/45 mx-auto mb-4" />
-          <p className="text-stone-900/65">You don't have admin access.</p>
+          <Shield className="w-12 h-12 text-stone-600 mx-auto mb-4" />
+          <p className="text-stone-700">You don't have admin access.</p>
           <Link to="/labs/wo-buddy" className="text-emerald-400 text-sm mt-2 inline-block hover:underline">
             Back to W.O.Buddy
           </Link>
@@ -105,14 +105,14 @@ const WOBuddyAdminDashboard = () => {
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-900/10">
+      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link to="/labs/wo-buddy" className="flex items-center gap-2 text-stone-900/75 hover:text-stone-900 transition-colors">
+          <Link to="/labs/wo-buddy" className="flex items-center gap-2 text-stone-800 hover:text-stone-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-xs">Back to App</span>
           </Link>
           <h1 className="text-base font-bold tracking-tight">
-            W.O.<span className="text-emerald-400">Buddy</span> <span className="text-stone-900/65 font-normal">Admin</span>
+            W.O.<span className="text-emerald-400">Buddy</span> <span className="text-stone-700 font-normal">Admin</span>
           </h1>
           <div className="w-20" />
         </div>
@@ -138,7 +138,7 @@ const WOBuddyAdminDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-stone-900/[0.04] rounded-xl p-1 border border-stone-900/10">
+        <div className="flex gap-1 mb-6 bg-transparent rounded-xl p-1 border border-stone-200">
           {([
             { id: 'users' as const, label: 'Users', icon: <Users className="w-4 h-4" /> },
             { id: 'analytics' as const, label: 'Analytics', icon: <BarChart3 className="w-4 h-4" /> },
@@ -148,7 +148,7 @@ const WOBuddyAdminDashboard = () => {
               key={t.id}
               onClick={() => setTab(t.id)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                tab === t.id ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20' : 'text-stone-900/65 hover:text-stone-900/75'
+                tab === t.id ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20' : 'text-stone-700 hover:text-stone-800'
               }`}
             >
               {t.icon}
@@ -162,13 +162,13 @@ const WOBuddyAdminDashboard = () => {
           <div className="space-y-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-900/55" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-600" />
               <input
                 type="text"
                 placeholder="Search users..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 rounded-xl bg-stone-900/[0.06] border border-stone-900/10 text-sm placeholder:text-stone-900/55 focus:outline-none focus:border-emerald-500/50"
+                className="w-full h-10 pl-10 pr-4 rounded-xl bg-transparent border border-stone-200 text-sm placeholder:text-stone-600 focus:outline-none focus:border-emerald-500/50"
               />
             </div>
 
@@ -179,7 +179,7 @@ const WOBuddyAdminDashboard = () => {
             ) : (
               <div className="space-y-2">
                 {filteredUsers.map((u) => (
-                  <div key={u.id} className="flex items-center gap-3 bg-stone-900/[0.04] rounded-xl p-3 border border-stone-900/10 hover:bg-stone-900/[0.05] transition-colors">
+                  <div key={u.id} className="flex items-center gap-3 bg-transparent rounded-xl p-3 border border-stone-200 hover:bg-transparent transition-colors">
                     {/* Avatar */}
                     {u.avatar_url ? (
                       <img src={u.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" />
@@ -200,16 +200,16 @@ const WOBuddyAdminDashboard = () => {
                           <span className="text-[9px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded-full border border-red-500/20">Inactive</span>
                         )}
                       </div>
-                      <p className="text-xs text-stone-900/55 truncate">{u.email}</p>
+                      <p className="text-xs text-stone-600 truncate">{u.email}</p>
                     </div>
 
                     {/* Meta */}
                     <div className="text-right hidden sm:block">
-                      <p className="text-[10px] text-stone-900/55">
+                      <p className="text-[10px] text-stone-600">
                         Joined {format(new Date(u.created_at), 'MMM d, yyyy')}
                       </p>
                       {u.last_active_at && (
-                        <p className="text-[10px] text-stone-900/45">
+                        <p className="text-[10px] text-stone-600">
                           Active {format(new Date(u.last_active_at), 'MMM d')}
                         </p>
                       )}
@@ -219,7 +219,7 @@ const WOBuddyAdminDashboard = () => {
                     <div className="relative">
                       <button
                         onClick={() => setOpenMenu(openMenu === u.id ? null : u.id)}
-                        className="p-2 rounded-lg hover:bg-stone-900/[0.06] text-stone-900/55 hover:text-stone-900/75 transition-colors"
+                        className="p-2 rounded-lg hover:bg-transparent text-stone-600 hover:text-stone-800 transition-colors"
                       >
                         <MoreVertical className="w-4 h-4" />
                       </button>
@@ -227,10 +227,10 @@ const WOBuddyAdminDashboard = () => {
                       {openMenu === u.id && (
                         <>
                           <div className="fixed inset-0 z-40" onClick={() => setOpenMenu(null)} />
-                          <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-white rounded-xl border border-stone-900/10 shadow-xl py-1">
+                          <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-white rounded-xl border border-stone-200 shadow-xl py-1">
                             <button
                               onClick={() => toggleUserActive(u.id, u.is_active)}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-900/75 hover:bg-stone-900/[0.06] hover:text-stone-900 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-800 hover:bg-transparent hover:text-stone-900 transition-colors"
                             >
                               {u.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                               {u.is_active ? 'Deactivate User' : 'Reactivate User'}
@@ -238,7 +238,7 @@ const WOBuddyAdminDashboard = () => {
                             {u.user_id !== wobuddyUser?.user_id && (
                               <button
                                 onClick={() => toggleUserAdmin(u.id, u.is_admin)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-900/75 hover:bg-stone-900/[0.06] hover:text-stone-900 transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-800 hover:bg-transparent hover:text-stone-900 transition-colors"
                               >
                                 <Shield className="w-4 h-4" />
                                 {u.is_admin ? 'Remove Admin' : 'Make Admin'}
@@ -252,7 +252,7 @@ const WOBuddyAdminDashboard = () => {
                 ))}
 
                 {filteredUsers.length === 0 && (
-                  <div className="text-center py-12 text-stone-900/55 text-sm">
+                  <div className="text-center py-12 text-stone-600 text-sm">
                     {search ? 'No users match your search' : 'No users yet'}
                   </div>
                 )}
@@ -264,10 +264,10 @@ const WOBuddyAdminDashboard = () => {
         {/* Analytics Tab */}
         {tab === 'analytics' && (
           <div className="space-y-4">
-            <div className="bg-stone-900/[0.04] rounded-xl p-6 border border-stone-900/10 text-center">
-              <BarChart3 className="w-10 h-10 text-stone-900/45 mx-auto mb-3" />
-              <p className="text-sm text-stone-900/65 mb-1">Analytics Dashboard</p>
-              <p className="text-xs text-stone-900/45">
+            <div className="bg-transparent rounded-xl p-6 border border-stone-200 text-center">
+              <BarChart3 className="w-10 h-10 text-stone-600 mx-auto mb-3" />
+              <p className="text-sm text-stone-700 mb-1">Analytics Dashboard</p>
+              <p className="text-xs text-stone-600">
                 Workout completions, active users over time, and engagement metrics will appear here as users begin training.
               </p>
             </div>
@@ -294,23 +294,23 @@ const WOBuddyAdminDashboard = () => {
         {/* Settings Tab */}
         {tab === 'settings' && (
           <div className="space-y-4">
-            <div className="bg-stone-900/[0.04] rounded-xl p-6 border border-stone-900/10">
+            <div className="bg-transparent rounded-xl p-6 border border-stone-200">
               <h3 className="text-sm font-medium mb-4">App Settings</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm">Allow New Signups</p>
-                    <p className="text-xs text-stone-900/55">Enable or disable new user registrations</p>
+                    <p className="text-xs text-stone-600">Enable or disable new user registrations</p>
                   </div>
                   <div className="w-10 h-6 rounded-full bg-emerald-500/30 flex items-center p-0.5 cursor-pointer">
                     <div className="w-5 h-5 rounded-full bg-emerald-400 ml-auto" />
                   </div>
                 </div>
-                <div className="h-px bg-stone-900/[0.06]" />
+                <div className="h-px bg-transparent" />
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm">Require Email Verification</p>
-                    <p className="text-xs text-stone-900/55">Users must verify email before accessing the app</p>
+                    <p className="text-xs text-stone-600">Users must verify email before accessing the app</p>
                   </div>
                   <div className="w-10 h-6 rounded-full bg-emerald-500/30 flex items-center p-0.5 cursor-pointer">
                     <div className="w-5 h-5 rounded-full bg-emerald-400 ml-auto" />
@@ -319,9 +319,9 @@ const WOBuddyAdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-stone-900/[0.04] rounded-xl p-6 border border-stone-900/10">
+            <div className="bg-transparent rounded-xl p-6 border border-stone-200">
               <h3 className="text-sm font-medium mb-2">Portability</h3>
-              <p className="text-xs text-stone-900/55 mb-4">
+              <p className="text-xs text-stone-600 mb-4">
                 This admin dashboard is designed to be portable. All WO.Buddy data lives in its own namespace (wobuddy_users, wobuddy_* tables)
                 and can be migrated independently from the main Asentio platform.
               </p>

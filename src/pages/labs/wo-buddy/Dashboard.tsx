@@ -205,7 +205,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
         <div className="relative z-10 px-6 py-5">
           {/* Top row: greeting */}
-          <p className="text-stone-900/75 text-xs uppercase tracking-[0.2em]">{greeting}</p>
+          <p className="text-stone-800 text-xs uppercase tracking-[0.2em]">{greeting}</p>
           <h2 className="text-2xl font-bold mt-0.5">{displayName}</h2>
 
           {/* Main weather row */}
@@ -217,10 +217,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
               <div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-light tracking-tight">{weather?.temp ?? '--'}</span>
-                  <span className="text-lg text-stone-900/75">°F</span>
+                  <span className="text-lg text-stone-800">°F</span>
                 </div>
                 {weather && (
-                  <p className="text-sm text-stone-900/70 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
+                  <p className="text-sm text-stone-700 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
                 )}
               </div>
             </div>
@@ -229,8 +229,8 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <div className="text-right">
               {weather && (
                 <>
-                  <p className="text-base font-medium text-stone-900/90">{getWeatherDescription(weather.code)}</p>
-                  <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-stone-900/70">
+                  <p className="text-base font-medium text-stone-900">{getWeatherDescription(weather.code)}</p>
+                  <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-stone-700">
                     <span className="flex items-center gap-1"><Droplets className="w-3 h-3" />{weather.humidity}%</span>
                     <span className="flex items-center gap-1"><Wind className="w-3 h-3" />{Math.round(weather.windSpeed)} mph</span>
                   </div>
@@ -240,9 +240,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           </div>
 
           {/* Bottom row: location + sunset/sunrise */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-900/10">
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-200">
             {weather && (
-              <div className="flex items-center gap-1.5 text-xs text-stone-900/70">
+              <div className="flex items-center gap-1.5 text-xs text-stone-700">
                 <MapPin className="w-3 h-3" />
                 <span>{weather.city}</span>
               </div>
@@ -254,10 +254,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 ) : (
                   <Sunrise className="w-3.5 h-3.5 text-amber-300" />
                 )}
-                <span className="text-xs text-stone-900/70">
+                <span className="text-xs text-stone-700">
                   {sunLabel === 'sunset' ? 'Sunset' : 'Sunrise'} in
                 </span>
-                <span className="text-xs text-stone-900/80 font-mono font-medium">{sunCountdown}</span>
+                <span className="text-xs text-stone-800 font-mono font-medium">{sunCountdown}</span>
               </div>
             )}
           </div>
@@ -286,25 +286,25 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                 onClick={() => setFunFactDismissed(true)}
                 className="absolute top-3 right-3 w-6 h-6 rounded-full bg-stone-900/10 hover:bg-stone-900/15 flex items-center justify-center transition-colors z-20"
               >
-                <X className="w-3.5 h-3.5 text-stone-900/70" />
+                <X className="w-3.5 h-3.5 text-stone-700" />
               </button>
               <div className="flex items-start gap-4 pr-6">
                 <div className="text-5xl shrink-0 animate-[pulse_3s_ease-in-out_infinite]">{milestone.emoji}</div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="text-base">{cat.icon}</span>
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-900/65">{cat.label} Milestone</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-stone-700">{cat.label} Milestone</span>
                   </div>
                   <h4 className={`text-lg font-bold ${milestone.accent}`}>{milestone.title}</h4>
-                  <p className="text-sm text-stone-900/70 mt-0.5 leading-snug">{milestone.desc}</p>
-                  <p className="text-[10px] text-stone-900/55 mt-2">{typeof value === 'number' && value >= 1000 ? formatNum(value) : value.toFixed(1)} {cat.unit} total</p>
+                  <p className="text-sm text-stone-700 mt-0.5 leading-snug">{milestone.desc}</p>
+                  <p className="text-[10px] text-stone-600 mt-2">{typeof value === 'number' && value >= 1000 ? formatNum(value) : value.toFixed(1)} {cat.unit} total</p>
                 </div>
               </div>
               {next && (
-                <div className="mt-4 pt-3 border-t border-stone-900/10">
+                <div className="mt-4 pt-3 border-t border-stone-200">
                   <div className="flex items-center justify-between text-[10px] mb-1.5">
-                    <span className="text-stone-900/65">Next: {next.emoji} {next.title}</span>
-                    <span className="text-stone-900/55">{formatNum(Math.round(next.threshold - value))} {cat.unit} to go</span>
+                    <span className="text-stone-700">Next: {next.emoji} {next.title}</span>
+                    <span className="text-stone-600">{formatNum(Math.round(next.threshold - value))} {cat.unit} to go</span>
                   </div>
                   <div className="h-1.5 bg-stone-900/5 rounded-full overflow-hidden">
                     <div
@@ -332,18 +332,18 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       {/* Coaching Insights */}
       {goals.length > 0 && (
-        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
+        <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Coaching</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-stone-700">Coaching</span>
             </div>
             <button onClick={() => onNavigate('goals')} className="text-xs text-emerald-400 flex items-center gap-0.5 font-medium">
               Goals <ChevronRight className="w-3 h-3" />
             </button>
           </div>
           {insights.slice(0, 2).map((insight, i) => (
-            <p key={i} className="text-[12px] text-stone-900/75 leading-relaxed">{insight}</p>
+            <p key={i} className="text-[12px] text-stone-800 leading-relaxed">{insight}</p>
           ))}
         </div>
       )}
@@ -359,17 +359,17 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             {goals.filter(g => g.status === 'active').map(g => {
               const pct = g.target_value > 0 ? Math.min(100, Math.round(((g.current_value ?? 0) / g.target_value) * 100)) : 0;
               return (
-                <div key={g.id} className="bg-stone-900/[0.04] rounded-xl border border-stone-900/10 p-3">
+                <div key={g.id} className="bg-transparent rounded-xl border border-stone-200 p-3">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-medium text-stone-900/70 truncate">{g.name}</span>
+                    <span className="text-xs font-medium text-stone-700 truncate">{g.name}</span>
                     <span className="text-xs font-bold text-emerald-400">{pct}%</span>
                   </div>
                   <div className="h-1.5 bg-stone-900/5 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
                   <div className="flex justify-between mt-1">
-                    <span className="text-[9px] text-stone-900/70">{g.current_value ?? 0} / {g.target_value} {g.metric}</span>
-                    {g.deadline && <span className="text-[9px] text-stone-900/45">Due {new Date(g.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                    <span className="text-[9px] text-stone-700">{g.current_value ?? 0} / {g.target_value} {g.metric}</span>
+                    {g.deadline && <span className="text-[9px] text-stone-600">Due {new Date(g.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                   </div>
                 </div>
               );
@@ -379,7 +379,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       )}
 
       {/* This Week + Daily Goal combined */}
-      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
+      <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
         <div className="flex items-center gap-2 mb-3">
           <Calendar className="w-4 h-4 text-emerald-400" />
           <span className="text-sm font-medium">This Week</span>
@@ -407,13 +407,13 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                           ? isToday
                             ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]'
                             : 'bg-emerald-500/40'
-                          : 'bg-stone-900/[0.06]'
+                          : 'bg-transparent'
                       }`}
                       style={{ height: hasData ? barH : 8 }}
                     />
                   </div>
-                  <span className={`text-[9px] ${isToday ? 'text-stone-900/70 font-medium' : 'text-stone-900/55'}`}>{day}</span>
-                  <span className={`text-[9px] ${hasData ? 'text-emerald-400/70' : 'text-stone-900/15'}`}>
+                  <span className={`text-[9px] ${isToday ? 'text-stone-700 font-medium' : 'text-stone-600'}`}>{day}</span>
+                  <span className={`text-[9px] ${hasData ? 'text-emerald-400/70' : 'text-stone-400'}`}>
                     {hasData ? `${mins}m` : ''}
                   </span>
                 </div>
@@ -424,9 +424,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Target className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-stone-900/70">Daily Goal</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-stone-700">Daily Goal</span>
           </div>
-          <span className="text-xs text-stone-900/55">{todayScore} / {profile.dailyGoal} pts</span>
+          <span className="text-xs text-stone-600">{todayScore} / {profile.dailyGoal} pts</span>
         </div>
         <div className="h-3 bg-stone-900/5 rounded-full overflow-hidden">
           <div
@@ -441,7 +441,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       <div>
         {/* Period tabs — minimal underline style */}
-        <div className="flex items-center gap-6 border-b border-stone-900/10 mb-6">
+        <div className="flex items-center gap-6 border-b border-stone-200 mb-6">
           {(['week', 'month', 'all'] as Period[]).map(p => (
             <button
               key={p}
@@ -486,7 +486,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             {exerciseStats.length === 0 ? (
               <p className="text-xs text-stone-500 py-6">No exercises logged yet. Start a workout to see your totals here.</p>
             ) : (
-              <div className="divide-y divide-stone-900/10">
+              <div className="divide-y divide-stone-200">
                 {exerciseStats.map((ex) => {
                   const stat = period === 'all' ? ex.allTime : period === 'month' ? ex.month : ex.week;
                   return (

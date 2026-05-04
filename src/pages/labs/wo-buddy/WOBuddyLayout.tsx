@@ -33,7 +33,7 @@ const WOBuddyApp = () => {
       <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-          <p className="text-xs text-stone-900/65">Loading...</p>
+          <p className="text-xs text-stone-700">Loading...</p>
         </div>
       </div>
     );
@@ -56,12 +56,12 @@ const WOBuddyApp = () => {
           <ProfilePage />
           <WearableSettings />
           {/* Account section */}
-          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-900/10">
+          <div className="bg-gradient-to-br from-stone-900/[0.05] to-stone-900/[0.03] rounded-2xl p-4 border border-stone-200">
             <h3 className="text-sm font-medium mb-3">Account</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-stone-900/65">Signed in as</span>
-                <span className="text-stone-900/75">{user.email}</span>
+                <span className="text-stone-700">Signed in as</span>
+                <span className="text-stone-800">{user.email}</span>
               </div>
               {isAdmin && (
                 <Link
@@ -87,9 +87,9 @@ const WOBuddyApp = () => {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col">
-      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-900/10">
+      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200">
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
-          <Link to="/labs" className="flex items-center gap-2 text-stone-900/75 hover:text-stone-900 transition-colors">
+          <Link to="/labs" className="flex items-center gap-2 text-stone-800 hover:text-stone-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-xs">Labs</span>
           </Link>
@@ -99,14 +99,14 @@ const WOBuddyApp = () => {
             </h1>
             {weather && (
               <div className="flex items-center gap-1.5 -mt-0.5">
-                <MapPin className="w-2.5 h-2.5 text-stone-900/55" />
-                <span className="text-[9px] text-stone-900/65">{weather.city}</span>
+                <MapPin className="w-2.5 h-2.5 text-stone-600" />
+                <span className="text-[9px] text-stone-700">{weather.city}</span>
                 <span className="text-[10px]">{getWeatherEmoji(weather.code, weather.isDay)}</span>
-                <span className="text-[9px] text-stone-900/70 font-medium">{weather.temp}°F</span>
+                <span className="text-[9px] text-stone-700 font-medium">{weather.temp}°F</span>
               </div>
             )}
           </div>
-          <button onClick={() => setActiveTab('settings')} className="w-8 h-8 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-900/65 hover:text-stone-900/75">
+          <button onClick={() => setActiveTab('settings')} className="w-8 h-8 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-700 hover:text-stone-800">
             <Settings className="w-4 h-4" />
           </button>
         </div>
@@ -116,7 +116,7 @@ const WOBuddyApp = () => {
         {renderPage()}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#ffffff]/95 backdrop-blur-xl border-t border-stone-900/10">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#ffffff]/95 backdrop-blur-xl border-t border-stone-200">
         <div className="max-w-lg mx-auto flex">
           {tabs.map((tab) => (
             <button
@@ -125,7 +125,7 @@ const WOBuddyApp = () => {
               className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-colors ${
                 activeTab === tab.id
                   ? 'text-emerald-400'
-                  : 'text-stone-900/65 hover:text-stone-900/75'
+                  : 'text-stone-700 hover:text-stone-800'
               }`}
             >
               {tab.icon}
