@@ -4510,6 +4510,17 @@ export type Database = {
       }
     }
     Functions: {
+      analytics_touch_session: {
+        Args: {
+          _converted?: boolean
+          _intent_level?: string
+          _intent_score?: number
+          _session_id: string
+          _visitor_id: string
+        }
+        Returns: undefined
+      }
+      is_gov_admin: { Args: { _user_id: string }; Returns: boolean }
       is_perkpath_admin: { Args: { _user_id: string }; Returns: boolean }
       is_wobuddy_admin: { Args: { _user_id: string }; Returns: boolean }
       pp_user_owns_membership: {
