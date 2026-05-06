@@ -49,6 +49,19 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // Authorization: caller must be a system admin or a governance member.
+    const [{ data: profile }, { data: govMember }] = await Promise.all([
+      admin.from('profiles').select('role').eq('id', user.id).maybeSingle(),
+      admin.from('gov_members').select('id').eq('user_id', user.id).maybeSingle(),
+    ]);
+    const isSysAdmin = profile?.role === 'admin';
+    const isGovMember = !!govMember;
+    if (!isSysAdmin && !isGovMember) {
+      return new Response(JSON.stringify({ error: 'Forbidden: governance access required' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Pull existing topics
     const { data: topicsData } = await admin
       .from('gov_policies')
