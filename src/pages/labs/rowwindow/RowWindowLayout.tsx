@@ -903,7 +903,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
         </div>
       )}
       <p className="mt-3 text-[11px] text-slate-500 leading-relaxed">
-        Compass &amp; GPS need device permission (iOS asks on tap). Heart rate uses Web Bluetooth and works on Chrome/Edge with most BLE chest straps and watches. When a sensor is unavailable, the instrument falls back to a simulated reading so the demo still works.
+        Compass &amp; GPS need device permission (iOS asks on tap). Heart rate uses Web Bluetooth and works on Chrome/Edge with most BLE chest straps and watches. For a Samsung Galaxy Watch, install the Samsung Health Monitor + "BLE HR" companion (or enable the watch&apos;s BLE heart-rate broadcast) so it advertises the standard heart-rate service, then tap <em>Connect Samsung watch</em> and pick it from the pairing dialog. When a sensor is unavailable, the instrument falls back to a simulated reading so the demo still works.
       </p>
     </section>
   );
