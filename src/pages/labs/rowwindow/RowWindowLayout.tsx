@@ -65,8 +65,27 @@ interface RowSession {
   hrSeries: { t: number; bpm: number }[];
 }
 
+const startOfToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+const isSameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
 const RowWindowLayout = () => {
-  const [now, setNow] = useState<number>(Date.now());
+  const [forecastDate, setForecastDate] = useState<Date>(() => startOfToday());
+  const isToday = isSameDay(forecastDate, new Date());
+  // When viewing today: `now` is real time. When viewing a future date: anchor to noon of that day.
+  const anchorMs = useMemo(() => {
+    if (isToday) return Date.now();
+    const d = new Date(forecastDate);
+    d.setHours(12, 0, 0, 0);
+    return d.getTime();
+  }, [forecastDate, isToday]);
+  const [now, setNow] = useState<number>(anchorMs);
+  useEffect(() => { setNow(anchorMs); }, [anchorMs]);
+
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
   const [tab, setTab] = useState<TabId>('pre');
@@ -77,8 +96,8 @@ const RowWindowLayout = () => {
   const { location } = locationState;
 
   // Live data state — seeded with mock so first paint is instant
-  const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(Date.now()));
-  const [wind, setWind] = useState<WindReading>(() => getMockWind(Date.now()));
+  const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(anchorMs));
+  const [wind, setWind] = useState<WindReading>(() => getMockWind(anchorMs));
   const [source, setSource] = useState<'noaa' | 'mock'>('mock');
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
