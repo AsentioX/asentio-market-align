@@ -294,7 +294,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
       setState(s => ({
         ...s,
         heartRateStatus: 'live',
-        heartRateDeviceName: device.name ?? 'Heart Rate Monitor',
+        heartRateDeviceName: device.name ?? opts?.defaultLabel ?? 'Heart Rate Monitor',
       }));
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
