@@ -184,26 +184,29 @@ const RowWindowLayout = () => {
     let cancelled = false;
     const load = async () => {
       setLoading(true);
-      const result = await fetchLiveConditions(Date.now(), ac.signal, {
+      const result = await fetchLiveConditions(anchorMs, ac.signal, {
         tideStationId: location.tideStationId,
         windStationId: location.windStationId,
       });
       if (cancelled) return;
       setSeries(result.series);
-      setWind(result.wind);
+      // Wind observations are only meaningful for "now" — keep live wind for today,
+      // fall back to mock for future dates.
+      setWind(isToday ? result.wind : getMockWind(anchorMs));
       setSource(result.source);
       setFetchError(result.error ?? null);
       setFetchedAt(Date.now());
       setLoading(false);
     };
     load();
-    const id = setInterval(load, LIVE_REFRESH_MS);
+    // Only auto-refresh when viewing today
+    const id = isToday ? setInterval(load, LIVE_REFRESH_MS) : null;
     return () => {
       cancelled = true;
       ac.abort();
-      clearInterval(id);
+      if (id) clearInterval(id);
     };
-  }, [location.tideStationId, location.windStationId]);
+  }, [location.tideStationId, location.windStationId, anchorMs, isToday]);
 
   // Push real sensor samples into history while session is active (no mock data).
   useEffect(() => {
