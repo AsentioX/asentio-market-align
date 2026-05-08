@@ -428,9 +428,59 @@ const RowWindowLayout = () => {
               )}
               {source === 'noaa' ? 'LIVE · NOAA' : 'MOCK'}
             </div>
-            <div className="text-right">
-              <div className="text-xl font-mono font-semibold text-slate-900 leading-none">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-1.5 rounded-md border text-left transition',
+                    isToday
+                      ? 'border-slate-300 bg-white hover:border-slate-400'
+                      : 'border-cyan-400 bg-cyan-50 hover:border-cyan-500',
+                  )}
+                  aria-label="Pick forecast date"
+                >
+                  <CalendarIcon className="w-4 h-4 text-cyan-700" />
+                  <div className="leading-tight">
+                    <div className="text-xs font-medium text-slate-900">
+                      {isToday ? 'Today' : forecastDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                    </div>
+                    <div className="text-[10px] text-slate-500 font-mono">
+                      {isToday
+                        ? new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : 'Forecast'}
+                    </div>
+                  </div>
+                  <ChevronDown className="w-3 h-3 text-slate-500" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="single"
+                  selected={forecastDate}
+                  onSelect={(d) => d && setForecastDate(d)}
+                  disabled={(d) => {
+                    const today = startOfToday();
+                    const max = new Date(today);
+                    max.setDate(max.getDate() + 30); // NOAA predictions ~30 days ahead
+                    return d < today || d > max;
+                  }}
+                  initialFocus
+                  className={cn('p-3 pointer-events-auto')}
+                />
+                {!isToday && (
+                  <div className="border-t border-slate-200 p-2">
+                    <button
+                      type="button"
+                      onClick={() => setForecastDate(startOfToday())}
+                      className="w-full text-xs text-cyan-700 hover:text-cyan-800 py-1 rounded hover:bg-slate-50 transition"
+                    >
+                      ← Back to today
+                    </button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </header>
