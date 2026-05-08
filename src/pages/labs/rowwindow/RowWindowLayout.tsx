@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import {
   Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw,
   Activity, Compass, Navigation, Play, Pause, Square, MapPin, Timer, Route, TrendingUp, Gauge, Heart, Flame,
-  Trash2, Download, ArrowLeftRight, ChevronDown,
+  Trash2, Download, ArrowLeftRight, ChevronDown, Calendar as CalendarIcon,
 } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, LineChart, Line } from 'recharts';
 import {
   VESSEL_PROFILES,
@@ -62,8 +65,27 @@ interface RowSession {
   hrSeries: { t: number; bpm: number }[];
 }
 
+const startOfToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+const isSameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
 const RowWindowLayout = () => {
-  const [now, setNow] = useState<number>(Date.now());
+  const [forecastDate, setForecastDate] = useState<Date>(() => startOfToday());
+  const isToday = isSameDay(forecastDate, new Date());
+  // When viewing today: `now` is real time. When viewing a future date: anchor to noon of that day.
+  const anchorMs = useMemo(() => {
+    if (isToday) return Date.now();
+    const d = new Date(forecastDate);
+    d.setHours(12, 0, 0, 0);
+    return d.getTime();
+  }, [forecastDate, isToday]);
+  const [now, setNow] = useState<number>(anchorMs);
+  useEffect(() => { setNow(anchorMs); }, [anchorMs]);
+
   const [vesselId, setVesselId] = useState<VesselProfile['id']>('single');
   const [duration, setDuration] = useState<number>(90);
   const [tab, setTab] = useState<TabId>('pre');
@@ -74,8 +96,8 @@ const RowWindowLayout = () => {
   const { location } = locationState;
 
   // Live data state — seeded with mock so first paint is instant
-  const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(Date.now()));
-  const [wind, setWind] = useState<WindReading>(() => getMockWind(Date.now()));
+  const [series, setSeries] = useState<TidePoint[]>(() => generateMockTideSeries(anchorMs));
+  const [wind, setWind] = useState<WindReading>(() => getMockWind(anchorMs));
   const [source, setSource] = useState<'noaa' | 'mock'>('mock');
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -148,12 +170,13 @@ const RowWindowLayout = () => {
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
-  // Tick every second when on water tab so timers/instruments feel live
+  // Tick every second when on water tab so timers/instruments feel live (today only)
   useEffect(() => {
+    if (!isToday) return; // freeze "now" on future dates
     const fastTab = tab === 'on' && sessionState === 'active';
     const id = setInterval(() => setNow(Date.now()), fastTab ? 1000 : 30_000);
     return () => clearInterval(id);
-  }, [tab, sessionState]);
+  }, [tab, sessionState, isToday]);
 
   // Live NOAA fetch — initial load + periodic refresh; refetch when station changes
   useEffect(() => {
@@ -161,26 +184,29 @@ const RowWindowLayout = () => {
     let cancelled = false;
     const load = async () => {
       setLoading(true);
-      const result = await fetchLiveConditions(Date.now(), ac.signal, {
+      const result = await fetchLiveConditions(anchorMs, ac.signal, {
         tideStationId: location.tideStationId,
         windStationId: location.windStationId,
       });
       if (cancelled) return;
       setSeries(result.series);
-      setWind(result.wind);
+      // Wind observations are only meaningful for "now" — keep live wind for today,
+      // fall back to mock for future dates.
+      setWind(isToday ? result.wind : getMockWind(anchorMs));
       setSource(result.source);
       setFetchError(result.error ?? null);
       setFetchedAt(Date.now());
       setLoading(false);
     };
     load();
-    const id = setInterval(load, LIVE_REFRESH_MS);
+    // Only auto-refresh when viewing today
+    const id = isToday ? setInterval(load, LIVE_REFRESH_MS) : null;
     return () => {
       cancelled = true;
       ac.abort();
-      clearInterval(id);
+      if (id) clearInterval(id);
     };
-  }, [location.tideStationId, location.windStationId]);
+  }, [location.tideStationId, location.windStationId, anchorMs, isToday]);
 
   // Push real sensor samples into history while session is active (no mock data).
   useEffect(() => {
@@ -402,9 +428,59 @@ const RowWindowLayout = () => {
               )}
               {source === 'noaa' ? 'LIVE · NOAA' : 'MOCK'}
             </div>
-            <div className="text-right">
-              <div className="text-xl font-mono font-semibold text-slate-900 leading-none">{new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-1.5 rounded-md border text-left transition',
+                    isToday
+                      ? 'border-slate-300 bg-white hover:border-slate-400'
+                      : 'border-cyan-400 bg-cyan-50 hover:border-cyan-500',
+                  )}
+                  aria-label="Pick forecast date"
+                >
+                  <CalendarIcon className="w-4 h-4 text-cyan-700" />
+                  <div className="leading-tight">
+                    <div className="text-xs font-medium text-slate-900">
+                      {isToday ? 'Today' : forecastDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                    </div>
+                    <div className="text-[10px] text-slate-500 font-mono">
+                      {isToday
+                        ? new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : 'Forecast'}
+                    </div>
+                  </div>
+                  <ChevronDown className="w-3 h-3 text-slate-500" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="single"
+                  selected={forecastDate}
+                  onSelect={(d) => d && setForecastDate(d)}
+                  disabled={(d) => {
+                    const today = startOfToday();
+                    const max = new Date(today);
+                    max.setDate(max.getDate() + 30); // NOAA predictions ~30 days ahead
+                    return d < today || d > max;
+                  }}
+                  initialFocus
+                  className={cn('p-3 pointer-events-auto')}
+                />
+                {!isToday && (
+                  <div className="border-t border-slate-200 p-2">
+                    <button
+                      type="button"
+                      onClick={() => setForecastDate(startOfToday())}
+                      className="w-full text-xs text-cyan-700 hover:text-cyan-800 py-1 rounded hover:bg-slate-50 transition"
+                    >
+                      ← Back to today
+                    </button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </header>
