@@ -875,10 +875,21 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           )}
           {showHrBtn && (
             <button
-              onClick={sensors.connectHeartRate}
+              onClick={() => sensors.connectHeartRate()}
               className="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 border border-rose-500/30 text-xs inline-flex items-center gap-1.5 transition"
             >
               <Heart className="w-3.5 h-3.5" /> Pair heart-rate monitor
+            </button>
+          )}
+          {showHrBtn && (
+            <button
+              onClick={() => sensors.connectHeartRate({
+                namePrefixes: ['Galaxy Watch', 'Galaxy Fit', 'Samsung'],
+                defaultLabel: 'Samsung Galaxy Watch',
+              })}
+              className="px-3 py-1.5 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 text-blue-700 border border-blue-500/30 text-xs inline-flex items-center gap-1.5 transition"
+            >
+              <Heart className="w-3.5 h-3.5" /> Connect Samsung watch
             </button>
           )}
           {sensors.heartRateStatus === 'live' && (
