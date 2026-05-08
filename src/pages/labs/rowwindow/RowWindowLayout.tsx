@@ -170,12 +170,13 @@ const RowWindowLayout = () => {
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
-  // Tick every second when on water tab so timers/instruments feel live
+  // Tick every second when on water tab so timers/instruments feel live (today only)
   useEffect(() => {
+    if (!isToday) return; // freeze "now" on future dates
     const fastTab = tab === 'on' && sessionState === 'active';
     const id = setInterval(() => setNow(Date.now()), fastTab ? 1000 : 30_000);
     return () => clearInterval(id);
-  }, [tab, sessionState]);
+  }, [tab, sessionState, isToday]);
 
   // Live NOAA fetch — initial load + periodic refresh; refetch when station changes
   useEffect(() => {
