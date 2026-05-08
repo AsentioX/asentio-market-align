@@ -252,7 +252,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   // -------------------------------------------------------------------------
   // Heart rate (Web Bluetooth)
   // -------------------------------------------------------------------------
-  const connectHeartRate = useCallback(async () => {
+  const connectHeartRate = useCallback(async (opts?: { namePrefixes?: string[]; defaultLabel?: string }) => {
     const bt = (navigator as unknown as { bluetooth?: Bluetooth }).bluetooth;
     if (!bt) {
       setState(s => ({ ...s, heartRateStatus: 'unavailable' }));
@@ -260,8 +260,11 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     }
     setState(s => ({ ...s, heartRateStatus: 'requesting' }));
     try {
+      const filters = opts?.namePrefixes?.length
+        ? opts.namePrefixes.map(namePrefix => ({ namePrefix }))
+        : [{ services: [HR_SERVICE] }];
       const device = await bt.requestDevice({
-        filters: [{ services: [HR_SERVICE] }],
+        filters,
         optionalServices: [HR_SERVICE],
       });
       hrDeviceRef.current = device;
