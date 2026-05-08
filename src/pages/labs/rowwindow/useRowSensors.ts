@@ -260,7 +260,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     }
     setState(s => ({ ...s, heartRateStatus: 'requesting' }));
     try {
-      const filters: BluetoothLEScanFilter[] = opts?.namePrefixes?.length
+      const filters: Array<{ namePrefix?: string; services?: BluetoothServiceUUID[] }> = opts?.namePrefixes?.length
         ? opts.namePrefixes.map(namePrefix => ({ namePrefix }))
         : [{ services: [HR_SERVICE] }];
       const device = await bt.requestDevice({
