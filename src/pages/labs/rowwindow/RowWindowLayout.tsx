@@ -875,10 +875,21 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           )}
           {showHrBtn && (
             <button
-              onClick={sensors.connectHeartRate}
+              onClick={() => sensors.connectHeartRate()}
               className="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 border border-rose-500/30 text-xs inline-flex items-center gap-1.5 transition"
             >
               <Heart className="w-3.5 h-3.5" /> Pair heart-rate monitor
+            </button>
+          )}
+          {showHrBtn && (
+            <button
+              onClick={() => sensors.connectHeartRate({
+                namePrefixes: ['Galaxy Watch', 'Galaxy Fit', 'Samsung'],
+                defaultLabel: 'Samsung Galaxy Watch',
+              })}
+              className="px-3 py-1.5 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 text-blue-700 border border-blue-500/30 text-xs inline-flex items-center gap-1.5 transition"
+            >
+              <Heart className="w-3.5 h-3.5" /> Connect Samsung watch
             </button>
           )}
           {sensors.heartRateStatus === 'live' && (
@@ -892,7 +903,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
         </div>
       )}
       <p className="mt-3 text-[11px] text-slate-500 leading-relaxed">
-        Compass &amp; GPS need device permission (iOS asks on tap). Heart rate uses Web Bluetooth and works on Chrome/Edge with most BLE chest straps and watches. When a sensor is unavailable, the instrument falls back to a simulated reading so the demo still works.
+        Compass &amp; GPS need device permission (iOS asks on tap). Heart rate uses Web Bluetooth and works on Chrome/Edge with most BLE chest straps and watches. For a Samsung Galaxy Watch, install the Samsung Health Monitor + "BLE HR" companion (or enable the watch&apos;s BLE heart-rate broadcast) so it advertises the standard heart-rate service, then tap <em>Connect Samsung watch</em> and pick it from the pairing dialog. When a sensor is unavailable, the instrument falls back to a simulated reading so the demo still works.
       </p>
     </section>
   );
