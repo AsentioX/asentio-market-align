@@ -913,9 +913,32 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           )}
         </div>
       )}
-      <p className="mt-3 text-[11px] text-slate-500 leading-relaxed">
-        Compass &amp; GPS need device permission (iOS asks on tap). Heart rate uses Web Bluetooth and works on Chrome/Edge with most BLE chest straps and watches. For a Samsung Galaxy Watch, install the Samsung Health Monitor + "BLE HR" companion (or enable the watch&apos;s BLE heart-rate broadcast) so it advertises the standard heart-rate service, then tap <em>Connect Samsung watch</em>. For a <strong>Garmin Forerunner 55</strong>, open <em>Settings → Sensors &amp; Accessories → Wrist Heart Rate → Broadcast Heart Rate</em> on the watch (or start an activity and swipe to <em>Broadcast HR</em>) so it advertises over BLE, then tap <em>Connect Garmin Forerunner</em>. Note: ANT+ is not supported by browsers — pairing uses the watch&apos;s built-in BLE broadcast. When a sensor is unavailable, the instrument falls back to a simulated reading so the demo still works.
-      </p>
+      <div className="mt-4 space-y-3 text-[11px] text-slate-600 leading-relaxed">
+        <div className="flex items-start gap-2">
+          <span className="mt-0.5 text-slate-400">•</span>
+          <p><strong className="text-slate-700">Compass &amp; GPS</strong> — require device permission (iOS will prompt on tap).</p>
+        </div>
+        <div className="flex items-start gap-2">
+          <span className="mt-0.5 text-slate-400">•</span>
+          <p><strong className="text-slate-700">Heart rate</strong> — uses Web Bluetooth (Chrome/Edge) and works with most BLE chest straps and watches.</p>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-3 space-y-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Pairing guides</p>
+
+          <div>
+            <p className="font-semibold text-slate-700">Samsung Galaxy Watch</p>
+            <p>Install the <em>Samsung Health Monitor + "BLE HR"</em> companion (or enable the watch&apos;s BLE heart-rate broadcast) so it advertises the standard heart-rate service, then tap <em>Connect Samsung watch</em>.</p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-slate-700">Garmin Forerunner 55</p>
+            <p>On the watch: <em>Settings → Sensors &amp; Accessories → Wrist Heart Rate → Broadcast Heart Rate</em> (or start an activity and swipe to <em>Broadcast HR</em>). Then tap <em>Connect Garmin Forerunner</em>.</p>
+          </div>
+        </div>
+
+        <p className="text-slate-500"><strong className="text-slate-600">Note:</strong> ANT+ isn&apos;t supported by browsers — pairing uses the watch&apos;s built-in BLE broadcast. If a sensor is unavailable, the instrument falls back to a simulated reading so the demo still works.</p>
+      </div>
     </section>
   );
 };
