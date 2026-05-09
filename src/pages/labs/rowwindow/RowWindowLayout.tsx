@@ -892,6 +892,17 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
               <Heart className="w-3.5 h-3.5" /> Connect Samsung watch
             </button>
           )}
+          {showHrBtn && (
+            <button
+              onClick={() => sensors.connectHeartRate({
+                namePrefixes: ['Forerunner', 'Garmin', 'FR55', 'HRM'],
+                defaultLabel: 'Garmin Forerunner 55',
+              })}
+              className="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 border border-emerald-500/30 text-xs inline-flex items-center gap-1.5 transition"
+            >
+              <Heart className="w-3.5 h-3.5" /> Connect Garmin Forerunner
+            </button>
+          )}
           {sensors.heartRateStatus === 'live' && (
             <button
               onClick={sensors.disconnectHeartRate}
