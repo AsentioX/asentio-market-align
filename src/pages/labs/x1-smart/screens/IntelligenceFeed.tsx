@@ -106,34 +106,25 @@ const IntelligenceFeed = ({ appMode }: IntelligenceFeedProps) => {
       };
 
   return (
-    <div className="space-y-6">
-      {/* Hero — graphical greeting card */}
-      <div className="relative rounded-3xl bg-white border border-black/[0.06] p-6 shadow-sm overflow-hidden">
-        <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-violet-200/40 via-indigo-100/30 to-transparent rounded-full blur-2xl -translate-y-20 translate-x-20" />
-        <div className="relative flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/30">
-            <Brain className="w-6 h-6 text-white" strokeWidth={2} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-violet-600 font-semibold mb-1.5">{hero.eyebrow}</div>
-            <h1 className="text-[26px] leading-[1.15] font-semibold tracking-tight text-stone-900">{hero.greeting}</h1>
-            <p className="text-sm text-stone-600 mt-3 leading-relaxed">{hero.sub}</p>
+    <div className="space-y-5">
+      {/* Hero — calm greeting card */}
+      <div className="rounded-xl bg-white border border-black/[0.06] p-5">
+        <div className="text-[11px] uppercase tracking-[0.18em] text-stone-500 font-medium mb-1.5">{hero.eyebrow}</div>
+        <h1 className="text-[22px] leading-[1.2] font-semibold tracking-tight text-stone-900">{hero.greeting}</h1>
+        <p className="text-[13px] text-stone-600 mt-2 leading-relaxed">{hero.sub}</p>
 
-            {/* System voice line */}
-            <div className={`mt-3 inline-flex items-center gap-2 text-[12.5px] font-medium ${voice.tone}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${
-                mood === 'urgent' ? 'bg-rose-500 animate-pulse' :
-                mood === 'watch' ? 'bg-amber-500' : 'bg-emerald-500'
-              }`} />
-              <em className="not-italic">"{voice.line}"</em>
-              <span className="text-stone-400">·</span>
-              <span className="text-[11px] text-stone-500 font-normal">Autonomy: {level}</span>
-            </div>
-          </div>
+        <div className={`mt-3 inline-flex items-center gap-2 text-[12px] ${voice.tone}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${
+            mood === 'urgent' ? 'bg-rose-500 animate-pulse' :
+            mood === 'watch' ? 'bg-amber-500' : 'bg-emerald-500'
+          }`} />
+          <em className="not-italic">"{voice.line}"</em>
+          <span className="text-stone-300">·</span>
+          <span className="text-stone-500">Autonomy: {level}</span>
         </div>
 
         {/* Quick stats strip */}
-        <div className="relative mt-5 grid grid-cols-3 gap-3">
+        <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-black/[0.06]">
           {hero.stats.map((s) => (
             <StatChip key={s.label} icon={s.icon} label={s.label} value={s.value} gradient={s.gradient} />
           ))}
