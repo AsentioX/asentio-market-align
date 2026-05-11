@@ -69,20 +69,22 @@ const X1SmartLayoutInner = () => {
 
   return (
     <div className="min-h-screen bg-[#fafaf7] text-[#0a0a0a] relative overflow-hidden">
-      {/* Vibrant ambient blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-20 w-[520px] h-[520px] bg-gradient-to-br from-violet-300/40 via-fuchsia-200/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute top-40 -right-20 w-[480px] h-[480px] bg-gradient-to-br from-cyan-200/40 via-sky-200/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 w-[420px] h-[420px] bg-gradient-to-br from-amber-200/30 via-rose-200/20 to-transparent rounded-full blur-3xl" />
+      {/* Mode-driven lifestyle background */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={appMode}
+            src={appMode === 'aihome' ? residentialBg : commercialBg}
+            alt={appMode === 'aihome' ? 'Residential lifestyle' : 'Commercial business'}
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-white/65 to-white/85" />
       </div>
-
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
 
       {/* Top bar */}
       <header className="relative z-30 border-b border-black/[0.06] backdrop-blur-xl bg-white/60 sticky top-0">
