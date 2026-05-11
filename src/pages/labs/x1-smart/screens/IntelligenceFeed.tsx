@@ -453,14 +453,12 @@ const PendingActionBar = ({
   );
 };
 
-const StatChip = ({ icon: Icon, label, value, gradient }: { icon: any; label: string; value: string; gradient: string }) => (
-  <div className="rounded-2xl bg-white border border-black/[0.06] p-3 flex items-center gap-3">
-    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-sm`}>
-      <Icon className="w-4 h-4 text-white" strokeWidth={2.5} />
-    </div>
+const StatChip = ({ icon: Icon, label, value }: { icon: any; label: string; value: string; gradient?: string }) => (
+  <div className="flex items-center gap-2.5">
+    <Icon className="w-4 h-4 text-stone-400" strokeWidth={2} />
     <div>
-      <div className="text-lg font-bold text-stone-900 leading-none tracking-tight">{value}</div>
-      <div className="text-[10px] uppercase tracking-wider text-stone-500 font-medium mt-1">{label}</div>
+      <div className="text-[15px] font-semibold text-stone-900 leading-none tracking-tight">{value}</div>
+      <div className="text-[10px] uppercase tracking-wider text-stone-500 mt-1">{label}</div>
     </div>
   </div>
 );
