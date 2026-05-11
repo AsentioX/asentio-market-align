@@ -5,6 +5,8 @@ import { Home, Building2, Mail, Lock, ArrowLeft, Eye, EyeOff, Activity, Users, S
 import { useAuth } from '@/hooks/useAuth';
 import { lovable } from '@/integrations/lovable';
 import { toast } from 'sonner';
+import residentialBg from './assets/residential-lifestyle.jpg';
+import commercialBg from './assets/commercial-business.jpg';
 
 const features = [
   {
@@ -86,20 +88,27 @@ export default function X1SmartLogin() {
 
   return (
     <div className="min-h-screen bg-[#fafaf7] text-[#0a0a0a] relative overflow-hidden">
-      {/* Vibrant ambient blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-20 w-[520px] h-[520px] bg-gradient-to-br from-violet-300/40 via-fuchsia-200/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute top-40 -right-20 w-[480px] h-[480px] bg-gradient-to-br from-cyan-200/40 via-sky-200/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 w-[420px] h-[420px] bg-gradient-to-br from-amber-200/30 via-rose-200/20 to-transparent rounded-full blur-3xl" />
+      {/* Split lifestyle background: residential (left) + commercial (right) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden flex">
+        <div className="relative w-1/2 h-full">
+          <img
+            src={residentialBg}
+            alt="Residential lifestyle"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/55 to-white/80" />
+        </div>
+        <div className="relative w-1/2 h-full">
+          <img
+            src={commercialBg}
+            alt="Commercial business"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-l from-white/70 via-white/55 to-white/80" />
+        </div>
       </div>
-
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
+      {/* Soft center wash for content legibility */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 via-white/20 to-white/60" />
 
       <header className="relative z-10 border-b border-black/[0.06] backdrop-blur-xl bg-white/60 sticky top-0">
         <div className="max-w-lg mx-auto px-5 h-14 flex items-center justify-between">
