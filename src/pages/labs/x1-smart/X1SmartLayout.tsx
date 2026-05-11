@@ -66,84 +66,41 @@ const X1SmartLayoutInner = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf7] text-[#0a0a0a] relative overflow-hidden">
-      {/* Vibrant ambient blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-20 w-[520px] h-[520px] bg-gradient-to-br from-violet-300/40 via-fuchsia-200/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute top-40 -right-20 w-[480px] h-[480px] bg-gradient-to-br from-cyan-200/40 via-sky-200/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 w-[420px] h-[420px] bg-gradient-to-br from-amber-200/30 via-rose-200/20 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
-
+    <div className="min-h-screen bg-[#fafaf7] text-[#0a0a0a]">
       {/* Top bar */}
-      <header className="relative z-30 border-b border-black/[0.06] backdrop-blur-xl bg-white/60 sticky top-0">
-        <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-4">
-            <Link to="/labs" className="flex items-center gap-1.5 text-stone-500 hover:text-stone-900 text-sm transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              <span>Labs</span>
-            </Link>
-            <div className="h-4 w-px bg-black/10" />
-            <div className="flex items-center gap-2.5">
-              <div className="relative">
-                <motion.div
-                  key={appMode}
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className={`w-8 h-8 rounded-xl bg-gradient-to-br ${meta.grad} flex items-center justify-center shadow-lg`}
-                >
-                  <AppIcon className="w-4 h-4 text-white" strokeWidth={2.5} />
-                </motion.div>
-              </div>
-              <div>
-                <div className="text-[15px] font-semibold tracking-tight leading-none">{meta.name}</div>
-                <div className="text-[10px] uppercase tracking-[0.18em] text-stone-500 mt-1 font-medium">{meta.tagline}</div>
-              </div>
-            </div>
+      <header className="border-b border-black/[0.06] bg-white sticky top-0 z-30">
+        <div className="max-w-6xl mx-auto px-5 h-14 flex items-center gap-4">
+          <Link to="/labs" className="flex items-center gap-1.5 text-stone-500 hover:text-stone-900 text-sm transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <span>Labs</span>
+          </Link>
+          <div className="h-4 w-px bg-black/10" />
+          <div className="flex items-center gap-2">
+            <AppIcon className="w-4 h-4 text-stone-700" strokeWidth={2} />
+            <span className="text-[14px] font-semibold tracking-tight">{meta.name}</span>
+            <span className="text-[12px] text-stone-400 hidden sm:inline">· {meta.tagline}</span>
           </div>
 
-          {/* App mode toggle (upper right) */}
           <div className="ml-auto flex items-center gap-3">
             <AutonomyChip level={level} onChange={setLevel} />
+            {/* App mode toggle */}
+            <div className="inline-flex rounded-lg border border-black/10 overflow-hidden text-[12px]">
+              <ModeToggleBtn active={appMode === 'aihome'} onClick={() => setAppMode('aihome')} label="AiHome" />
+              <ModeToggleBtn active={appMode === 'aispaces'} onClick={() => setAppMode('aispaces')} label="AiSpaces" />
+            </div>
             <button
               onClick={signOut}
-              className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100"
+              className="text-stone-400 hover:text-stone-900 transition-colors"
               title="Sign out"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              Sign Out
+              <LogOut className="w-4 h-4" />
             </button>
-            <div className="inline-flex p-1 rounded-2xl bg-stone-900 shadow-lg">
-              <ModeToggleBtn
-                active={appMode === 'aihome'}
-                onClick={() => setAppMode('aihome')}
-                icon={Home}
-                label="X1 AiHome"
-                sublabel="Residential"
-                activeGrad="from-emerald-500 to-cyan-500"
-              />
-              <ModeToggleBtn
-                active={appMode === 'aispaces'}
-                onClick={() => setAppMode('aispaces')}
-                icon={Building2}
-                label="X1 AiSpaces"
-                sublabel="Commercial"
-                activeGrad="from-indigo-500 to-violet-600"
-              />
-            </div>
           </div>
         </div>
 
         {/* Surface tabs */}
-        <nav className="max-w-6xl mx-auto px-5 pb-3">
-          <div className="inline-flex p-1 rounded-2xl bg-white/80 border border-black/[0.06] backdrop-blur-sm shadow-sm">
+        <nav className="max-w-6xl mx-auto px-5">
+          <div className="flex gap-1 -mb-px">
             {TABS.map((t) => {
               const Icon = t.icon;
               const active = surface === t.key;
@@ -151,19 +108,14 @@ const X1SmartLayoutInner = () => {
                 <button
                   key={t.key}
                   onClick={() => setSurface(t.key)}
-                  className={`relative flex items-center gap-2 px-4 py-2 text-sm rounded-xl transition-colors ${
-                    active ? 'text-white' : 'text-stone-600 hover:text-stone-900'
+                  className={`relative flex items-center gap-2 px-3 py-2.5 text-[13px] border-b-2 transition-colors ${
+                    active
+                      ? 'border-stone-900 text-stone-900 font-medium'
+                      : 'border-transparent text-stone-500 hover:text-stone-900'
                   }`}
                 >
-                  {active && (
-                    <motion.div
-                      layoutId="x1-tab-pill"
-                      className={`absolute inset-0 bg-gradient-to-br ${meta.grad} rounded-xl shadow-md`}
-                      transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-                    />
-                  )}
-                  <Icon className="w-4 h-4 relative z-10" />
-                  <span className="font-medium relative z-10">{t.label}</span>
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{t.label}</span>
                 </button>
               );
             })}
