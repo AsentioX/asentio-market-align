@@ -13,6 +13,8 @@ import CommercialPeople from './screens/commercial/CommercialPeople';
 import CommercialSpaces from './screens/commercial/CommercialSpaces';
 import CommercialAutonomy from './screens/commercial/CommercialAutonomy';
 import { AutonomyProvider, useAutonomy, AUTONOMY_LEVELS, type AutonomyLevel } from './AutonomyContext';
+import residentialBg from './assets/residential-lifestyle.jpg';
+import commercialBg from './assets/commercial-business.jpg';
 
 type AppMode = 'aihome' | 'aispaces';
 type Surface = 'feed' | 'people' | 'spaces' | 'autonomy' | 'timeline';
