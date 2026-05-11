@@ -151,29 +151,20 @@ const X1SmartLayout = () => (
   </AutonomyProvider>
 );
 
-const ModeToggleBtn = ({ active, onClick, icon: Icon, label, sublabel, activeGrad }: {
-  active: boolean; onClick: () => void; icon: any; label: string; sublabel: string; activeGrad: string;
+const ModeToggleBtn = ({ active, onClick, label }: {
+  active: boolean; onClick: () => void; label: string;
 }) => (
   <button
     onClick={onClick}
-    className={`relative flex items-center gap-2.5 px-4 py-2 rounded-xl transition-colors ${
-      active ? 'text-white' : 'text-stone-400 hover:text-white'
+    className={`px-3 py-1.5 transition-colors ${
+      active ? 'bg-stone-900 text-white' : 'bg-white text-stone-600 hover:text-stone-900'
     }`}
   >
-    {active && (
-      <motion.div
-        layoutId="app-mode-pill"
-        className={`absolute inset-0 bg-gradient-to-br ${activeGrad} rounded-xl shadow-lg`}
-        transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-      />
-    )}
-    <Icon className="w-4 h-4 relative z-10" strokeWidth={2.5} />
-    <div className="relative z-10 text-left">
-      <div className="text-[13px] font-bold leading-none">{label}</div>
-      <div className="text-[9px] uppercase tracking-[0.15em] opacity-80 mt-0.5">{sublabel}</div>
-    </div>
+    {label}
   </button>
 );
+
+const _AutonomyChip_separator = null;
 
 const AutonomyChip = ({ level, onChange }: { level: AutonomyLevel; onChange: (l: AutonomyLevel) => void }) => {
   const [open, setOpen] = useState(false);
