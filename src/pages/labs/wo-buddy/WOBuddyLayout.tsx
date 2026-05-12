@@ -12,6 +12,7 @@ import ExerciseLibraryPage from './ExerciseLibraryPage';
 import ProgressAnalytics from './ProgressAnalytics';
 import WOBuddyLogin from './WOBuddyLogin';
 import { WOBuddyAuthProvider, useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
+import './wobuddy-luminous.css';
 
 type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings' | 'library' | 'progress';
 
@@ -30,7 +31,7 @@ const WOBuddyApp = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex items-center justify-center">
+      <div className="wob-luminous min-h-screen bg-[#faf8f5] text-stone-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
           <p className="text-xs text-stone-700">Loading...</p>
@@ -86,7 +87,7 @@ const WOBuddyApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col">
+    <div className="wob-luminous min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col">
       <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200/70">
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/labs" className="flex items-center gap-2 text-stone-800 hover:text-stone-900 transition-colors">

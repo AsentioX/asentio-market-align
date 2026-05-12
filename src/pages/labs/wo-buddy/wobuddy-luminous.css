@@ -1,0 +1,168 @@
+/* WO.Buddy — Luminous theme overrides
+   Scoped via the .wob-luminous wrapper applied in WOBuddyLayout.
+   Light bg #FAFAFA, white containers, magenta accent #FF00FF,
+   16px corner radius, soft 4% blurred shadows replacing borders. */
+
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+.wob-luminous {
+  --wob-bg: #FAFAFA;
+  --wob-surface: #FFFFFF;
+  --wob-accent: #FF00FF;
+  --wob-accent-soft: rgba(255, 0, 255, 0.10);
+  --wob-track: #ECECEF;
+  --wob-shadow-sm: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04);
+  --wob-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.04);
+  --wob-shadow-lg: 0 2px 4px rgba(0,0,0,0.04), 0 16px 40px rgba(0,0,0,0.05);
+
+  font-family: 'Lexend', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--wob-bg) !important;
+  color: #0A0A0A;
+  letter-spacing: -0.005em;
+}
+
+.wob-luminous,
+.wob-luminous * {
+  font-family: inherit;
+}
+
+/* ---- Surfaces -------------------------------------------------- */
+.wob-luminous .bg-\[\#faf8f5\],
+.wob-luminous .bg-\[\#faf8f5\]\/90,
+.wob-luminous .bg-\[\#faf8f5\]\/95 {
+  background-color: var(--wob-bg) !important;
+}
+
+.wob-luminous .bg-\[\#ffffff\]\/95,
+.wob-luminous .bg-white,
+.wob-luminous .bg-white\/90,
+.wob-luminous .bg-white\/95 {
+  background-color: var(--wob-surface) !important;
+}
+
+/* Cards: soft elevation in place of borders */
+.wob-luminous .rounded-2xl.bg-white,
+.wob-luminous .rounded-xl.bg-white,
+.wob-luminous .rounded-3xl.bg-white,
+.wob-luminous .bg-white.border,
+.wob-luminous .bg-white[class*="border-"] {
+  box-shadow: var(--wob-shadow) !important;
+}
+
+/* ---- Borders → soft shadows ----------------------------------- */
+.wob-luminous [class*="border-stone-"],
+.wob-luminous [class*="border-emerald-"],
+.wob-luminous [class*="border-violet-"],
+.wob-luminous [class*="border-amber-"],
+.wob-luminous [class*="border-orange-"],
+.wob-luminous [class*="border-red-"] {
+  border-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ---- Radius (friendly 16px) ----------------------------------- */
+.wob-luminous .rounded-lg,
+.wob-luminous .rounded-xl,
+.wob-luminous .rounded-2xl { border-radius: 16px !important; }
+.wob-luminous .rounded-3xl { border-radius: 20px !important; }
+.wob-luminous button.rounded-full,
+.wob-luminous .rounded-full { /* keep pills/rings as full */ }
+
+/* ---- Accent: emerald & violet → magenta ----------------------- */
+.wob-luminous [class*="text-emerald-"],
+.wob-luminous [class*="text-violet-"],
+.wob-luminous [class*="text-fuchsia-"] {
+  color: var(--wob-accent) !important;
+}
+
+.wob-luminous [class*="bg-emerald-"],
+.wob-luminous [class*="bg-violet-"],
+.wob-luminous [class*="bg-fuchsia-"] {
+  background-color: var(--wob-accent-soft) !important;
+}
+
+.wob-luminous .bg-emerald-500,
+.wob-luminous .bg-emerald-600,
+.wob-luminous .bg-emerald-700,
+.wob-luminous .bg-violet-500,
+.wob-luminous .bg-violet-600,
+.wob-luminous .bg-fuchsia-500 {
+  background-color: var(--wob-accent) !important;
+  color: #fff !important;
+}
+
+.wob-luminous [class*="from-emerald-"],
+.wob-luminous [class*="from-violet-"],
+.wob-luminous [class*="from-fuchsia-"] {
+  --tw-gradient-from: var(--wob-accent) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(255,0,255,0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.wob-luminous [class*="to-emerald-"],
+.wob-luminous [class*="to-violet-"],
+.wob-luminous [class*="to-fuchsia-"] {
+  --tw-gradient-to: var(--wob-accent) var(--tw-gradient-to-position) !important;
+}
+.wob-luminous [class*="via-emerald-"],
+.wob-luminous [class*="via-violet-"] {
+  --tw-gradient-via: var(--wob-accent) !important;
+}
+
+.wob-luminous [class*="ring-emerald-"],
+.wob-luminous [class*="ring-violet-"] {
+  --tw-ring-color: rgba(255, 0, 255, 0.4) !important;
+}
+
+/* Glow shadows */
+.wob-luminous [class*="shadow-\["] {
+  box-shadow: 0 0 16px rgba(255, 0, 255, 0.35) !important;
+}
+
+/* ---- Track color for progress bars ---------------------------- */
+.wob-luminous .bg-stone-900\/5,
+.wob-luminous .bg-stone-900\/10,
+.wob-luminous .bg-stone-200,
+.wob-luminous .bg-stone-100 {
+  background-color: var(--wob-track) !important;
+}
+
+/* Recharts grid + axes — soft */
+.wob-luminous .recharts-cartesian-grid line { stroke: rgba(0,0,0,0.05) !important; }
+.wob-luminous .recharts-text { fill: #6B7280 !important; }
+
+/* ---- Typography ----------------------------------------------- */
+.wob-luminous h1, .wob-luminous h2, .wob-luminous h3,
+.wob-luminous .font-bold { font-weight: 800 !important; letter-spacing: -0.015em; }
+.wob-luminous .font-semibold { font-weight: 700; }
+.wob-luminous .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+/* Boost contrast for muted greys on light bg */
+.wob-luminous .text-stone-500,
+.wob-luminous .text-stone-600 { color: #6B7280 !important; }
+.wob-luminous .text-stone-700 { color: #4B5563 !important; }
+.wob-luminous .text-stone-800,
+.wob-luminous .text-stone-900 { color: #0A0A0A !important; }
+
+/* ---- Micro-interactions: card hover lift --------------------- */
+.wob-luminous .rounded-2xl,
+.wob-luminous .rounded-xl,
+.wob-luminous .rounded-3xl {
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 220ms ease;
+}
+
+.wob-luminous button.rounded-2xl:hover,
+.wob-luminous button.rounded-xl:hover,
+.wob-luminous a.rounded-2xl:hover,
+.wob-luminous a.rounded-xl:hover,
+.wob-luminous .rounded-2xl.bg-white:hover,
+.wob-luminous .rounded-xl.bg-white:hover {
+  transform: scale(1.02);
+  box-shadow: var(--wob-shadow-lg);
+}
+.wob-luminous button.rounded-2xl:active,
+.wob-luminous button.rounded-xl:active {
+  transform: scale(0.99);
+}
+
+/* ---- Bottom nav active state --------------------------------- */
+.wob-luminous nav button.text-emerald-400 { color: var(--wob-accent) !important; }
