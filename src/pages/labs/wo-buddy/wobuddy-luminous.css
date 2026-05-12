@@ -6,7 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
 
 .wob-luminous {
-  --wob-bg: #FAFAFA;
+  --wob-bg: #ECEEF1;
   --wob-surface: #FFFFFF;
   --wob-accent: #FF5F1F;
   --wob-accent-soft: rgba(255, 95, 31, 0.10);
