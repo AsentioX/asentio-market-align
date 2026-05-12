@@ -94,7 +94,7 @@
 .wob-luminous [class*="from-violet-"],
 .wob-luminous [class*="from-fuchsia-"] {
   --tw-gradient-from: var(--wob-accent) var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgba(255,0,255,0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: rgba(255,95,31,0) var(--tw-gradient-to-position) !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 .wob-luminous [class*="to-emerald-"],
@@ -109,12 +109,12 @@
 
 .wob-luminous [class*="ring-emerald-"],
 .wob-luminous [class*="ring-violet-"] {
-  --tw-ring-color: rgba(255, 0, 255, 0.4) !important;
+  --tw-ring-color: rgba(255, 95, 31, 0.4) !important;
 }
 
 /* Glow shadows */
 .wob-luminous [class*="shadow-\["] {
-  box-shadow: 0 0 16px rgba(255, 0, 255, 0.35) !important;
+  box-shadow: 0 0 16px rgba(255, 95, 31, 0.35) !important;
 }
 
 /* ---- Track color for progress bars ---------------------------- */
