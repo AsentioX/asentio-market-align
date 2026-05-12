@@ -40,13 +40,33 @@
   background-color: var(--wob-surface) !important;
 }
 
-/* Cards: soft elevation in place of borders */
-.wob-luminous .rounded-2xl.bg-white,
-.wob-luminous .rounded-xl.bg-white,
-.wob-luminous .rounded-3xl.bg-white,
-.wob-luminous .bg-white.border,
-.wob-luminous .bg-white[class*="border-"] {
+/* Widgets: any rounded container becomes a white card with soft elevation,
+   so it pops against the gray page background. Excludes the bottom nav, header,
+   and inline pills/badges (rounded-full). */
+.wob-luminous main .rounded-xl,
+.wob-luminous main .rounded-2xl,
+.wob-luminous main .rounded-3xl {
+  background-color: var(--wob-surface) !important;
   box-shadow: var(--wob-shadow) !important;
+}
+
+/* Don't paint nested chips/buttons/avatars white — only the top-level widgets.
+   Re-allow accent-tinted children to keep their color. */
+.wob-luminous main .rounded-xl [class*="bg-emerald-"],
+.wob-luminous main .rounded-2xl [class*="bg-emerald-"],
+.wob-luminous main .rounded-xl [class*="bg-violet-"],
+.wob-luminous main .rounded-2xl [class*="bg-violet-"],
+.wob-luminous main .rounded-xl [class*="bg-fuchsia-"],
+.wob-luminous main .rounded-2xl [class*="bg-fuchsia-"] {
+  background-color: var(--wob-accent-soft) !important;
+  box-shadow: none !important;
+}
+.wob-luminous main .rounded-xl .bg-emerald-500,
+.wob-luminous main .rounded-xl .bg-emerald-600,
+.wob-luminous main .rounded-2xl .bg-emerald-500,
+.wob-luminous main .rounded-2xl .bg-emerald-600 {
+  background-color: var(--wob-accent) !important;
+  box-shadow: none !important;
 }
 
 /* ---- Borders → soft shadows ----------------------------------- */
