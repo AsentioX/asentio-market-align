@@ -12,6 +12,7 @@ import ExerciseLibraryPage from './ExerciseLibraryPage';
 import ProgressAnalytics from './ProgressAnalytics';
 import WOBuddyLogin from './WOBuddyLogin';
 import { WOBuddyAuthProvider, useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
+import './wobuddy-luminous.css';
 
 type Tab = 'dashboard' | 'workout' | 'competitions' | 'goals' | 'settings' | 'library' | 'progress';
 
