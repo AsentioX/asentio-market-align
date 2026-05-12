@@ -87,7 +87,7 @@ const WOBuddyApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col">
+    <div className="wob-luminous min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col">
       <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200/70">
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/labs" className="flex items-center gap-2 text-stone-800 hover:text-stone-900 transition-colors">
