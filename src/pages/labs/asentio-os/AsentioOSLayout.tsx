@@ -1132,15 +1132,151 @@ const Forecasting = ({ dark }:{dark:boolean}) => {
 };
 
 /* ---------- Clients ---------- */
-const Clients = ({ dark }:{dark:boolean}) => (
+type Client = {
+  id: string;
+  name: string;
+  revenue: number;
+  margin: number;
+  status: string;
+  tenure: string | null;
+  notes: string | null;
+};
+
+const STATUS_OPTIONS = ['Healthy', 'At Risk', 'Inactive'];
+const emptyClient = { name:'', revenue:0, margin:0, status:'Healthy', tenure:'', notes:'' };
+
+const ClientForm = ({ initial, onSave, onCancel, saving }:{
+  initial: typeof emptyClient;
+  onSave: (v: typeof emptyClient) => void;
+  onCancel: () => void;
+  saving: boolean;
+}) => {
+  const [v, setV] = useState(initial);
+  const inputCls = "w-full h-9 px-3 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40";
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Name</label>
+        <input className={inputCls} value={v.name} onChange={e=>setV({...v, name:e.target.value})} placeholder="Acme Corp" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Revenue ($)</label>
+          <input type="number" className={inputCls} value={v.revenue} onChange={e=>setV({...v, revenue:Number(e.target.value)})} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Margin (0–1)</label>
+          <input type="number" step="0.01" min="0" max="1" className={inputCls} value={v.margin} onChange={e=>setV({...v, margin:Number(e.target.value)})} />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Status</label>
+          <select className={inputCls} value={v.status} onChange={e=>setV({...v, status:e.target.value})}>
+            {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Tenure</label>
+          <input className={inputCls} value={v.tenure} onChange={e=>setV({...v, tenure:e.target.value})} placeholder="1.4y" />
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Notes</label>
+        <textarea rows={2} className={inputCls + ' h-auto py-2'} value={v.notes} onChange={e=>setV({...v, notes:e.target.value})} />
+      </div>
+      <div className="flex justify-end gap-2 pt-2">
+        <Btn variant="ghost" onClick={onCancel} disabled={saving}>Cancel</Btn>
+        <Btn variant="primary" onClick={()=>onSave(v)} disabled={saving || !v.name.trim()}>
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Save
+        </Btn>
+      </div>
+    </div>
+  );
+};
+
+const Clients = ({ dark }:{dark:boolean}) => {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<Client | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('asentio_clients').select('*').order('revenue', { ascending: false });
+    if (error) setError(error.message);
+    else setClients((data || []) as Client[]);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const save = async (v: typeof emptyClient) => {
+    setSaving(true); setError(null);
+    const payload = {
+      name: v.name.trim(), revenue: v.revenue, margin: v.margin,
+      status: v.status, tenure: v.tenure || null, notes: v.notes || null,
+    };
+    const { error } = editing
+      ? await supabase.from('asentio_clients').update(payload).eq('id', editing.id)
+      : await supabase.from('asentio_clients').insert(payload);
+    setSaving(false);
+    if (error) { setError(error.message); return; }
+    setEditing(null); setCreating(false);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm('Delete this client?')) return;
+    const { error } = await supabase.from('asentio_clients').delete().eq('id', id);
+    if (error) { setError(error.message); return; }
+    load();
+  };
+
+  const showForm = creating || !!editing;
+  const formInitial = editing
+    ? { name: editing.name, revenue: Number(editing.revenue), margin: Number(editing.margin),
+        status: editing.status, tenure: editing.tenure || '', notes: editing.notes || '' }
+    : emptyClient;
+
+  const totalRev = clients.reduce((s,c)=>s+Number(c.revenue), 0);
+  const topShare = clients[0] && totalRev ? (Number(clients[0].revenue)/totalRev)*100 : 0;
+  const chartData = clients.map(c => ({ name: c.name, revenue: Number(c.revenue) }));
+
+  return (
   <div className="space-y-6">
-    <SectionHeader title="Clients" sub={`${CLIENTS.length} accounts · top 5 = 73% of revenue`} />
+    <SectionHeader title="Clients" sub={`${clients.length} accounts${totalRev ? ` · top client = ${topShare.toFixed(0)}% of revenue` : ''}`}>
+      <Btn variant="primary" onClick={()=>{ setEditing(null); setCreating(true); }}>
+        <Plus className="w-4 h-4" /> New client
+      </Btn>
+    </SectionHeader>
+
+    {error && (
+      <div className="text-xs text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/10 rounded-lg px-3 py-2">{error}</div>
+    )}
+
+    {showForm && (
+      <Card className="p-5">
+        <div className="text-sm font-medium text-slate-900 dark:text-white mb-4">
+          {editing ? 'Edit client' : 'New client'}
+        </div>
+        <ClientForm
+          initial={formInitial}
+          saving={saving}
+          onCancel={()=>{ setEditing(null); setCreating(false); setError(null); }}
+          onSave={save}
+        />
+      </Card>
+    )}
+
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <Card className="p-5 lg:col-span-2">
         <div className="text-sm font-medium text-slate-900 dark:text-white mb-4">Revenue by client</div>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={CLIENTS} margin={{ left:-20 }}>
+            <BarChart data={chartData} margin={{ left:-20 }}>
               <CartesianGrid stroke={chartGrid(dark)} strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" stroke={chartTickColor(dark)} tickLine={false} axisLine={false} fontSize={10} angle={-15} textAnchor="end" height={50} />
               <YAxis stroke={chartTickColor(dark)} tickLine={false} axisLine={false} fontSize={11} />
@@ -1151,14 +1287,12 @@ const Clients = ({ dark }:{dark:boolean}) => (
         </div>
       </Card>
       <Card className="p-5">
-        <div className="text-sm font-medium text-slate-900 dark:text-white mb-4">Concentration risk</div>
-        <div className="text-3xl font-semibold text-amber-600 dark:text-amber-300">Medium</div>
-        <p className="text-xs text-slate-500 mt-2">Top client = 28% of YTD revenue. Consider diversifying with 2 mid-market wins in Q3.</p>
-        <div className="mt-4 space-y-2">
+        <div className="text-sm font-medium text-slate-900 dark:text-white mb-4">Health breakdown</div>
+        <div className="space-y-2">
           {[
-            { l:'Healthy',  c:'emerald', n: CLIENTS.filter(c=>c.status==='Healthy').length },
-            { l:'At Risk',  c:'amber',   n: CLIENTS.filter(c=>c.status==='At Risk').length },
-            { l:'Inactive', c:'rose',    n: CLIENTS.filter(c=>c.status==='Inactive').length },
+            { l:'Healthy',  c:'emerald', n: clients.filter(c=>c.status==='Healthy').length },
+            { l:'At Risk',  c:'amber',   n: clients.filter(c=>c.status==='At Risk').length },
+            { l:'Inactive', c:'rose',    n: clients.filter(c=>c.status==='Inactive').length },
           ].map(s => (
             <div key={s.l} className="flex items-center justify-between text-sm">
               <Pill tone={s.c}>{s.l}</Pill>
@@ -1169,18 +1303,31 @@ const Clients = ({ dark }:{dark:boolean}) => (
       </Card>
     </div>
 
-    <DataTable
-      head={['Client','Revenue','Margin','Tenure','Health']}
-      rows={CLIENTS.map(c => [
-        <span className="font-medium text-slate-900 dark:text-white">{c.name}</span>,
-        <span className="tabular-nums">${c.revenue.toLocaleString()}</span>,
-        <span className="tabular-nums">{(c.margin*100).toFixed(0)}%</span>,
-        c.tenure,
-        <Pill tone={c.status==='Healthy'?'emerald':c.status==='At Risk'?'amber':'rose'}>{c.status}</Pill>,
-      ])}
-    />
+    {loading ? (
+      <Card className="p-8 text-center text-sm text-slate-500"><Loader2 className="w-4 h-4 animate-spin inline mr-2" /> Loading clients…</Card>
+    ) : (
+      <DataTable
+        head={['Client','Revenue','Margin','Tenure','Health','']}
+        rows={clients.map(c => [
+          <span className="font-medium text-slate-900 dark:text-white">{c.name}</span>,
+          <span className="tabular-nums">${Number(c.revenue).toLocaleString()}</span>,
+          <span className="tabular-nums">{(Number(c.margin)*100).toFixed(0)}%</span>,
+          c.tenure || '—',
+          <Pill tone={c.status==='Healthy'?'emerald':c.status==='At Risk'?'amber':'rose'}>{c.status}</Pill>,
+          <div className="flex items-center justify-end gap-1">
+            <button onClick={()=>{ setCreating(false); setEditing(c); }}
+              className="p-1.5 rounded-md text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+              aria-label="Edit"><Pencil className="w-4 h-4" /></button>
+            <button onClick={()=>remove(c.id)}
+              className="p-1.5 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+              aria-label="Delete"><Trash2 className="w-4 h-4" /></button>
+          </div>,
+        ])}
+      />
+    )}
   </div>
-);
+  );
+};
 
 /* ---------- Reports ---------- */
 const Reports = () => (
