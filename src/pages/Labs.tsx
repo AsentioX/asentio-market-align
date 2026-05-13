@@ -132,6 +132,14 @@ const labApps: LabApp[] = [
     tags: ['Eldercare', 'Health', 'Family'],
     link: '/labs/carekits',
   },
+  {
+    name: 'Asentio OS',
+    description: 'Executive operating dashboard for a consulting business — CRM, contracts, invoices, expenses, forecasting, and an AI copilot in one place.',
+    icon: <Building2 className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Dashboard', 'Finance', 'AI'],
+    link: '/labs/asentio-os',
+  },
 ];
 
 const statusColors: Record<string, string> = {
