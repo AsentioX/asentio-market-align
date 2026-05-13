@@ -719,20 +719,206 @@ const Revenue = ({ dark }:{dark:boolean}) => (
   </div>
 );
 
+/* ---------- Bank statement parsing ---------- */
+type BankTxn = { date: string; description: string; amount: number };
+type BankStatement = {
+  id: string;
+  name: string;
+  uploadedAt: string;
+  transactions: BankTxn[];
+};
+
+const BANK_STORAGE_KEY = 'asentio-os.bankStatements.v1';
+
+const parseCSV = (text: string): BankTxn[] => {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return [];
+  const splitRow = (l: string) => {
+    const out: string[] = []; let cur = ''; let q = false;
+    for (const ch of l) {
+      if (ch === '"') q = !q;
+      else if (ch === ',' && !q) { out.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    out.push(cur);
+    return out.map(s => s.trim().replace(/^"|"$/g, ''));
+  };
+  const header = splitRow(lines[0]).map(h => h.toLowerCase());
+  const findIdx = (keys: string[]) => header.findIndex(h => keys.some(k => h.includes(k)));
+  const dIdx = findIdx(['date','posted']);
+  const aIdx = findIdx(['amount','debit','withdraw','value']);
+  const descIdx = findIdx(['desc','memo','detail','payee','merchant','narrative']);
+  if (dIdx < 0 || aIdx < 0) return [];
+  const txns: BankTxn[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = splitRow(lines[i]);
+    if (cols.length <= Math.max(dIdx, aIdx)) continue;
+    const rawDate = cols[dIdx];
+    let rawAmt = cols[aIdx].replace(/[$,\s]/g, '');
+    if (/^\(.*\)$/.test(rawAmt)) rawAmt = '-' + rawAmt.slice(1, -1);
+    const amt = parseFloat(rawAmt);
+    if (!rawDate || Number.isNaN(amt)) continue;
+    const d = new Date(rawDate);
+    if (Number.isNaN(d.getTime())) continue;
+    txns.push({
+      date: d.toISOString().slice(0, 10),
+      description: descIdx >= 0 ? (cols[descIdx] || '') : '',
+      amount: amt,
+    });
+  }
+  return txns;
+};
+
+const useBankStatements = () => {
+  const [statements, setStatements] = useState<BankStatement[]>(() => {
+    try { return JSON.parse(localStorage.getItem(BANK_STORAGE_KEY) || '[]'); }
+    catch { return []; }
+  });
+  useEffect(() => {
+    localStorage.setItem(BANK_STORAGE_KEY, JSON.stringify(statements));
+  }, [statements]);
+  const add = (s: BankStatement) => setStatements(prev => [s, ...prev]);
+  const remove = (id: string) => setStatements(prev => prev.filter(s => s.id !== id));
+  return { statements, add, remove };
+};
+
+const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const aggregateByMonth = (statements: BankStatement[]) => {
+  const buckets = new Map<string, { revenue: number; expense: number }>();
+  for (const s of statements) {
+    for (const t of s.transactions) {
+      const key = t.date.slice(0, 7);
+      const b = buckets.get(key) || { revenue: 0, expense: 0 };
+      if (t.amount < 0) b.expense += -t.amount;
+      else b.revenue += t.amount;
+      buckets.set(key, b);
+    }
+  }
+  return Array.from(buckets.entries())
+    .sort(([a],[b]) => a.localeCompare(b))
+    .map(([k, v]) => ({
+      m: MONTH_LABELS[parseInt(k.slice(5,7), 10) - 1] + ' ' + k.slice(2,4),
+      revenue: Math.round(v.revenue / 1000),
+      expense: Math.round(v.expense / 1000),
+    }));
+};
+
 /* ---------- Expenses ---------- */
-const Expenses = ({ dark }:{dark:boolean}) => (
+const Expenses = ({ dark }:{dark:boolean}) => {
+  const { statements, add, remove } = useBankStatements();
+  const [error, setError] = useState<string | null>(null);
+
+  const trendData = useMemo(() => {
+    const agg = aggregateByMonth(statements);
+    return agg.length > 0 ? agg : REVENUE_TREND;
+  }, [statements]);
+
+  const totalTxns = useMemo(
+    () => statements.reduce((sum, s) => sum + s.transactions.length, 0),
+    [statements]
+  );
+  const totalExpense = useMemo(() => {
+    let sum = 0;
+    for (const s of statements) for (const t of s.transactions) if (t.amount < 0) sum += -t.amount;
+    return sum;
+  }, [statements]);
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files) return;
+    setError(null);
+    for (const file of Array.from(files)) {
+      try {
+        const text = await file.text();
+        const txns = parseCSV(text);
+        if (txns.length === 0) {
+          setError(`${file.name}: no transactions found. Expected CSV with date and amount columns.`);
+          continue;
+        }
+        add({
+          id: crypto.randomUUID(),
+          name: file.name,
+          uploadedAt: new Date().toISOString(),
+          transactions: txns,
+        });
+      } catch (e:any) {
+        setError(`${file.name}: ${e?.message || 'failed to parse'}`);
+      }
+    }
+  };
+
+  return (
   <div className="space-y-6">
     <SectionHeader title="Expenses" sub="Burn, categories, and margin">
       <Btn variant="outline"><Download className="w-4 h-4" /> Export</Btn>
-      <Btn variant="primary"><Plus className="w-4 h-4" /> Add expense</Btn>
+      <label className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 cursor-pointer transition-all">
+        <Upload className="w-4 h-4" /> Upload bank statement
+        <input
+          type="file"
+          accept=".csv,text/csv"
+          multiple
+          className="hidden"
+          onChange={(e) => { handleFiles(e.target.files); e.currentTarget.value = ''; }}
+        />
+      </label>
     </SectionHeader>
+
+    <Card className="p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <div className="text-sm font-medium text-slate-900 dark:text-white">Bank statements</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {statements.length} file{statements.length === 1 ? '' : 's'} · {totalTxns} transactions · ${totalExpense.toLocaleString(undefined,{maximumFractionDigits:0})} expenses extracted
+          </div>
+        </div>
+      </div>
+      {error && (
+        <div className="text-xs text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/10 rounded-lg px-3 py-2 mb-3">
+          {error}
+        </div>
+      )}
+      {statements.length === 0 ? (
+        <div className="text-sm text-slate-500 dark:text-slate-400 py-8 text-center border border-dashed border-slate-200 dark:border-white/10 rounded-xl">
+          No statements yet. Upload a CSV with <span className="font-mono">date, description, amount</span> columns to populate the burn chart.
+        </div>
+      ) : (
+        <div className="divide-y divide-slate-100 dark:divide-white/5">
+          {statements.map(s => (
+            <div key={s.id} className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shrink-0">
+                  <FileSpreadsheet className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-slate-900 dark:text-white truncate">{s.name}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    {s.transactions.length} transactions · uploaded {new Date(s.uploadedAt).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => remove(s.id)}
+                className="inline-flex items-center gap-1 h-8 px-2.5 rounded-md text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-500/10 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Delete
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
 
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <Card className="p-5 lg:col-span-2">
-        <div className="text-sm font-medium text-slate-900 dark:text-white mb-4">Burn rate trend</div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-sm font-medium text-slate-900 dark:text-white">Burn rate trend</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            {statements.length > 0 ? 'From uploaded statements' : 'Sample data — upload a statement to replace'}
+          </div>
+        </div>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={REVENUE_TREND} margin={{ left:-20 }}>
+            <LineChart data={trendData} margin={{ left:-20 }}>
               <CartesianGrid stroke={chartGrid(dark)} strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="m" stroke={chartTickColor(dark)} tickLine={false} axisLine={false} fontSize={11} />
               <YAxis stroke={chartTickColor(dark)} tickLine={false} axisLine={false} fontSize={11} />
@@ -771,7 +957,8 @@ const Expenses = ({ dark }:{dark:boolean}) => (
       ])}
     />
   </div>
-);
+  );
+};
 
 /* ---------- Forecasting ---------- */
 const Forecasting = ({ dark }:{dark:boolean}) => {
