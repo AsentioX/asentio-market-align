@@ -134,6 +134,7 @@ const AppContent = () => {
           <Route path="/labs/verdant" element={<VerdantLanding />} />
           <Route path="/labs/carekits" element={<CareKitsLayout />} />
           <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
+          <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
           <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
             <Route index element={<CFDashboard />} />
             <Route path="explore" element={<CFExplore />} />
