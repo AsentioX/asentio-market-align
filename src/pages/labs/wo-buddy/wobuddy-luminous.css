@@ -155,12 +155,58 @@
 .wob-luminous .font-semibold { font-weight: 700; }
 .wob-luminous .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
 
-/* Boost contrast for muted greys on light bg */
-.wob-luminous .text-stone-500,
-.wob-luminous .text-stone-600 { color: #6B7280 !important; }
-.wob-luminous .text-stone-700 { color: #4B5563 !important; }
+/* Boost contrast for muted greys on light bg (WCAG AA on white) */
+.wob-luminous .text-stone-300,
+.wob-luminous .text-stone-400,
+.wob-luminous .text-stone-500 { color: #4B5563 !important; }
+.wob-luminous .text-stone-600,
+.wob-luminous .text-stone-700 { color: #374151 !important; }
 .wob-luminous .text-stone-800,
 .wob-luminous .text-stone-900 { color: #0A0A0A !important; }
+
+/* Pale colored text (e.g. text-blue-200, text-emerald-300) used on dark
+   backgrounds becomes unreadable on light cards — darken to AA. */
+.wob-luminous .text-blue-100,
+.wob-luminous .text-blue-200,
+.wob-luminous .text-blue-300,
+.wob-luminous .text-blue-400 { color: #1D4ED8 !important; }
+.wob-luminous .text-orange-200,
+.wob-luminous .text-orange-300,
+.wob-luminous .text-orange-400 { color: #C2410C !important; }
+.wob-luminous .text-amber-200,
+.wob-luminous .text-amber-300,
+.wob-luminous .text-amber-400 { color: #B45309 !important; }
+.wob-luminous .text-purple-200,
+.wob-luminous .text-purple-300,
+.wob-luminous .text-purple-400 { color: #6D28D9 !important; }
+.wob-luminous .text-pink-200,
+.wob-luminous .text-pink-300,
+.wob-luminous .text-pink-400 { color: #BE185D !important; }
+.wob-luminous .text-red-200,
+.wob-luminous .text-red-300,
+.wob-luminous .text-red-400 { color: #B91C1C !important; }
+.wob-luminous .text-white,
+.wob-luminous .text-white\/80,
+.wob-luminous .text-white\/90 { color: #0A0A0A !important; }
+/* But keep white text inside accent-filled buttons */
+.wob-luminous .bg-emerald-500 .text-white,
+.wob-luminous .bg-emerald-600 .text-white,
+.wob-luminous .bg-violet-500 .text-white,
+.wob-luminous .bg-violet-600 .text-white,
+.wob-luminous .bg-fuchsia-500 .text-white { color: #fff !important; }
+
+/* Tinted button backgrounds (e.g. bg-blue-500/15) sit on white now —
+   give them a readable solid tint so foreground text passes contrast. */
+.wob-luminous [class*="bg-blue-500\/"],
+.wob-luminous [class*="bg-blue-400\/"] { background-color: rgba(29, 78, 216, 0.10) !important; }
+.wob-luminous [class*="bg-orange-500\/"],
+.wob-luminous [class*="bg-orange-400\/"] { background-color: rgba(194, 65, 12, 0.10) !important; }
+.wob-luminous [class*="bg-amber-500\/"],
+.wob-luminous [class*="bg-amber-400\/"] { background-color: rgba(180, 83, 9, 0.10) !important; }
+.wob-luminous [class*="bg-purple-500\/"],
+.wob-luminous [class*="bg-purple-400\/"] { background-color: rgba(109, 40, 217, 0.10) !important; }
+.wob-luminous [class*="bg-pink-500\/"],
+.wob-luminous [class*="bg-pink-400\/"] { background-color: rgba(190, 24, 93, 0.10) !important; }
 
 /* ---- Micro-interactions: card hover lift --------------------- */
 .wob-luminous .rounded-2xl,
