@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import {
   LayoutDashboard, GitBranch, FileText, Receipt, TrendingUp, Wallet,
   LineChart as LineChartIcon, Users, BarChart3, Settings, Search, Bell,
   Sparkles, Plus, ArrowUpRight, ArrowDownRight, MoreHorizontal, Filter,
   Download, Calendar, CheckCircle2, AlertCircle, Clock, Sun, Moon,
   ChevronRight, Send, X, Zap, DollarSign, Briefcase, FileSignature,
-  Upload, Trash2, FileSpreadsheet,
+  Upload, Trash2, FileSpreadsheet, Pencil, Loader2,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
