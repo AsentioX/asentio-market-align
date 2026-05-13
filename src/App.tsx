@@ -61,6 +61,7 @@ import X1SmartLayout from "./pages/labs/x1-smart/X1SmartLayout";
 import VerdantLanding from "./pages/labs/verdant/VerdantLanding";
 import CareKitsLayout from "./pages/labs/carekits/CareKitsLayout";
 import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
+import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
 import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
 import CFExplore from "./pages/labs/contractor-finder/Explore";
 import CFSegments from "./pages/labs/contractor-finder/Segments";
