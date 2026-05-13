@@ -60,6 +60,7 @@ import ContractorFinderLayout from "./pages/labs/contractor-finder/ContractorFin
 import X1SmartLayout from "./pages/labs/x1-smart/X1SmartLayout";
 import VerdantLanding from "./pages/labs/verdant/VerdantLanding";
 import CareKitsLayout from "./pages/labs/carekits/CareKitsLayout";
+import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
 import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
 import CFExplore from "./pages/labs/contractor-finder/Explore";
 import CFSegments from "./pages/labs/contractor-finder/Segments";
@@ -82,7 +83,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -131,6 +132,7 @@ const AppContent = () => {
           <Route path="/labs/x1-smart" element={<X1SmartLayout />} />
           <Route path="/labs/verdant" element={<VerdantLanding />} />
           <Route path="/labs/carekits" element={<CareKitsLayout />} />
+          <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
           <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
             <Route index element={<CFDashboard />} />
             <Route path="explore" element={<CFExplore />} />
