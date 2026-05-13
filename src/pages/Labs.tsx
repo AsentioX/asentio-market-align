@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -131,6 +131,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Eldercare', 'Health', 'Family'],
     link: '/labs/carekits',
+  },
+  {
+    name: 'Asentio OS',
+    description: 'Executive operating dashboard for a consulting business — CRM, contracts, invoices, expenses, forecasting, and an AI copilot in one place.',
+    icon: <Building2 className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Dashboard', 'Finance', 'AI'],
+    link: '/labs/asentio-os',
   },
 ];
 
