@@ -669,15 +669,76 @@ const Invoices = ({ dark }:{dark:boolean}) => {
 };
 
 /* ---------- Revenue ---------- */
-const Revenue = ({ dark }:{dark:boolean}) => (
+const Revenue = ({ dark }:{dark:boolean}) => {
+  const { statements, add, remove } = useBankStatements();
+  const [error, setError] = useState<string | null>(null);
+
+  const chartData = useMemo(() => {
+    const agg = aggregateByMonth(statements);
+    if (agg.length === 0) return REVENUE_TREND.map(d => ({...d, projected: d.revenue * 1.15}));
+    return agg.map(d => ({ m: d.m, revenue: d.revenue, projected: Math.round(d.revenue * 1.15) }));
+  }, [statements]);
+
+  const totalTxns = useMemo(
+    () => statements.reduce((sum, s) => sum + s.transactions.length, 0),
+    [statements]
+  );
+  const totalRevenue = useMemo(() => {
+    let sum = 0;
+    for (const s of statements) for (const t of s.transactions) if (t.amount > 0) sum += t.amount;
+    return sum;
+  }, [statements]);
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files) return;
+    setError(null);
+    for (const file of Array.from(files)) {
+      try {
+        const text = await file.text();
+        const txns = parseCSV(text);
+        if (txns.length === 0) {
+          setError(`${file.name}: no transactions found. Expected CSV with date and amount columns.`);
+          continue;
+        }
+        add({
+          id: crypto.randomUUID(),
+          name: file.name,
+          uploadedAt: new Date().toISOString(),
+          transactions: txns,
+        });
+      } catch (e:any) {
+        setError(`${file.name}: ${e?.message || 'failed to parse'}`);
+      }
+    }
+  };
+
+  return (
   <div className="space-y-6">
-    <SectionHeader title="Revenue" sub="Recognized vs projected, by source and client" />
+    <SectionHeader title="Revenue" sub="Recognized vs projected, by source and client">
+      <label className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 cursor-pointer transition-all">
+        <Upload className="w-4 h-4" /> Upload bank statement
+        <input
+          type="file"
+          accept=".csv,text/csv"
+          multiple
+          className="hidden"
+          onChange={(e) => { handleFiles(e.target.files); e.currentTarget.value = ''; }}
+        />
+      </label>
+    </SectionHeader>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <Card className="p-5 lg:col-span-2">
-        <div className="text-sm font-medium text-slate-900 dark:text-white mb-4">Realized vs projected</div>
+        <div className="text-sm font-medium text-slate-900 dark:text-white mb-4">
+          Realized vs projected
+          {statements.length > 0 && (
+            <span className="ml-2 text-xs font-normal text-slate-500 dark:text-slate-400">
+              · from {statements.length} uploaded statement{statements.length === 1 ? '' : 's'}
+            </span>
+          )}
+        </div>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={REVENUE_TREND.map(d => ({...d, projected: d.revenue * 1.15}))} margin={{ left:-20 }}>
+            <AreaChart data={chartData} margin={{ left:-20 }}>
               <defs>
                 <linearGradient id="gReal" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#22D3EE" stopOpacity={0.4} />
@@ -716,8 +777,55 @@ const Revenue = ({ dark }:{dark:boolean}) => (
         </div>
       </Card>
     </div>
+
+    <Card className="p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <div className="text-sm font-medium text-slate-900 dark:text-white">Bank statements</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {statements.length} file{statements.length === 1 ? '' : 's'} · {totalTxns} transactions · ${totalRevenue.toLocaleString(undefined,{maximumFractionDigits:0})} revenue extracted
+          </div>
+        </div>
+      </div>
+      {error && (
+        <div className="text-xs text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/10 rounded-lg px-3 py-2 mb-3">
+          {error}
+        </div>
+      )}
+      {statements.length === 0 ? (
+        <div className="text-sm text-slate-500 dark:text-slate-400 py-8 text-center border border-dashed border-slate-200 dark:border-white/10 rounded-xl">
+          No statements yet. Upload a CSV with <span className="font-mono">date, description, amount</span> columns to populate the revenue chart.
+        </div>
+      ) : (
+        <div className="divide-y divide-slate-100 dark:divide-white/5">
+          {statements.map(s => (
+            <div key={s.id} className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                  <FileSpreadsheet className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-slate-900 dark:text-white truncate">{s.name}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    {s.transactions.length} transactions · uploaded {new Date(s.uploadedAt).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => remove(s.id)}
+                className="p-2 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                aria-label="Delete statement"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
   </div>
-);
+  );
+};
 
 /* ---------- Bank statement parsing ---------- */
 type BankTxn = { date: string; description: string; amount: number };
