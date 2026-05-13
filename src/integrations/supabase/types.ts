@@ -112,6 +112,42 @@ export type Database = {
         }
         Relationships: []
       }
+      asentio_clients: {
+        Row: {
+          created_at: string
+          id: string
+          margin: number
+          name: string
+          notes: string | null
+          revenue: number
+          status: string
+          tenure: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          margin?: number
+          name: string
+          notes?: string | null
+          revenue?: number
+          status?: string
+          tenure?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          margin?: number
+          name?: string
+          notes?: string | null
+          revenue?: number
+          status?: string
+          tenure?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       case_studies: {
         Row: {
           challenge: string | null
