@@ -5,6 +5,7 @@ import {
   Sparkles, Plus, ArrowUpRight, ArrowDownRight, MoreHorizontal, Filter,
   Download, Calendar, CheckCircle2, AlertCircle, Clock, Sun, Moon,
   ChevronRight, Send, X, Zap, DollarSign, Briefcase, FileSignature,
+  Upload, Trash2, FileSpreadsheet,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
