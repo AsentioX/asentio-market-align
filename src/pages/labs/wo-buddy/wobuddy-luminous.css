@@ -113,18 +113,18 @@
 .wob-luminous [class*="from-emerald-"],
 .wob-luminous [class*="from-violet-"],
 .wob-luminous [class*="from-fuchsia-"] {
-  --tw-gradient-from: var(--wob-accent) var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgba(255,0,13,0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-from: rgba(255, 0, 13, 0.08) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(255, 0, 13, 0) var(--tw-gradient-to-position) !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 .wob-luminous [class*="to-emerald-"],
 .wob-luminous [class*="to-violet-"],
 .wob-luminous [class*="to-fuchsia-"] {
-  --tw-gradient-to: var(--wob-accent) var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: rgba(255, 0, 13, 0.04) var(--tw-gradient-to-position) !important;
 }
 .wob-luminous [class*="via-emerald-"],
 .wob-luminous [class*="via-violet-"] {
-  --tw-gradient-via: var(--wob-accent) !important;
+  --tw-gradient-via: rgba(255, 0, 13, 0.06) !important;
 }
 
 .wob-luminous [class*="ring-emerald-"],
