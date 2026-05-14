@@ -56,9 +56,15 @@ const BATTERY_LEVEL_CHAR = 0x2a19;
 // Singleton store: device list + the currently-streaming HR sample.
 // ---------------------------------------------------------------------------
 
+// Web Bluetooth types are not in the default lib; use loose `any`-typed aliases
+// to keep this hook portable without pulling in @types/web-bluetooth.
+type BTDevice = any;
+type BTServer = any;
+type BTChar = any;
+
 interface ConnectedHandle {
-  device: BluetoothDevice;
-  hrChar?: BluetoothRemoteGATTCharacteristic;
+  device: BTDevice;
+  hrChar?: BTChar;
   onHr?: (e: Event) => void;
   onDisconnect?: () => void;
 }
