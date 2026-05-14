@@ -118,7 +118,7 @@ export function isWebBluetoothSupported() {
   return typeof navigator !== 'undefined' && 'bluetooth' in navigator;
 }
 
-async function readBattery(server: BluetoothRemoteGATTServer): Promise<number | undefined> {
+async function readBattery(server: BTServer): Promise<number | undefined> {
   try {
     const svc = await server.getPrimaryService(BATTERY_SERVICE);
     const ch = await svc.getCharacteristic(BATTERY_LEVEL_CHAR);
@@ -141,7 +141,7 @@ async function attachHandlers(handle: ConnectedHandle, deviceId: string) {
   handle.hrChar = ch;
 
   const onHr = (e: Event) => {
-    const target = e.target as BluetoothRemoteGATTCharacteristic;
+    const target = e.target as BTChar;
     if (!target.value) return;
     const sample = parseHrMeasurement(target.value);
     _liveByDevice.set(deviceId, { ...sample, ts: Date.now() });
@@ -162,7 +162,7 @@ export async function connectHeartRateDevice(): Promise<WearableDevice | null> {
   const device = await (navigator as any).bluetooth.requestDevice({
     filters: [{ services: [HR_SERVICE] }],
     optionalServices: [BATTERY_SERVICE],
-  }) as BluetoothDevice;
+  }) as BTDevice;
 
   const id = device.id;
   const name = device.name || 'Heart Rate Monitor';
