@@ -216,6 +216,18 @@ const curlDetector: ExerciseDetector = {
   precondition: (lm) => {
     const angle = torsoVerticalAngle(lm);
     if (angle > 45) return { ok: false, reason: 'Stand upright' };
+    // Elbows must stay tucked near the torso (not flying overhead like a pull-up).
+    const elbowMid = midpoint(lm[LM.LEFT_ELBOW], lm[LM.RIGHT_ELBOW]);
+    const shoulderMid = midpoint(lm[LM.LEFT_SHOULDER], lm[LM.RIGHT_SHOULDER]);
+    const hipMid = midpoint(lm[LM.LEFT_HIP], lm[LM.RIGHT_HIP]);
+    if (elbowMid.y < shoulderMid.y) {
+      return { ok: false, reason: 'Keep elbows down' };
+    }
+    // Elbow horizontally should sit between shoulder and hip line (tucked in)
+    const torsoX = (shoulderMid.x + hipMid.x) / 2;
+    if (Math.abs(elbowMid.x - torsoX) > 0.12) {
+      return { ok: false, reason: 'Tuck elbows in' };
+    }
     return { ok: true };
   },
   getPrimaryMetric: avgElbowAngle,
