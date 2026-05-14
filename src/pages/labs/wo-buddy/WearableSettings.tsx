@@ -1,15 +1,6 @@
 import { useState } from 'react';
-import { Watch, Smartphone, Radio, Bluetooth, Check, ChevronRight, Signal, Wifi, X } from 'lucide-react';
-
-interface Device {
-  id: string;
-  name: string;
-  type: 'watch' | 'ring' | 'band' | 'phone';
-  brand: string;
-  connected: boolean;
-  battery?: number;
-  lastSync?: string;
-}
+import { Watch, Smartphone, Radio, Bluetooth, ChevronRight, Signal, Wifi, X, AlertCircle } from 'lucide-react';
+import { useWearableDevices } from './useWearableDevices';
 
 const deviceIcons: Record<string, React.ReactNode> = {
   watch: <Watch className="w-5 h-5" />,
@@ -18,68 +9,58 @@ const deviceIcons: Record<string, React.ReactNode> = {
   phone: <Smartphone className="w-5 h-5" />,
 };
 
-const mockDevices: Device[] = [
-  { id: '1', name: 'Apple Watch Series 10', type: 'watch', brand: 'Apple', connected: true, battery: 72, lastSync: '2 min ago' },
-  { id: '2', name: 'Oura Ring Gen 4', type: 'ring', brand: 'Oura', connected: false, lastSync: undefined },
-  { id: '3', name: 'Whoop 5.0', type: 'band', brand: 'Whoop', connected: false, lastSync: undefined },
-  { id: '4', name: 'Withings Body+ Scale', type: 'band', brand: 'Withings', connected: false, lastSync: undefined },
-];
-
-const availableDevices: { name: string; type: string }[] = [
-  { name: 'Garmin Forerunner', type: 'watch' },
-  { name: 'Fitbit Charge 6', type: 'band' },
-  { name: 'Samsung Galaxy Ring', type: 'ring' },
-  { name: 'Polar Vantage V3', type: 'watch' },
-];
-
 const WearableSettings = () => {
-  const [devices, setDevices] = useState<Device[]>(mockDevices);
-  const [scanning, setScanning] = useState(false);
-  const [showAvailable, setShowAvailable] = useState(false);
+  const { devices, connect, disconnect, remove, supported } = useWearableDevices();
+  const [pairing, setPairing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const toggleConnect = (id: string) => {
-    setDevices(prev => prev.map(d =>
-      d.id === id ? { ...d, connected: !d.connected, lastSync: !d.connected ? 'Just now' : d.lastSync, battery: !d.connected ? Math.round(50 + Math.random() * 45) : d.battery } : d
-    ));
-  };
-
-  const handleScan = () => {
-    setScanning(true);
-    setShowAvailable(false);
-    setTimeout(() => {
-      setScanning(false);
-      setShowAvailable(true);
-    }, 2000);
-  };
-
-  const handleAddDevice = (name: string, type: string) => {
-    const newDevice: Device = {
-      id: String(Date.now()),
-      name,
-      type: type as Device['type'],
-      brand: name.split(' ')[0],
-      connected: true,
-      battery: Math.round(60 + Math.random() * 35),
-      lastSync: 'Just now',
-    };
-    setDevices(prev => [...prev, newDevice]);
-    setShowAvailable(false);
-  };
-
-  const removeDevice = (id: string) => {
-    setDevices(prev => prev.filter(d => d.id !== id));
+  const handleScan = async () => {
+    setError(null);
+    setPairing(true);
+    try {
+      await connect();
+    } catch (e: any) {
+      // User-cancel triggers a NotFoundError; ignore that.
+      if (e?.name !== 'NotFoundError') {
+        setError(e?.message || 'Failed to pair device');
+      }
+    } finally {
+      setPairing(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold">Wearable Devices</h2>
-        <p className="text-xs text-stone-700 mt-1">Pair your watch, ring, or fitness band to sync data automatically.</p>
+        <p className="text-xs text-stone-700 mt-1">
+          Pair any Bluetooth heart-rate strap or watch (Polar, Wahoo, Garmin, Coospo, Scosche…) to stream live data.
+        </p>
       </div>
+
+      {!supported && (
+        <div className="flex items-start gap-2 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-stone-700">
+            Web Bluetooth isn't available in this browser. Use Chrome / Edge on desktop or Android.
+            Apple Watch and iOS Safari are not supported by Apple.
+          </p>
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-start gap-2 p-3 rounded-2xl bg-red-500/10 border border-red-500/20">
+          <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-stone-700">{error}</p>
+        </div>
+      )}
 
       {/* Connected / saved devices */}
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700 mb-3">Your Devices</h3>
+        {devices.length === 0 && (
+          <p className="text-xs text-stone-600 italic">No devices paired yet. Tap "Scan" below to connect a strap or watch.</p>
+        )}
         <div className="space-y-2">
           {devices.map((device) => (
             <div key={device.id} className={`rounded-2xl border overflow-hidden transition-all ${
@@ -89,9 +70,7 @@ const WearableSettings = () => {
             }`}>
               <div className="p-4 flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  device.connected
-                    ? 'bg-emerald-500/15 text-emerald-400'
-                    : 'bg-stone-900/5 text-stone-600'
+                  device.connected ? 'bg-emerald-500/15 text-emerald-400' : 'bg-stone-900/5 text-stone-600'
                 }`}>
                   {deviceIcons[device.type]}
                 </div>
@@ -102,45 +81,40 @@ const WearableSettings = () => {
                     {device.connected && (
                       <span className="flex items-center gap-0.5 text-[9px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
                         <Bluetooth className="w-2.5 h-2.5" />
-                        Connected
+                        Live
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 mt-0.5 text-[10px] text-stone-700">
                     {device.battery !== undefined && device.connected && (
-                      <span className="flex items-center gap-0.5">
-                        🔋 {device.battery}%
-                      </span>
+                      <span className="flex items-center gap-0.5">🔋 {device.battery}%</span>
                     )}
-                    {device.lastSync && (
-                      <span>Last sync: {device.lastSync}</span>
-                    )}
+                    {device.lastSync && <span>Last sync: {device.lastSync}</span>}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => toggleConnect(device.id)}
-                    className={`text-[10px] font-medium px-3 py-1.5 rounded-lg transition-colors ${
-                      device.connected
-                        ? 'bg-stone-900/5 text-stone-700 hover:text-stone-800'
-                        : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
-                    }`}
-                  >
-                    {device.connected ? 'Disconnect' : 'Connect'}
-                  </button>
-                  {!device.connected && (
-                    <button onClick={() => removeDevice(device.id)} className="w-7 h-7 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-600 hover:text-red-400 transition-colors">
+                  {device.connected ? (
+                    <button
+                      onClick={() => disconnect(device.id)}
+                      className="text-[10px] font-medium px-3 py-1.5 rounded-lg bg-stone-900/5 text-stone-700 hover:text-stone-800"
+                    >
+                      Disconnect
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => remove(device.id)}
+                      className="w-7 h-7 rounded-lg bg-stone-900/5 flex items-center justify-center text-stone-600 hover:text-red-400 transition-colors"
+                    >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Sync data types */}
               {device.connected && (
                 <div className="px-4 pb-3 flex gap-2 flex-wrap">
-                  {['Heart Rate', 'Steps', 'Sleep', 'Calories'].map(metric => (
+                  {['Heart Rate', 'RR / HRV', 'Battery'].map(metric => (
                     <span key={metric} className="text-[9px] bg-stone-900/5 text-stone-700 px-2 py-1 rounded-full border border-stone-200/70">
                       {metric} ✓
                     </span>
@@ -152,78 +126,25 @@ const WearableSettings = () => {
         </div>
       </div>
 
-      {/* Scan for devices */}
+      {/* Scan / pair */}
       <button
         onClick={handleScan}
-        disabled={scanning}
+        disabled={pairing || !supported}
         className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border text-sm font-medium transition-all ${
-          scanning
+          pairing
             ? 'bg-blue-500/10 border-blue-500/20 text-blue-400'
-            : 'bg-transparent border-stone-200/70 text-stone-700 hover:text-stone-700 hover:bg-transparent'
-        }`}
+            : 'bg-transparent border-stone-200/70 text-stone-700 hover:bg-stone-900/5'
+        } disabled:opacity-50`}
       >
-        {scanning ? (
-          <>
-            <Wifi className="w-4 h-4 animate-pulse" />
-            Scanning for devices...
-          </>
+        {pairing ? (
+          <><Wifi className="w-4 h-4 animate-pulse" /> Waiting for device…</>
         ) : (
-          <>
-            <Bluetooth className="w-4 h-4" />
-            Scan for New Devices
-          </>
+          <><Bluetooth className="w-4 h-4" /> Pair Bluetooth Heart-Rate Device</>
         )}
       </button>
-
-      {/* Available devices */}
-      {showAvailable && (
-        <div className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700">Available Nearby</h3>
-          {availableDevices
-            .filter(ad => !devices.some(d => d.name === ad.name))
-            .map((ad) => (
-              <button
-                key={ad.name}
-                onClick={() => handleAddDevice(ad.name, ad.type)}
-                className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-transparent border border-stone-200/70 hover:bg-transparent transition-colors text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-stone-900/5 flex items-center justify-center text-stone-600">
-                  {deviceIcons[ad.type as keyof typeof deviceIcons] || <Bluetooth className="w-5 h-5" />}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{ad.name}</p>
-                  <p className="text-[10px] text-stone-600">Tap to pair</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-600" />
-              </button>
-            ))}
-        </div>
-      )}
-
-      {/* Health integrations */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-700 mb-3">Health Integrations</h3>
-        <div className="space-y-2">
-          {[
-            { name: 'Apple Health', icon: '🍎', connected: true },
-            { name: 'Google Fit', icon: '💚', connected: false },
-            { name: 'Samsung Health', icon: '💙', connected: false },
-            { name: 'Strava', icon: '🟠', connected: false },
-          ].map(integration => (
-            <div key={integration.name} className="flex items-center gap-3 p-3.5 rounded-2xl bg-transparent border border-stone-200/70">
-              <span className="text-xl">{integration.icon}</span>
-              <span className="flex-1 text-sm font-medium">{integration.name}</span>
-              <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${
-                integration.connected
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                  : 'bg-stone-900/5 text-stone-700 border border-stone-200/70'
-              }`}>
-                {integration.connected ? 'Connected' : 'Connect'}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <p className="text-[10px] text-stone-600 text-center -mt-3">
+        Wear the strap / watch and put it in pairing mode, then tap above. Your browser will show a device picker.
+      </p>
     </div>
   );
 };

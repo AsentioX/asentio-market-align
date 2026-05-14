@@ -1,5 +1,10 @@
-// Shared wearable device state for W.O.Buddy
-// Simulates real-time biometric data from connected devices
+// Real wearable integration for W.O.Buddy
+// Uses the Web Bluetooth API + BLE Heart Rate Service (0x180D) to stream
+// live data from any standards-compliant strap or watch (Polar, Wahoo,
+// Garmin HRM, Coospo, Scosche, etc.).
+//
+// Browser support: Chrome / Edge / Opera on desktop + Android.
+// iOS Safari and Apple Watch are NOT supported (Apple restriction).
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 
@@ -22,6 +27,7 @@ export interface WearableLiveData {
   skinTemp?: number;
   stress?: number;
   cadence?: number;
+  rrIntervals?: number[]; // ms, for HRV
 }
 
 const HR_ZONES = [
@@ -40,20 +46,187 @@ export function getHRZones() {
   return HR_ZONES;
 }
 
-// Simulated default connected devices (matches WearableSettings mock)
-const DEFAULT_DEVICES: WearableDevice[] = [
-  { id: '1', name: 'Apple Watch Series 10', type: 'watch', brand: 'Apple', connected: true, battery: 72, lastSync: '2 min ago' },
-  { id: '2', name: 'Oura Ring Gen 4', type: 'ring', brand: 'Oura', connected: false, lastSync: undefined },
-  { id: '3', name: 'Whoop 5.0', type: 'band', brand: 'Whoop', connected: false, lastSync: undefined },
-];
+// BLE GATT UUIDs
+const HR_SERVICE = 0x180d;
+const HR_MEASUREMENT_CHAR = 0x2a37;
+const BATTERY_SERVICE = 0x180f;
+const BATTERY_LEVEL_CHAR = 0x2a19;
 
-// Singleton state so devices persist across components in the same session
-let _devices: WearableDevice[] = [...DEFAULT_DEVICES];
+// ---------------------------------------------------------------------------
+// Singleton store: device list + the currently-streaming HR sample.
+// ---------------------------------------------------------------------------
+
+// Web Bluetooth types are not in the default lib; use loose `any`-typed aliases
+// to keep this hook portable without pulling in @types/web-bluetooth.
+type BTDevice = any;
+type BTServer = any;
+type BTChar = any;
+
+interface ConnectedHandle {
+  device: BTDevice;
+  hrChar?: BTChar;
+  onHr?: (e: Event) => void;
+  onDisconnect?: () => void;
+}
+
+let _devices: WearableDevice[] = [];
+const _handles = new Map<string, ConnectedHandle>();
 let _listeners: Array<() => void> = [];
+
+// Latest HR sample keyed by device id (so multiple components share it)
+const _liveByDevice = new Map<string, { hr: number; rr: number[]; ts: number }>();
 
 function notify() {
   _listeners.forEach(fn => fn());
 }
+
+function parseHrMeasurement(value: DataView): { hr: number; rr: number[] } {
+  // BLE HR Measurement format (Bluetooth SIG GATT 0x2A37)
+  const flags = value.getUint8(0);
+  const hr16 = (flags & 0x01) !== 0;
+  const energyExpended = (flags & 0x08) !== 0;
+  const rrPresent = (flags & 0x10) !== 0;
+
+  let offset = 1;
+  let hr: number;
+  if (hr16) {
+    hr = value.getUint16(offset, true);
+    offset += 2;
+  } else {
+    hr = value.getUint8(offset);
+    offset += 1;
+  }
+  if (energyExpended) offset += 2;
+
+  const rr: number[] = [];
+  if (rrPresent) {
+    while (offset + 1 < value.byteLength) {
+      const raw = value.getUint16(offset, true);
+      rr.push((raw / 1024) * 1000); // 1/1024 s units → ms
+      offset += 2;
+    }
+  }
+  return { hr, rr };
+}
+
+function updateDevice(id: string, patch: Partial<WearableDevice>) {
+  _devices = _devices.map(d => (d.id === id ? { ...d, ...patch } : d));
+  notify();
+}
+
+export function isWebBluetoothSupported() {
+  return typeof navigator !== 'undefined' && 'bluetooth' in navigator;
+}
+
+async function readBattery(server: BTServer): Promise<number | undefined> {
+  try {
+    const svc = await server.getPrimaryService(BATTERY_SERVICE);
+    const ch = await svc.getCharacteristic(BATTERY_LEVEL_CHAR);
+    const v = await ch.readValue();
+    return v.getUint8(0);
+  } catch {
+    return undefined;
+  }
+}
+
+async function attachHandlers(handle: ConnectedHandle, deviceId: string) {
+  const { device } = handle;
+  const server = await device.gatt!.connect();
+
+  const battery = await readBattery(server);
+  if (battery !== undefined) updateDevice(deviceId, { battery });
+
+  const svc = await server.getPrimaryService(HR_SERVICE);
+  const ch = await svc.getCharacteristic(HR_MEASUREMENT_CHAR);
+  handle.hrChar = ch;
+
+  const onHr = (e: Event) => {
+    const target = e.target as BTChar;
+    if (!target.value) return;
+    const sample = parseHrMeasurement(target.value);
+    _liveByDevice.set(deviceId, { ...sample, ts: Date.now() });
+    updateDevice(deviceId, { lastSync: 'Just now' });
+  };
+  handle.onHr = onHr;
+  ch.addEventListener('characteristicvaluechanged', onHr);
+  await ch.startNotifications();
+}
+
+export async function connectHeartRateDevice(): Promise<WearableDevice | null> {
+  if (!isWebBluetoothSupported()) {
+    throw new Error(
+      'Web Bluetooth is not available in this browser. Use Chrome or Edge on desktop or Android. (Apple Watch and iOS Safari are not supported.)'
+    );
+  }
+
+  const device = await (navigator as any).bluetooth.requestDevice({
+    filters: [{ services: [HR_SERVICE] }],
+    optionalServices: [BATTERY_SERVICE],
+  }) as BTDevice;
+
+  const id = device.id;
+  const name = device.name || 'Heart Rate Monitor';
+  const lower = name.toLowerCase();
+  const type: WearableDevice['type'] =
+    /watch|fenix|forerunner|venu|vivoactive|epix/.test(lower) ? 'watch' :
+    /ring/.test(lower) ? 'ring' : 'band';
+  const brand =
+    /polar/.test(lower) ? 'Polar' :
+    /wahoo|tickr/.test(lower) ? 'Wahoo' :
+    /garmin/.test(lower) ? 'Garmin' :
+    /coospo/.test(lower) ? 'Coospo' :
+    /scosche/.test(lower) ? 'Scosche' :
+    /whoop/.test(lower) ? 'Whoop' :
+    name.split(' ')[0];
+
+  const handle: ConnectedHandle = { device };
+  _handles.set(id, handle);
+
+  const onDisconnect = () => {
+    handle.hrChar?.removeEventListener('characteristicvaluechanged', handle.onHr!);
+    _liveByDevice.delete(id);
+    updateDevice(id, { connected: false });
+  };
+  handle.onDisconnect = onDisconnect;
+  device.addEventListener('gattserverdisconnected', onDisconnect);
+
+  const wd: WearableDevice = { id, name, type, brand, connected: true, lastSync: 'Just now' };
+  if (!_devices.find(d => d.id === id)) {
+    _devices = [..._devices, wd];
+  } else {
+    updateDevice(id, { connected: true, lastSync: 'Just now' });
+  }
+  notify();
+
+  await attachHandlers(handle, id);
+  notify();
+  return wd;
+}
+
+export async function disconnectDevice(id: string) {
+  const h = _handles.get(id);
+  if (h) {
+    try {
+      h.hrChar?.removeEventListener('characteristicvaluechanged', h.onHr!);
+      await h.hrChar?.stopNotifications().catch(() => {});
+      h.device.removeEventListener('gattserverdisconnected', h.onDisconnect!);
+      h.device.gatt?.disconnect();
+    } catch { /* noop */ }
+    _handles.delete(id);
+  }
+  _liveByDevice.delete(id);
+  updateDevice(id, { connected: false });
+}
+
+export function removeDevice(id: string) {
+  disconnectDevice(id);
+  _devices = _devices.filter(d => d.id !== id);
+  notify();
+}
+
+// ---------------------------------------------------------------------------
+// React hooks
+// ---------------------------------------------------------------------------
 
 export function useWearableDevices() {
   const [, rerender] = useState(0);
@@ -68,80 +241,79 @@ export function useWearableDevices() {
 
   const connectedDevices = _devices.filter(d => d.connected);
 
-  const toggleDevice = useCallback((id: string) => {
-    _devices = _devices.map(d =>
-      d.id === id
-        ? { ...d, connected: !d.connected, lastSync: !d.connected ? 'Just now' : d.lastSync, battery: !d.connected ? Math.round(50 + Math.random() * 45) : d.battery }
-        : d
-    );
-    notify();
+  const connect = useCallback(async () => {
+    return connectHeartRateDevice();
   }, []);
 
-  return { devices: _devices, connectedDevices, toggleDevice };
+  const disconnect = useCallback(async (id: string) => {
+    await disconnectDevice(id);
+  }, []);
+
+  const remove = useCallback((id: string) => {
+    removeDevice(id);
+  }, []);
+
+  return {
+    devices: _devices,
+    connectedDevices,
+    connect,
+    disconnect,
+    remove,
+    supported: isWebBluetoothSupported(),
+  };
 }
 
-// Hook for live biometric data simulation during a workout
+// Live biometric stream from a real BLE HR device.
+// Calories are estimated from HR (Keytel et al. simplified formula) over time
+// since standard HR profile only carries beats per minute + RR intervals.
 export function useWearableLiveData(isActive: boolean, selectedDeviceId: string | null) {
   const [data, setData] = useState<WearableLiveData>({
-    heartRate: 72,
+    heartRate: 0,
     heartRateZone: 'rest',
     calories: 0,
     steps: 0,
-    bloodOxygen: 98,
-    skinTemp: 97.6,
-    stress: 25,
   });
 
   const caloriesRef = useRef(0);
-  const stepsRef = useRef(0);
+  const lastTickRef = useRef<number | null>(null);
 
-  // Find if the selected device is actually connected
   const device = _devices.find(d => d.id === selectedDeviceId && d.connected);
 
   useEffect(() => {
     if (!isActive || !device) return;
 
-    const interval = setInterval(() => {
-      setData(prev => {
-        // Simulate HR that ramps up during activity
-        const hrDelta = Math.floor(Math.random() * 7) - 2; // -2 to +4 bias up
-        const newHR = Math.min(185, Math.max(90, prev.heartRate + hrDelta));
-        const zone = getHRZone(newHR);
+    // Poll the singleton store so all subscribers see the latest BLE sample.
+    const id = window.setInterval(() => {
+      const live = _liveByDevice.get(device.id);
+      if (!live || live.hr <= 0) return;
 
-        // Accumulate calories and steps
-        caloriesRef.current += 0.15 + Math.random() * 0.1;
-        stepsRef.current += Math.floor(Math.random() * 3);
+      const now = Date.now();
+      if (lastTickRef.current != null) {
+        const dtMin = (now - lastTickRef.current) / 60000;
+        // Simplified calorie estimate: kcal/min ≈ (HR - 60) * 0.08 (adult avg)
+        const kcalPerMin = Math.max(0, (live.hr - 60) * 0.08);
+        caloriesRef.current += kcalPerMin * dtMin;
+      }
+      lastTickRef.current = now;
 
-        return {
-          heartRate: newHR,
-          heartRateZone: zone.name,
-          calories: Math.round(caloriesRef.current),
-          steps: stepsRef.current,
-          bloodOxygen: Math.round(95 + Math.random() * 4),
-          skinTemp: +(97 + Math.random() * 1.5).toFixed(1),
-          stress: Math.min(100, Math.max(10, (prev.stress || 25) + Math.floor(Math.random() * 7) - 3)),
-          cadence: device.type === 'watch' ? Math.round(70 + Math.random() * 30) : undefined,
-        };
+      const zone = getHRZone(live.hr);
+      setData({
+        heartRate: live.hr,
+        heartRateZone: zone.name,
+        calories: Math.round(caloriesRef.current),
+        steps: 0, // not available on standard HR profile
+        rrIntervals: live.rr.length ? live.rr : undefined,
       });
-    }, 1500);
+    }, 500);
 
-    return () => clearInterval(interval);
+    return () => window.clearInterval(id);
   }, [isActive, device]);
 
-  // Reset accumulators when workout stops
   useEffect(() => {
     if (!isActive) {
       caloriesRef.current = 0;
-      stepsRef.current = 0;
-      setData({
-        heartRate: 72,
-        heartRateZone: 'rest',
-        calories: 0,
-        steps: 0,
-        bloodOxygen: 98,
-        skinTemp: 97.6,
-        stress: 25,
-      });
+      lastTickRef.current = null;
+      setData({ heartRate: 0, heartRateZone: 'rest', calories: 0, steps: 0 });
     }
   }, [isActive]);
 
