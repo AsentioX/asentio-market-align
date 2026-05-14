@@ -181,6 +181,15 @@ const sitUpDetector: ExerciseDetector = {
 const pullUpDetector: ExerciseDetector = {
   label: 'PULL-UP',
   requiredLandmarks: [LM.LEFT_SHOULDER, LM.RIGHT_SHOULDER, LM.LEFT_WRIST, LM.RIGHT_WRIST, LM.NOSE],
+  precondition: (lm) => {
+    // Wrists must stay clearly above the shoulders (overhead grip on a bar).
+    const wristMid = midpoint(lm[LM.LEFT_WRIST], lm[LM.RIGHT_WRIST]);
+    const shoulderMid = midpoint(lm[LM.LEFT_SHOULDER], lm[LM.RIGHT_SHOULDER]);
+    if (wristMid.y > shoulderMid.y - 0.05) {
+      return { ok: false, reason: 'Hands above shoulders' };
+    }
+    return { ok: true };
+  },
   getPrimaryMetric: (lm) => {
     // Vertical distance between nose and wrist midpoint (positive when nose above wrists)
     const wristMid = midpoint(lm[LM.LEFT_WRIST], lm[LM.RIGHT_WRIST]);
