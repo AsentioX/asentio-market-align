@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon, Trash2 } from 'lucide-react';
+import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon, Trash2, Settings as SettingsIcon } from 'lucide-react';
 import { useWOBuddyStats } from '@/hooks/useWOBuddyStats';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import AvatarCropModal from './AvatarCropModal';
+import { useUnits, fmtHeight, fmtWeight, kgToLbs, lbsToKg, cmToIn, inToCm } from './useUnits';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
