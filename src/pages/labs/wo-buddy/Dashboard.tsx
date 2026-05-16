@@ -99,6 +99,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const insights = generateInsights(goals);
   const { wobuddyUser } = useWOBuddyAuth();
   const { weather } = useLocalWeather();
+  const { units } = useUnits();
+  const tempLabel = units === 'imperial' ? '°F' : '°C';
+  const windLabel = units === 'imperial' ? 'mph' : 'km/h';
   const { profile } = useWOBuddyProfile();
   const { overviews, exerciseStats, weeklyMinutes, todayScore } = useWOBuddyStats();
 
