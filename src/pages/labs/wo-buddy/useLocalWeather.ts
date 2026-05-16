@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useUnits } from './useUnits';
 
 interface WeatherData {
   temp: number;
@@ -89,6 +90,7 @@ async function reverseGeocode(lat: number, lon: number): Promise<string> {
 }
 
 export const useLocalWeather = () => {
+  const { units } = useUnits();
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -100,13 +102,16 @@ export const useLocalWeather = () => {
       return;
     }
 
+    const tempUnit = units === 'imperial' ? 'fahrenheit' : 'celsius';
+    const windUnit = units === 'imperial' ? 'mph' : 'kmh';
+
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude: lat, longitude: lon } = pos.coords;
         try {
           const [weatherRes, city] = await Promise.all([
             fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto`
+              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}&timezone=auto`
             ).then((r) => r.json()),
             reverseGeocode(lat, lon),
           ]);
@@ -139,7 +144,7 @@ export const useLocalWeather = () => {
       },
       { timeout: 10000, maximumAge: 300000 }
     );
-  }, []);
+  }, [units]);
 
   return { weather, loading, error };
 };

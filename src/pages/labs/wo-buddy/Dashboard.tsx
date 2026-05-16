@@ -8,6 +8,7 @@ import { generateInsights } from './goalMappings';
 import { shareContent, buildAchievementShareText } from './shareUtils';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 import { useLocalWeather, getWeatherEmoji, getWeatherDescription, getWeatherGradient } from './useLocalWeather';
+import { useUnits } from './useUnits';
 
 /* ── Fun Fact Milestone System ────────────────────────────── */
 interface Milestone {
@@ -98,6 +99,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const insights = generateInsights(goals);
   const { wobuddyUser } = useWOBuddyAuth();
   const { weather } = useLocalWeather();
+  const { units } = useUnits();
+  const tempLabel = units === 'imperial' ? '°F' : '°C';
+  const windLabel = units === 'imperial' ? 'mph' : 'km/h';
   const { profile } = useWOBuddyProfile();
   const { overviews, exerciseStats, weeklyMinutes, todayScore } = useWOBuddyStats();
 
@@ -217,7 +221,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
               <div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-light tracking-tight text-white">{weather?.temp ?? '--'}</span>
-                  <span className="text-lg text-white/85">°F</span>
+                  <span className="text-lg text-white/85">{tempLabel}</span>
                 </div>
                 {weather && (
                   <p className="text-sm text-white/85 mt-0.5">{weather.highTemp}° / {weather.lowTemp}°</p>
@@ -232,7 +236,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
                   <p className="text-base font-medium text-white">{getWeatherDescription(weather.code)}</p>
                   <div className="flex items-center justify-end gap-3 mt-1.5 text-xs text-white/85">
                     <span className="flex items-center gap-1"><Droplets className="w-3 h-3" />{weather.humidity}%</span>
-                    <span className="flex items-center gap-1"><Wind className="w-3 h-3" />{Math.round(weather.windSpeed)} mph</span>
+                    <span className="flex items-center gap-1"><Wind className="w-3 h-3" />{Math.round(weather.windSpeed)} {windLabel}</span>
                   </div>
                 </>
               )}

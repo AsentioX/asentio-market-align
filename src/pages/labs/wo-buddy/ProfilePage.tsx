@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon, Trash2 } from 'lucide-react';
+import { Ruler, Weight, Heart, User, Pencil, Check, X, Star, Dumbbell, Camera, ImageIcon, Trash2, Settings as SettingsIcon } from 'lucide-react';
 import { useWOBuddyStats } from '@/hooks/useWOBuddyStats';
 import { useWOBuddyProfile } from '@/hooks/useWOBuddy';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import AvatarCropModal from './AvatarCropModal';
+import { useUnits, fmtHeight, fmtWeight, kgToLbs, lbsToKg, cmToIn, inToCm } from './useUnits';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
@@ -14,6 +15,7 @@ import {
 
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
+  const { units, setUnits, isImperial } = useUnits();
   const { user, wobuddyUser, signOut, refreshWOBuddyUser } = useWOBuddyAuth();
   const { workoutCount } = useWOBuddyStats();
   const memberSince = wobuddyUser?.created_at
@@ -219,6 +221,32 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      {/* Units */}
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <SettingsIcon className="w-4 h-4 text-violet-400" />
+            <div>
+              <p className="text-sm font-medium">Units</p>
+              <p className="text-[11px] text-stone-700">Imperial uses lbs, ft/in, °F · Metric uses kg, cm, °C</p>
+            </div>
+          </div>
+          <div className="flex bg-stone-100 rounded-full p-0.5">
+            {(['imperial', 'metric'] as const).map((u) => (
+              <button
+                key={u}
+                onClick={() => setUnits(u)}
+                className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all ${
+                  units === u ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-600'
+                }`}
+              >
+                {u === 'imperial' ? 'Imperial' : 'Metric'}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Body Metrics */}
       <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center justify-between mb-3">
@@ -241,9 +269,9 @@ const ProfilePage = () => {
         {!editingProfile ? (
           <div className="grid grid-cols-2 gap-2.5">
             {[
-              { icon: <Ruler className="w-3.5 h-3.5 text-blue-400" />, label: 'Height', value: `${profile.height} cm`, bg: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/10' },
-              { icon: <Weight className="w-3.5 h-3.5 text-green-400" />, label: 'Weight', value: `${profile.weight} kg`, bg: 'from-green-500/15 to-green-600/5', border: 'border-green-500/10' },
-              { icon: <Star className="w-3.5 h-3.5 text-amber-400" />, label: 'Goal Weight', value: `${profile.goalWeight} kg`, bg: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/10' },
+              { icon: <Ruler className="w-3.5 h-3.5 text-blue-400" />, label: 'Height', value: fmtHeight(profile.height, units), bg: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/10' },
+              { icon: <Weight className="w-3.5 h-3.5 text-green-400" />, label: 'Weight', value: fmtWeight(profile.weight, units), bg: 'from-green-500/15 to-green-600/5', border: 'border-green-500/10' },
+              { icon: <Star className="w-3.5 h-3.5 text-amber-400" />, label: 'Goal Weight', value: fmtWeight(profile.goalWeight, units), bg: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/10' },
               { icon: <Heart className="w-3.5 h-3.5 text-rose-400" />, label: 'Resting HR', value: `${profile.restingHR} bpm`, bg: 'from-rose-500/15 to-rose-600/5', border: 'border-rose-500/10', measured: true },
               { icon: <User className="w-3.5 h-3.5 text-violet-400" />, label: 'Age / Gender', value: `${getAge(profile.birthdate)} · ${profile.gender}`, bg: 'from-violet-500/15 to-violet-600/5', border: 'border-violet-500/10' },
               { icon: <Dumbbell className="w-3.5 h-3.5 text-cyan-400" />, label: 'Body Fat', value: `${profile.bodyFat}%`, bg: 'from-cyan-500/15 to-cyan-600/5', border: 'border-cyan-500/10', measured: true },
@@ -262,17 +290,32 @@ const ProfilePage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">
-            {[
-              { label: 'Height (cm)', key: 'height' as const, type: 'number' },
-              { label: 'Weight (kg)', key: 'weight' as const, type: 'number' },
-              { label: 'Goal Weight (kg)', key: 'goalWeight' as const, type: 'number' },
-            ].map((field) => (
+            {([
+              {
+                label: isImperial ? 'Height (in)' : 'Height (cm)',
+                key: 'height' as const,
+                display: isImperial ? Math.round(cmToIn(draft.height)) : draft.height,
+                toMetric: (v: number) => (isImperial ? inToCm(v) : v),
+              },
+              {
+                label: isImperial ? 'Weight (lbs)' : 'Weight (kg)',
+                key: 'weight' as const,
+                display: isImperial ? Math.round(kgToLbs(draft.weight)) : draft.weight,
+                toMetric: (v: number) => (isImperial ? lbsToKg(v) : v),
+              },
+              {
+                label: isImperial ? 'Goal Weight (lbs)' : 'Goal Weight (kg)',
+                key: 'goalWeight' as const,
+                display: isImperial ? Math.round(kgToLbs(draft.goalWeight)) : draft.goalWeight,
+                toMetric: (v: number) => (isImperial ? lbsToKg(v) : v),
+              },
+            ]).map((field) => (
               <div key={field.key} className="bg-transparent rounded-xl p-3 border border-stone-200/70">
                 <label className="text-[10px] text-stone-700 block mb-1">{field.label}</label>
                 <input
                   type="number"
-                  value={draft[field.key]}
-                  onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: Number(e.target.value) }))}
+                  value={field.display}
+                  onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: field.toMetric(Number(e.target.value)) }))}
                   className="w-full bg-transparent text-sm font-semibold outline-none border-b border-stone-200/70 focus:border-emerald-400/50 pb-0.5 transition-colors"
                 />
               </div>
