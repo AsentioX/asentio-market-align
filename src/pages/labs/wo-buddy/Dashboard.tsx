@@ -8,6 +8,7 @@ import { generateInsights } from './goalMappings';
 import { shareContent, buildAchievementShareText } from './shareUtils';
 import { useWOBuddyAuth } from '@/hooks/useWOBuddyAuth';
 import { useLocalWeather, getWeatherEmoji, getWeatherDescription, getWeatherGradient } from './useLocalWeather';
+import { useUnits } from './useUnits';
 
 /* ── Fun Fact Milestone System ────────────────────────────── */
 interface Milestone {
