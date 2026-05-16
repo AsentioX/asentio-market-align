@@ -232,3 +232,17 @@
 
 /* ---- Bottom nav active state --------------------------------- */
 .wob-luminous nav button.text-emerald-400 { color: var(--wob-accent) !important; }
+
+/* ---- Weather hero card: keep dark gradient + white text ------ */
+.wob-luminous .wob-weather-hero {
+  background-color: transparent !important;
+  box-shadow: var(--wob-shadow) !important;
+}
+.wob-luminous .wob-weather-hero,
+.wob-luminous .wob-weather-hero * {
+  color: #ffffff !important;
+}
+.wob-luminous .wob-weather-hero .text-white\/85 { color: rgba(255,255,255,0.85) !important; }
+.wob-luminous .wob-weather-hero .text-amber-200 { color: #fde68a !important; }
+.wob-luminous .wob-weather-hero .text-orange-200 { color: #fed7aa !important; }
+.wob-luminous .wob-weather-hero .border-white\/25 { border-color: rgba(255,255,255,0.25) !important; }
