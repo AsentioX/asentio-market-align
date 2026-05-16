@@ -221,6 +221,32 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      {/* Units */}
+      <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <SettingsIcon className="w-4 h-4 text-violet-400" />
+            <div>
+              <p className="text-sm font-medium">Units</p>
+              <p className="text-[11px] text-stone-700">Imperial uses lbs, ft/in, °F · Metric uses kg, cm, °C</p>
+            </div>
+          </div>
+          <div className="flex bg-stone-100 rounded-full p-0.5">
+            {(['imperial', 'metric'] as const).map((u) => (
+              <button
+                key={u}
+                onClick={() => setUnits(u)}
+                className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all ${
+                  units === u ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-600'
+                }`}
+              >
+                {u === 'imperial' ? 'Imperial' : 'Metric'}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Body Metrics */}
       <div className="bg-white rounded-2xl p-4 border border-stone-200/70">
         <div className="flex items-center justify-between mb-3">
