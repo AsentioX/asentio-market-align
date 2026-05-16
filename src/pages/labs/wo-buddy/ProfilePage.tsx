@@ -290,17 +290,32 @@ const ProfilePage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">
-            {[
-              { label: 'Height (cm)', key: 'height' as const, type: 'number' },
-              { label: 'Weight (kg)', key: 'weight' as const, type: 'number' },
-              { label: 'Goal Weight (kg)', key: 'goalWeight' as const, type: 'number' },
-            ].map((field) => (
+            {([
+              {
+                label: isImperial ? 'Height (in)' : 'Height (cm)',
+                key: 'height' as const,
+                display: isImperial ? Math.round(cmToIn(draft.height)) : draft.height,
+                toMetric: (v: number) => (isImperial ? inToCm(v) : v),
+              },
+              {
+                label: isImperial ? 'Weight (lbs)' : 'Weight (kg)',
+                key: 'weight' as const,
+                display: isImperial ? Math.round(kgToLbs(draft.weight)) : draft.weight,
+                toMetric: (v: number) => (isImperial ? lbsToKg(v) : v),
+              },
+              {
+                label: isImperial ? 'Goal Weight (lbs)' : 'Goal Weight (kg)',
+                key: 'goalWeight' as const,
+                display: isImperial ? Math.round(kgToLbs(draft.goalWeight)) : draft.goalWeight,
+                toMetric: (v: number) => (isImperial ? lbsToKg(v) : v),
+              },
+            ]).map((field) => (
               <div key={field.key} className="bg-transparent rounded-xl p-3 border border-stone-200/70">
                 <label className="text-[10px] text-stone-700 block mb-1">{field.label}</label>
                 <input
                   type="number"
-                  value={draft[field.key]}
-                  onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: Number(e.target.value) }))}
+                  value={field.display}
+                  onChange={(e) => setDraft(prev => ({ ...prev, [field.key]: field.toMetric(Number(e.target.value)) }))}
                   className="w-full bg-transparent text-sm font-semibold outline-none border-b border-stone-200/70 focus:border-emerald-400/50 pb-0.5 transition-colors"
                 />
               </div>
