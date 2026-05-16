@@ -15,6 +15,7 @@ import {
 
 const ProfilePage = () => {
   const { profile, updateProfile, isAuthenticated } = useWOBuddyProfile();
+  const { units, setUnits, isImperial } = useUnits();
   const { user, wobuddyUser, signOut, refreshWOBuddyUser } = useWOBuddyAuth();
   const { workoutCount } = useWOBuddyStats();
   const memberSince = wobuddyUser?.created_at
