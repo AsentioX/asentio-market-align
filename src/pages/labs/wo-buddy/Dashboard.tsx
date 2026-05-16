@@ -190,7 +190,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   return (
     <div className="space-y-6">
       {/* Hero Card — Google-style Weather Widget */}
-      <div className={`relative rounded-3xl overflow-hidden bg-gradient-to-br ${weather ? getWeatherGradient(weather.code, weather.isDay) : 'from-slate-700 via-slate-800 to-gray-900'}`}>
+      <div className={`wob-weather-hero relative rounded-3xl overflow-hidden bg-gradient-to-br ${weather ? getWeatherGradient(weather.code, weather.isDay) : 'from-slate-700 via-slate-800 to-gray-900'}`}>
         {/* Animated weather particles */}
         <div className="absolute inset-0 opacity-20 overflow-hidden">
           {weather && weather.code >= 61 && weather.code <= 82 && (
