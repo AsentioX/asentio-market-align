@@ -269,9 +269,9 @@ const ProfilePage = () => {
         {!editingProfile ? (
           <div className="grid grid-cols-2 gap-2.5">
             {[
-              { icon: <Ruler className="w-3.5 h-3.5 text-blue-400" />, label: 'Height', value: `${profile.height} cm`, bg: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/10' },
-              { icon: <Weight className="w-3.5 h-3.5 text-green-400" />, label: 'Weight', value: `${profile.weight} kg`, bg: 'from-green-500/15 to-green-600/5', border: 'border-green-500/10' },
-              { icon: <Star className="w-3.5 h-3.5 text-amber-400" />, label: 'Goal Weight', value: `${profile.goalWeight} kg`, bg: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/10' },
+              { icon: <Ruler className="w-3.5 h-3.5 text-blue-400" />, label: 'Height', value: fmtHeight(profile.height, units), bg: 'from-blue-500/15 to-blue-600/5', border: 'border-blue-500/10' },
+              { icon: <Weight className="w-3.5 h-3.5 text-green-400" />, label: 'Weight', value: fmtWeight(profile.weight, units), bg: 'from-green-500/15 to-green-600/5', border: 'border-green-500/10' },
+              { icon: <Star className="w-3.5 h-3.5 text-amber-400" />, label: 'Goal Weight', value: fmtWeight(profile.goalWeight, units), bg: 'from-amber-500/15 to-amber-600/5', border: 'border-amber-500/10' },
               { icon: <Heart className="w-3.5 h-3.5 text-rose-400" />, label: 'Resting HR', value: `${profile.restingHR} bpm`, bg: 'from-rose-500/15 to-rose-600/5', border: 'border-rose-500/10', measured: true },
               { icon: <User className="w-3.5 h-3.5 text-violet-400" />, label: 'Age / Gender', value: `${getAge(profile.birthdate)} · ${profile.gender}`, bg: 'from-violet-500/15 to-violet-600/5', border: 'border-violet-500/10' },
               { icon: <Dumbbell className="w-3.5 h-3.5 text-cyan-400" />, label: 'Body Fat', value: `${profile.bodyFat}%`, bg: 'from-cyan-500/15 to-cyan-600/5', border: 'border-cyan-500/10', measured: true },
