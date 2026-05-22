@@ -30,7 +30,7 @@ import {
 import { useRowLocation } from './useRowLocation';
 import { LocationPicker } from './LocationPicker';
 import { useRowSensors, type SensorStatus, type TrackPoint } from './useRowSensors';
-import { useWaypoints, type Waypoint } from './useWaypoints';
+import { useWaypoints } from './useWaypoints';
 import { useMockRowGPS } from './useMockRowGPS';
 import { WaypointPlanner } from './WaypointPlanner';
 import { LiveTrackingMap } from './LiveTrackingMap';
