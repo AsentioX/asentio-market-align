@@ -1670,7 +1670,7 @@ const SessionCard = ({
         <InlineStat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
       </div>
 
-      {/* Section 2 — Map */}
+      {/* Section 2 — Map with speed heatmap + scrubber */}
       {hasTrack ? (
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -1678,7 +1678,7 @@ const SessionCard = ({
             <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Path travelled</h3>
             <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
           </div>
-          <CourseMap track={session.track} />
+          <PostRowMap track={session.track} />
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
