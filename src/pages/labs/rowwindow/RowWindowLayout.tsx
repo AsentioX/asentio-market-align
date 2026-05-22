@@ -166,9 +166,38 @@ const RowWindowLayout = () => {
   // Real device sensors (compass, GPS, BLE heart-rate). Values are null when
   // the corresponding sensor is not live — the UI renders an em-dash.
   const sensors = useRowSensors({ tracking: sessionState === 'active' });
-  const liveHeading: number | null = sensors.headingStatus === 'live' ? sensors.headingDeg : null;
-  const liveDistance: number | null = sensors.positionStatus === 'live' ? sensors.distanceMeters : null;
-  const liveSpeedMs: number | null = sensors.positionStatus === 'live' ? sensors.speedMs : null;
+
+  // Waypoints — shared across all 3 tabs, persisted to localStorage.
+  const waypointsHook = useWaypoints();
+  const [achievedIds, setAchievedIds] = useState<string[]>([]);
+  const onAchieveWaypoint = (id: string) => setAchievedIds((p) => (p.includes(id) ? p : [...p, id]));
+
+  // Mock GPS simulator — drives a fake boat along the planned waypoints so
+  // live tracking, distance updates, and waypoint snapping can be tested
+  // without physically moving.
+  const [mockEnabled, setMockEnabled] = useState<boolean>(false);
+  const mockGPS = useMockRowGPS({
+    active: mockEnabled && sessionState === 'active',
+    waypoints: waypointsHook.waypoints,
+    fallbackCenter: { lat: location.lat, lon: location.lng },
+    speedMs: 3.2,
+  });
+
+  const liveHeading: number | null = mockEnabled
+    ? mockGPS.headingDeg
+    : (sensors.headingStatus === 'live' ? sensors.headingDeg : null);
+  const liveDistance: number | null = mockEnabled
+    ? mockGPS.distanceMeters
+    : (sensors.positionStatus === 'live' ? sensors.distanceMeters : null);
+  const liveSpeedMs: number | null = mockEnabled
+    ? mockGPS.speedMs
+    : (sensors.positionStatus === 'live' ? sensors.speedMs : null);
+  const livePosition: { lat: number; lon: number } | null = mockEnabled
+    ? mockGPS.position
+    : (sensors.track.length > 0
+        ? { lat: sensors.track[sensors.track.length - 1].lat, lon: sensors.track[sensors.track.length - 1].lon }
+        : null);
+  const liveTrack: TrackPoint[] = mockEnabled ? mockGPS.track : sensors.track;
   const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
   // Stroke rate now comes from the device accelerometer (peak-detection).
   const spm: number | null = sensors.motionStatus === 'live' ? sensors.spm : null;
