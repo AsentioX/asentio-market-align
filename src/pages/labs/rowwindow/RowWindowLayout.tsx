@@ -347,7 +347,7 @@ const RowWindowLayout = () => {
     const avgHr = hrHistory.length
       ? Math.round(hrHistory.reduce((s, h) => s + h.bpm, 0) / hrHistory.length)
       : null;
-    const distanceReal = sensors.positionStatus === 'live' ? Math.round(sensors.distanceMeters) : null;
+    const distanceReal = liveDistance !== null ? Math.round(liveDistance) : null;
     const headingReal = liveHeading !== null ? Math.round(liveHeading) : null;
     const newId = `row-${endedAt}-${Math.random().toString(36).slice(2, 8)}`;
     const summary: RowSession = {
