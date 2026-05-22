@@ -30,6 +30,11 @@ import {
 import { useRowLocation } from './useRowLocation';
 import { LocationPicker } from './LocationPicker';
 import { useRowSensors, type SensorStatus, type TrackPoint } from './useRowSensors';
+import { useWaypoints } from './useWaypoints';
+import { useMockRowGPS } from './useMockRowGPS';
+import { WaypointPlanner } from './WaypointPlanner';
+import { LiveTrackingMap } from './LiveTrackingMap';
+import { PostRowMap } from './PostRowMap';
 
 const DURATIONS = [60, 90, 120];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -161,9 +166,38 @@ const RowWindowLayout = () => {
   // Real device sensors (compass, GPS, BLE heart-rate). Values are null when
   // the corresponding sensor is not live — the UI renders an em-dash.
   const sensors = useRowSensors({ tracking: sessionState === 'active' });
-  const liveHeading: number | null = sensors.headingStatus === 'live' ? sensors.headingDeg : null;
-  const liveDistance: number | null = sensors.positionStatus === 'live' ? sensors.distanceMeters : null;
-  const liveSpeedMs: number | null = sensors.positionStatus === 'live' ? sensors.speedMs : null;
+
+  // Waypoints — shared across all 3 tabs, persisted to localStorage.
+  const waypointsHook = useWaypoints();
+  const [achievedIds, setAchievedIds] = useState<string[]>([]);
+  const onAchieveWaypoint = (id: string) => setAchievedIds((p) => (p.includes(id) ? p : [...p, id]));
+
+  // Mock GPS simulator — drives a fake boat along the planned waypoints so
+  // live tracking, distance updates, and waypoint snapping can be tested
+  // without physically moving.
+  const [mockEnabled, setMockEnabled] = useState<boolean>(false);
+  const mockGPS = useMockRowGPS({
+    active: mockEnabled && sessionState === 'active',
+    waypoints: waypointsHook.waypoints,
+    fallbackCenter: { lat: location.lat, lon: location.lng },
+    speedMs: 3.2,
+  });
+
+  const liveHeading: number | null = mockEnabled
+    ? mockGPS.headingDeg
+    : (sensors.headingStatus === 'live' ? sensors.headingDeg : null);
+  const liveDistance: number | null = mockEnabled
+    ? mockGPS.distanceMeters
+    : (sensors.positionStatus === 'live' ? sensors.distanceMeters : null);
+  const liveSpeedMs: number | null = mockEnabled
+    ? mockGPS.speedMs
+    : (sensors.positionStatus === 'live' ? sensors.speedMs : null);
+  const livePosition: { lat: number; lon: number } | null = mockEnabled
+    ? mockGPS.position
+    : (sensors.track.length > 0
+        ? { lat: sensors.track[sensors.track.length - 1].lat, lon: sensors.track[sensors.track.length - 1].lon }
+        : null);
+  const liveTrack: TrackPoint[] = mockEnabled ? mockGPS.track : sensors.track;
   const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
   // Stroke rate now comes from the device accelerometer (peak-detection).
   const spm: number | null = sensors.motionStatus === 'live' ? sensors.spm : null;
@@ -283,8 +317,9 @@ const RowWindowLayout = () => {
     maxSpmRef.current = 0;
     maxLaneOffsetRef.current = 0;
     sensors.resetDistance();
+    setAchievedIds([]);
     // Best-effort: trigger sensor permissions on the user-gesture that starts the row.
-    sensors.requestPermissions();
+    if (!mockEnabled) sensors.requestPermissions();
     setSessionState('active');
   };
 
@@ -312,7 +347,7 @@ const RowWindowLayout = () => {
     const avgHr = hrHistory.length
       ? Math.round(hrHistory.reduce((s, h) => s + h.bpm, 0) / hrHistory.length)
       : null;
-    const distanceReal = sensors.positionStatus === 'live' ? Math.round(sensors.distanceMeters) : null;
+    const distanceReal = liveDistance !== null ? Math.round(liveDistance) : null;
     const headingReal = liveHeading !== null ? Math.round(liveHeading) : null;
     const newId = `row-${endedAt}-${Math.random().toString(36).slice(2, 8)}`;
     const summary: RowSession = {
@@ -343,8 +378,8 @@ const RowWindowLayout = () => {
         windDir: wind.directionLabel,
       },
       spmSeries: [...spmHistoryRef.current],
-      track: [...sensors.track],
-      speedSeries: sensors.track
+      track: [...liveTrack],
+      speedSeries: liveTrack
         .filter((p) => p.speedMs >= 0)
         .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
       hrSeries: [...hrHistoryRef.current],
@@ -487,57 +522,99 @@ const RowWindowLayout = () => {
 
       <main className="max-w-6xl mx-auto px-5 pt-2 pb-6 space-y-6">
         {tab === 'pre' && (
-          <PreRowView
-            assessment={assessment}
-            statusMeta={statusMeta}
-            vessel={vessel}
-            duration={duration}
-            current={current}
-            direction={direction}
-            nextTurn={nextTurn}
-            nextLowTurn={nextLowTurn}
-            lowTideMarker={lowTideMarker}
-            now={now}
-            wind={wind}
-            vesselId={vesselId}
-            setVesselId={setVesselId}
-            setDuration={setDuration}
-            chartData={chartData}
-            windowEndMs={windowEndMs}
-            source={source}
-            fetchedAt={fetchedAt}
-            fetchError={fetchError}
-            locationState={locationState}
-            onLaunch={() => {
-              startSession();
-              setTab('on');
-            }}
-          />
+          <>
+            <WaypointPlanner
+              center={{ lat: location.lat, lon: location.lng }}
+              waypoints={waypointsHook.waypoints}
+              totalDistanceMeters={waypointsHook.totalDistanceMeters}
+              onAdd={waypointsHook.addWaypoint}
+              onRemove={waypointsHook.removeWaypoint}
+              onClear={waypointsHook.clearWaypoints}
+            />
+            <PreRowView
+              assessment={assessment}
+              statusMeta={statusMeta}
+              vessel={vessel}
+              duration={duration}
+              current={current}
+              direction={direction}
+              nextTurn={nextTurn}
+              nextLowTurn={nextLowTurn}
+              lowTideMarker={lowTideMarker}
+              now={now}
+              wind={wind}
+              vesselId={vesselId}
+              setVesselId={setVesselId}
+              setDuration={setDuration}
+              chartData={chartData}
+              windowEndMs={windowEndMs}
+              source={source}
+              fetchedAt={fetchedAt}
+              fetchError={fetchError}
+              locationState={locationState}
+              onLaunch={() => {
+                startSession();
+                setTab('on');
+              }}
+            />
+          </>
         )}
 
         {tab === 'on' && (
-          <OnWaterView
-            sessionState={sessionState}
-            elapsedMs={elapsedMs}
-            distanceMeters={liveDistance}
-            spm={spm}
-            speedMs={liveSpeedMs}
-            headingDeg={liveHeading}
-            targetHeadingDeg={targetHeadingDeg}
-            onSetTarget={setTargetHeadingDeg}
-            laneOffsetMeters={laneOffsetMeters}
-            heartRate={liveHeartRate}
-            wind={wind}
-            tide={current}
-            direction={direction}
-            nextLowTurn={nextLowTurn}
-            lowTideMarker={lowTideMarker}
-            now={now}
-            onStart={startSession}
-            onPauseResume={pauseResume}
-            onEnd={endSession}
-            sensors={sensors}
-          />
+          <>
+            {sessionState !== 'idle' && (
+              <LiveTrackingMap
+                waypoints={waypointsHook.waypoints}
+                achievedIds={achievedIds}
+                onAchieve={onAchieveWaypoint}
+                position={livePosition}
+                headingDeg={liveHeading}
+                speedMs={liveSpeedMs}
+                track={liveTrack}
+                fallbackCenter={{ lat: location.lat, lon: location.lng }}
+              />
+            )}
+            {sessionState !== 'idle' && (
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
+                <div className="text-xs text-slate-700">
+                  <span className="font-semibold">Mock GPS simulator</span>
+                  <span className="text-slate-500 ml-1.5">drives a fake boat along your waypoints</span>
+                </div>
+                <button
+                  onClick={() => setMockEnabled((v) => !v)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition ${
+                    mockEnabled
+                      ? 'bg-cyan-600 text-white border-cyan-700 hover:bg-cyan-700'
+                      : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  {mockEnabled ? 'Simulator ON' : 'Simulator OFF'}
+                </button>
+              </div>
+            )}
+            <OnWaterView
+              sessionState={sessionState}
+              elapsedMs={elapsedMs}
+              distanceMeters={liveDistance}
+              spm={spm}
+              speedMs={liveSpeedMs}
+              headingDeg={liveHeading}
+              targetHeadingDeg={targetHeadingDeg}
+              onSetTarget={setTargetHeadingDeg}
+              laneOffsetMeters={laneOffsetMeters}
+              heartRate={liveHeartRate}
+              wind={wind}
+              tide={current}
+              direction={direction}
+              nextLowTurn={nextLowTurn}
+              lowTideMarker={lowTideMarker}
+              now={now}
+              onStart={startSession}
+              onPauseResume={pauseResume}
+              onEnd={endSession}
+              sensors={sensors}
+            />
+          </>
         )}
 
         {tab === 'post' && (
@@ -552,6 +629,8 @@ const RowWindowLayout = () => {
           />
         )}
       </main>
+
+
 
       {/* Bottom tab bar */}
       <nav className="fixed bottom-0 inset-x-0 z-20 border-t border-slate-200 bg-[hsl(210_40%_99%)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
@@ -1591,7 +1670,7 @@ const SessionCard = ({
         <InlineStat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
       </div>
 
-      {/* Section 2 — Map */}
+      {/* Section 2 — Map with speed heatmap + scrubber */}
       {hasTrack ? (
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -1599,7 +1678,7 @@ const SessionCard = ({
             <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Path travelled</h3>
             <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
           </div>
-          <CourseMap track={session.track} />
+          <PostRowMap track={session.track} />
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
