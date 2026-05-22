@@ -378,8 +378,8 @@ const RowWindowLayout = () => {
         windDir: wind.directionLabel,
       },
       spmSeries: [...spmHistoryRef.current],
-      track: [...sensors.track],
-      speedSeries: sensors.track
+      track: [...liveTrack],
+      speedSeries: liveTrack
         .filter((p) => p.speedMs >= 0)
         .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
       hrSeries: [...hrHistoryRef.current],
