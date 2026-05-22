@@ -522,57 +522,99 @@ const RowWindowLayout = () => {
 
       <main className="max-w-6xl mx-auto px-5 pt-2 pb-6 space-y-6">
         {tab === 'pre' && (
-          <PreRowView
-            assessment={assessment}
-            statusMeta={statusMeta}
-            vessel={vessel}
-            duration={duration}
-            current={current}
-            direction={direction}
-            nextTurn={nextTurn}
-            nextLowTurn={nextLowTurn}
-            lowTideMarker={lowTideMarker}
-            now={now}
-            wind={wind}
-            vesselId={vesselId}
-            setVesselId={setVesselId}
-            setDuration={setDuration}
-            chartData={chartData}
-            windowEndMs={windowEndMs}
-            source={source}
-            fetchedAt={fetchedAt}
-            fetchError={fetchError}
-            locationState={locationState}
-            onLaunch={() => {
-              startSession();
-              setTab('on');
-            }}
-          />
+          <>
+            <WaypointPlanner
+              center={{ lat: location.lat, lon: location.lng }}
+              waypoints={waypointsHook.waypoints}
+              totalDistanceMeters={waypointsHook.totalDistanceMeters}
+              onAdd={waypointsHook.addWaypoint}
+              onRemove={waypointsHook.removeWaypoint}
+              onClear={waypointsHook.clearWaypoints}
+            />
+            <PreRowView
+              assessment={assessment}
+              statusMeta={statusMeta}
+              vessel={vessel}
+              duration={duration}
+              current={current}
+              direction={direction}
+              nextTurn={nextTurn}
+              nextLowTurn={nextLowTurn}
+              lowTideMarker={lowTideMarker}
+              now={now}
+              wind={wind}
+              vesselId={vesselId}
+              setVesselId={setVesselId}
+              setDuration={setDuration}
+              chartData={chartData}
+              windowEndMs={windowEndMs}
+              source={source}
+              fetchedAt={fetchedAt}
+              fetchError={fetchError}
+              locationState={locationState}
+              onLaunch={() => {
+                startSession();
+                setTab('on');
+              }}
+            />
+          </>
         )}
 
         {tab === 'on' && (
-          <OnWaterView
-            sessionState={sessionState}
-            elapsedMs={elapsedMs}
-            distanceMeters={liveDistance}
-            spm={spm}
-            speedMs={liveSpeedMs}
-            headingDeg={liveHeading}
-            targetHeadingDeg={targetHeadingDeg}
-            onSetTarget={setTargetHeadingDeg}
-            laneOffsetMeters={laneOffsetMeters}
-            heartRate={liveHeartRate}
-            wind={wind}
-            tide={current}
-            direction={direction}
-            nextLowTurn={nextLowTurn}
-            lowTideMarker={lowTideMarker}
-            now={now}
-            onStart={startSession}
-            onPauseResume={pauseResume}
-            onEnd={endSession}
-            sensors={sensors}
-          />
+          <>
+            {sessionState !== 'idle' && (
+              <LiveTrackingMap
+                waypoints={waypointsHook.waypoints}
+                achievedIds={achievedIds}
+                onAchieve={onAchieveWaypoint}
+                position={livePosition}
+                headingDeg={liveHeading}
+                speedMs={liveSpeedMs}
+                track={liveTrack}
+                fallbackCenter={{ lat: location.lat, lon: location.lng }}
+              />
+            )}
+            {sessionState !== 'idle' && (
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
+                <div className="text-xs text-slate-700">
+                  <span className="font-semibold">Mock GPS simulator</span>
+                  <span className="text-slate-500 ml-1.5">drives a fake boat along your waypoints</span>
+                </div>
+                <button
+                  onClick={() => setMockEnabled((v) => !v)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition ${
+                    mockEnabled
+                      ? 'bg-cyan-600 text-white border-cyan-700 hover:bg-cyan-700'
+                      : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  {mockEnabled ? 'Simulator ON' : 'Simulator OFF'}
+                </button>
+              </div>
+            )}
+            <OnWaterView
+              sessionState={sessionState}
+              elapsedMs={elapsedMs}
+              distanceMeters={liveDistance}
+              spm={spm}
+              speedMs={liveSpeedMs}
+              headingDeg={liveHeading}
+              targetHeadingDeg={targetHeadingDeg}
+              onSetTarget={setTargetHeadingDeg}
+              laneOffsetMeters={laneOffsetMeters}
+              heartRate={liveHeartRate}
+              wind={wind}
+              tide={current}
+              direction={direction}
+              nextLowTurn={nextLowTurn}
+              lowTideMarker={lowTideMarker}
+              now={now}
+              onStart={startSession}
+              onPauseResume={pauseResume}
+              onEnd={endSession}
+              sensors={sensors}
+            />
+          </>
         )}
 
         {tab === 'post' && (
@@ -587,6 +629,8 @@ const RowWindowLayout = () => {
           />
         )}
       </main>
+
+
 
       {/* Bottom tab bar */}
       <nav className="fixed bottom-0 inset-x-0 z-20 border-t border-slate-200 bg-[hsl(210_40%_99%)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
