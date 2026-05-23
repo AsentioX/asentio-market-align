@@ -1,7 +1,5 @@
-import { useMemo, useState } from 'react';
-import './leaflet-setup';
-import { MapContainer, TileLayer, Polyline, CircleMarker, Marker } from 'react-leaflet';
-import L from 'leaflet';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import L from './leaflet-setup';
 import { Gauge, Clock, Route, TrendingUp } from 'lucide-react';
 import type { TrackPoint } from './useRowSensors';
 
@@ -33,6 +31,9 @@ const dot = (color: string) =>
 
 export function PostRowMap({ track }: Props) {
   const [scrubIdx, setScrubIdx] = useState<number | null>(null);
+  const mapElRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const layerRef = useRef<L.LayerGroup | null>(null);
 
   const stats = useMemo(() => {
     if (track.length < 2) {
@@ -86,6 +87,32 @@ export function PostRowMap({ track }: Props) {
   const scrubPoint = scrubIdx !== null ? track[scrubIdx] : null;
   const scrubColor = scrubPoint ? speedColor(scrubPoint.speedMs, stats.minS, stats.maxS) : '#000';
 
+  useEffect(() => {
+    if (!mapElRef.current || mapRef.current) return;
+    const map = L.map(mapElRef.current, { scrollWheelZoom: true }).setView(center, 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+    layerRef.current = L.layerGroup().addTo(map);
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      layerRef.current = null;
+    };
+  }, [center]);
+
+  useEffect(() => {
+    const layer = layerRef.current;
+    if (!layer) return;
+    layer.clearLayers();
+    segments.forEach((s) => L.polyline(s.positions, { color: s.color, weight: 5, opacity: 0.9 }).addTo(layer));
+    L.circleMarker([track[0].lat, track[0].lon], { radius: 7, color: 'white', fillColor: 'hsl(150 70% 45%)', fillOpacity: 1, weight: 2 }).addTo(layer);
+    L.circleMarker([track[track.length - 1].lat, track[track.length - 1].lon], { radius: 7, color: 'white', fillColor: 'hsl(355 80% 55%)', fillOpacity: 1, weight: 2 }).addTo(layer);
+    if (scrubPoint) {
+      L.marker([scrubPoint.lat, scrubPoint.lon], { icon: dot(scrubColor) }).addTo(layer);
+    }
+  }, [segments, track, scrubPoint, scrubColor]);
+
   return (
     <div className="space-y-3">
       {/* Summary card */}
@@ -99,22 +126,7 @@ export function PostRowMap({ track }: Props) {
       {/* Map with speed heatmap */}
       <div className="rounded-xl overflow-hidden border border-slate-200">
         <div className="h-[380px] relative">
-          <MapContainer center={center} zoom={16} scrollWheelZoom className="w-full h-full" style={{ background: 'hsl(210 40% 95%)' }}>
-            <TileLayer
-              attribution='&copy; OpenStreetMap'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {segments.map((s) => (
-              <Polyline key={s.idx} positions={s.positions} pathOptions={{ color: s.color, weight: 5, opacity: 0.9 }} />
-            ))}
-            {/* Start / end markers */}
-            <CircleMarker center={[track[0].lat, track[0].lon]} radius={7} pathOptions={{ color: 'white', fillColor: 'hsl(150 70% 45%)', fillOpacity: 1, weight: 2 }} />
-            <CircleMarker center={[track[track.length - 1].lat, track[track.length - 1].lon]} radius={7} pathOptions={{ color: 'white', fillColor: 'hsl(355 80% 55%)', fillOpacity: 1, weight: 2 }} />
-            {/* Scrubber marker */}
-            {scrubPoint && (
-              <Marker position={[scrubPoint.lat, scrubPoint.lon]} icon={dot(scrubColor)} />
-            )}
-          </MapContainer>
+          <div ref={mapElRef} className="w-full h-full" style={{ background: 'hsl(210 40% 95%)' }} />
 
           {/* Scrub tooltip */}
           {scrubPoint && (
