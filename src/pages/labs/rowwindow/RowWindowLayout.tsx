@@ -523,14 +523,6 @@ const RowWindowLayout = () => {
       <main className="max-w-6xl mx-auto px-5 pt-2 pb-6 space-y-6">
         {tab === 'pre' && (
           <>
-            <WaypointPlanner
-              center={{ lat: location.lat, lon: location.lng }}
-              waypoints={waypointsHook.waypoints}
-              totalDistanceMeters={waypointsHook.totalDistanceMeters}
-              onAdd={waypointsHook.addWaypoint}
-              onRemove={waypointsHook.removeWaypoint}
-              onClear={waypointsHook.clearWaypoints}
-            />
             <PreRowView
               assessment={assessment}
               statusMeta={statusMeta}
@@ -556,6 +548,14 @@ const RowWindowLayout = () => {
                 startSession();
                 setTab('on');
               }}
+            />
+            <WaypointPlanner
+              center={{ lat: location.lat, lon: location.lng }}
+              waypoints={waypointsHook.waypoints}
+              totalDistanceMeters={waypointsHook.totalDistanceMeters}
+              onAdd={waypointsHook.addWaypoint}
+              onRemove={waypointsHook.removeWaypoint}
+              onClear={waypointsHook.clearWaypoints}
             />
           </>
         )}
