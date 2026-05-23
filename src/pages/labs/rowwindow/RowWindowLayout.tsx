@@ -1134,6 +1134,8 @@ const OnWaterView = ({
         )}
       </section>
 
+      {children}
+
       {/* Primary metrics row */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
         <BigStat
