@@ -57,7 +57,13 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
       mapRef.current = null;
       routeLayerRef.current = null;
     };
-  }, [center.lat, center.lon]);
+  }, []);
+
+  useEffect(() => {
+    if (mapRef.current && waypoints.length === 0) {
+      mapRef.current.setView([center.lat, center.lon], mapRef.current.getZoom());
+    }
+  }, [center.lat, center.lon, waypoints.length]);
 
   useEffect(() => {
     const layer = routeLayerRef.current;
