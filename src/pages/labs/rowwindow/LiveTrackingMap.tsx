@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import L from './leaflet-setup';
+import type { LayerGroup, Map as LeafletMap } from 'leaflet';
 import { Lock, Unlock, Navigation, Flag, Timer } from 'lucide-react';
 import { Waypoint, haversineMeters } from './useWaypoints';
 import type { TrackPoint } from './useRowSensors';
@@ -69,8 +70,8 @@ export function LiveTrackingMap({
 }: Props) {
   const [follow, setFollow] = useState(true);
   const mapElRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const layerRef = useRef<L.LayerGroup | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const layerRef = useRef<LayerGroup | null>(null);
   const lastAchievedRef = useRef<Set<string>>(new Set());
 
   // Find next unachieved waypoint
@@ -113,7 +114,7 @@ export function LiveTrackingMap({
       mapRef.current = null;
       layerRef.current = null;
     };
-  }, [center.lat, center.lon]);
+  }, []);
 
   useEffect(() => {
     const layer = layerRef.current;
