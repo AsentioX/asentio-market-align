@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import L from './leaflet-setup';
+import type { LayerGroup, Map as LeafletMap } from 'leaflet';
 import { Gauge, Clock, Route, TrendingUp } from 'lucide-react';
 import type { TrackPoint } from './useRowSensors';
 
@@ -32,8 +33,8 @@ const dot = (color: string) =>
 export function PostRowMap({ track }: Props) {
   const [scrubIdx, setScrubIdx] = useState<number | null>(null);
   const mapElRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const layerRef = useRef<L.LayerGroup | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const layerRef = useRef<LayerGroup | null>(null);
 
   const stats = useMemo(() => {
     if (track.length < 2) {
