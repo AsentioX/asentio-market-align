@@ -75,20 +75,13 @@ export function PostRowMap({ track }: Props) {
     return segs;
   }, [track, stats.minS, stats.maxS]);
 
-  if (track.length < 2) {
-    return (
-      <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-        No GPS track recorded for this session.
-      </div>
-    );
-  }
-
-  const center: [number, number] = [track[0].lat, track[0].lon];
-  const scrubPoint = scrubIdx !== null ? track[scrubIdx] : null;
+  const hasTrack = track.length >= 2;
+  const center = useMemo<[number, number]>(() => hasTrack ? [track[0].lat, track[0].lon] : [0, 0], [hasTrack, track]);
+  const scrubPoint = hasTrack && scrubIdx !== null ? track[scrubIdx] : null;
   const scrubColor = scrubPoint ? speedColor(scrubPoint.speedMs, stats.minS, stats.maxS) : '#000';
 
   useEffect(() => {
-    if (!mapElRef.current || mapRef.current) return;
+    if (!hasTrack || !mapElRef.current || mapRef.current) return;
     const map = L.map(mapElRef.current, { scrollWheelZoom: true }).setView(center, 16);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
     layerRef.current = L.layerGroup().addTo(map);
@@ -99,7 +92,7 @@ export function PostRowMap({ track }: Props) {
       mapRef.current = null;
       layerRef.current = null;
     };
-  }, [center]);
+  }, [center, hasTrack]);
 
   useEffect(() => {
     const layer = layerRef.current;
@@ -112,6 +105,14 @@ export function PostRowMap({ track }: Props) {
       L.marker([scrubPoint.lat, scrubPoint.lon], { icon: dot(scrubColor) }).addTo(layer);
     }
   }, [segments, track, scrubPoint, scrubColor]);
+
+  if (!hasTrack) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+        No GPS track recorded for this session.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
