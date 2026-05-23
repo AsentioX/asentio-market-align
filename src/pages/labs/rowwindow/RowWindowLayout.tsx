@@ -1048,6 +1048,7 @@ interface OnWaterViewProps {
   onPauseResume: () => void;
   onEnd: () => void;
   sensors: ReturnType<typeof useRowSensors>;
+  children?: React.ReactNode;
 }
 
 const OnWaterView = ({
@@ -1055,6 +1056,7 @@ const OnWaterView = ({
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
+  children,
 }: OnWaterViewProps) => {
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   // Pace derives from real GPS ground speed (seconds per 500 m).
