@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import L from './leaflet-setup';
+import type { LayerGroup, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
 import { Trash2, MapPin, Route } from 'lucide-react';
 import { Waypoint } from './useWaypoints';
 
@@ -35,8 +36,8 @@ const numberedIcon = (n: number) =>
 
 export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd, onRemove, onClear }: Props) {
   const mapElRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const routeLayerRef = useRef<L.LayerGroup | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const routeLayerRef = useRef<LayerGroup | null>(null);
   const onAddRef = useRef(onAdd);
   const positions = useMemo(() => waypoints.map((w) => [w.lat, w.lon] as [number, number]), [waypoints]);
 
@@ -49,7 +50,7 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
     routeLayerRef.current = L.layerGroup().addTo(map);
-    map.on('click', (e: L.LeafletMouseEvent) => onAddRef.current(e.latlng.lat, e.latlng.lng));
+    map.on('click', (e: LeafletMouseEvent) => onAddRef.current(e.latlng.lat, e.latlng.lng));
     mapRef.current = map;
 
     return () => {
