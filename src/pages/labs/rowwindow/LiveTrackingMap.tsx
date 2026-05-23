@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import './leaflet-setup';
-import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Polyline, CircleMarker, useMap } from 'react-leaflet';
+import L from './leaflet-setup';
+import type { LayerGroup, Map as LeafletMap } from 'leaflet';
 import { Lock, Unlock, Navigation, Flag, Timer } from 'lucide-react';
 import { Waypoint, haversineMeters } from './useWaypoints';
 import type { TrackPoint } from './useRowSensors';
@@ -66,20 +65,13 @@ const boatIcon = (headingDeg: number) =>
     iconAnchor: [19, 19],
   });
 
-// Auto-recenter the map on the boat when "follow" is on.
-function FollowCamera({ position, follow }: { position: { lat: number; lon: number } | null; follow: boolean }) {
-  const map = useMap();
-  useEffect(() => {
-    if (!follow || !position) return;
-    map.panTo([position.lat, position.lon], { animate: true, duration: 0.6 });
-  }, [follow, position, map]);
-  return null;
-}
-
 export function LiveTrackingMap({
   waypoints, achievedIds, onAchieve, position, headingDeg, speedMs, track, fallbackCenter,
 }: Props) {
   const [follow, setFollow] = useState(true);
+  const mapElRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const layerRef = useRef<LayerGroup | null>(null);
   const lastAchievedRef = useRef<Set<string>>(new Set());
 
   // Find next unachieved waypoint
@@ -109,6 +101,53 @@ export function LiveTrackingMap({
   const plannedPositions = waypoints.map((w) => [w.lat, w.lon] as [number, number]);
   const actualPositions = track.map((p) => [p.lat, p.lon] as [number, number]);
   const center = position ?? waypoints[0] ?? fallbackCenter;
+
+  useEffect(() => {
+    if (!mapElRef.current || mapRef.current) return;
+    const map = L.map(mapElRef.current, { scrollWheelZoom: true }).setView([center.lat, center.lon], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+    layerRef.current = L.layerGroup().addTo(map);
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      layerRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const layer = layerRef.current;
+    if (!layer) return;
+    layer.clearLayers();
+    if (plannedPositions.length > 1) {
+      L.polyline(plannedPositions, { color: 'hsl(195 90% 45%)', weight: 3, opacity: 0.55, dashArray: '6 6' }).addTo(layer);
+    }
+    if (actualPositions.length > 1) {
+      L.polyline(actualPositions, { color: 'hsl(22 95% 55%)', weight: 4, opacity: 0.95 }).addTo(layer);
+    }
+    waypoints.forEach((w, i) => {
+      L.marker([w.lat, w.lon], { icon: numberedIcon(i + 1, achievedIds.includes(w.id)) }).addTo(layer);
+    });
+    if (nextWaypoint) {
+      L.circleMarker([nextWaypoint.lat, nextWaypoint.lon], {
+        radius: 22,
+        color: 'hsl(195 90% 45%)',
+        fillColor: 'hsl(195 90% 55%)',
+        fillOpacity: 0.15,
+        weight: 1.5,
+        dashArray: '4 4',
+      }).addTo(layer);
+    }
+    if (position) {
+      L.marker([position.lat, position.lon], { icon: boatIcon(headingDeg ?? 0) }).addTo(layer);
+    }
+  }, [plannedPositions, actualPositions, waypoints, achievedIds, nextWaypoint, position, headingDeg]);
+
+  useEffect(() => {
+    if (!follow || !position || !mapRef.current) return;
+    mapRef.current.panTo([position.lat, position.lon], { animate: true, duration: 0.6 });
+  }, [follow, position]);
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white overflow-hidden relative">
@@ -154,47 +193,11 @@ export function LiveTrackingMap({
       )}
 
       <div className="h-[420px] md:h-[480px] relative">
-        <MapContainer
-          center={[center.lat, center.lon]}
-          zoom={16}
-          scrollWheelZoom
+        <div
+          ref={mapElRef}
           className="w-full h-full"
           style={{ background: 'hsl(210 40% 95%)' }}
-        >
-          <TileLayer
-            attribution='&copy; OpenStreetMap'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <FollowCamera position={position} follow={follow} />
-
-          {/* Planned path */}
-          {plannedPositions.length > 1 && (
-            <Polyline positions={plannedPositions} pathOptions={{ color: 'hsl(195 90% 45%)', weight: 3, opacity: 0.55, dashArray: '6 6' }} />
-          )}
-          {/* Actual path */}
-          {actualPositions.length > 1 && (
-            <Polyline positions={actualPositions} pathOptions={{ color: 'hsl(22 95% 55%)', weight: 4, opacity: 0.95 }} />
-          )}
-
-          {/* Waypoint markers */}
-          {waypoints.map((w, i) => (
-            <Marker key={w.id} position={[w.lat, w.lon]} icon={numberedIcon(i + 1, achievedIds.includes(w.id))} />
-          ))}
-
-          {/* Capture radius around next waypoint */}
-          {nextWaypoint && (
-            <CircleMarker
-              center={[nextWaypoint.lat, nextWaypoint.lon]}
-              radius={22}
-              pathOptions={{ color: 'hsl(195 90% 45%)', fillColor: 'hsl(195 90% 55%)', fillOpacity: 0.15, weight: 1.5, dashArray: '4 4' }}
-            />
-          )}
-
-          {/* Boat */}
-          {position && (
-            <Marker position={[position.lat, position.lon]} icon={boatIcon(headingDeg ?? 0)} />
-          )}
-        </MapContainer>
+        />
 
         {/* Camera lock toggle */}
         <button

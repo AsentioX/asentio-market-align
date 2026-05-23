@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
-import './leaflet-setup';
-import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Polyline, useMapEvents } from 'react-leaflet';
+import { useEffect, useMemo, useRef } from 'react';
+import L from './leaflet-setup';
+import type { LayerGroup, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
 import { Trash2, MapPin, Route } from 'lucide-react';
 import { Waypoint } from './useWaypoints';
 
@@ -35,15 +34,49 @@ const numberedIcon = (n: number) =>
     iconAnchor: [14, 28],
   });
 
-function MapClickHandler({ onAdd }: { onAdd: (lat: number, lon: number) => void }) {
-  useMapEvents({
-    click(e) { onAdd(e.latlng.lat, e.latlng.lng); },
-  });
-  return null;
-}
-
 export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd, onRemove, onClear }: Props) {
+  const mapElRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const routeLayerRef = useRef<LayerGroup | null>(null);
+  const onAddRef = useRef(onAdd);
   const positions = useMemo(() => waypoints.map((w) => [w.lat, w.lon] as [number, number]), [waypoints]);
+
+  useEffect(() => { onAddRef.current = onAdd; }, [onAdd]);
+
+  useEffect(() => {
+    if (!mapElRef.current || mapRef.current) return;
+    const map = L.map(mapElRef.current, { scrollWheelZoom: true }).setView([center.lat, center.lon], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+    routeLayerRef.current = L.layerGroup().addTo(map);
+    map.on('click', (e: LeafletMouseEvent) => onAddRef.current(e.latlng.lat, e.latlng.lng));
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      routeLayerRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mapRef.current && waypoints.length === 0) {
+      mapRef.current.setView([center.lat, center.lon], mapRef.current.getZoom());
+    }
+  }, [center.lat, center.lon, waypoints.length]);
+
+  useEffect(() => {
+    const layer = routeLayerRef.current;
+    if (!layer) return;
+    layer.clearLayers();
+    if (positions.length > 1) {
+      L.polyline(positions, { color: 'hsl(195 90% 45%)', weight: 4, opacity: 0.85, dashArray: '6 6' }).addTo(layer);
+    }
+    waypoints.forEach((w, i) => {
+      L.marker([w.lat, w.lon], { icon: numberedIcon(i + 1) }).addTo(layer);
+    });
+  }, [positions, waypoints]);
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
@@ -73,25 +106,11 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_220px]">
         <div className="h-[360px] md:h-[420px] relative">
-          <MapContainer
-            center={[center.lat, center.lon]}
-            zoom={15}
-            scrollWheelZoom
+          <div
+            ref={mapElRef}
             className="w-full h-full"
             style={{ background: 'hsl(210 40% 95%)' }}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <MapClickHandler onAdd={onAdd} />
-            {positions.length > 1 && (
-              <Polyline positions={positions} pathOptions={{ color: 'hsl(195 90% 45%)', weight: 4, opacity: 0.85, dashArray: '6 6' }} />
-            )}
-            {waypoints.map((w, i) => (
-              <Marker key={w.id} position={[w.lat, w.lon]} icon={numberedIcon(i + 1)} />
-            ))}
-          </MapContainer>
+          />
           {waypoints.length === 0 && (
             <div className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-white/95 border border-slate-200 shadow-sm text-xs text-slate-700 z-[400] pointer-events-none">
               <MapPin className="w-3.5 h-3.5 inline mr-1 text-cyan-700" />
