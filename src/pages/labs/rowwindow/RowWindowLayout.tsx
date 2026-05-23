@@ -523,14 +523,6 @@ const RowWindowLayout = () => {
       <main className="max-w-6xl mx-auto px-5 pt-2 pb-6 space-y-6">
         {tab === 'pre' && (
           <>
-            <WaypointPlanner
-              center={{ lat: location.lat, lon: location.lng }}
-              waypoints={waypointsHook.waypoints}
-              totalDistanceMeters={waypointsHook.totalDistanceMeters}
-              onAdd={waypointsHook.addWaypoint}
-              onRemove={waypointsHook.removeWaypoint}
-              onClear={waypointsHook.clearWaypoints}
-            />
             <PreRowView
               assessment={assessment}
               statusMeta={statusMeta}
@@ -557,23 +549,19 @@ const RowWindowLayout = () => {
                 setTab('on');
               }}
             />
+            <WaypointPlanner
+              center={{ lat: location.lat, lon: location.lng }}
+              waypoints={waypointsHook.waypoints}
+              totalDistanceMeters={waypointsHook.totalDistanceMeters}
+              onAdd={waypointsHook.addWaypoint}
+              onRemove={waypointsHook.removeWaypoint}
+              onClear={waypointsHook.clearWaypoints}
+            />
           </>
         )}
 
         {tab === 'on' && (
           <>
-            {sessionState !== 'idle' && (
-              <LiveTrackingMap
-                waypoints={waypointsHook.waypoints}
-                achievedIds={achievedIds}
-                onAchieve={onAchieveWaypoint}
-                position={livePosition}
-                headingDeg={liveHeading}
-                speedMs={liveSpeedMs}
-                track={liveTrack}
-                fallbackCenter={{ lat: location.lat, lon: location.lng }}
-              />
-            )}
             {sessionState !== 'idle' && (
               <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
                 <div className="text-xs text-slate-700">
@@ -613,7 +601,20 @@ const RowWindowLayout = () => {
               onPauseResume={pauseResume}
               onEnd={endSession}
               sensors={sensors}
-            />
+            >
+              {sessionState !== 'idle' && (
+                <LiveTrackingMap
+                  waypoints={waypointsHook.waypoints}
+                  achievedIds={achievedIds}
+                  onAchieve={onAchieveWaypoint}
+                  position={livePosition}
+                  headingDeg={liveHeading}
+                  speedMs={liveSpeedMs}
+                  track={liveTrack}
+                  fallbackCenter={{ lat: location.lat, lon: location.lng }}
+                />
+              )}
+            </OnWaterView>
           </>
         )}
 
@@ -1048,6 +1049,7 @@ interface OnWaterViewProps {
   onPauseResume: () => void;
   onEnd: () => void;
   sensors: ReturnType<typeof useRowSensors>;
+  children?: React.ReactNode;
 }
 
 const OnWaterView = ({
@@ -1055,6 +1057,7 @@ const OnWaterView = ({
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
+  children,
 }: OnWaterViewProps) => {
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   // Pace derives from real GPS ground speed (seconds per 500 m).
@@ -1131,6 +1134,8 @@ const OnWaterView = ({
           </div>
         )}
       </section>
+
+      {children}
 
       {/* Primary metrics row */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
