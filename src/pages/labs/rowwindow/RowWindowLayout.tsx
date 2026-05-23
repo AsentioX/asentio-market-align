@@ -563,18 +563,6 @@ const RowWindowLayout = () => {
         {tab === 'on' && (
           <>
             {sessionState !== 'idle' && (
-              <LiveTrackingMap
-                waypoints={waypointsHook.waypoints}
-                achievedIds={achievedIds}
-                onAchieve={onAchieveWaypoint}
-                position={livePosition}
-                headingDeg={liveHeading}
-                speedMs={liveSpeedMs}
-                track={liveTrack}
-                fallbackCenter={{ lat: location.lat, lon: location.lng }}
-              />
-            )}
-            {sessionState !== 'idle' && (
               <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
                 <div className="text-xs text-slate-700">
                   <span className="font-semibold">Mock GPS simulator</span>
@@ -613,7 +601,20 @@ const RowWindowLayout = () => {
               onPauseResume={pauseResume}
               onEnd={endSession}
               sensors={sensors}
-            />
+            >
+              {sessionState !== 'idle' && (
+                <LiveTrackingMap
+                  waypoints={waypointsHook.waypoints}
+                  achievedIds={achievedIds}
+                  onAchieve={onAchieveWaypoint}
+                  position={livePosition}
+                  headingDeg={liveHeading}
+                  speedMs={liveSpeedMs}
+                  track={liveTrack}
+                  fallbackCenter={{ lat: location.lat, lon: location.lng }}
+                />
+              )}
+            </OnWaterView>
           </>
         )}
 
