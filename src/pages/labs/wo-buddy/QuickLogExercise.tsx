@@ -396,8 +396,9 @@ interface MetricInputProps {
   metric: ExerciseMetric;
   value: number | string | undefined;
   onChange: (v: number | string) => void;
+  compact?: boolean;
 }
-const MetricInput = ({ metric, value, onChange }: MetricInputProps) => {
+const MetricInput = ({ metric, value, onChange, compact }: MetricInputProps) => {
   const presets = PRESETS[metric.key];
   const numeric = metric.type === 'numeric' || metric.type === 'time' || metric.type === 'distance';
   return (
