@@ -344,12 +344,12 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
 
       {/* Sticky CTA */}
       {selected && (
-        <div className="fixed bottom-4 left-0 right-0 px-4 z-30 pointer-events-none">
+        <div className={`fixed left-0 right-0 px-4 z-30 pointer-events-none ${isMobile ? 'bottom-3' : 'bottom-4'}`}>
           <div className="max-w-md mx-auto pointer-events-auto">
             <button
               onClick={handleSave}
               disabled={!canSave}
-              className={`w-full flex items-center justify-center gap-2 font-semibold py-4 rounded-2xl transition-all ${
+              className={`w-full flex items-center justify-center gap-2 font-semibold rounded-2xl transition-all ${isMobile ? 'py-3.5 text-sm' : 'py-4 text-base'} ${
                 canSave
                   ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-2xl shadow-emerald-500/30 active:scale-[0.98]'
                   : 'bg-stone-200 text-stone-500 cursor-not-allowed'
