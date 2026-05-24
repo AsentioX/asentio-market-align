@@ -64,6 +64,8 @@ interface Props {
 }
 
 const QuickLogExercise = ({ onBack, onSave }: Props) => {
+  const isMobile = useIsMobile();
+
   // ── Top-level state ──
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<ExerciseDefinition | null>(null);
