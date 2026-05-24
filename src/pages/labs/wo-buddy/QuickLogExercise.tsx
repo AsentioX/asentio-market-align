@@ -309,13 +309,14 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
           )}
 
           {showOptional && (
-            <div className="space-y-2.5">
+            <div className={isMobile ? 'space-y-2' : 'space-y-2.5'}>
               {selected.defaultMetrics.slice(2).map(m => (
                 <MetricInput
                   key={m.key}
                   metric={m}
                   value={metrics[m.key]}
                   onChange={v => setMetrics(prev => ({ ...prev, [m.key]: v }))}
+                  compact={isMobile}
                 />
               ))}
               {selected.optionalMetrics.map(m => (
@@ -324,6 +325,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
                   metric={m}
                   value={metrics[m.key]}
                   onChange={v => setMetrics(prev => ({ ...prev, [m.key]: v }))}
+                  compact={isMobile}
                 />
               ))}
             </div>
