@@ -402,9 +402,9 @@ const MetricInput = ({ metric, value, onChange, compact }: MetricInputProps) => 
   const presets = PRESETS[metric.key];
   const numeric = metric.type === 'numeric' || metric.type === 'time' || metric.type === 'distance';
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white/60 p-3">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800">
+    <div className={`rounded-2xl border border-stone-200 bg-white/60 ${compact ? 'p-2.5' : 'p-3'}`}>
+      <div className={`flex items-center justify-between ${compact ? 'mb-1.5' : 'mb-2'}`}>
+        <div className={`flex items-center gap-1.5 font-semibold text-stone-800 ${compact ? 'text-[10px]' : 'text-[11px]'}`}>
           <span className="text-stone-600">{METRIC_ICON[metric.key] ?? <Hash className="w-3.5 h-3.5" />}</span>
           <span>{metric.label}</span>
           {metric.unit && <span className="text-[10px] text-stone-500 font-normal">({metric.unit})</span>}
@@ -421,18 +421,18 @@ const MetricInput = ({ metric, value, onChange, compact }: MetricInputProps) => 
             else onChange(v);
           }}
           placeholder="0"
-          className="w-20 bg-transparent text-right text-lg font-bold text-stone-900 tabular-nums focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className={`w-20 bg-transparent text-right font-bold text-stone-900 tabular-nums focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${compact ? 'text-base' : 'text-lg'}`}
         />
       </div>
       {presets && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
           {presets.map(p => {
             const active = Number(value) === Number(p);
             return (
               <button
                 key={String(p)}
                 onClick={() => onChange(p)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                className={`rounded-lg font-medium transition ${compact ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-[11px]'} ${
                   active
                     ? 'bg-emerald-500 text-white'
                     : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
