@@ -700,18 +700,17 @@ const PreRowView = ({
   <>
 
     {/* Primary status — traffic light */}
-    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4 md:p-5">
-      <div className="flex flex-col md:flex-row md:items-center gap-6">
-        <div className="flex items-center gap-5">
-          <div className="flex flex-col gap-2 p-3 rounded-2xl bg-slate-100 border border-slate-200">
-            <div className={`w-6 h-6 rounded-full ${assessment.status === 'red' ? statusMeta.dotClass : 'bg-rose-900/40'}`} />
-            <div className={`w-6 h-6 rounded-full ${assessment.status === 'yellow' ? statusMeta.dotClass : 'bg-amber-900/40'}`} />
-            <div className={`w-6 h-6 rounded-full ${assessment.status === 'green' ? statusMeta.dotClass : 'bg-emerald-900/40'}`} />
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-3 md:p-4">
+      <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-1.5 p-2 rounded-2xl bg-slate-100 border border-slate-200">
+            <div className={`w-5 h-5 rounded-full ${assessment.status === 'red' ? statusMeta.dotClass : 'bg-rose-900/40'}`} />
+            <div className={`w-5 h-5 rounded-full ${assessment.status === 'yellow' ? statusMeta.dotClass : 'bg-amber-900/40'}`} />
+            <div className={`w-5 h-5 rounded-full ${assessment.status === 'green' ? statusMeta.dotClass : 'bg-emerald-900/40'}`} />
           </div>
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-600">Launch Status</div>
-            <div className={`text-2xl md:text-3xl font-bold mt-1 ${statusMeta.textClass}`}>{statusMeta.label}</div>
-            <div className="mt-1 flex flex-nowrap items-stretch gap-2">
+            <div className={`text-xl md:text-2xl font-bold ${statusMeta.textClass}`}>{statusMeta.label}</div>
+            <div className="flex flex-nowrap items-stretch gap-2">
               <button
                 type="button"
                 onClick={() => {
