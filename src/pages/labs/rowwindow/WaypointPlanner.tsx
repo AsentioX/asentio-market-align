@@ -37,14 +37,17 @@ const numberedIcon = (n: number) =>
     iconAnchor: [14, 28],
   });
 
-export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd, onRemove, onClear }: Props) {
+export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd, onRemove, onMove, onClear }: Props) {
+  const isMobile = useIsMobile();
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const routeLayerRef = useRef<LayerGroup | null>(null);
   const onAddRef = useRef(onAdd);
+  const onMoveRef = useRef(onMove);
   const positions = useMemo(() => waypoints.map((w) => [w.lat, w.lon] as [number, number]), [waypoints]);
 
   useEffect(() => { onAddRef.current = onAdd; }, [onAdd]);
+  useEffect(() => { onMoveRef.current = onMove; }, [onMove]);
 
   useEffect(() => {
     if (!mapElRef.current || mapRef.current) return;
@@ -77,7 +80,32 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
       L.polyline(positions, { color: 'hsl(195 90% 45%)', weight: 4, opacity: 0.85, dashArray: '6 6' }).addTo(layer);
     }
     waypoints.forEach((w, i) => {
-      L.marker([w.lat, w.lon], { icon: numberedIcon(i + 1) }).addTo(layer);
+      const marker: LeafletMarker = L.marker([w.lat, w.lon], {
+        icon: numberedIcon(i + 1),
+        draggable: true,
+        autoPan: true,
+      }).addTo(layer);
+      marker.on('drag', () => {
+        // Live-update polyline while dragging
+        const layerInner = routeLayerRef.current;
+        if (!layerInner) return;
+        // Rebuild polyline using current marker positions
+        const livePositions = waypoints.map((wp, idx) => {
+          if (idx === i) {
+            const ll = marker.getLatLng();
+            return [ll.lat, ll.lng] as [number, number];
+          }
+          return [wp.lat, wp.lon] as [number, number];
+        });
+        layerInner.eachLayer((l) => {
+          // @ts-expect-error - Polyline has setLatLngs
+          if (typeof l.setLatLngs === 'function' && l !== marker) l.setLatLngs(livePositions);
+        });
+      });
+      marker.on('dragend', () => {
+        const ll = marker.getLatLng();
+        onMoveRef.current(w.id, ll.lat, ll.lng);
+      });
     });
   }, [positions, waypoints]);
 
