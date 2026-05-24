@@ -195,7 +195,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Try “row”, “bench”, “push ups”…"
-              className="w-full bg-white/60 border border-stone-200 rounded-2xl pl-10 pr-11 py-3.5 text-base text-stone-900 placeholder:text-stone-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition"
+              className={`w-full bg-white/60 border border-stone-200 rounded-2xl pl-10 pr-11 text-stone-900 placeholder:text-stone-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition ${isMobile ? 'py-3 text-sm' : 'py-3.5 text-base'}`}
             />
             <button
               type="button"
