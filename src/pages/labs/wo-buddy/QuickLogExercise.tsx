@@ -332,7 +332,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
           )}
 
           {/* Why this matters */}
-          <div className="rounded-2xl bg-stone-900/[0.03] border border-stone-200 p-3.5">
+          <div className={`rounded-2xl bg-stone-900/[0.03] border border-stone-200 ${isMobile ? 'p-3' : 'p-3.5'}`}>
             <div className="text-[10px] font-semibold uppercase tracking-widest text-emerald-700 mb-1">Why it matters</div>
             <p className="text-xs text-stone-800 leading-relaxed">{selected.whyItMatters}</p>
             {selected.shortTermBenefit && (
