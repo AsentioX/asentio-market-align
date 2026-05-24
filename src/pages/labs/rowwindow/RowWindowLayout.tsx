@@ -903,7 +903,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
   const showPosBtn = sensors.positionStatus !== 'live' && sensors.positionStatus !== 'unavailable';
   const showHrBtn = sensors.heartRateStatus !== 'live';
   return (
-    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-3">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="text-xs uppercase tracking-[0.2em] text-slate-600">Sensors</div>
         <div className="flex flex-wrap items-center gap-3 text-xs">
@@ -937,7 +937,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
         </div>
       </div>
       {(showCompassBtn || showPosBtn || showHrBtn) && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-2">
           {showCompassBtn && (
             <button
               onClick={sensors.requestCompass}
@@ -994,7 +994,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           )}
         </div>
       )}
-      <div className="mt-4 space-y-3 text-[11px] text-slate-600 leading-relaxed">
+      <div className="mt-2 space-y-2 text-[11px] text-slate-600 leading-relaxed">
         <div className="flex items-start gap-2">
           <span className="mt-0.5 text-slate-400">•</span>
           <p><strong className="text-slate-700">Compass &amp; GPS</strong> — require device permission (iOS will prompt on tap).</p>
@@ -1004,7 +1004,7 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           <p><strong className="text-slate-700">Heart rate</strong> — uses Web Bluetooth (Chrome/Edge) and works with most BLE chest straps and watches.</p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-3 space-y-2.5">
+        <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 space-y-2">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Pairing guides</p>
 
           <div>
@@ -1542,7 +1542,7 @@ interface PostRowViewProps {
 const PostRowView = ({ sessions, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
   if (sessions.length === 0) {
     return (
-      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-8 text-center">
+      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 text-center">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-500/15 border border-slate-400/20 flex items-center justify-center mb-4">
           <TrendingUp className="w-8 h-8 text-slate-600" />
         </div>
@@ -1561,7 +1561,7 @@ const PostRowView = ({ sessions, onDeleteSession, onExportSession, onNewRow }: P
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-center gap-2 px-1">
         <Clock className="w-4 h-4 text-cyan-700" />
         <h2 className="text-sm font-semibold tracking-tight">Saved Rows</h2>
@@ -1639,7 +1639,7 @@ const SessionCard = ({
   const hasChart = chartData.length > 1;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 space-y-5">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4 space-y-3">
       {/* Section 1 — header stats */}
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
@@ -1818,7 +1818,7 @@ const InlineStat = ({ icon, label, value, sub }: { icon: React.ReactNode; label:
 const BigStat = ({
   icon, label, value, sub, accent = 'text-slate-900', mono = false, pulse = false,
 }: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
-  <div className="px-1 py-3 border-b border-slate-200">
+  <div className="px-1 py-2 border-b border-slate-200">
     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
       <span className={pulse ? 'animate-pulse' : ''}>{icon}</span>
       {label}
@@ -1829,7 +1829,7 @@ const BigStat = ({
 );
 
 const Panel = ({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) => (
-  <div className="px-1 py-4 border-b border-slate-200">
+  <div className="px-1 py-3 border-b border-slate-200">
     <div className="flex items-center gap-2 mb-3">
       {icon}
       <h2 className="text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold">{title}</h2>
