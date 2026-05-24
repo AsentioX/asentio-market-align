@@ -15,14 +15,6 @@ interface Props {
   onClear: () => void;
 }
 
-interface Props {
-  center: { lat: number; lon: number };
-  waypoints: Waypoint[];
-  totalDistanceMeters: number;
-  onAdd: (lat: number, lon: number) => void;
-  onRemove: (id: string) => void;
-  onClear: () => void;
-}
 
 const numberedIcon = (n: number) =>
   L.divIcon({
