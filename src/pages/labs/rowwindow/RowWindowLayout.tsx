@@ -36,7 +36,7 @@ import { WaypointPlanner } from './WaypointPlanner';
 import { LiveTrackingMap } from './LiveTrackingMap';
 import { PostRowMap } from './PostRowMap';
 
-const DURATIONS = [60, 90, 120];
+const DURATIONS = [60, 90, 120, 150];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 
 type TabId = 'pre' | 'on' | 'post';
