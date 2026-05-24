@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { EXERCISE_LIBRARY, CATEGORY_CONFIG, type ExerciseDefinition, type ExerciseMetric } from './exerciseLibrary';
 import type { PlanExercise } from './planEngine';
+import { useIsMobile } from './useIsMobile';
 
 // ─── Storage helpers ────────────────────────────────────────────────────────
 const RECENTS_KEY = 'wob_quicklog_recents_v1';
@@ -63,6 +64,8 @@ interface Props {
 }
 
 const QuickLogExercise = ({ onBack, onSave }: Props) => {
+  const isMobile = useIsMobile();
+
   // ── Top-level state ──
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<ExerciseDefinition | null>(null);
@@ -160,7 +163,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
 
   // ───────────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-4 pb-28">
+    <div className={`${isMobile ? 'space-y-3' : 'space-y-4'} pb-28`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
@@ -192,7 +195,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Try “row”, “bench”, “push ups”…"
-              className="w-full bg-white/60 border border-stone-200 rounded-2xl pl-10 pr-11 py-3.5 text-base text-stone-900 placeholder:text-stone-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition"
+              className={`w-full bg-white/60 border border-stone-200 rounded-2xl pl-10 pr-11 text-stone-900 placeholder:text-stone-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition ${isMobile ? 'py-3 text-sm' : 'py-3.5 text-base'}`}
             />
             <button
               type="button"
@@ -260,15 +263,15 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
       {selected && cat && (
         <div className="space-y-4">
           {/* Hero card */}
-          <div className={`rounded-3xl ${cat.bg} ${cat.border} border p-4`}>
+          <div className={`rounded-3xl ${cat.bg} ${cat.border} border ${isMobile ? 'p-3' : 'p-4'}`}>
             <div className="flex items-start gap-3">
-              <div className={`w-14 h-14 rounded-2xl bg-white/70 flex items-center justify-center text-3xl shrink-0`}>
+              <div className={`${isMobile ? 'w-12 h-12 text-2xl' : 'w-14 h-14 text-3xl'} rounded-2xl bg-white/70 flex items-center justify-center shrink-0`}>
                 {selected.icon}
               </div>
               <div className="flex-1 min-w-0">
                 <div className={`text-[10px] font-semibold uppercase tracking-widest ${cat.color}`}>{cat.label}</div>
-                <h3 className="text-lg font-bold text-stone-900 leading-tight">{selected.name}</h3>
-                <p className="text-[11px] text-stone-700 mt-0.5 line-clamp-2">{selected.description}</p>
+                <h3 className={`font-bold text-stone-900 leading-tight ${isMobile ? 'text-base' : 'text-lg'}`}>{selected.name}</h3>
+                <p className="text-[11px] text-stone-700 mt-1 line-clamp-2">{selected.description}</p>
               </div>
             </div>
           </div>
@@ -282,13 +285,14 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
           )}
 
           {/* Primary metrics */}
-          <div className="space-y-2.5">
+          <div className={isMobile ? 'space-y-2' : 'space-y-2.5'}>
             {selected.defaultMetrics.slice(0, 2).map(m => (
               <MetricInput
                 key={m.key}
                 metric={m}
                 value={metrics[m.key]}
                 onChange={v => setMetrics(prev => ({ ...prev, [m.key]: v }))}
+                compact={isMobile}
               />
             ))}
           </div>
@@ -305,13 +309,14 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
           )}
 
           {showOptional && (
-            <div className="space-y-2.5">
+            <div className={isMobile ? 'space-y-2' : 'space-y-2.5'}>
               {selected.defaultMetrics.slice(2).map(m => (
                 <MetricInput
                   key={m.key}
                   metric={m}
                   value={metrics[m.key]}
                   onChange={v => setMetrics(prev => ({ ...prev, [m.key]: v }))}
+                  compact={isMobile}
                 />
               ))}
               {selected.optionalMetrics.map(m => (
@@ -320,13 +325,14 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
                   metric={m}
                   value={metrics[m.key]}
                   onChange={v => setMetrics(prev => ({ ...prev, [m.key]: v }))}
+                  compact={isMobile}
                 />
               ))}
             </div>
           )}
 
           {/* Why this matters */}
-          <div className="rounded-2xl bg-stone-900/[0.03] border border-stone-200 p-3.5">
+          <div className={`rounded-2xl bg-stone-900/[0.03] border border-stone-200 ${isMobile ? 'p-3' : 'p-3.5'}`}>
             <div className="text-[10px] font-semibold uppercase tracking-widest text-emerald-700 mb-1">Why it matters</div>
             <p className="text-xs text-stone-800 leading-relaxed">{selected.whyItMatters}</p>
             {selected.shortTermBenefit && (
@@ -338,12 +344,12 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
 
       {/* Sticky CTA */}
       {selected && (
-        <div className="fixed bottom-4 left-0 right-0 px-4 z-30 pointer-events-none">
+        <div className={`fixed left-0 right-0 px-4 z-30 pointer-events-none ${isMobile ? 'bottom-3' : 'bottom-4'}`}>
           <div className="max-w-md mx-auto pointer-events-auto">
             <button
               onClick={handleSave}
               disabled={!canSave}
-              className={`w-full flex items-center justify-center gap-2 font-semibold py-4 rounded-2xl transition-all ${
+              className={`w-full flex items-center justify-center gap-2 font-semibold rounded-2xl transition-all ${isMobile ? 'py-3.5 text-sm' : 'py-4 text-base'} ${
                 canSave
                   ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-2xl shadow-emerald-500/30 active:scale-[0.98]'
                   : 'bg-stone-200 text-stone-500 cursor-not-allowed'
@@ -392,14 +398,15 @@ interface MetricInputProps {
   metric: ExerciseMetric;
   value: number | string | undefined;
   onChange: (v: number | string) => void;
+  compact?: boolean;
 }
-const MetricInput = ({ metric, value, onChange }: MetricInputProps) => {
+const MetricInput = ({ metric, value, onChange, compact }: MetricInputProps) => {
   const presets = PRESETS[metric.key];
   const numeric = metric.type === 'numeric' || metric.type === 'time' || metric.type === 'distance';
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white/60 p-3">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800">
+    <div className={`rounded-2xl border border-stone-200 bg-white/60 ${compact ? 'p-2.5' : 'p-3'}`}>
+      <div className={`flex items-center justify-between ${compact ? 'mb-1.5' : 'mb-2'}`}>
+        <div className={`flex items-center gap-1.5 font-semibold text-stone-800 ${compact ? 'text-[10px]' : 'text-[11px]'}`}>
           <span className="text-stone-600">{METRIC_ICON[metric.key] ?? <Hash className="w-3.5 h-3.5" />}</span>
           <span>{metric.label}</span>
           {metric.unit && <span className="text-[10px] text-stone-500 font-normal">({metric.unit})</span>}
@@ -416,18 +423,18 @@ const MetricInput = ({ metric, value, onChange }: MetricInputProps) => {
             else onChange(v);
           }}
           placeholder="0"
-          className="w-20 bg-transparent text-right text-lg font-bold text-stone-900 tabular-nums focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className={`w-20 bg-transparent text-right font-bold text-stone-900 tabular-nums focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${compact ? 'text-base' : 'text-lg'}`}
         />
       </div>
       {presets && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
           {presets.map(p => {
             const active = Number(value) === Number(p);
             return (
               <button
                 key={String(p)}
                 onClick={() => onChange(p)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                className={`rounded-lg font-medium transition ${compact ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-[11px]'} ${
                   active
                     ? 'bg-emerald-500 text-white'
                     : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
