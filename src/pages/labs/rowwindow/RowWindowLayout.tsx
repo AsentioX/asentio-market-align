@@ -555,6 +555,7 @@ const RowWindowLayout = () => {
               totalDistanceMeters={waypointsHook.totalDistanceMeters}
               onAdd={waypointsHook.addWaypoint}
               onRemove={waypointsHook.removeWaypoint}
+              onMove={waypointsHook.updateWaypoint}
               onClear={waypointsHook.clearWaypoints}
             />
           </>

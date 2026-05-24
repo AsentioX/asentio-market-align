@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import L from './leaflet-setup';
-import type { LayerGroup, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
-import { Trash2, MapPin, Route } from 'lucide-react';
+import type { LayerGroup, LeafletMouseEvent, Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
+import { Trash2, MapPin, Route, Move } from 'lucide-react';
 import { Waypoint } from './useWaypoints';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Props {
   center: { lat: number; lon: number };
@@ -10,8 +11,10 @@ interface Props {
   totalDistanceMeters: number;
   onAdd: (lat: number, lon: number) => void;
   onRemove: (id: string) => void;
+  onMove: (id: string, lat: number, lon: number) => void;
   onClear: () => void;
 }
+
 
 const numberedIcon = (n: number) =>
   L.divIcon({
@@ -34,14 +37,17 @@ const numberedIcon = (n: number) =>
     iconAnchor: [14, 28],
   });
 
-export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd, onRemove, onClear }: Props) {
+export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd, onRemove, onMove, onClear }: Props) {
+  const isMobile = useIsMobile();
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const routeLayerRef = useRef<LayerGroup | null>(null);
   const onAddRef = useRef(onAdd);
+  const onMoveRef = useRef(onMove);
   const positions = useMemo(() => waypoints.map((w) => [w.lat, w.lon] as [number, number]), [waypoints]);
 
   useEffect(() => { onAddRef.current = onAdd; }, [onAdd]);
+  useEffect(() => { onMoveRef.current = onMove; }, [onMove]);
 
   useEffect(() => {
     if (!mapElRef.current || mapRef.current) return;
@@ -74,7 +80,32 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
       L.polyline(positions, { color: 'hsl(195 90% 45%)', weight: 4, opacity: 0.85, dashArray: '6 6' }).addTo(layer);
     }
     waypoints.forEach((w, i) => {
-      L.marker([w.lat, w.lon], { icon: numberedIcon(i + 1) }).addTo(layer);
+      const marker: LeafletMarker = L.marker([w.lat, w.lon], {
+        icon: numberedIcon(i + 1),
+        draggable: true,
+        autoPan: true,
+      }).addTo(layer);
+      marker.on('drag', () => {
+        // Live-update polyline while dragging
+        const layerInner = routeLayerRef.current;
+        if (!layerInner) return;
+        // Rebuild polyline using current marker positions
+        const livePositions = waypoints.map((wp, idx) => {
+          if (idx === i) {
+            const ll = marker.getLatLng();
+            return [ll.lat, ll.lng] as [number, number];
+          }
+          return [wp.lat, wp.lon] as [number, number];
+        });
+        layerInner.eachLayer((l) => {
+          // @ts-expect-error - Polyline has setLatLngs
+          if (typeof l.setLatLngs === 'function' && l !== marker) l.setLatLngs(livePositions);
+        });
+      });
+      marker.on('dragend', () => {
+        const ll = marker.getLatLng();
+        onMoveRef.current(w.id, ll.lat, ll.lng);
+      });
     });
   }, [positions, waypoints]);
 
@@ -104,29 +135,34 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_220px]">
-        <div className="h-[360px] md:h-[420px] relative">
+      <div className={isMobile ? 'flex flex-col' : 'grid grid-cols-1 md:grid-cols-[1fr_240px]'}>
+        <div className={`${isMobile ? 'h-[320px]' : 'h-[360px] md:h-[420px]'} relative`}>
           <div
             ref={mapElRef}
             className="w-full h-full"
             style={{ background: 'hsl(210 40% 95%)' }}
           />
-          {waypoints.length === 0 && (
+          {waypoints.length === 0 ? (
             <div className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-white/95 border border-slate-200 shadow-sm text-xs text-slate-700 z-[400] pointer-events-none">
               <MapPin className="w-3.5 h-3.5 inline mr-1 text-cyan-700" />
               Tap the map to drop your first waypoint
             </div>
+          ) : (
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-white/95 border border-slate-200 shadow-sm text-[11px] text-slate-700 z-[400] pointer-events-none inline-flex items-center gap-1">
+              <Move className="w-3 h-3 text-cyan-700" />
+              Drag pins to fine-tune
+            </div>
           )}
         </div>
 
-        <div className="border-t md:border-t-0 md:border-l border-slate-200 max-h-[420px] overflow-y-auto">
+        <div className={`border-slate-200 overflow-y-auto ${isMobile ? 'border-t max-h-[260px]' : 'border-t md:border-t-0 md:border-l max-h-[420px]'}`}>
           {waypoints.length === 0 ? (
             <div className="p-4 text-xs text-slate-500 text-center">No waypoints yet.</div>
           ) : (
             <ul className="divide-y divide-slate-100">
               {waypoints.map((w, i) => (
-                <li key={w.id} className="flex items-center gap-2 px-3 py-2.5">
-                  <span className="w-6 h-6 shrink-0 rounded-full bg-cyan-100 text-cyan-800 text-xs font-bold flex items-center justify-center">
+                <li key={w.id} className={`flex items-center gap-2 px-3 ${isMobile ? 'py-3.5' : 'py-2.5'}`}>
+                  <span className={`${isMobile ? 'w-8 h-8 text-sm' : 'w-6 h-6 text-xs'} shrink-0 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center`}>
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0 text-[11px] font-mono text-slate-700 leading-tight">
@@ -134,10 +170,10 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
                   </div>
                   <button
                     onClick={() => onRemove(w.id)}
-                    className="p-1.5 rounded-md text-rose-600 hover:bg-rose-50 transition"
+                    className={`${isMobile ? 'p-3' : 'p-1.5'} rounded-md text-rose-600 hover:bg-rose-50 transition`}
                     aria-label={`Delete waypoint ${i + 1}`}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </li>
               ))}

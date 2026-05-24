@@ -44,6 +44,10 @@ export function useWaypoints() {
     setWaypoints((w) => w.filter((x) => x.id !== id));
   }, []);
 
+  const updateWaypoint = useCallback((id: string, lat: number, lon: number) => {
+    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, lat, lon } : x)));
+  }, []);
+
   const clearWaypoints = useCallback(() => setWaypoints([]), []);
 
   const totalDistanceMeters = useMemo(() => {
@@ -54,5 +58,5 @@ export function useWaypoints() {
     return d;
   }, [waypoints]);
 
-  return { waypoints, addWaypoint, removeWaypoint, clearWaypoints, totalDistanceMeters, setWaypoints };
+  return { waypoints, addWaypoint, removeWaypoint, updateWaypoint, clearWaypoints, totalDistanceMeters, setWaypoints };
 }
