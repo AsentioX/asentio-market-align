@@ -163,7 +163,7 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
 
   // ───────────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-4 pb-28">
+    <div className={`${isMobile ? 'space-y-3' : 'space-y-4'} pb-28`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
