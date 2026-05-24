@@ -263,15 +263,15 @@ const QuickLogExercise = ({ onBack, onSave }: Props) => {
       {selected && cat && (
         <div className="space-y-4">
           {/* Hero card */}
-          <div className={`rounded-3xl ${cat.bg} ${cat.border} border p-4`}>
+          <div className={`rounded-3xl ${cat.bg} ${cat.border} border ${isMobile ? 'p-3' : 'p-4'}`}>
             <div className="flex items-start gap-3">
-              <div className={`w-14 h-14 rounded-2xl bg-white/70 flex items-center justify-center text-3xl shrink-0`}>
+              <div className={`${isMobile ? 'w-12 h-12 text-2xl' : 'w-14 h-14 text-3xl'} rounded-2xl bg-white/70 flex items-center justify-center shrink-0`}>
                 {selected.icon}
               </div>
               <div className="flex-1 min-w-0">
                 <div className={`text-[10px] font-semibold uppercase tracking-widest ${cat.color}`}>{cat.label}</div>
-                <h3 className="text-lg font-bold text-stone-900 leading-tight">{selected.name}</h3>
-                <p className="text-[11px] text-stone-700 mt-0.5 line-clamp-2">{selected.description}</p>
+                <h3 className={`font-bold text-stone-900 leading-tight ${isMobile ? 'text-base' : 'text-lg'}`}>{selected.name}</h3>
+                <p className="text-[11px] text-stone-700 mt-1 line-clamp-2">{selected.description}</p>
               </div>
             </div>
           </div>
