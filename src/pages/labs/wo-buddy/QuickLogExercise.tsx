@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { EXERCISE_LIBRARY, CATEGORY_CONFIG, type ExerciseDefinition, type ExerciseMetric } from './exerciseLibrary';
 import type { PlanExercise } from './planEngine';
+import { useIsMobile } from './useIsMobile';
 
 // ─── Storage helpers ────────────────────────────────────────────────────────
 const RECENTS_KEY = 'wob_quicklog_recents_v1';
