@@ -58,5 +58,5 @@ export function useWaypoints() {
     return d;
   }, [waypoints]);
 
-  return { waypoints, addWaypoint, removeWaypoint, clearWaypoints, totalDistanceMeters, setWaypoints };
+  return { waypoints, addWaypoint, removeWaypoint, updateWaypoint, clearWaypoints, totalDistanceMeters, setWaypoints };
 }
