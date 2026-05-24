@@ -111,7 +111,7 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200">
+      <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-slate-200">
         <div className="flex items-center gap-2">
           <Route className="w-4 h-4 text-cyan-700" />
           <h2 className="text-sm font-semibold tracking-tight">Plan your route</h2>
@@ -136,7 +136,7 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
       </div>
 
       <div className={isMobile ? 'flex flex-col' : 'grid grid-cols-1 md:grid-cols-[1fr_240px]'}>
-        <div className={`${isMobile ? 'h-[320px]' : 'h-[360px] md:h-[420px]'} relative`}>
+        <div className={`${isMobile ? 'h-[340px]' : 'h-[340px] md:h-[460px]'} relative`}>
           <div
             ref={mapElRef}
             className="w-full h-full"
@@ -155,13 +155,13 @@ export function WaypointPlanner({ center, waypoints, totalDistanceMeters, onAdd,
           )}
         </div>
 
-        <div className={`border-slate-200 overflow-y-auto ${isMobile ? 'border-t max-h-[260px]' : 'border-t md:border-t-0 md:border-l max-h-[420px]'}`}>
+        <div className={`border-slate-200 overflow-y-auto ${isMobile ? 'border-t max-h-[240px]' : 'border-t md:border-t-0 md:border-l max-h-[460px]'}`}>
           {waypoints.length === 0 ? (
             <div className="p-4 text-xs text-slate-500 text-center">No waypoints yet.</div>
           ) : (
             <ul className="divide-y divide-slate-100">
               {waypoints.map((w, i) => (
-                <li key={w.id} className={`flex items-center gap-2 px-3 ${isMobile ? 'py-3.5' : 'py-2.5'}`}>
+                <li key={w.id} className={`flex items-center gap-2 px-3 ${isMobile ? 'py-2' : 'py-1.5'}`}>
                   <span className={`${isMobile ? 'w-8 h-8 text-sm' : 'w-6 h-6 text-xs'} shrink-0 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center`}>
                     {i + 1}
                   </span>
