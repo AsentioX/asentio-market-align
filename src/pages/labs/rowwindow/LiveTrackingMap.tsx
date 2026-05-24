@@ -192,7 +192,7 @@ export function LiveTrackingMap({
         </div>
       )}
 
-      <div className="h-[420px] md:h-[480px] relative">
+      <div className="h-[440px] md:h-[520px] relative">
         <div
           ref={mapElRef}
           className="w-full h-full"

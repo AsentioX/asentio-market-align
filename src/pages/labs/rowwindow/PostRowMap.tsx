@@ -116,7 +116,7 @@ export function PostRowMap({ track }: Props) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Summary card */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <SummaryStat icon={<Route className="w-4 h-4" />} label="Distance" value={`${(stats.distance / 1000).toFixed(2)} km`} />
@@ -127,7 +127,7 @@ export function PostRowMap({ track }: Props) {
 
       {/* Map with speed heatmap */}
       <div className="rounded-xl overflow-hidden border border-slate-200">
-        <div className="h-[380px] relative">
+        <div className="h-[420px] relative">
           <div ref={mapElRef} className="w-full h-full" style={{ background: 'hsl(210 40% 95%)' }} />
 
           {/* Scrub tooltip */}
@@ -144,7 +144,7 @@ export function PostRowMap({ track }: Props) {
         </div>
 
         {/* Legend + scrubber */}
-        <div className="border-t border-slate-200 bg-slate-50 px-3 py-3 space-y-2.5">
+        <div className="border-t border-slate-200 bg-slate-50 px-3 py-2 space-y-2">
           <div className="flex items-center gap-3 text-[11px] text-slate-700">
             <span className="font-semibold uppercase tracking-wider">Speed</span>
             <div className="flex-1 h-2 rounded-full" style={{
@@ -179,7 +179,7 @@ export function PostRowMap({ track }: Props) {
 
 function SummaryStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
       <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-600">
         {icon}
         {label}
