@@ -520,7 +520,7 @@ const RowWindowLayout = () => {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-5 pt-2 pb-6 space-y-6">
+      <main className="max-w-6xl mx-auto px-4 pt-1 pb-4 space-y-3">
         {tab === 'pre' && (
           <>
             <PreRowView
@@ -700,7 +700,7 @@ const PreRowView = ({
   <>
 
     {/* Primary status — traffic light */}
-    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-6 md:p-8">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4 md:p-5">
       <div className="flex flex-col md:flex-row md:items-center gap-6">
         <div className="flex items-center gap-5">
           <div className="flex flex-col gap-2 p-3 rounded-2xl bg-slate-100 border border-slate-200">
@@ -795,7 +795,7 @@ const PreRowView = ({
 
     {/* Chop alert */}
     {assessment.chopAlert && (
-      <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex gap-3 items-start">
+      <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 flex gap-3 items-start">
         <AlertTriangle className="w-5 h-5 text-amber-700 mt-0.5 shrink-0" />
         <div>
           <div className="font-semibold text-amber-800">Chop Alert — Square Waves in Port Channel</div>
@@ -807,8 +807,8 @@ const PreRowView = ({
     )}
 
     {/* Tide chart */}
-    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5">
-      <div className="flex items-center justify-between mb-4">
+    <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-3">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Anchor className="w-4 h-4 text-cyan-700" />
           <h2 className="text-sm font-semibold tracking-tight">Tide Forecast (24h)</h2>
@@ -862,7 +862,7 @@ const PreRowView = ({
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-3 text-[11px] text-slate-500">
+      <p className="mt-2 text-[11px] text-slate-500">
         {source === 'noaa' ? (
           <>
             Live tide predictions from <a href={`https://tidesandcurrents.noaa.gov/stationhome.html?id=${locationState.location.tideStationId}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">NOAA CO-OPS Station {locationState.location.tideStationId}</a> ({locationState.location.name}, MLLW datum) · 6-min interval
@@ -1072,7 +1072,7 @@ const OnWaterView = ({
 
   if (sessionState === 'idle') {
     return (
-      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-8 text-center">
+      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 text-center">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center mb-4">
           <Activity className="w-8 h-8 text-cyan-700" />
         </div>
@@ -1093,7 +1093,7 @@ const OnWaterView = ({
   return (
     <>
       {/* Heading — full-width compass at top, no panel chrome */}
-      <section className="-mt-2 space-y-2">
+      <section className="-mt-1 space-y-1">
         {/* Header row */}
         <div className="flex items-baseline justify-between gap-2">
           <div className={`text-2xl md:text-3xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
@@ -1139,7 +1139,7 @@ const OnWaterView = ({
       {children}
 
       {/* Primary metrics row */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-0">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0">
         <BigStat
           icon={<Timer className="w-4 h-4" />}
           label="Elapsed"
@@ -1174,7 +1174,7 @@ const OnWaterView = ({
 
 
       {/* Heart rate + environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
-      <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-6 gap-y-4 items-stretch">
+      <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-stretch">
         <div className="grid grid-cols-1">
           <BigStat
             icon={<Heart className="w-4 h-4" />}
@@ -1185,7 +1185,7 @@ const OnWaterView = ({
             pulse={sessionState === 'active' && heartRate !== null}
           />
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4">
+        <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-3">
           <div className="flex flex-row items-stretch divide-x divide-slate-200">
             <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
               <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
@@ -1242,7 +1242,7 @@ const OnWaterView = ({
       <div className="flex gap-2">
         <button
           onClick={onPauseResume}
-          className="flex-1 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+          className="flex-1 px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
         >
           {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
         </button>
