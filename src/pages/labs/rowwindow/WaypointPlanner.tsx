@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useRef } from 'react';
 import L from './leaflet-setup';
-import type { LayerGroup, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
-import { Trash2, MapPin, Route } from 'lucide-react';
+import type { LayerGroup, LeafletMouseEvent, Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
+import { Trash2, MapPin, Route, Move } from 'lucide-react';
 import { Waypoint } from './useWaypoints';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+interface Props {
+  center: { lat: number; lon: number };
+  waypoints: Waypoint[];
+  totalDistanceMeters: number;
+  onAdd: (lat: number, lon: number) => void;
+  onRemove: (id: string) => void;
+  onMove: (id: string, lat: number, lon: number) => void;
+  onClear: () => void;
+}
 
 interface Props {
   center: { lat: number; lon: number };
