@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, ChevronDown, X, Mail, Phone, Check } from 'lucide-react';
 import { lovable } from '@/integrations/lovable';
 import { supabase } from '@/integrations/supabase/client';
+import { useGallery } from './useGallery';
 import logo from './assets/logo.png';
 
 const RACE_DATE = new Date('2026-06-20T08:00:00-07:00').getTime();
@@ -63,6 +64,7 @@ const galleryItems = [
 const BeaverBoatLayout = () => {
   const { days, hours, mins, secs } = useCountdown(RACE_DATE);
   const regCountdown = useCountdown(REG_DEADLINE);
+  const { items: galleryDb } = useGallery();
   const urgent = regCountdown.diff < 1000 * 60 * 60 * 24 * 30; // <30 days to reg close
   const [signupOpen, setSignupOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -246,22 +248,59 @@ const BeaverBoatLayout = () => {
       {/* Gallery */}
       <section className="py-20 bg-black text-white">
         <div className="container mx-auto px-4">
-          <div className="text-xs font-bold text-[#FF000D] uppercase tracking-widest mb-3">Gallery</div>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-3">Previous Races & Bay Practice</h2>
-          <p className="text-white/60 mb-10 text-lg">Catch the crew in action.</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {galleryItems.map((g, i) => (
-              <div key={i} className="aspect-[4/3] rounded-xl bg-gradient-to-br from-neutral-800 to-neutral-900 border border-white/10 overflow-hidden relative group cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#A31F34]/20 to-transparent opacity-0 group-hover:opacity-100 transition" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                  <img src={logo} alt="" className="w-16 h-16 object-contain opacity-30 mb-3" />
-                  <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${g.type === 'race' ? 'bg-[#FF000D] text-white' : 'bg-[#C0C0C0] text-black'}`}>
-                    {g.type === 'race' ? 'Race' : 'Practice'}
-                  </span>
-                  <span className="text-sm text-white/80 mt-2 text-center font-medium">{g.label}</span>
+          <div className="flex items-end justify-between mb-3 gap-4 flex-wrap">
+            <div>
+              <div className="text-xs font-bold text-[#FF000D] uppercase tracking-widest mb-3">Gallery</div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-3">Previous Races & Bay Practice</h2>
+              <p className="text-white/60 text-lg">Catch the crew in action.</p>
+            </div>
+            <Link
+              to="/labs/beaver-boat/admin"
+              className="text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white border border-white/15 hover:border-white/40 px-3 py-2 rounded-lg transition"
+            >
+              CMS Login
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-7">
+            {galleryDb.length > 0 ? (
+              galleryDb.map((g) => (
+                <div key={g.id} className="aspect-[4/3] rounded-xl bg-neutral-900 border border-white/10 overflow-hidden relative group">
+                  {g.media_kind === 'video' ? (
+                    <video
+                      src={g.media_url}
+                      className="w-full h-full object-cover"
+                      muted
+                      loop
+                      playsInline
+                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
+                      onMouseLeave={(e) => (e.currentTarget as HTMLVideoElement).pause()}
+                    />
+                  ) : (
+                    <img src={g.media_url} alt={g.label} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0" />
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+                    <span className="text-sm text-white font-bold truncate">{g.label}</span>
+                    <span className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${g.item_type === 'race' ? 'bg-[#FF000D] text-white' : 'bg-[#C0C0C0] text-black'}`}>
+                      {g.item_type}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              galleryItems.map((g, i) => (
+                <div key={i} className="aspect-[4/3] rounded-xl bg-gradient-to-br from-neutral-800 to-neutral-900 border border-white/10 overflow-hidden relative group cursor-pointer">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#A31F34]/20 to-transparent opacity-0 group-hover:opacity-100 transition" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                    <img src={logo} alt="" className="w-16 h-16 object-contain opacity-30 mb-3" />
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${g.type === 'race' ? 'bg-[#FF000D] text-white' : 'bg-[#C0C0C0] text-black'}`}>
+                      {g.type === 'race' ? 'Race' : 'Practice'}
+                    </span>
+                    <span className="text-sm text-white/80 mt-2 text-center font-medium">{g.label}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
