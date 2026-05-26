@@ -1,10 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Upload, Trash2, LogOut, Image as ImageIcon, Video } from 'lucide-react';
+import { ArrowLeft, Upload, Trash2, LogOut, Image as ImageIcon, Video, Mail, MailOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { useGallery } from './useGallery';
 import logo from './assets/logo.png';
+
+interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 
 const BeaverBoatAdmin = () => {
   const [user, setUser] = useState<any>(null);
