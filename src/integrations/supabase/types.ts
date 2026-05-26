@@ -148,6 +148,42 @@ export type Database = {
         }
         Relationships: []
       }
+      beaver_boat_gallery: {
+        Row: {
+          created_at: string
+          id: string
+          item_type: string
+          label: string
+          media_kind: string
+          media_url: string
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_type?: string
+          label: string
+          media_kind?: string
+          media_url: string
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_type?: string
+          label?: string
+          media_kind?: string
+          media_url?: string
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       case_studies: {
         Row: {
           challenge: string | null
