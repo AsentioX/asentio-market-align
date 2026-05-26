@@ -32,6 +32,17 @@ const BeaverBoatAdmin = () => {
 
   const { items, reload } = useGallery();
 
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+
+  const loadMessages = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('beaver_boat_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (data) setMessages(data as ContactMessage[]);
+  }, [user]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -39,6 +50,22 @@ const BeaverBoatAdmin = () => {
     });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (user) loadMessages();
+  }, [user, loadMessages]);
+
+  const toggleRead = async (m: ContactMessage) => {
+    setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, is_read: !x.is_read } : x)));
+    await supabase.from('beaver_boat_messages').update({ is_read: !m.is_read }).eq('id', m.id);
+  };
+
+  const deleteMessage = async (m: ContactMessage) => {
+    if (!confirm(`Delete message from ${m.name}?`)) return;
+    setMessages((prev) => prev.filter((x) => x.id !== m.id));
+    await supabase.from('beaver_boat_messages').delete().eq('id', m.id);
+  };
+
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
