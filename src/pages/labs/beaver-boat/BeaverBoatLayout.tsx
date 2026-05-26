@@ -75,6 +75,28 @@ const BeaverBoatLayout = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [sponsorMsg, setSponsorMsg] = useState({ name: '', email: '', company: '', message: '' });
   const [sponsorSent, setSponsorSent] = useState(false);
+  const [contactMsg, setContactMsg] = useState({ name: '', email: '', message: '' });
+  const [contactSent, setContactSent] = useState(false);
+  const [contactSending, setContactSending] = useState(false);
+  const [contactError, setContactError] = useState('');
+
+  const submitContact = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactError('');
+    setContactSending(true);
+    const { error } = await supabase.from('beaver_boat_messages').insert({
+      name: contactMsg.name.trim(),
+      email: contactMsg.email.trim(),
+      message: contactMsg.message.trim(),
+    });
+    setContactSending(false);
+    if (error) {
+      setContactError(error.message);
+      return;
+    }
+    setContactSent(true);
+    setContactMsg({ name: '', email: '', message: '' });
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -345,6 +367,72 @@ const BeaverBoatLayout = () => {
               </>
             )}
           </form>
+        </div>
+      </section>
+
+      {/* Contact Us */}
+      <section id="contact" className="py-20 bg-white">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Contact</div>
+          <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-3">Get in Touch</h2>
+          <p className="text-neutral-600 text-lg mb-8">
+            Questions about practice, partnerships, or paddling with us? Send a note straight to the captain's inbox.
+          </p>
+
+          {contactSent ? (
+            <div className="bg-[#F5F5F5] border-2 border-[#A31F34]/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-[#A31F34] flex items-center justify-center mb-4">
+                <Check className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-black mb-2">Message Received</h3>
+              <p className="text-neutral-600 mb-5">Thanks! A crew admin will get back to you shortly.</p>
+              <button
+                onClick={() => setContactSent(false)}
+                className="text-sm font-bold text-[#A31F34] hover:text-[#FF000D]"
+              >
+                Send another message
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={submitContact} className="bg-[#F5F5F5] rounded-2xl p-6 md:p-8 space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  required
+                  maxLength={120}
+                  value={contactMsg.name}
+                  onChange={(e) => setContactMsg({ ...contactMsg, name: e.target.value })}
+                  placeholder="Your name"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-black/10 bg-white focus:border-[#A31F34] outline-none"
+                />
+                <input
+                  required
+                  type="email"
+                  maxLength={255}
+                  value={contactMsg.email}
+                  onChange={(e) => setContactMsg({ ...contactMsg, email: e.target.value })}
+                  placeholder="Email"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-black/10 bg-white focus:border-[#A31F34] outline-none"
+                />
+              </div>
+              <textarea
+                required
+                maxLength={4000}
+                rows={5}
+                value={contactMsg.message}
+                onChange={(e) => setContactMsg({ ...contactMsg, message: e.target.value })}
+                placeholder="What's on your mind?"
+                className="w-full px-4 py-3 rounded-lg border-2 border-black/10 bg-white focus:border-[#A31F34] outline-none resize-none"
+              />
+              {contactError && <div className="text-sm text-[#A31F34]">{contactError}</div>}
+              <button
+                type="submit"
+                disabled={contactSending}
+                className="w-full md:w-auto px-8 py-4 rounded-lg bg-[#A31F34] text-white font-black text-lg hover:bg-[#FF000D] transition disabled:opacity-60"
+              >
+                {contactSending ? 'Sending…' : 'Send Message'}
+              </button>
+            </form>
+          )}
         </div>
       </section>
 

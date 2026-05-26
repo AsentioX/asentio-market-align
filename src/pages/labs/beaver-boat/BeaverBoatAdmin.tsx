@@ -1,10 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Upload, Trash2, LogOut, Image as ImageIcon, Video } from 'lucide-react';
+import { ArrowLeft, Upload, Trash2, LogOut, Image as ImageIcon, Video, Mail, MailOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { useGallery } from './useGallery';
 import logo from './assets/logo.png';
+
+interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 
 const BeaverBoatAdmin = () => {
   const [user, setUser] = useState<any>(null);
@@ -22,6 +32,17 @@ const BeaverBoatAdmin = () => {
 
   const { items, reload } = useGallery();
 
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+
+  const loadMessages = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('beaver_boat_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (data) setMessages(data as ContactMessage[]);
+  }, [user]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -29,6 +50,22 @@ const BeaverBoatAdmin = () => {
     });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (user) loadMessages();
+  }, [user, loadMessages]);
+
+  const toggleRead = async (m: ContactMessage) => {
+    setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, is_read: !x.is_read } : x)));
+    await supabase.from('beaver_boat_messages').update({ is_read: !m.is_read }).eq('id', m.id);
+  };
+
+  const deleteMessage = async (m: ContactMessage) => {
+    if (!confirm(`Delete message from ${m.name}?`)) return;
+    setMessages((prev) => prev.filter((x) => x.id !== m.id));
+    await supabase.from('beaver_boat_messages').delete().eq('id', m.id);
+  };
+
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -317,6 +354,71 @@ const BeaverBoatAdmin = () => {
                     )}
                   </div>
                   <div className="p-2.5 text-xs font-medium truncate">{g.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Contact messages inbox — spans full width on lg */}
+        <section className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-black flex items-center gap-2">
+              <Mail className="w-5 h-5 text-[#A31F34]" />
+              Contact Messages
+              <span className="text-neutral-400 font-bold">({messages.length})</span>
+              {messages.filter((m) => !m.is_read).length > 0 && (
+                <span className="ml-2 px-2 py-0.5 rounded-full bg-[#FF000D] text-white text-xs font-black">
+                  {messages.filter((m) => !m.is_read).length} new
+                </span>
+              )}
+            </h2>
+          </div>
+
+          {messages.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-dashed border-black/15 p-10 text-center text-neutral-500">
+              No messages yet. Submissions from the Contact Us form will appear here.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`bg-white rounded-xl border p-5 ${
+                    m.is_read ? 'border-black/10 opacity-75' : 'border-[#A31F34]/30 shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
+                    <div>
+                      <div className="font-bold flex items-center gap-2">
+                        {!m.is_read && <span className="w-2 h-2 rounded-full bg-[#FF000D]" />}
+                        {m.name}
+                      </div>
+                      <a href={`mailto:${m.email}`} className="text-sm text-[#A31F34] hover:underline">
+                        {m.email}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-400">
+                        {new Date(m.created_at).toLocaleString()}
+                      </span>
+                      <button
+                        onClick={() => toggleRead(m)}
+                        title={m.is_read ? 'Mark as unread' : 'Mark as read'}
+                        className="p-1.5 rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-black"
+                      >
+                        {m.is_read ? <Mail className="w-4 h-4" /> : <MailOpen className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => deleteMessage(m)}
+                        title="Delete"
+                        className="p-1.5 rounded-lg text-neutral-500 hover:bg-[#A31F34]/10 hover:text-[#A31F34]"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-neutral-700 whitespace-pre-wrap leading-relaxed">{m.message}</p>
                 </div>
               ))}
             </div>
