@@ -75,6 +75,28 @@ const BeaverBoatLayout = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [sponsorMsg, setSponsorMsg] = useState({ name: '', email: '', company: '', message: '' });
   const [sponsorSent, setSponsorSent] = useState(false);
+  const [contactMsg, setContactMsg] = useState({ name: '', email: '', message: '' });
+  const [contactSent, setContactSent] = useState(false);
+  const [contactSending, setContactSending] = useState(false);
+  const [contactError, setContactError] = useState('');
+
+  const submitContact = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactError('');
+    setContactSending(true);
+    const { error } = await supabase.from('beaver_boat_messages').insert({
+      name: contactMsg.name.trim(),
+      email: contactMsg.email.trim(),
+      message: contactMsg.message.trim(),
+    });
+    setContactSending(false);
+    if (error) {
+      setContactError(error.message);
+      return;
+    }
+    setContactSent(true);
+    setContactMsg({ name: '', email: '', message: '' });
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
