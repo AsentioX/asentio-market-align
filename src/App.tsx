@@ -61,6 +61,7 @@ import X1SmartLayout from "./pages/labs/x1-smart/X1SmartLayout";
 import VerdantLanding from "./pages/labs/verdant/VerdantLanding";
 import CareKitsLayout from "./pages/labs/carekits/CareKitsLayout";
 import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
+import BeaverBoatAdmin from "./pages/labs/beaver-boat/BeaverBoatAdmin";
 import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
 import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
 import CFExplore from "./pages/labs/contractor-finder/Explore";
@@ -134,6 +135,7 @@ const AppContent = () => {
           <Route path="/labs/verdant" element={<VerdantLanding />} />
           <Route path="/labs/carekits" element={<CareKitsLayout />} />
           <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
+          <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
           <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
           <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
             <Route index element={<CFDashboard />} />
