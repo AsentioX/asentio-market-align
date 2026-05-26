@@ -359,6 +359,71 @@ const BeaverBoatAdmin = () => {
             </div>
           )}
         </section>
+
+        {/* Contact messages inbox — spans full width on lg */}
+        <section className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-black flex items-center gap-2">
+              <Mail className="w-5 h-5 text-[#A31F34]" />
+              Contact Messages
+              <span className="text-neutral-400 font-bold">({messages.length})</span>
+              {messages.filter((m) => !m.is_read).length > 0 && (
+                <span className="ml-2 px-2 py-0.5 rounded-full bg-[#FF000D] text-white text-xs font-black">
+                  {messages.filter((m) => !m.is_read).length} new
+                </span>
+              )}
+            </h2>
+          </div>
+
+          {messages.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-dashed border-black/15 p-10 text-center text-neutral-500">
+              No messages yet. Submissions from the Contact Us form will appear here.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`bg-white rounded-xl border p-5 ${
+                    m.is_read ? 'border-black/10 opacity-75' : 'border-[#A31F34]/30 shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
+                    <div>
+                      <div className="font-bold flex items-center gap-2">
+                        {!m.is_read && <span className="w-2 h-2 rounded-full bg-[#FF000D]" />}
+                        {m.name}
+                      </div>
+                      <a href={`mailto:${m.email}`} className="text-sm text-[#A31F34] hover:underline">
+                        {m.email}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-400">
+                        {new Date(m.created_at).toLocaleString()}
+                      </span>
+                      <button
+                        onClick={() => toggleRead(m)}
+                        title={m.is_read ? 'Mark as unread' : 'Mark as read'}
+                        className="p-1.5 rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-black"
+                      >
+                        {m.is_read ? <Mail className="w-4 h-4" /> : <MailOpen className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => deleteMessage(m)}
+                        title="Delete"
+                        className="p-1.5 rounded-lg text-neutral-500 hover:bg-[#A31F34]/10 hover:text-[#A31F34]"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-neutral-700 whitespace-pre-wrap leading-relaxed">{m.message}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
