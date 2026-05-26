@@ -30,13 +30,6 @@ const races = [
     maps: 'https://www.google.com/maps/search/?api=1&query=Lake+Merced+Park+San+Francisco',
     primary: true,
   },
-  {
-    title: 'Northern California International Dragon Boat Festival',
-    date: 'September 12–13, 2026',
-    location: 'Leo J. Ryan Park, Foster City',
-    maps: 'https://www.google.com/maps/search/?api=1&query=Leo+J+Ryan+Park+Foster+City',
-    primary: false,
-  },
 ];
 
 const faqs = [
