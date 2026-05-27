@@ -104,6 +104,11 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   // Refs for cleanup / cross-callback access without re-subscribing
   const watchIdRef = useRef<number | null>(null);
   const lastPosRef = useRef<{ lat: number; lon: number; t: number } | null>(null);
+  // Rolling buffer of recent fixes for smoothed speed (last ~4 seconds).
+  const recentFixesRef = useRef<{ lat: number; lon: number; t: number }[]>([]);
+  // Last reliable speed reading + timestamp, used to bridge brief GPS gaps so
+  // the pace display doesn't flicker to "—" between fixes.
+  const lastGoodSpeedRef = useRef<{ speed: number; t: number } | null>(null);
   const orientationHandlerRef = useRef<((e: DeviceOrientationEvent) => void) | null>(null);
   const hrDeviceRef = useRef<BluetoothDevice | null>(null);
   const hrCharRef = useRef<BluetoothRemoteGATTCharacteristic | null>(null);
