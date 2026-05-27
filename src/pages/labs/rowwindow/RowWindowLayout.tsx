@@ -1093,22 +1093,6 @@ const OnWaterView = ({
     <>
       {/* Heading — full-width compass at top, no panel chrome */}
       <section className="-mt-1 space-y-1">
-        {/* Header row */}
-        <div className="flex items-baseline justify-between gap-2">
-          <div className={`text-[11px] font-medium ${
-            headingDeg === null ? 'text-slate-500'
-            : Math.abs(headingError) < 5 ? 'text-emerald-700'
-            : Math.abs(headingError) < 12 ? 'text-amber-700'
-            : 'text-rose-700'
-          }`}>
-            {headingDeg === null
-              ? 'Compass not connected'
-              : headingError === 0
-              ? 'On line'
-              : `${Math.abs(Math.round(headingError))}° ${headingError > 0 ? 'right' : 'left'}`}
-          </div>
-        </div>
-
         {/* Compass strip — scales with screen width */}
         <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
 
