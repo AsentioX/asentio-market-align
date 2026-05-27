@@ -35,6 +35,8 @@ import { useMockRowGPS } from './useMockRowGPS';
 import { WaypointPlanner } from './WaypointPlanner';
 import { LiveTrackingMap } from './LiveTrackingMap';
 import { PostRowMap } from './PostRowMap';
+import { usePieceDetector } from './usePieceDetector';
+import { PiecesWidget } from './PiecesWidget';
 
 const DURATIONS = [60, 90, 120, 150];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -1064,6 +1066,15 @@ const OnWaterView = ({
   const pacePer500 = speedMs && speedMs > 0.2 ? 500 / speedMs : 0;
   const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : DASH;
 
+  // Auto-detect workout pieces from turnaround + speed pickup.
+  const { pieces, currentPiece, clearPieces } = usePieceDetector({
+    active: sessionState === 'active',
+    headingDeg,
+    speedMs,
+    spm,
+    distanceMeters: distanceMeters ?? 0,
+  });
+
   const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
   const laneStatus: 'good' | 'warn' | 'alert' = laneAbs < 1.5 ? 'good' : laneAbs < 3 ? 'warn' : 'alert';
   const laneColor = laneStatus === 'good' ? 'text-emerald-700' : laneStatus === 'warn' ? 'text-amber-700' : 'text-rose-700';
@@ -1151,6 +1162,16 @@ const OnWaterView = ({
           mono
         />
       </section>
+
+      {/* Auto-detected workout pieces (turnaround + speed pickup) */}
+      <PiecesWidget
+        currentPiece={currentPiece}
+        pieces={pieces}
+        onClear={clearPieces}
+        sessionActive={sessionState === 'active'}
+      />
+
+
 
 
       {/* Heart rate + environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
