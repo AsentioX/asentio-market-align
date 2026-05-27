@@ -337,7 +337,7 @@ const BeaverBoatLayout = () => {
               Help fuel the boat. Sponsors get logo placement on team gear and recognition with the alumni club.
             </p>
             <div className="space-y-3 text-white/80">
-              {['Logo on team jerseys', 'Recognition at SF & NorCal festivals', 'Social shoutouts to MIT alumni network'].map((b) => (
+              {['Logo on team jerseys', 'Social shoutouts to MIT alumni network'].map((b) => (
                 <div key={b} className="flex items-center gap-3"><Check className="w-5 h-5 text-[#FF000D]" />{b}</div>
               ))}
             </div>
