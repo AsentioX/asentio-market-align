@@ -112,14 +112,16 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
   // Stroke-detection state — kept in refs so the listener doesn't re-subscribe.
   const strokeStateRef = useRef<{
-    // Low-pass filtered vertical acceleration (gravity removed).
     lpAccel: number;
-    // High-pass (signal − slow baseline) used for peak detection.
     baseline: number;
+    // Rolling mean-square of the dynamic (high-pass) signal → adaptive threshold.
+    rms: number;
     lastPeakT: number;
-    // Sliding window of recent stroke intervals (ms) for SPM smoothing.
+    lastDynamic: number;
+    rising: boolean;
+    sawFirstSample: boolean;
     intervals: number[];
-  }>({ lpAccel: 0, baseline: 0, lastPeakT: 0, intervals: [] });
+  }>({ lpAccel: 0, baseline: 0, rms: 0, lastPeakT: 0, lastDynamic: 0, rising: false, sawFirstSample: false, intervals: [] });
 
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
 
