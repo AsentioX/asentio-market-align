@@ -1163,6 +1163,16 @@ const OnWaterView = ({
         />
       </section>
 
+      {/* Auto-detected workout pieces (turnaround + speed pickup) */}
+      <PiecesWidget
+        currentPiece={currentPiece}
+        pieces={pieces}
+        onClear={clearPieces}
+        sessionActive={sessionState === 'active'}
+      />
+
+
+
 
       {/* Heart rate + environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
       <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-stretch">
