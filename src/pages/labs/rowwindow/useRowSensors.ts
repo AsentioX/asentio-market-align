@@ -356,25 +356,37 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     const handler = (e: DeviceMotionEvent) => {
       const a = e.accelerationIncludingGravity ?? e.acceleration;
       if (!a || a.x == null || a.y == null || a.z == null) return;
-      // Magnitude is orientation-independent — the boat may be in any pose.
       const mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
       const st = strokeStateRef.current;
 
-      // Two cascaded one-pole filters:
-      //   lpAccel  ≈ smoothed signal (cuts high-frequency noise)
-      //   baseline ≈ very slow average (acts as DC / gravity removal)
+      // Mark the sensor "live" as soon as we receive ANY sample so the UI
+      // shows the accelerometer is working even before the first stroke peak.
+      if (!st.sawFirstSample) {
+        st.sawFirstSample = true;
+        setState(s => (s.motionStatus === 'live' ? s : { ...s, motionStatus: 'live' }));
+      }
+
+      // Cascaded one-pole filters: lpAccel = smoothed signal, baseline = DC.
       st.lpAccel = st.lpAccel * 0.8 + mag * 0.2;
       st.baseline = st.baseline * 0.985 + st.lpAccel * 0.015;
       const dynamic = st.lpAccel - st.baseline;
 
-      const now = e.timeStamp ? performance.timeOrigin + e.timeStamp : Date.now();
-      // Threshold tuned for typical rowing rocking (≈0.4 m/s² above baseline);
-      // refractory period prevents double-counting within one stroke (max ~60 spm).
-      const THRESHOLD = 0.4;
-      const MIN_INTERVAL_MS = 1000; // ≥ 60 spm cap
-      const MAX_INTERVAL_MS = 6000; // ≤ 10 spm floor (otherwise treat as stopped)
+      // Rolling RMS of the dynamic signal → adaptive threshold. Floors at 0.18
+      // m/s² so a perfectly still phone doesn't fire on noise.
+      st.rms = Math.sqrt(st.rms * st.rms * 0.95 + dynamic * dynamic * 0.05);
+      const THRESHOLD = Math.max(0.18, st.rms * 1.3);
 
-      if (dynamic > THRESHOLD && now - st.lastPeakT > MIN_INTERVAL_MS) {
+      const now = e.timeStamp ? performance.timeOrigin + e.timeStamp : Date.now();
+      const MIN_INTERVAL_MS = 700;  // ≤ ~85 spm cap (covers race cadence)
+      const MAX_INTERVAL_MS = 6000; // ≥ 10 spm floor
+
+      // Edge-detect a downward zero-crossing AFTER having crossed the threshold —
+      // i.e. count one peak per rocking cycle, not one per noisy bump.
+      if (dynamic > THRESHOLD) st.rising = true;
+      const peak = st.rising && dynamic < st.lastDynamic && st.lastDynamic > THRESHOLD;
+
+      if (peak && now - st.lastPeakT > MIN_INTERVAL_MS) {
+        st.rising = false;
         if (st.lastPeakT !== 0) {
           const interval = now - st.lastPeakT;
           if (interval < MAX_INTERVAL_MS) {
@@ -382,22 +394,19 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
             if (st.intervals.length > 6) st.intervals.shift();
             const avg = st.intervals.reduce((a, b) => a + b, 0) / st.intervals.length;
             const spm = Math.round(60000 / avg);
-            setState(s => ({ ...s, spm, motionStatus: 'live' }));
+            setState(s => ({ ...s, spm }));
           } else {
-            // Long gap — restart cadence tracking.
             st.intervals = [];
-            setState(s => ({ ...s, spm: null, motionStatus: 'live' }));
+            setState(s => ({ ...s, spm: null }));
           }
-        } else {
-          setState(s => ({ ...s, motionStatus: 'live' }));
         }
         st.lastPeakT = now;
-      } else if (now - st.lastPeakT > MAX_INTERVAL_MS && st.lastPeakT !== 0) {
-        // Idle — clear stale SPM so the UI doesn't lie.
+      } else if (st.lastPeakT !== 0 && now - st.lastPeakT > MAX_INTERVAL_MS) {
         st.intervals = [];
         st.lastPeakT = 0;
-        setState(s => ({ ...s, spm: null }));
+        setState(s => (s.spm === null ? s : { ...s, spm: null }));
       }
+      st.lastDynamic = dynamic;
     };
     motionHandlerRef.current = handler;
     window.addEventListener('devicemotion', handler);
