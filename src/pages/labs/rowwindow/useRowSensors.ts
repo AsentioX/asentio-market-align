@@ -203,6 +203,7 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
       (pos) => {
         const { latitude, longitude, speed, accuracy, heading } = pos.coords;
         const now = pos.timestamp || Date.now();
+        const acc = accuracy ?? 100;
         let computedSpeed = typeof speed === 'number' && speed >= 0 ? speed : null;
         let added = 0;
 
@@ -214,28 +215,54 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
             longitude,
           );
           const dt = (now - lastPosRef.current.t) / 1000;
-          // Filter out GPS jitter: ignore micro-jumps while stationary.
-          if (dist > 1.5 && dt > 0.4 && accuracy < 25) {
+          // Accumulate distance with a light jitter filter.
+          if (dist > 1.0 && dt > 0.3 && acc < 35) {
             if (trackingRef.current) added = dist;
-            if (computedSpeed === null && dt > 0) computedSpeed = dist / dt;
           }
         }
         lastPosRef.current = { lat: latitude, lon: longitude, t: now };
 
+        // Maintain a small rolling buffer of accurate fixes and derive a
+        // smoothed speed over the last ~4 s. This avoids the flicker that
+        // happens when pos.coords.speed is null between strokes.
+        if (acc < 40) {
+          recentFixesRef.current.push({ lat: latitude, lon: longitude, t: now });
+          const cutoff = now - 4000;
+          recentFixesRef.current = recentFixesRef.current.filter((p) => p.t >= cutoff);
+          if (computedSpeed === null && recentFixesRef.current.length >= 2) {
+            const buf = recentFixesRef.current;
+            let total = 0;
+            for (let i = 1; i < buf.length; i++) {
+              total += haversineMeters(buf[i - 1].lat, buf[i - 1].lon, buf[i].lat, buf[i].lon);
+            }
+            const span = (buf[buf.length - 1].t - buf[0].t) / 1000;
+            if (span > 0.5) computedSpeed = total / span;
+          }
+        }
+
+        // Bridge brief gaps: if this fix can't yield a speed but we had one
+        // recently, keep it for up to 5 s so the pace UI stays stable.
+        let speedForState = computedSpeed;
+        if (speedForState !== null && speedForState >= 0.2) {
+          lastGoodSpeedRef.current = { speed: speedForState, t: now };
+        } else if (lastGoodSpeedRef.current && now - lastGoodSpeedRef.current.t < 5000) {
+          speedForState = lastGoodSpeedRef.current.speed;
+        }
+
         setState(s => {
-          const trackPush = trackingRef.current && (accuracy ?? 100) < 30
-            ? [...s.track, { t: now, lat: latitude, lon: longitude, speedMs: computedSpeed ?? 0, accuracy: accuracy ?? 0 }]
+          const trackPush = trackingRef.current && acc < 30
+            ? [...s.track, { t: now, lat: latitude, lon: longitude, speedMs: speedForState ?? 0, accuracy: acc }]
             : s.track;
           return {
             ...s,
             positionStatus: 'live',
             positionAccuracy: accuracy ?? null,
-            speedMs: computedSpeed,
+            speedMs: speedForState,
             distanceMeters: s.distanceMeters + added,
             track: trackPush,
             // GPS heading is only reliable while moving; surface it when available
             // and we don't have a compass lock yet.
-            headingDeg: typeof heading === 'number' && !Number.isNaN(heading) && (computedSpeed ?? 0) > 1
+            headingDeg: typeof heading === 'number' && !Number.isNaN(heading) && (speedForState ?? 0) > 1
               ? heading
               : s.headingDeg,
           };
