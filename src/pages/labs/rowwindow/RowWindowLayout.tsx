@@ -1095,9 +1095,6 @@ const OnWaterView = ({
       <section className="-mt-1 space-y-1">
         {/* Header row */}
         <div className="flex items-baseline justify-between gap-2">
-          <div className={`text-2xl md:text-3xl font-bold font-mono leading-none ${headingDeg !== null ? 'text-cyan-800' : 'text-slate-400'}`}>
-            {headingDeg !== null ? `${Math.round(headingDeg)}°` : '—'}
-          </div>
           <div className={`text-[11px] font-medium ${
             headingDeg === null ? 'text-slate-500'
             : Math.abs(headingError) < 5 ? 'text-emerald-700'
