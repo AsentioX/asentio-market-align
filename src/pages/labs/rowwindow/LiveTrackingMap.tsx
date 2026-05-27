@@ -45,25 +45,26 @@ const boatIcon = (headingDeg: number) =>
     className: '',
     html: `
       <div style="
-        width: 38px; height: 38px;
+        width: 38px; height: 52px;
         transform: rotate(${headingDeg}deg);
         display: flex; align-items: center; justify-content: center;
         filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
       ">
-        <svg viewBox="0 0 24 24" width="34" height="34">
-          <defs>
-            <linearGradient id="boat-grad" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="hsl(22 95% 60%)"/>
-              <stop offset="100%" stop-color="hsl(15 90% 45%)"/>
-            </linearGradient>
-          </defs>
-          <path d="M12 2 L18 20 L12 17 L6 20 Z"
-            fill="url(#boat-grad)" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+        <svg viewBox="0 0 24 38" width="34" height="54">
+          <!-- Bow arrow: left half green (port), right half red (starboard) -->
+          <path d="M12 2 L12 15 L6 18 Z"
+            fill="hsl(140 70% 45%)" stroke="white" stroke-width="1.2" stroke-linejoin="round"/>
+          <path d="M12 2 L18 18 L12 15 Z"
+            fill="hsl(2 85% 55%)" stroke="white" stroke-width="1.2" stroke-linejoin="round"/>
+          <!-- Stern arrow: white, pointing opposite -->
+          <path d="M12 36 L18 20 L12 23 L6 20 Z"
+            fill="white" stroke="hsl(0 0% 25%)" stroke-width="1.2" stroke-linejoin="round"/>
         </svg>
       </div>`,
-    iconSize: [38, 38],
-    iconAnchor: [19, 19],
+    iconSize: [38, 52],
+    iconAnchor: [19, 26],
   });
+
 
 export function LiveTrackingMap({
   waypoints, achievedIds, onAchieve, position, headingDeg, speedMs, track, fallbackCenter,
