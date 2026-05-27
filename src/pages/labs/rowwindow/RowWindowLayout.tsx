@@ -35,6 +35,8 @@ import { useMockRowGPS } from './useMockRowGPS';
 import { WaypointPlanner } from './WaypointPlanner';
 import { LiveTrackingMap } from './LiveTrackingMap';
 import { PostRowMap } from './PostRowMap';
+import { usePieceDetector } from './usePieceDetector';
+import { PiecesWidget } from './PiecesWidget';
 
 const DURATIONS = [60, 90, 120, 150];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
