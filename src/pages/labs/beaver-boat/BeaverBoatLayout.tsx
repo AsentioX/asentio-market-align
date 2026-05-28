@@ -447,11 +447,11 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Contact Us */}
-      <section id="contact" className="py-20 bg-white">
+      <section id="contact" className="py-14 sm:py-20 bg-white">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Contact</div>
-          <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-3">Get in Touch</h2>
-          <p className="text-neutral-600 text-lg mb-8">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight mb-3">Get in Touch</h2>
+          <p className="text-neutral-600 text-base sm:text-lg mb-6 sm:mb-8">
             Questions about practice, partnerships, or paddling with us? Send a note straight to the captain's inbox.
           </p>
 
