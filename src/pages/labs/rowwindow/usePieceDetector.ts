@@ -72,6 +72,14 @@ export function usePieceDetector({ active, headingDeg, speedMs, spm, distanceMet
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [currentPiece, setCurrentPiece] = useState<Piece | null>(null);
 
+  // Mirrors of state in refs so endSession() can snapshot synchronously.
+  const piecesRef = useRef<Piece[]>([]);
+  const currentPieceRef = useRef<Piece | null>(null);
+  const distanceRef = useRef<number>(distanceMeters);
+  useEffect(() => { piecesRef.current = pieces; }, [pieces]);
+  useEffect(() => { currentPieceRef.current = currentPiece; }, [currentPiece]);
+  useEffect(() => { distanceRef.current = distanceMeters; }, [distanceMeters]);
+
   // Rolling heading history for turn detection.
   const headingHistRef = useRef<{ t: number; deg: number }[]>([]);
   const turnFlagUntilRef = useRef(0);
