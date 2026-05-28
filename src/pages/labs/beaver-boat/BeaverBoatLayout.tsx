@@ -315,9 +315,6 @@ const BeaverBoatLayout = () => {
                       </div>
                     </>
                   )}
-                  <a href={r.maps} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition ${r.primary ? 'bg-white text-black hover:bg-[#C0C0C0]' : 'bg-black text-white hover:bg-[#A31F34]'}`}>
-                    <MapPin className="w-4 h-4" /> Get Directions
-                  </a>
                 </div>
               </div>
             ))}
