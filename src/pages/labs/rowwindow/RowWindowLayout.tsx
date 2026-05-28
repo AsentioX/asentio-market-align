@@ -1051,6 +1051,9 @@ interface OnWaterViewProps {
   onPauseResume: () => void;
   onEnd: () => void;
   sensors: ReturnType<typeof useRowSensors>;
+  pieces: Piece[];
+  currentPiece: Piece | null;
+  onClearPieces: () => void;
   children?: React.ReactNode;
 }
 
@@ -1059,21 +1062,13 @@ const OnWaterView = ({
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
+  pieces, currentPiece, onClearPieces,
   children,
 }: OnWaterViewProps) => {
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   // Pace derives from real GPS ground speed (seconds per 500 m).
   const pacePer500 = speedMs && speedMs > 0.2 ? 500 / speedMs : 0;
   const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : DASH;
-
-  // Auto-detect workout pieces from turnaround + speed pickup.
-  const { pieces, currentPiece, clearPieces } = usePieceDetector({
-    active: sessionState === 'active',
-    headingDeg,
-    speedMs,
-    spm,
-    distanceMeters: distanceMeters ?? 0,
-  });
 
   const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
   const laneStatus: 'good' | 'warn' | 'alert' = laneAbs < 1.5 ? 'good' : laneAbs < 3 ? 'warn' : 'alert';
