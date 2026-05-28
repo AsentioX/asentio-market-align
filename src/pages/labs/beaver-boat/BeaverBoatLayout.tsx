@@ -184,9 +184,6 @@ const BeaverBoatLayout = () => {
       {/* Top bar */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-black/10">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/labs" className="flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-black">
-            <ArrowLeft className="w-4 h-4" /> Labs
-          </Link>
           <div className="flex items-center gap-3">
             <img src={logo} alt="Beaver Boat Club" className="h-10 w-10 object-contain" />
             <span className="font-bold tracking-tight hidden sm:block">Beaver Boat Club</span>
