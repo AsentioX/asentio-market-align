@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw,
   Activity, Compass, Navigation, Play, Pause, Square, MapPin, Timer, Route, TrendingUp, Gauge, Heart, Flame,
-  Trash2, Download, ArrowLeftRight, ChevronDown, Calendar as CalendarIcon,
+  Trash2, Download, ArrowLeftRight, ChevronDown, Calendar as CalendarIcon, Flag,
 } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
