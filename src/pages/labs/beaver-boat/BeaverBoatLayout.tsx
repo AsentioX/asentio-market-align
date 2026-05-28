@@ -288,9 +288,9 @@ const BeaverBoatLayout = () => {
                   <div className={`flex items-center gap-2 text-sm mb-2 ${r.primary ? 'text-white/80' : 'text-neutral-600'}`}>
                     <Calendar className="w-4 h-4" /> {r.date}
                   </div>
-                  <div className={`flex items-center gap-2 text-sm ${r.primary ? 'text-white/80 mb-2' : 'text-neutral-600 mb-6'}`}>
+                  <a href={r.maps} target="_blank" rel="noreferrer" className={`flex items-center gap-2 text-sm hover:underline ${r.primary ? 'text-white/80 mb-2' : 'text-neutral-600 mb-6'}`}>
                     <MapPin className="w-4 h-4" /> {r.location}
-                  </div>
+                  </a>
                   {r.primary && (
                     <>
                       <div className="border-t border-white/20 my-2" />
