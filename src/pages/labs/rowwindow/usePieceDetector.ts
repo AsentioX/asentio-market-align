@@ -72,6 +72,14 @@ export function usePieceDetector({ active, headingDeg, speedMs, spm, distanceMet
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [currentPiece, setCurrentPiece] = useState<Piece | null>(null);
 
+  // Mirrors of state in refs so endSession() can snapshot synchronously.
+  const piecesRef = useRef<Piece[]>([]);
+  const currentPieceRef = useRef<Piece | null>(null);
+  const distanceRef = useRef<number>(distanceMeters);
+  useEffect(() => { piecesRef.current = pieces; }, [pieces]);
+  useEffect(() => { currentPieceRef.current = currentPiece; }, [currentPiece]);
+  useEffect(() => { distanceRef.current = distanceMeters; }, [distanceMeters]);
+
   // Rolling heading history for turn detection.
   const headingHistRef = useRef<{ t: number; deg: number }[]>([]);
   const turnFlagUntilRef = useRef(0);
@@ -199,7 +207,21 @@ export function usePieceDetector({ active, headingDeg, speedMs, spm, distanceMet
     accumRef.current = null;
   };
 
-  return { pieces, currentPiece, clearPieces };
+  /** Synchronous snapshot of all pieces — useful when ending a session so the
+   *  currently-open piece (if any) is captured in the saved row.  */
+  const snapshotPieces = (): Piece[] => {
+    const closed = [...piecesRef.current];
+    const open = currentPieceRef.current;
+    if (open && accumRef.current) {
+      const finalized = finalizePiece(open, accumRef.current, distanceRef.current);
+      if (finalized.endedAt! - finalized.startedAt >= MIN_PIECE_DURATION_MS) {
+        closed.push(finalized);
+      }
+    }
+    return closed;
+  };
+
+  return { pieces, currentPiece, clearPieces, snapshotPieces };
 }
 
 function finalizePiece(

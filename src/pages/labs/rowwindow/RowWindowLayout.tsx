@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Waves, Wind, Sailboat, ArrowLeft, AlertTriangle, ArrowUp, ArrowDown, Clock, Anchor, Radio, RefreshCw,
   Activity, Compass, Navigation, Play, Pause, Square, MapPin, Timer, Route, TrendingUp, Gauge, Heart, Flame,
-  Trash2, Download, ArrowLeftRight, ChevronDown, Calendar as CalendarIcon,
+  Trash2, Download, ArrowLeftRight, ChevronDown, Calendar as CalendarIcon, Flag,
 } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -35,7 +35,7 @@ import { useMockRowGPS } from './useMockRowGPS';
 import { WaypointPlanner } from './WaypointPlanner';
 import { LiveTrackingMap } from './LiveTrackingMap';
 import { PostRowMap } from './PostRowMap';
-import { usePieceDetector } from './usePieceDetector';
+import { usePieceDetector, type Piece } from './usePieceDetector';
 import { PiecesWidget } from './PiecesWidget';
 
 const DURATIONS = [60, 90, 120, 150];
@@ -70,6 +70,8 @@ interface RowSession {
   track: TrackPoint[];
   speedSeries: { t: number; speedMs: number; pace: number }[];
   hrSeries: { t: number; bpm: number }[];
+  /** Auto-detected workout pieces (turnaround + speed pickup). */
+  pieces?: Piece[];
 }
 
 const startOfToday = () => {
@@ -205,6 +207,16 @@ const RowWindowLayout = () => {
   const spm: number | null = sensors.motionStatus === 'live' ? sensors.spm : null;
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
+
+  // Auto-detect workout pieces from turnaround + speed pickup.
+  // Lives on the layout so endSession() can snapshot pieces into the saved row.
+  const pieceDetector = usePieceDetector({
+    active: sessionState === 'active',
+    headingDeg: liveHeading,
+    speedMs: liveSpeedMs,
+    spm,
+    distanceMeters: liveDistance ?? 0,
+  });
 
   // Tick every second when on water tab so timers/instruments feel live (today only)
   useEffect(() => {
@@ -385,6 +397,7 @@ const RowWindowLayout = () => {
         .filter((p) => p.speedMs >= 0)
         .map((p) => ({ t: p.t, speedMs: p.speedMs, pace: p.speedMs > 0.2 ? Math.round(500 / p.speedMs) : 0 })),
       hrSeries: [...hrHistoryRef.current],
+      pieces: pieceDetector.snapshotPieces(),
     };
     setSavedSessions((prev) => [summary, ...prev]);
     setSelectedSessionId(newId);
@@ -604,6 +617,9 @@ const RowWindowLayout = () => {
               onPauseResume={pauseResume}
               onEnd={endSession}
               sensors={sensors}
+              pieces={pieceDetector.pieces}
+              currentPiece={pieceDetector.currentPiece}
+              onClearPieces={pieceDetector.clearPieces}
             >
               {sessionState !== 'idle' && (
                 <LiveTrackingMap
@@ -1051,6 +1067,9 @@ interface OnWaterViewProps {
   onPauseResume: () => void;
   onEnd: () => void;
   sensors: ReturnType<typeof useRowSensors>;
+  pieces: Piece[];
+  currentPiece: Piece | null;
+  onClearPieces: () => void;
   children?: React.ReactNode;
 }
 
@@ -1059,21 +1078,13 @@ const OnWaterView = ({
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
+  pieces, currentPiece, onClearPieces,
   children,
 }: OnWaterViewProps) => {
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   // Pace derives from real GPS ground speed (seconds per 500 m).
   const pacePer500 = speedMs && speedMs > 0.2 ? 500 / speedMs : 0;
   const paceLabel = pacePer500 ? `${Math.floor(pacePer500 / 60)}:${String(Math.round(pacePer500 % 60)).padStart(2, '0')}` : DASH;
-
-  // Auto-detect workout pieces from turnaround + speed pickup.
-  const { pieces, currentPiece, clearPieces } = usePieceDetector({
-    active: sessionState === 'active',
-    headingDeg,
-    speedMs,
-    spm,
-    distanceMeters: distanceMeters ?? 0,
-  });
 
   const laneAbs = laneOffsetMeters !== null ? Math.abs(laneOffsetMeters) : 0;
   const laneStatus: 'good' | 'warn' | 'alert' = laneAbs < 1.5 ? 'good' : laneAbs < 3 ? 'warn' : 'alert';
@@ -1169,7 +1180,7 @@ const OnWaterView = ({
       <PiecesWidget
         currentPiece={currentPiece}
         pieces={pieces}
-        onClear={clearPieces}
+        onClear={onClearPieces}
         sessionActive={sessionState === 'active'}
       />
 
@@ -1690,6 +1701,64 @@ const SessionCard = ({
       {/* Collapsible detail sections */}
       {!collapsed && (
         <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+          {/* Workout pieces auto-detected during the row */}
+          {session.pieces && session.pieces.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Flag className="w-4 h-4 text-cyan-700" />
+                <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Workouts</h3>
+                <span className="text-[11px] text-slate-500 ml-auto">{session.pieces.length} piece{session.pieces.length === 1 ? '' : 's'}</span>
+              </div>
+              <ul className="space-y-1.5">
+                {session.pieces.map((p, i) => {
+                  const dur = (p.endedAt ?? p.startedAt) - p.startedAt;
+                  const durLabel = `${Math.floor(dur / 60000)}:${String(Math.round((dur % 60000) / 1000)).padStart(2, '0')}`;
+                  const paceLbl = p.avgPaceSecPer500
+                    ? `${Math.floor(p.avgPaceSecPer500 / 60)}:${String(p.avgPaceSecPer500 % 60).padStart(2, '0')}`
+                    : DASH;
+                  return (
+                    <li key={p.id} className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[11px] font-semibold text-slate-700">
+                          Piece {i + 1}
+                          <span className="ml-2 font-mono text-slate-500 font-normal">{durLabel}</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-mono">
+                          {new Date(p.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 mt-1.5">
+                        <div>
+                          <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-500">
+                            <Route className="w-3 h-3" /> Distance
+                          </div>
+                          <div className="text-[13px] font-semibold text-slate-900 font-mono leading-tight mt-0.5">
+                            {Math.round(p.distanceMeters)} m
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-500">
+                            <Activity className="w-3 h-3" /> Stroke rate
+                          </div>
+                          <div className="text-[13px] font-semibold text-slate-900 font-mono leading-tight mt-0.5">
+                            {p.avgSpm !== null ? `${p.avgSpm} spm` : DASH}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-500">
+                            <Gauge className="w-3 h-3" /> Pace / 500m
+                          </div>
+                          <div className="text-[13px] font-semibold text-slate-900 font-mono leading-tight mt-0.5">
+                            {paceLbl}
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
           {/* Section 2 — Map with speed heatmap + scrubber */}
           {hasTrack ? (
             <div>
