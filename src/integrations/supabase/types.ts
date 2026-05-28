@@ -474,44 +474,56 @@ export type Database = {
       }
       cf_ingest_runs: {
         Row: {
+          bytes_processed: number
           created_by: string | null
           error_message: string | null
           failed_rows: number | null
           file_name: string | null
+          file_size: number | null
           finished_at: string | null
+          headers_json: Json | null
           id: string
           inserted_rows: number | null
           source: string
           started_at: string
           status: string
+          storage_path: string | null
           total_rows: number | null
           updated_rows: number | null
         }
         Insert: {
+          bytes_processed?: number
           created_by?: string | null
           error_message?: string | null
           failed_rows?: number | null
           file_name?: string | null
+          file_size?: number | null
           finished_at?: string | null
+          headers_json?: Json | null
           id?: string
           inserted_rows?: number | null
           source?: string
           started_at?: string
           status?: string
+          storage_path?: string | null
           total_rows?: number | null
           updated_rows?: number | null
         }
         Update: {
+          bytes_processed?: number
           created_by?: string | null
           error_message?: string | null
           failed_rows?: number | null
           file_name?: string | null
+          file_size?: number | null
           finished_at?: string | null
+          headers_json?: Json | null
           id?: string
           inserted_rows?: number | null
           source?: string
           started_at?: string
           status?: string
+          storage_path?: string | null
           total_rows?: number | null
           updated_rows?: number | null
         }
