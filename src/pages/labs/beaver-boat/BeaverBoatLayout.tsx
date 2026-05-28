@@ -230,13 +230,13 @@ const BeaverBoatLayout = () => {
             </div>
 
             {/* Countdown */}
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
-              <div className="flex items-center gap-4 mb-6">
-                <img src={logo} alt="" className="w-16 h-16 md:w-20 md:h-20 object-contain bg-white rounded-xl p-2" />
-                <div>
-                  <div className="text-xs font-bold text-[#FF000D] uppercase tracking-widest">Countdown to</div>
-                  <div className="text-white font-bold text-lg leading-tight">SF Dragon Boat Festival</div>
-                  <div className="text-white/60 text-sm">June 20 & 21, 2026</div>
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 sm:p-6 md:p-8">
+              <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
+                <img src={logo} alt="" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain bg-white rounded-xl p-2 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-[10px] sm:text-xs font-bold text-[#FF000D] uppercase tracking-widest">Countdown to</div>
+                  <div className="text-white font-bold text-base sm:text-lg leading-tight">SF Dragon Boat Festival</div>
+                  <div className="text-white/60 text-xs sm:text-sm">June 20 & 21, 2026</div>
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-2 md:gap-3">
