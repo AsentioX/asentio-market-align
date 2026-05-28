@@ -1,0 +1,5 @@
+ALTER TABLE public.cf_ingest_runs
+  ADD COLUMN IF NOT EXISTS bytes_processed BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS file_size BIGINT,
+  ADD COLUMN IF NOT EXISTS headers_json JSONB,
+  ADD COLUMN IF NOT EXISTS storage_path TEXT;

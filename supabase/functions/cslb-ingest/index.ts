@@ -1,19 +1,30 @@
 // CSLB ingest: streams an uploaded CSLB License Master CSV from the cf-ingest bucket
-// and batch-upserts contractors into cf_contractors. Returns immediately with a run_id;
-// the heavy work continues in the background via EdgeRuntime.waitUntil.
+// and batch-upserts contractors into cf_contractors.
 //
-// POST body: { storage_path: string }
+// This function is RESUMABLE & SELF-CHAINING. Each invocation processes a slice of
+// the file (bounded by wall-time MAX_WALL_MS), persists the byte offset, and then
+// re-invokes itself until EOF. This avoids edge-function wall-time limits when
+// ingesting the full ~290k-row, ~77 MB CSLB master CSV.
+//
+// Initial call (from admin UI):
+//   POST { storage_path: string }                 → 200 { run_id, status: 'started' }
+// Internal resume call (function → function):
+//   POST { run_id: string } with header x-internal-resume: 1
+//                                                 → 200 { run_id, status: 'chunk_done' | 'complete' }
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-internal-resume',
 };
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+const BATCH_SIZE = 500;
+const MAX_WALL_MS = 90_000; // process up to ~90s per invocation, then self-chain
 
 const CLASS_LABELS: Record<string, string> = {
   'A': 'General Engineering', 'B': 'General Contractor', 'B-2': 'Residential Remodeling',
@@ -31,10 +42,7 @@ const CLASS_LABELS: Record<string, string> = {
   'C-57': 'Well Drilling', 'C-60': 'Welding', 'C-61': 'Limited Specialty',
 };
 
-function tradeFor(primary: string | undefined): string {
-  if (!primary) return 'Other';
-  return CLASS_LABELS[primary] ?? primary;
-}
+const tradeFor = (p: string | undefined) => (p && CLASS_LABELS[p]) || p || 'Other';
 
 function estimateSize(bondAmount: number | null, classCount: number): string {
   if (bondAmount && bondAmount >= 25000) return classCount >= 3 ? 'Mid-Sized' : 'Growing Local';
@@ -73,7 +81,10 @@ function parseLine(line: string): string[] {
   return out.map((c) => c.trim());
 }
 
-// Build a normalized header lookup once
+function buildHeaderIndexFromObj(obj: Record<string, number>): Map<string, number> {
+  return new Map(Object.entries(obj));
+}
+
 function buildHeaderIndex(headers: string[]): Map<string, number> {
   const map = new Map<string, number>();
   headers.forEach((h, i) => {
@@ -135,16 +146,44 @@ function mapRow(row: string[], idx: Map<string, number>) {
   };
 }
 
-// Streams the storage object, parses CSV row-by-row, batch-upserts, never holds full file in memory.
-async function processFile(runId: string, storage_path: string) {
+// Process one chunk of the file, starting at run.bytes_processed.
+// Returns when EOF reached OR wall-time budget consumed.
+async function processChunk(runId: string) {
+  const started = Date.now();
   const admin = createClient(SUPABASE_URL, SERVICE_KEY);
-  const BATCH_SIZE = 500;
-  let inserted = 0;
-  let failed = 0;
-  let totalRows = 0;
+
+  const { data: run, error: runErr } = await admin
+    .from('cf_ingest_runs').select('*').eq('id', runId).single();
+  if (runErr || !run) throw new Error(`run not found: ${runErr?.message}`);
+
+  const storage_path = run.storage_path as string;
+  let bytesProcessed: number = Number(run.bytes_processed ?? 0);
+  let inserted: number = Number(run.inserted_rows ?? 0);
+  let failed: number = Number(run.failed_rows ?? 0);
+  let totalRows: number = Number(run.total_rows ?? 0);
   let lastError = '';
-  let headerIdx: Map<string, number> | null = null;
+  let headerIdx: Map<string, number> | null = run.headers_json
+    ? buildHeaderIndexFromObj(run.headers_json as Record<string, number>)
+    : null;
+
+  // Download the file once per chunk. 77 MB fits comfortably in edge memory.
+  const { data: file, error: dlErr } = await admin.storage.from('cf-ingest').download(storage_path);
+  if (dlErr || !file) throw new Error(`Download failed: ${dlErr?.message}`);
+  const fileSize = file.size;
+  if (!run.file_size) {
+    await admin.from('cf_ingest_runs').update({ file_size: fileSize }).eq('id', runId);
+  }
+
+  // Slice from where we left off
+  const slice = bytesProcessed > 0 ? file.slice(bytesProcessed) : file;
+  const reader = slice.stream().pipeThrough(new TextDecoderStream()).getReader();
+
+  let buffer = '';
+  let inQuotes = false;
+  let lineStart = 0;
+  let consumedInSlice = 0; // bytes from the start of the slice that have been "committed"
   let batch: ReturnType<typeof mapRow>[] = [];
+  let reachedTimeLimit = false;
 
   const flush = async () => {
     if (!batch.length) return;
@@ -163,92 +202,150 @@ async function processFile(runId: string, storage_path: string) {
     }
   };
 
-  try {
-    const { data: file, error: dlErr } = await admin.storage.from('cf-ingest').download(storage_path);
-    if (dlErr || !file) throw new Error(`Download failed: ${dlErr?.message}`);
+  const persistProgress = async (extraStatus?: string) => {
+    const update: Record<string, unknown> = {
+      bytes_processed: bytesProcessed,
+      inserted_rows: inserted,
+      failed_rows: failed,
+      total_rows: totalRows,
+      error_message: lastError || null,
+    };
+    if (extraStatus) update.status = extraStatus;
+    await admin.from('cf_ingest_runs').update(update).eq('id', runId);
+  };
 
-    if (storage_path.toLowerCase().endsWith('.zip')) {
-      throw new Error('ZIP not supported in streaming mode — please upload the unzipped CSV.');
-    }
+  // Helper: byte length of a JS string in UTF-8 (for byte offset tracking after newline)
+  const enc = new TextEncoder();
 
-    const reader = file.stream().pipeThrough(new TextDecoderStream()).getReader();
-    let buffer = '';
-    let inQuotes = false;
-    let lineStart = 0;
-
-    const processBuffer = async (final = false) => {
-      let i = 0;
-      while (i < buffer.length) {
-        const ch = buffer[i];
-        if (ch === '"') {
-          if (inQuotes && buffer[i + 1] === '"') { i += 2; continue; }
-          inQuotes = !inQuotes;
-        } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
-          const line = buffer.slice(lineStart, i);
-          if (line.length) {
-            if (!headerIdx) {
-              headerIdx = buildHeaderIndex(parseLine(line));
-            } else {
-              const cells = parseLine(line);
-              const rec = mapRow(cells, headerIdx);
-              if (rec) {
-                batch.push(rec);
-                totalRows++;
-                if (batch.length >= BATCH_SIZE) {
-                  await flush();
-                  await admin.from('cf_ingest_runs')
-                    .update({ inserted_rows: inserted, failed_rows: failed, total_rows: totalRows })
-                    .eq('id', runId);
-                }
+  const processBuffer = async (final = false) => {
+    let i = 0;
+    while (i < buffer.length) {
+      const ch = buffer[i];
+      if (ch === '"') {
+        if (inQuotes && buffer[i + 1] === '"') { i += 2; continue; }
+        inQuotes = !inQuotes;
+      } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+        const line = buffer.slice(lineStart, i);
+        let lineEnd = i;
+        if (ch === '\r' && buffer[i + 1] === '\n') lineEnd = i + 1;
+        if (line.length) {
+          if (!headerIdx) {
+            const headerCells = parseLine(line);
+            headerIdx = buildHeaderIndex(headerCells);
+            // Persist headers as a plain object {normalized_key: index}
+            const headerObj: Record<string, number> = {};
+            headerIdx.forEach((v, k) => { headerObj[k] = v; });
+            await admin.from('cf_ingest_runs').update({ headers_json: headerObj }).eq('id', runId);
+          } else {
+            const rec = mapRow(parseLine(line), headerIdx);
+            if (rec) {
+              batch.push(rec);
+              totalRows++;
+              if (batch.length >= BATCH_SIZE) {
+                await flush();
               }
             }
           }
-          if (ch === '\r' && buffer[i + 1] === '\n') i++;
-          lineStart = i + 1;
         }
-        i++;
+        // Advance committed byte cursor to just past the newline
+        const committedSlice = buffer.slice(lineStart, lineEnd + 1);
+        consumedInSlice += enc.encode(committedSlice).length;
+        bytesProcessed = (run.bytes_processed ?? 0) + consumedInSlice;
+        lineStart = lineEnd + 1;
+        i = lineEnd + 1;
+
+        // Time check at line boundary so we can checkpoint cleanly
+        if (!final && Date.now() - started > MAX_WALL_MS) {
+          reachedTimeLimit = true;
+          // discard remainder of buffer; we'll resume from bytesProcessed next call
+          buffer = '';
+          lineStart = 0;
+          await flush();
+          await persistProgress();
+          return;
+        }
+        continue;
       }
+      i++;
+    }
+    // Drop committed portion of buffer to keep it bounded
+    if (lineStart > 0) {
       buffer = buffer.slice(lineStart);
       lineStart = 0;
-      if (final && buffer.trim().length) {
-        if (!headerIdx) headerIdx = buildHeaderIndex(parseLine(buffer));
-        else {
-          const rec = mapRow(parseLine(buffer), headerIdx);
-          if (rec) { batch.push(rec); totalRows++; }
-        }
-        buffer = '';
+    }
+    if (final && buffer.trim().length) {
+      const remaining = buffer;
+      if (!headerIdx) headerIdx = buildHeaderIndex(parseLine(remaining));
+      else {
+        const rec = mapRow(parseLine(remaining), headerIdx);
+        if (rec) { batch.push(rec); totalRows++; }
       }
-    };
+      consumedInSlice += enc.encode(remaining).length;
+      bytesProcessed = (run.bytes_processed ?? 0) + consumedInSlice;
+      buffer = '';
+    }
+  };
 
-    await admin.from('cf_ingest_runs').update({ status: 'inserting' }).eq('id', runId);
+  try {
+    if (bytesProcessed === 0) {
+      await admin.from('cf_ingest_runs').update({ status: 'inserting' }).eq('id', runId);
+    }
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += value;
       await processBuffer(false);
+      if (reachedTimeLimit) {
+        try { await reader.cancel(); } catch (_) { /* ignore */ }
+        return { done: false, bytesProcessed, inserted, totalRows };
+      }
     }
     await processBuffer(true);
     await flush();
 
+    // If we got here, we reached EOF.
+    bytesProcessed = fileSize;
     await admin.from('cf_ingest_runs').update({
       status: failed === totalRows && totalRows > 0 ? 'failed' : 'complete',
+      bytes_processed: bytesProcessed,
       inserted_rows: inserted,
       failed_rows: failed,
       total_rows: totalRows,
       error_message: lastError || null,
       finished_at: new Date().toISOString(),
     }).eq('id', runId);
+    return { done: true, bytesProcessed, inserted, totalRows };
   } catch (err) {
-    console.error('processFile error', err);
+    console.error('processChunk error', err);
     await admin.from('cf_ingest_runs').update({
       status: 'failed',
+      bytes_processed: bytesProcessed,
       inserted_rows: inserted,
       failed_rows: failed,
       total_rows: totalRows,
       error_message: err instanceof Error ? err.message : 'Unknown error',
       finished_at: new Date().toISOString(),
     }).eq('id', runId);
+    throw err;
+  }
+}
+
+// Fire-and-forget self-invoke for the next chunk
+async function scheduleResume(runId: string) {
+  const url = `${SUPABASE_URL}/functions/v1/cslb-ingest`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+        'x-internal-resume': '1',
+      },
+      body: JSON.stringify({ run_id: runId }),
+    });
+  } catch (e) {
+    console.error('scheduleResume failed', e);
   }
 }
 
@@ -256,6 +353,38 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
+    const isInternalResume = req.headers.get('x-internal-resume') === '1';
+    const body = await req.json().catch(() => ({}));
+
+    // ---- Internal resume path: process next chunk, then re-chain if needed ----
+    if (isInternalResume) {
+      const authHeader = req.headers.get('Authorization') || '';
+      if (!authHeader.includes(SERVICE_KEY)) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const run_id: string | undefined = body.run_id;
+      if (!run_id) {
+        return new Response(JSON.stringify({ error: 'run_id required' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      // @ts-ignore EdgeRuntime available in Supabase edge
+      EdgeRuntime.waitUntil((async () => {
+        try {
+          const res = await processChunk(run_id);
+          if (!res.done) await scheduleResume(run_id);
+        } catch (e) {
+          console.error('resume processChunk failed', e);
+        }
+      })());
+      return new Response(JSON.stringify({ run_id, status: 'chunk_started' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // ---- Initial admin-triggered path ----
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -284,26 +413,51 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json().catch(() => ({}));
+    // Support two modes from the admin UI:
+    //   1) { storage_path } → create new run and start
+    //   2) { resume_run_id } → resume an existing run that was previously interrupted
     const storage_path: string | undefined = body.storage_path;
-    if (!storage_path) {
-      return new Response(JSON.stringify({ error: 'storage_path required' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const resume_run_id: string | undefined = body.resume_run_id;
+
+    let runId: string;
+    if (resume_run_id) {
+      runId = resume_run_id;
+      await admin.from('cf_ingest_runs')
+        .update({ status: 'inserting', error_message: null, finished_at: null })
+        .eq('id', runId);
+    } else {
+      if (!storage_path) {
+        return new Response(JSON.stringify({ error: 'storage_path or resume_run_id required' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const { data: run, error: runErr } = await admin
+        .from('cf_ingest_runs')
+        .insert({
+          source: 'CSLB',
+          file_name: storage_path,
+          storage_path,
+          status: 'parsing',
+          created_by: userId,
+          bytes_processed: 0,
+        })
+        .select('id').single();
+      if (runErr || !run) throw new Error(runErr?.message || 'failed to create run');
+      runId = run.id;
     }
 
-    const { data: run, error: runErr } = await admin
-      .from('cf_ingest_runs')
-      .insert({ source: 'CSLB', file_name: storage_path, status: 'parsing', created_by: userId })
-      .select('id').single();
-    if (runErr || !run) throw new Error(runErr?.message || 'failed to create run');
-
-    // Run the heavy work in the background. Returns immediately.
-    // @ts-ignore - EdgeRuntime is available in Supabase edge functions
-    EdgeRuntime.waitUntil(processFile(run.id, storage_path));
+    // @ts-ignore EdgeRuntime available in Supabase edge
+    EdgeRuntime.waitUntil((async () => {
+      try {
+        const res = await processChunk(runId);
+        if (!res.done) await scheduleResume(runId);
+      } catch (e) {
+        console.error('initial processChunk failed', e);
+      }
+    })());
 
     return new Response(
-      JSON.stringify({ run_id: run.id, status: 'started' }),
+      JSON.stringify({ run_id: runId, status: 'started' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (err) {
