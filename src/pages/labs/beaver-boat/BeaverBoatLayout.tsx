@@ -183,14 +183,14 @@ const BeaverBoatLayout = () => {
     <div className="min-h-screen bg-white text-black">
       {/* Top bar */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-black/10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Beaver Boat Club" className="h-10 w-10 object-contain" />
-            <span className="font-bold tracking-tight hidden sm:block">Beaver Boat Club</span>
+        <div className="container mx-auto px-4 h-14 sm:h-16 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <img src={logo} alt="Beaver Boat Club" className="h-8 w-8 sm:h-10 sm:w-10 object-contain shrink-0" />
+            <span className="font-bold tracking-tight truncate text-sm sm:text-base">Beaver Boat Club</span>
           </div>
           <button
             onClick={openSignup}
-            className={`px-4 py-2 rounded-md text-sm font-bold text-white transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] animate-pulse' : 'bg-[#A31F34]'}`}
+            className={`shrink-0 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-bold text-white transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] animate-pulse' : 'bg-[#A31F34]'}`}
           >
             Join Us
           </button>
@@ -200,43 +200,43 @@ const BeaverBoatLayout = () => {
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-black via-neutral-900 to-[#A31F34]">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, white 1px, transparent 1px), radial-gradient(circle at 70% 60%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        <div className="container mx-auto px-4 py-20 md:py-28 relative">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
+        <div className="container mx-auto px-4 py-14 sm:py-20 md:py-28 relative">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-semibold uppercase tracking-widest text-white/90 mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-white/90 mb-5 sm:mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#FF000D] animate-pulse" />
-                MIT Alumni · San Francisco Bay Area
+                MIT Alumni · SF Bay Area
               </div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.05] mb-5">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.05] mb-4 sm:mb-5">
                 Beaver Boat Club
-                <span className="block text-[#C0C0C0] text-2xl md:text-3xl font-bold mt-3">
+                <span className="block text-[#C0C0C0] text-xl sm:text-2xl md:text-3xl font-bold mt-2 sm:mt-3">
                   MIT Alumni Dragonboat Team
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
+              <p className="text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 max-w-lg">
                 We are a novice boat — <span className="text-white font-bold">no experience necessary.</span> Just show up, paddle hard, and join a crew that competes across the Bay.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3">
                 <button
                   onClick={openSignup}
-                  className={`px-8 py-4 rounded-xl text-lg font-black text-white shadow-2xl transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] shadow-[#FF000D]/40 animate-pulse' : 'bg-[#A31F34] shadow-[#A31F34]/40'}`}
+                  className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-black text-white shadow-2xl transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] shadow-[#FF000D]/40 animate-pulse' : 'bg-[#A31F34] shadow-[#A31F34]/40'}`}
                 >
                   Join Us →
                 </button>
-                <a href="#races" className="px-8 py-4 rounded-xl text-lg font-bold border-2 border-white/30 text-white hover:bg-white/10 transition">
+                <a href="#races" className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold border-2 border-white/30 text-white hover:bg-white/10 transition text-center">
                   See Race Calendar
                 </a>
               </div>
             </div>
 
             {/* Countdown */}
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
-              <div className="flex items-center gap-4 mb-6">
-                <img src={logo} alt="" className="w-16 h-16 md:w-20 md:h-20 object-contain bg-white rounded-xl p-2" />
-                <div>
-                  <div className="text-xs font-bold text-[#FF000D] uppercase tracking-widest">Countdown to</div>
-                  <div className="text-white font-bold text-lg leading-tight">SF Dragon Boat Festival</div>
-                  <div className="text-white/60 text-sm">June 20 & 21, 2026</div>
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 sm:p-6 md:p-8">
+              <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
+                <img src={logo} alt="" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain bg-white rounded-xl p-2 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-[10px] sm:text-xs font-bold text-[#FF000D] uppercase tracking-widest">Countdown to</div>
+                  <div className="text-white font-bold text-base sm:text-lg leading-tight">SF Dragon Boat Festival</div>
+                  <div className="text-white/60 text-xs sm:text-sm">June 20 & 21, 2026</div>
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-2 md:gap-3">
@@ -261,18 +261,18 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Races */}
-      <section id="races" className="py-20 bg-[#F5F5F5]">
+      <section id="races" className="py-14 sm:py-20 bg-[#F5F5F5]">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mb-12">
+          <div className="max-w-2xl mb-8 sm:mb-12">
             <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Race Calendar</div>
-            <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight">2026 Season</h2>
-            <p className="text-neutral-600 mt-3 text-lg">Local Bay Area festivals where you'll race with the crew.</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight">2026 Season</h2>
+            <p className="text-neutral-600 mt-3 text-base sm:text-lg">Local Bay Area festivals where you'll race with the crew.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {races.map((r) => (
               <div
                 key={r.title}
-                className={`group relative overflow-hidden rounded-2xl p-7 border-2 transition-all hover:-translate-y-1 ${r.primary ? 'text-white border-black' : 'bg-white text-black border-black/10'}`}
+                className={`group relative overflow-hidden rounded-2xl p-5 sm:p-7 border-2 transition-all hover:-translate-y-1 ${r.primary ? 'text-white border-black' : 'bg-white text-black border-black/10'}`}
                 style={r.primary ? { backgroundImage: `url(${raceFestivalBg})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
               >
                 {r.primary && <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-black/40" aria-hidden />}
@@ -292,21 +292,21 @@ const BeaverBoatLayout = () => {
                     <>
                       <div className="border-t border-white/20 my-2" />
                       <div className="space-y-2 mb-6">
-                        <div className="flex items-center gap-2 text-sm text-white/80">
-                          <Clock className="w-4 h-4 shrink-0 text-[#FF000D]" />
+                        <div className="flex items-start gap-2 text-sm text-white/80 flex-wrap">
+                          <Clock className="w-4 h-4 shrink-0 text-[#FF000D] mt-0.5" />
                           <span className="font-bold text-[#FF000D]">Registration deadline:</span>
                           <span className="text-[#FF000D]">May 31, 2026</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-white/80">
-                          <Calendar className="w-4 h-4 shrink-0" /> Practice: June 7 (Sun) & June 13 (Sat)
+                        <div className="flex items-start gap-2 text-sm text-white/80">
+                          <Calendar className="w-4 h-4 shrink-0 mt-0.5" /> <span>Practice: June 7 (Sun) & June 13 (Sat)</span>
                         </div>
-                      <div className="flex items-center gap-2 text-sm text-white/80">
-                        <MapPin className="w-4 h-4 shrink-0" />
+                      <div className="flex items-start gap-2 text-sm text-white/80 flex-wrap">
+                        <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
                         <span>Practice location:</span>
-                        <a href="https://maps.app.goo.gl/cE7qAEukWG8Qv1RZ9" target="_blank" rel="noreferrer" className="underline hover:text-white">Bair Island Aquatic Center</a>
+                        <a href="https://maps.app.goo.gl/cE7qAEukWG8Qv1RZ9" target="_blank" rel="noreferrer" className="underline hover:text-white break-words">Bair Island Aquatic Center</a>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-white/80">
-                        <Globe className="w-4 h-4 shrink-0" />
+                      <div className="flex items-start gap-2 text-sm text-white/80">
+                        <Globe className="w-4 h-4 shrink-0 mt-0.5" />
                         <a href="https://www.dragonboatsf.com/" target="_blank" rel="noreferrer" className="underline hover:text-white">Event website</a>
                       </div>
                       </div>
@@ -320,19 +320,19 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 bg-white">
+      <section className="py-14 sm:py-20 bg-white">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Novice FAQ</div>
-          <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-10">First Time? Read This.</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight mb-8 sm:mb-10">First Time? Read This.</h2>
           <div className="space-y-3">
             {faqs.map((f, i) => (
               <div key={i} className="border-2 border-black/10 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left font-bold hover:bg-[#F5F5F5]"
+                  className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left font-bold hover:bg-[#F5F5F5] text-sm sm:text-base"
                 >
                   <span>{f.q}</span>
-                  <ChevronDown className={`w-5 h-5 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
                 </button>
                 {openFaq === i && (
                   <div className="px-5 pb-5 text-neutral-700 leading-relaxed">{f.a}</div>
@@ -344,13 +344,13 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Gallery */}
-      <section className="py-20 bg-black text-white">
+      <section className="py-14 sm:py-20 bg-black text-white">
         <div className="container mx-auto px-4">
           <div className="flex items-end justify-between mb-3 gap-4 flex-wrap">
             <div>
               <div className="text-xs font-bold text-[#FF000D] uppercase tracking-widest mb-3">Gallery</div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-3">Previous Races & Bay Practice</h2>
-              <p className="text-white/60 text-lg">Catch the crew in action.</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-3">Previous Races & Bay Practice</h2>
+              <p className="text-white/60 text-base sm:text-lg">Catch the crew in action.</p>
             </div>
             <Link
               to="/labs/beaver-boat/admin"
@@ -359,7 +359,7 @@ const BeaverBoatLayout = () => {
               CMS Login
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-7">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-7">
             {galleryDb.length > 0 ? (
               galleryDb.map((g) => (
                 <div key={g.id} className="aspect-[4/3] rounded-xl bg-neutral-900 border border-white/10 overflow-hidden relative group">
@@ -404,12 +404,12 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Sponsors */}
-      <section className="py-20 bg-gradient-to-br from-[#A31F34] to-black text-white">
-        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <section className="py-14 sm:py-20 bg-gradient-to-br from-[#A31F34] to-black text-white">
+        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             <div className="text-xs font-bold text-[#C0C0C0] uppercase tracking-widest mb-3">Sponsorship</div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5">Seeking Sponsors</h2>
-            <p className="text-white/80 text-lg mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 sm:mb-5">Seeking Sponsors</h2>
+            <p className="text-white/80 text-base sm:text-lg mb-6">
               Help fuel the boat. Sponsors get logo placement on team gear and recognition with the alumni club.
             </p>
             <div className="space-y-3 text-white/80">
@@ -447,11 +447,11 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Contact Us */}
-      <section id="contact" className="py-20 bg-white">
+      <section id="contact" className="py-14 sm:py-20 bg-white">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Contact</div>
-          <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-3">Get in Touch</h2>
-          <p className="text-neutral-600 text-lg mb-8">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight mb-3">Get in Touch</h2>
+          <p className="text-neutral-600 text-base sm:text-lg mb-6 sm:mb-8">
             Questions about practice, partnerships, or paddling with us? Send a note straight to the captain's inbox.
           </p>
 
