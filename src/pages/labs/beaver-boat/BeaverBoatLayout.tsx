@@ -272,7 +272,7 @@ const BeaverBoatLayout = () => {
             {races.map((r) => (
               <div
                 key={r.title}
-                className={`group relative overflow-hidden rounded-2xl p-7 border-2 transition-all hover:-translate-y-1 ${r.primary ? 'text-white border-black' : 'bg-white text-black border-black/10'}`}
+                className={`group relative overflow-hidden rounded-2xl p-5 sm:p-7 border-2 transition-all hover:-translate-y-1 ${r.primary ? 'text-white border-black' : 'bg-white text-black border-black/10'}`}
                 style={r.primary ? { backgroundImage: `url(${raceFestivalBg})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
               >
                 {r.primary && <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-black/40" aria-hidden />}
