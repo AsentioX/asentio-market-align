@@ -9,6 +9,55 @@ import logo from './assets/logo.png';
 const RACE_DATE = new Date('2026-06-20T08:00:00-07:00').getTime();
 const REG_DEADLINE = new Date('2026-05-31T23:59:59-07:00').getTime();
 
+const useBeaverBoatSEO = () => {
+  useEffect(() => {
+    const isOwnDomain = typeof window !== 'undefined' &&
+      (window.location.hostname === 'beaverboatclub.com' || window.location.hostname === 'www.beaverboatclub.com');
+    const canonicalUrl = isOwnDomain
+      ? 'https://beaverboatclub.com/'
+      : 'https://asentio-website.lovable.app/labs/beaver-boat';
+    const title = 'Beaver Boat Club — MIT Alumni Dragon Boat Crew, San Francisco';
+    const description = 'Beaver Boat Club is a San Francisco Bay Area dragon boat crew anchored by MIT alumni. Join us for the 2026 SF Dragon Boat Festival — no experience required.';
+
+    const prevTitle = document.title;
+    document.title = title;
+
+    const setMeta = (selector: string, attr: string, name: string, content: string) => {
+      let el = document.head.querySelector(selector) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+      return el;
+    };
+
+    const metas = [
+      setMeta('meta[name="description"]', 'name', 'description', description),
+      setMeta('meta[property="og:title"]', 'property', 'og:title', title),
+      setMeta('meta[property="og:description"]', 'property', 'og:description', description),
+      setMeta('meta[property="og:url"]', 'property', 'og:url', canonicalUrl),
+      setMeta('meta[property="og:type"]', 'property', 'og:type', 'website'),
+    ];
+
+    let canonical = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    const hadCanonical = !!canonical;
+    const prevCanonical = canonical?.href;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = canonicalUrl;
+
+    return () => {
+      document.title = prevTitle;
+      if (hadCanonical && canonical && prevCanonical) canonical.href = prevCanonical;
+    };
+  }, []);
+};
+
 const useCountdown = (target: number) => {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
