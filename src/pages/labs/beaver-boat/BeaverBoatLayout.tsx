@@ -359,7 +359,7 @@ const BeaverBoatLayout = () => {
               CMS Login
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-7">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-7">
             {galleryDb.length > 0 ? (
               galleryDb.map((g) => (
                 <div key={g.id} className="aspect-[4/3] rounded-xl bg-neutral-900 border border-white/10 overflow-hidden relative group">
