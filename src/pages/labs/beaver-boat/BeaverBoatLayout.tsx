@@ -404,12 +404,12 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Sponsors */}
-      <section className="py-20 bg-gradient-to-br from-[#A31F34] to-black text-white">
-        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <section className="py-14 sm:py-20 bg-gradient-to-br from-[#A31F34] to-black text-white">
+        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             <div className="text-xs font-bold text-[#C0C0C0] uppercase tracking-widest mb-3">Sponsorship</div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5">Seeking Sponsors</h2>
-            <p className="text-white/80 text-lg mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 sm:mb-5">Seeking Sponsors</h2>
+            <p className="text-white/80 text-base sm:text-lg mb-6">
               Help fuel the boat. Sponsors get logo placement on team gear and recognition with the alumni club.
             </p>
             <div className="space-y-3 text-white/80">
