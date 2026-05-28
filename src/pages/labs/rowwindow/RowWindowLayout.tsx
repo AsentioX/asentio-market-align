@@ -1701,6 +1701,64 @@ const SessionCard = ({
       {/* Collapsible detail sections */}
       {!collapsed && (
         <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+          {/* Workout pieces auto-detected during the row */}
+          {session.pieces && session.pieces.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Flag className="w-4 h-4 text-cyan-700" />
+                <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Workouts</h3>
+                <span className="text-[11px] text-slate-500 ml-auto">{session.pieces.length} piece{session.pieces.length === 1 ? '' : 's'}</span>
+              </div>
+              <ul className="space-y-1.5">
+                {session.pieces.map((p, i) => {
+                  const dur = (p.endedAt ?? p.startedAt) - p.startedAt;
+                  const durLabel = `${Math.floor(dur / 60000)}:${String(Math.round((dur % 60000) / 1000)).padStart(2, '0')}`;
+                  const paceLbl = p.avgPaceSecPer500
+                    ? `${Math.floor(p.avgPaceSecPer500 / 60)}:${String(p.avgPaceSecPer500 % 60).padStart(2, '0')}`
+                    : DASH;
+                  return (
+                    <li key={p.id} className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[11px] font-semibold text-slate-700">
+                          Piece {i + 1}
+                          <span className="ml-2 font-mono text-slate-500 font-normal">{durLabel}</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-mono">
+                          {new Date(p.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 mt-1.5">
+                        <div>
+                          <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-500">
+                            <Route className="w-3 h-3" /> Distance
+                          </div>
+                          <div className="text-[13px] font-semibold text-slate-900 font-mono leading-tight mt-0.5">
+                            {Math.round(p.distanceMeters)} m
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-500">
+                            <Activity className="w-3 h-3" /> Stroke rate
+                          </div>
+                          <div className="text-[13px] font-semibold text-slate-900 font-mono leading-tight mt-0.5">
+                            {p.avgSpm !== null ? `${p.avgSpm} spm` : DASH}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-500">
+                            <Gauge className="w-3 h-3" /> Pace / 500m
+                          </div>
+                          <div className="text-[13px] font-semibold text-slate-900 font-mono leading-tight mt-0.5">
+                            {paceLbl}
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
           {/* Section 2 — Map with speed heatmap + scrubber */}
           {hasTrack ? (
             <div>
