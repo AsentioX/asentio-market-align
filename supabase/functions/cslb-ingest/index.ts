@@ -206,24 +206,19 @@ async function processChunk(runId: string) {
     ? buildHeaderIndexFromObj(run.headers_json as Record<string, number>)
     : null;
 
-  // Download the file once per chunk. 77 MB fits comfortably in edge memory.
-  const { data: file, error: dlErr } = await admin.storage.from('cf-ingest').download(storage_path);
-  if (dlErr || !file) throw new Error(`Download failed: ${dlErr?.message}`);
-  const fileSize = file.size;
+  const range = await fetchStorageRange(storage_path, bytesProcessed, MAX_BYTES_PER_CHUNK);
+  const fileSize = range.fileSize;
   if (!run.file_size) {
     await admin.from('cf_ingest_runs').update({ file_size: fileSize }).eq('id', runId);
   }
-
-  // Slice from where we left off
-  const slice = bytesProcessed > 0 ? file.slice(bytesProcessed) : file;
-  const reader = slice.stream().pipeThrough(new TextDecoderStream()).getReader();
 
   let buffer = '';
   let inQuotes = false;
   let lineStart = 0;
   let consumedInSlice = 0; // bytes from the start of the slice that have been "committed"
   let batch: ReturnType<typeof mapRow>[] = [];
-  let reachedTimeLimit = false;
+  let reachedChunkLimit = false;
+  let rowsThisChunk = 0;
 
   const flush = async () => {
     if (!batch.length) return;
