@@ -12,9 +12,9 @@ const REG_DEADLINE = new Date('2026-05-31T23:59:59-07:00').getTime();
 const useBeaverBoatSEO = () => {
   useEffect(() => {
     const isOwnDomain = typeof window !== 'undefined' &&
-      (window.location.hostname === 'beaverboatclub.com' || window.location.hostname === 'www.beaverboatclub.com');
+      (window.location.hostname === 'beaverboatclub.org' || window.location.hostname === 'www.beaverboatclub.org');
     const canonicalUrl = isOwnDomain
-      ? 'https://beaverboatclub.com/'
+      ? 'https://beaverboatclub.org/'
       : 'https://asentio-website.lovable.app/labs/beaver-boat';
     const title = 'Beaver Boat Club — MIT Alumni Dragon Boat Crew, San Francisco';
     const description = 'Beaver Boat Club is a San Francisco Bay Area dragon boat crew anchored by MIT alumni. Join us for the 2026 SF Dragon Boat Festival — no experience required.';
