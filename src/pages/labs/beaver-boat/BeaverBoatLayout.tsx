@@ -78,7 +78,7 @@ const races = [
     title: '2026 San Francisco Dragon Boat Festival',
     date: 'June 20–21, 2026',
     location: 'Lake Merced Park, San Francisco',
-    maps: 'https://www.google.com/maps/search/?api=1&query=Lake+Merced+Park+San+Francisco',
+    maps: 'https://maps.app.goo.gl/v4oGVuHdx9eFBe9SA',
     primary: true,
   },
 ];
