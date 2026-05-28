@@ -5,6 +5,7 @@ import { lovable } from '@/integrations/lovable';
 import { supabase } from '@/integrations/supabase/client';
 import { useGallery } from './useGallery';
 import logo from './assets/logo.png';
+import raceFestivalBg from '@/assets/beaver-boat/race-festival.jpg';
 
 const RACE_DATE = new Date('2026-06-20T08:00:00-07:00').getTime();
 const REG_DEADLINE = new Date('2026-05-31T23:59:59-07:00').getTime();
@@ -272,21 +273,28 @@ const BeaverBoatLayout = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {races.map((r) => (
-              <div key={r.title} className={`group rounded-2xl p-7 border-2 transition-all hover:-translate-y-1 ${r.primary ? 'bg-black text-white border-black' : 'bg-white text-black border-black/10'}`}>
-                <div className="flex items-start justify-between mb-4">
-                  <Calendar className={`w-7 h-7 ${r.primary ? 'text-[#FF000D]' : 'text-[#A31F34]'}`} />
-                  {r.primary && <span className="px-2 py-0.5 rounded-full bg-[#FF000D] text-white text-[10px] font-black uppercase tracking-wider">Next Up</span>}
+              <div
+                key={r.title}
+                className={`group relative overflow-hidden rounded-2xl p-7 border-2 transition-all hover:-translate-y-1 ${r.primary ? 'text-white border-black' : 'bg-white text-black border-black/10'}`}
+                style={r.primary ? { backgroundImage: `url(${raceFestivalBg})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+              >
+                {r.primary && <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-black/40" aria-hidden />}
+                <div className="relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <Calendar className={`w-7 h-7 ${r.primary ? 'text-[#FF000D]' : 'text-[#A31F34]'}`} />
+                    {r.primary && <span className="px-2 py-0.5 rounded-full bg-[#FF000D] text-white text-[10px] font-black uppercase tracking-wider">Next Up</span>}
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-black mb-3 leading-tight">{r.title}</h3>
+                  <div className={`flex items-center gap-2 text-sm mb-2 ${r.primary ? 'text-white/80' : 'text-neutral-600'}`}>
+                    <Calendar className="w-4 h-4" /> {r.date}
+                  </div>
+                  <div className={`flex items-center gap-2 text-sm mb-6 ${r.primary ? 'text-white/80' : 'text-neutral-600'}`}>
+                    <MapPin className="w-4 h-4" /> {r.location}
+                  </div>
+                  <a href={r.maps} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition ${r.primary ? 'bg-white text-black hover:bg-[#C0C0C0]' : 'bg-black text-white hover:bg-[#A31F34]'}`}>
+                    <MapPin className="w-4 h-4" /> Get Directions
+                  </a>
                 </div>
-                <h3 className="text-xl md:text-2xl font-black mb-3 leading-tight">{r.title}</h3>
-                <div className={`flex items-center gap-2 text-sm mb-2 ${r.primary ? 'text-white/70' : 'text-neutral-600'}`}>
-                  <Calendar className="w-4 h-4" /> {r.date}
-                </div>
-                <div className={`flex items-center gap-2 text-sm mb-6 ${r.primary ? 'text-white/70' : 'text-neutral-600'}`}>
-                  <MapPin className="w-4 h-4" /> {r.location}
-                </div>
-                <a href={r.maps} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition ${r.primary ? 'bg-white text-black hover:bg-[#C0C0C0]' : 'bg-black text-white hover:bg-[#A31F34]'}`}>
-                  <MapPin className="w-4 h-4" /> Get Directions
-                </a>
               </div>
             ))}
           </div>
