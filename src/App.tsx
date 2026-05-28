@@ -83,15 +83,33 @@ import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
+const isBeaverBoatHost = () => {
+  if (typeof window === 'undefined') return false;
+  const h = window.location.hostname;
+  return h === 'beaverboatclub.com' || h === 'www.beaverboatclub.com';
+};
+
 const AppContent = () => {
   const location = useLocation();
-  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os');
+  const beaverHost = isBeaverBoatHost();
+  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
       window.gtag('config', 'G-YMVGV4MD6C', { page_path: location.pathname + location.search });
     }
   }, [location]);
+
+  if (beaverHost) {
+    return (
+      <main>
+        <Routes>
+          <Route path="/admin" element={<BeaverBoatAdmin />} />
+          <Route path="*" element={<BeaverBoatLayout />} />
+        </Routes>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -184,6 +202,7 @@ const AppContent = () => {
     </>
   );
 };
+
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
