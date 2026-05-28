@@ -15,6 +15,9 @@ interface IngestRun {
   error_message: string | null;
   started_at: string;
   finished_at: string | null;
+  bytes_processed?: number | null;
+  file_size?: number | null;
+  storage_path?: string | null;
 }
 
 interface Stats {
