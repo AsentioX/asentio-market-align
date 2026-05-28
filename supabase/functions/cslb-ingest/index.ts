@@ -276,6 +276,7 @@ async function processChunk(runId: string) {
             if (rec) {
               batch.push(rec);
               totalRows++;
+              rowsThisChunk++;
               if (batch.length >= BATCH_SIZE) {
                 await flush();
               }
@@ -289,9 +290,9 @@ async function processChunk(runId: string) {
         lineStart = lineEnd + 1;
         i = lineEnd + 1;
 
-        // Time check at line boundary so we can checkpoint cleanly
-        if (!final && Date.now() - started > MAX_WALL_MS) {
-          reachedTimeLimit = true;
+        // Checkpoint at line boundary so we can resume cleanly
+        if (!final && (Date.now() - started > MAX_WALL_MS || rowsThisChunk >= MAX_ROWS_PER_CHUNK)) {
+          reachedChunkLimit = true;
           // discard remainder of buffer; we'll resume from bytesProcessed next call
           buffer = '';
           lineStart = 0;
@@ -309,7 +310,7 @@ async function processChunk(runId: string) {
       lineStart = 0;
     }
     if (final && buffer.trim().length) {
-      const remaining = buffer;
+      const remaining = buffer.replace(/\r?\n?$/, '');
       if (!headerIdx) headerIdx = buildHeaderIndex(parseLine(remaining));
       else {
         const rec = mapRow(parseLine(remaining), headerIdx);
