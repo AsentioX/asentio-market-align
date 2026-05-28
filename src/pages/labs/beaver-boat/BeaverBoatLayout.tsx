@@ -200,30 +200,30 @@ const BeaverBoatLayout = () => {
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-black via-neutral-900 to-[#A31F34]">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, white 1px, transparent 1px), radial-gradient(circle at 70% 60%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        <div className="container mx-auto px-4 py-20 md:py-28 relative">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
+        <div className="container mx-auto px-4 py-14 sm:py-20 md:py-28 relative">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-semibold uppercase tracking-widest text-white/90 mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-white/90 mb-5 sm:mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#FF000D] animate-pulse" />
-                MIT Alumni · San Francisco Bay Area
+                MIT Alumni · SF Bay Area
               </div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.05] mb-5">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.05] mb-4 sm:mb-5">
                 Beaver Boat Club
-                <span className="block text-[#C0C0C0] text-2xl md:text-3xl font-bold mt-3">
+                <span className="block text-[#C0C0C0] text-xl sm:text-2xl md:text-3xl font-bold mt-2 sm:mt-3">
                   MIT Alumni Dragonboat Team
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
+              <p className="text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 max-w-lg">
                 We are a novice boat — <span className="text-white font-bold">no experience necessary.</span> Just show up, paddle hard, and join a crew that competes across the Bay.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3">
                 <button
                   onClick={openSignup}
-                  className={`px-8 py-4 rounded-xl text-lg font-black text-white shadow-2xl transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] shadow-[#FF000D]/40 animate-pulse' : 'bg-[#A31F34] shadow-[#A31F34]/40'}`}
+                  className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-black text-white shadow-2xl transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] shadow-[#FF000D]/40 animate-pulse' : 'bg-[#A31F34] shadow-[#A31F34]/40'}`}
                 >
                   Join Us →
                 </button>
-                <a href="#races" className="px-8 py-4 rounded-xl text-lg font-bold border-2 border-white/30 text-white hover:bg-white/10 transition">
+                <a href="#races" className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold border-2 border-white/30 text-white hover:bg-white/10 transition text-center">
                   See Race Calendar
                 </a>
               </div>
