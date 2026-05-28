@@ -344,13 +344,13 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Gallery */}
-      <section className="py-20 bg-black text-white">
+      <section className="py-14 sm:py-20 bg-black text-white">
         <div className="container mx-auto px-4">
           <div className="flex items-end justify-between mb-3 gap-4 flex-wrap">
             <div>
               <div className="text-xs font-bold text-[#FF000D] uppercase tracking-widest mb-3">Gallery</div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-3">Previous Races & Bay Practice</h2>
-              <p className="text-white/60 text-lg">Catch the crew in action.</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-3">Previous Races & Bay Practice</h2>
+              <p className="text-white/60 text-base sm:text-lg">Catch the crew in action.</p>
             </div>
             <Link
               to="/labs/beaver-boat/admin"
