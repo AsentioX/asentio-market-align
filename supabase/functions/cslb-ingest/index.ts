@@ -327,17 +327,19 @@ async function processChunk(runId: string) {
       await admin.from('cf_ingest_runs').update({ status: 'inserting' }).eq('id', runId);
     }
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += value;
-      await processBuffer(false);
-      if (reachedTimeLimit) {
-        try { await reader.cancel(); } catch (_) { /* ignore */ }
-        return { done: false, bytesProcessed, inserted, totalRows };
-      }
+    buffer += range.text;
+    await processBuffer(range.reachedEof);
+    if (reachedChunkLimit) {
+      return { done: false, bytesProcessed, inserted, totalRows };
     }
-    await processBuffer(true);
+
+    if (!range.reachedEof) {
+      // Avoid processing a partial trailing row; resume from the last committed newline.
+      await flush();
+      await persistProgress();
+      return { done: false, bytesProcessed, inserted, totalRows };
+    }
+
     await flush();
 
     // If we got here, we reached EOF.
