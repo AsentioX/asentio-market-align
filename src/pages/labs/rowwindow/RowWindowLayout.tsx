@@ -1596,6 +1596,7 @@ const SessionCard = ({
   onDelete: () => void;
   onExport: () => void;
 }) => {
+  const [collapsed, setCollapsed] = useState(true);
   const [show, setShow] = useState({ pace: true, speed: true, hr: true });
   const toggle = (k: 'pace' | 'speed' | 'hr') => setShow((s) => ({ ...s, [k]: !s[k] }));
 
@@ -1643,8 +1644,15 @@ const SessionCard = ({
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-4 space-y-3">
-      {/* Section 1 — header stats */}
+      {/* Section 1 — header stats (always visible) */}
       <div className="flex items-start gap-3">
+        <button
+          onClick={() => setCollapsed((v) => !v)}
+          className="shrink-0 mt-0.5 p-1 rounded-md hover:bg-slate-100 transition"
+          title={collapsed ? 'Expand session' : 'Collapse session'}
+        >
+          <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${collapsed ? '-rotate-90' : ''}`} />
+        </button>
         <div className="flex-1 min-w-0">
           <div className="text-xs uppercase tracking-[0.18em] text-slate-500">
             {startedDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
@@ -1679,80 +1687,85 @@ const SessionCard = ({
         <InlineStat icon={<Heart className="w-4 h-4" />} label="Avg HR" value={session.avgHeartRate !== null ? `${session.avgHeartRate} bpm` : DASH} />
       </div>
 
-      {/* Section 2 — Map with speed heatmap + scrubber */}
-      {hasTrack ? (
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="w-4 h-4 text-cyan-700" />
-            <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Path travelled</h3>
-            <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
-          </div>
-          <PostRowMap track={session.track} />
-        </div>
-      ) : (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-          No GPS track recorded for this session.
-        </div>
-      )}
-
-      {/* Section 3 — Combined chart with toggles */}
-      {hasChart ? (
-        <div>
-          <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <TrendingUp className="w-4 h-4 text-cyan-700" />
-            <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Pace · Speed · Heart rate vs Distance</h3>
-            <div className="ml-auto flex items-center gap-1.5">
-              <SeriesToggle active={show.pace} color="hsl(280 80% 55%)" label="Pace" onClick={() => toggle('pace')} />
-              <SeriesToggle active={show.speed} color="hsl(195 90% 45%)" label="Speed" onClick={() => toggle('speed')} />
-              <SeriesToggle active={show.hr && hasHR} color="hsl(355 75% 55%)" label="HR" disabled={!hasHR} onClick={() => toggle('hr')} />
+      {/* Collapsible detail sections */}
+      {!collapsed && (
+        <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+          {/* Section 2 — Map with speed heatmap + scrubber */}
+          {hasTrack ? (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-4 h-4 text-cyan-700" />
+                <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Path travelled</h3>
+                <span className="text-[11px] text-slate-500 ml-auto">{session.track.length} GPS fixes</span>
+              </div>
+              <PostRowMap track={session.track} />
             </div>
-          </div>
-          <div className="h-64 w-full">
-            <ResponsiveContainer>
-              <LineChart data={chartData} margin={{ top: 10, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid stroke="hsl(220 15% 88%)" strokeDasharray="3 3" vertical={false} />
-                <XAxis
-                  dataKey="distM"
-                  type="number"
-                  domain={['dataMin', 'dataMax']}
-                  stroke="hsl(220 15% 35%)"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(m) => (m >= 1000 ? `${(m / 1000).toFixed(1)}km` : `${m}m`)}
-                />
-                <YAxis yAxisId="left" stroke="hsl(195 90% 45%)" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis yAxisId="right" orientation="right" stroke="hsl(355 75% 55%)" fontSize={11} tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={{ background: 'hsl(0 0% 100%)', border: '1px solid hsl(220 15% 80%)', borderRadius: 8, fontSize: 12 }}
-                  labelFormatter={(m: number) => (m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${m} m`)}
-                  formatter={(value: number, name: string) => {
-                    if (name === 'pace') {
-                      const mm = Math.floor(value / 60);
-                      const ss = value % 60;
-                      return [`${mm}:${String(ss).padStart(2, '0')} /500m`, 'Pace'];
-                    }
-                    if (name === 'speedKmh') return [`${value} km/h`, 'Speed'];
-                    if (name === 'hr') return [`${value} bpm`, 'Heart rate'];
-                    return [value, name];
-                  }}
-                />
-                {show.speed && (
-                  <Line yAxisId="left" type="monotone" dataKey="speedKmh" stroke="hsl(195 90% 45%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
-                )}
-                {show.pace && (
-                  <Line yAxisId="left" type="monotone" dataKey="pace" stroke="hsl(280 80% 55%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
-                )}
-                {show.hr && hasHR && (
-                  <Line yAxisId="right" type="monotone" dataKey="hr" stroke="hsl(355 75% 55%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
-                )}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
-          Not enough data to chart pace, speed, or heart rate.
+          ) : (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+              No GPS track recorded for this session.
+            </div>
+          )}
+
+          {/* Section 3 — Combined chart with toggles */}
+          {hasChart ? (
+            <div>
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <TrendingUp className="w-4 h-4 text-cyan-700" />
+                <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-600">Pace · Speed · Heart rate vs Distance</h3>
+                <div className="ml-auto flex items-center gap-1.5">
+                  <SeriesToggle active={show.pace} color="hsl(280 80% 55%)" label="Pace" onClick={() => toggle('pace')} />
+                  <SeriesToggle active={show.speed} color="hsl(195 90% 45%)" label="Speed" onClick={() => toggle('speed')} />
+                  <SeriesToggle active={show.hr && hasHR} color="hsl(355 75% 55%)" label="HR" disabled={!hasHR} onClick={() => toggle('hr')} />
+                </div>
+              </div>
+              <div className="h-64 w-full">
+                <ResponsiveContainer>
+                  <LineChart data={chartData} margin={{ top: 10, right: 8, left: -16, bottom: 0 }}>
+                    <CartesianGrid stroke="hsl(220 15% 88%)" strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="distM"
+                      type="number"
+                      domain={['dataMin', 'dataMax']}
+                      stroke="hsl(220 15% 35%)"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(m) => (m >= 1000 ? `${(m / 1000).toFixed(1)}km` : `${m}m`)}
+                    />
+                    <YAxis yAxisId="left" stroke="hsl(195 90% 45%)" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis yAxisId="right" orientation="right" stroke="hsl(355 75% 55%)" fontSize={11} tickLine={false} axisLine={false} />
+                    <Tooltip
+                      contentStyle={{ background: 'hsl(0 0% 100%)', border: '1px solid hsl(220 15% 80%)', borderRadius: 8, fontSize: 12 }}
+                      labelFormatter={(m: number) => (m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${m} m`)}
+                      formatter={(value: number, name: string) => {
+                        if (name === 'pace') {
+                          const mm = Math.floor(value / 60);
+                          const ss = value % 60;
+                          return [`${mm}:${String(ss).padStart(2, '0')} /500m`, 'Pace'];
+                        }
+                        if (name === 'speedKmh') return [`${value} km/h`, 'Speed'];
+                        if (name === 'hr') return [`${value} bpm`, 'Heart rate'];
+                        return [value, name];
+                      }}
+                    />
+                    {show.speed && (
+                      <Line yAxisId="left" type="monotone" dataKey="speedKmh" stroke="hsl(195 90% 45%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
+                    )}
+                    {show.pace && (
+                      <Line yAxisId="left" type="monotone" dataKey="pace" stroke="hsl(280 80% 55%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
+                    )}
+                    {show.hr && hasHR && (
+                      <Line yAxisId="right" type="monotone" dataKey="hr" stroke="hsl(355 75% 55%)" strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
+                    )}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+              Not enough data to chart pace, speed, or heart rate.
+            </div>
+          )}
         </div>
       )}
     </section>
