@@ -1144,6 +1144,7 @@ const OnWaterView = ({
           value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)} km` : DASH}
           sub={distanceMeters !== null ? `${Math.round(distanceMeters)} m` : 'GPS not connected'}
           accent="text-cyan-800"
+          mono
         />
         <BigStat
           icon={<Activity className="w-4 h-4" />}
@@ -1151,6 +1152,7 @@ const OnWaterView = ({
           value={spm !== null ? `${Math.round(spm)}` : DASH}
           sub="strokes / min"
           accent="text-cyan-800"
+          mono
           pulse={sessionState === 'active' && spm !== null}
         />
         <BigStat
