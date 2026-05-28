@@ -23,8 +23,10 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-const BATCH_SIZE = 500;
-const MAX_WALL_MS = 90_000; // process up to ~90s per invocation, then self-chain
+const BATCH_SIZE = 250;
+const MAX_WALL_MS = 5_000; // keep each invocation safely under edge CPU limits
+const MAX_BYTES_PER_CHUNK = 768 * 1024;
+const MAX_ROWS_PER_CHUNK = 2_000;
 
 const CLASS_LABELS: Record<string, string> = {
   'A': 'General Engineering', 'B': 'General Contractor', 'B-2': 'Residential Remodeling',
@@ -43,6 +45,44 @@ const CLASS_LABELS: Record<string, string> = {
 };
 
 const tradeFor = (p: string | undefined) => (p && CLASS_LABELS[p]) || p || 'Other';
+
+function storageObjectUrl(path: string): string {
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  return `${SUPABASE_URL}/storage/v1/object/cf-ingest/${encodedPath}`;
+}
+
+async function fetchStorageRange(storagePath: string, start: number, maxBytes: number) {
+  const end = start + maxBytes - 1;
+  const res = await fetch(storageObjectUrl(storagePath), {
+    headers: {
+      Authorization: `Bearer ${SERVICE_KEY}`,
+      apikey: SERVICE_KEY,
+      Range: `bytes=${start}-${end}`,
+    },
+  });
+
+  if (res.status === 416) {
+    const contentRange = res.headers.get('content-range') || '';
+    const total = Number(contentRange.match(/\*\/(\d+)/)?.[1] || start);
+    return { text: '', fileSize: total, reachedEof: true };
+  }
+
+  if (!res.ok && res.status !== 206) {
+    throw new Error(`Download failed: ${res.status} ${await res.text()}`);
+  }
+
+  const text = await res.text();
+  const contentRange = res.headers.get('content-range') || '';
+  const m = contentRange.match(/bytes (\d+)-(\d+)\/(\d+|\*)/);
+  if (m && m[3] !== '*') {
+    const rangeEnd = Number(m[2]);
+    const fileSize = Number(m[3]);
+    return { text, fileSize, reachedEof: rangeEnd + 1 >= fileSize };
+  }
+
+  const contentLength = Number(res.headers.get('content-length') || 0);
+  return { text, fileSize: start + contentLength, reachedEof: res.status === 200 };
+}
 
 function estimateSize(bondAmount: number | null, classCount: number): string {
   if (bondAmount && bondAmount >= 25000) return classCount >= 3 ? 'Mid-Sized' : 'Growing Local';
