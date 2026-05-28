@@ -86,7 +86,7 @@ const queryClient = new QueryClient();
 const isBeaverBoatHost = () => {
   if (typeof window === 'undefined') return false;
   const h = window.location.hostname;
-  return h === 'beaverboatclub.com' || h === 'www.beaverboatclub.com';
+  return h === 'beaverboatclub.org' || h === 'www.beaverboatclub.org';
 };
 
 const AppContent = () => {
