@@ -261,12 +261,12 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* Races */}
-      <section id="races" className="py-20 bg-[#F5F5F5]">
+      <section id="races" className="py-14 sm:py-20 bg-[#F5F5F5]">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mb-12">
+          <div className="max-w-2xl mb-8 sm:mb-12">
             <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Race Calendar</div>
-            <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight">2026 Season</h2>
-            <p className="text-neutral-600 mt-3 text-lg">Local Bay Area festivals where you'll race with the crew.</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight">2026 Season</h2>
+            <p className="text-neutral-600 mt-3 text-base sm:text-lg">Local Bay Area festivals where you'll race with the crew.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {races.map((r) => (
