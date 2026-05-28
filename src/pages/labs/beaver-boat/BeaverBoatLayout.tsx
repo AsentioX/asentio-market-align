@@ -111,6 +111,7 @@ const galleryItems = [
 ];
 
 const BeaverBoatLayout = () => {
+  useBeaverBoatSEO();
   const { days, hours, mins, secs } = useCountdown(RACE_DATE);
   const regCountdown = useCountdown(REG_DEADLINE);
   const { items: galleryDb } = useGallery();
