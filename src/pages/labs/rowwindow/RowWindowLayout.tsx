@@ -614,6 +614,9 @@ const RowWindowLayout = () => {
               onPauseResume={pauseResume}
               onEnd={endSession}
               sensors={sensors}
+              pieces={pieceDetector.pieces}
+              currentPiece={pieceDetector.currentPiece}
+              onClearPieces={pieceDetector.clearPieces}
             >
               {sessionState !== 'idle' && (
                 <LiveTrackingMap
