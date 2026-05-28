@@ -210,6 +210,26 @@ export default function Pipeline() {
     }
   };
 
+  // Resume an existing ingest run that was interrupted (e.g. by edge wall-time limit).
+  // The function will pick up at bytes_processed and self-chain until EOF.
+  const resumeRun = async (runId: string) => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    try {
+      const { error } = await supabase.functions.invoke('cslb-ingest', {
+        body: { resume_run_id: runId },
+      });
+      if (error) throw error;
+      toast({ title: 'Resuming ingest', description: 'Picking up where the previous run left off…' });
+      await loadRuns();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Resume failed', description: msg, variant: 'destructive' });
+    }
+  };
+
   // Stage 3 — bulk-attach websites via CSV (license_number,website)
   const handleWebsiteCsv = async (file: File) => {
     if (!isAuthed) {
