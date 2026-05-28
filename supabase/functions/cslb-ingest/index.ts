@@ -23,8 +23,10 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-const BATCH_SIZE = 500;
-const MAX_WALL_MS = 90_000; // process up to ~90s per invocation, then self-chain
+const BATCH_SIZE = 250;
+const MAX_WALL_MS = 5_000; // keep each invocation safely under edge CPU limits
+const MAX_BYTES_PER_CHUNK = 768 * 1024;
+const MAX_ROWS_PER_CHUNK = 2_000;
 
 const CLASS_LABELS: Record<string, string> = {
   'A': 'General Engineering', 'B': 'General Contractor', 'B-2': 'Residential Remodeling',
@@ -43,6 +45,44 @@ const CLASS_LABELS: Record<string, string> = {
 };
 
 const tradeFor = (p: string | undefined) => (p && CLASS_LABELS[p]) || p || 'Other';
+
+function storageObjectUrl(path: string): string {
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  return `${SUPABASE_URL}/storage/v1/object/cf-ingest/${encodedPath}`;
+}
+
+async function fetchStorageRange(storagePath: string, start: number, maxBytes: number) {
+  const end = start + maxBytes - 1;
+  const res = await fetch(storageObjectUrl(storagePath), {
+    headers: {
+      Authorization: `Bearer ${SERVICE_KEY}`,
+      apikey: SERVICE_KEY,
+      Range: `bytes=${start}-${end}`,
+    },
+  });
+
+  if (res.status === 416) {
+    const contentRange = res.headers.get('content-range') || '';
+    const total = Number(contentRange.match(/\*\/(\d+)/)?.[1] || start);
+    return { text: '', fileSize: total, reachedEof: true };
+  }
+
+  if (!res.ok && res.status !== 206) {
+    throw new Error(`Download failed: ${res.status} ${await res.text()}`);
+  }
+
+  const text = await res.text();
+  const contentRange = res.headers.get('content-range') || '';
+  const m = contentRange.match(/bytes (\d+)-(\d+)\/(\d+|\*)/);
+  if (m && m[3] !== '*') {
+    const rangeEnd = Number(m[2]);
+    const fileSize = Number(m[3]);
+    return { text, fileSize, reachedEof: rangeEnd + 1 >= fileSize };
+  }
+
+  const contentLength = Number(res.headers.get('content-length') || 0);
+  return { text, fileSize: start + contentLength, reachedEof: res.status === 200 };
+}
 
 function estimateSize(bondAmount: number | null, classCount: number): string {
   if (bondAmount && bondAmount >= 25000) return classCount >= 3 ? 'Mid-Sized' : 'Growing Local';
@@ -166,24 +206,19 @@ async function processChunk(runId: string) {
     ? buildHeaderIndexFromObj(run.headers_json as Record<string, number>)
     : null;
 
-  // Download the file once per chunk. 77 MB fits comfortably in edge memory.
-  const { data: file, error: dlErr } = await admin.storage.from('cf-ingest').download(storage_path);
-  if (dlErr || !file) throw new Error(`Download failed: ${dlErr?.message}`);
-  const fileSize = file.size;
+  const range = await fetchStorageRange(storage_path, bytesProcessed, MAX_BYTES_PER_CHUNK);
+  const fileSize = range.fileSize;
   if (!run.file_size) {
     await admin.from('cf_ingest_runs').update({ file_size: fileSize }).eq('id', runId);
   }
-
-  // Slice from where we left off
-  const slice = bytesProcessed > 0 ? file.slice(bytesProcessed) : file;
-  const reader = slice.stream().pipeThrough(new TextDecoderStream()).getReader();
 
   let buffer = '';
   let inQuotes = false;
   let lineStart = 0;
   let consumedInSlice = 0; // bytes from the start of the slice that have been "committed"
   let batch: ReturnType<typeof mapRow>[] = [];
-  let reachedTimeLimit = false;
+  let reachedChunkLimit = false;
+  let rowsThisChunk = 0;
 
   const flush = async () => {
     if (!batch.length) return;
@@ -241,6 +276,7 @@ async function processChunk(runId: string) {
             if (rec) {
               batch.push(rec);
               totalRows++;
+              rowsThisChunk++;
               if (batch.length >= BATCH_SIZE) {
                 await flush();
               }
@@ -254,9 +290,9 @@ async function processChunk(runId: string) {
         lineStart = lineEnd + 1;
         i = lineEnd + 1;
 
-        // Time check at line boundary so we can checkpoint cleanly
-        if (!final && Date.now() - started > MAX_WALL_MS) {
-          reachedTimeLimit = true;
+        // Checkpoint at line boundary so we can resume cleanly
+        if (!final && (Date.now() - started > MAX_WALL_MS || rowsThisChunk >= MAX_ROWS_PER_CHUNK)) {
+          reachedChunkLimit = true;
           // discard remainder of buffer; we'll resume from bytesProcessed next call
           buffer = '';
           lineStart = 0;
@@ -274,7 +310,7 @@ async function processChunk(runId: string) {
       lineStart = 0;
     }
     if (final && buffer.trim().length) {
-      const remaining = buffer;
+      const remaining = buffer.replace(/\r?\n?$/, '');
       if (!headerIdx) headerIdx = buildHeaderIndex(parseLine(remaining));
       else {
         const rec = mapRow(parseLine(remaining), headerIdx);
@@ -291,17 +327,19 @@ async function processChunk(runId: string) {
       await admin.from('cf_ingest_runs').update({ status: 'inserting' }).eq('id', runId);
     }
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += value;
-      await processBuffer(false);
-      if (reachedTimeLimit) {
-        try { await reader.cancel(); } catch (_) { /* ignore */ }
-        return { done: false, bytesProcessed, inserted, totalRows };
-      }
+    buffer += range.text;
+    await processBuffer(range.reachedEof);
+    if (reachedChunkLimit) {
+      return { done: false, bytesProcessed, inserted, totalRows };
     }
-    await processBuffer(true);
+
+    if (!range.reachedEof) {
+      // Avoid processing a partial trailing row; resume from the last committed newline.
+      await flush();
+      await persistProgress();
+      return { done: false, bytesProcessed, inserted, totalRows };
+    }
+
     await flush();
 
     // If we got here, we reached EOF.
