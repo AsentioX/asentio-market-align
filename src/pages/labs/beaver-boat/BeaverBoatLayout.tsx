@@ -329,10 +329,10 @@ const BeaverBoatLayout = () => {
               <div key={i} className="border-2 border-black/10 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left font-bold hover:bg-[#F5F5F5]"
+                  className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left font-bold hover:bg-[#F5F5F5] text-sm sm:text-base"
                 >
                   <span>{f.q}</span>
-                  <ChevronDown className={`w-5 h-5 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
                 </button>
                 {openFaq === i && (
                   <div className="px-5 pb-5 text-neutral-700 leading-relaxed">{f.a}</div>
