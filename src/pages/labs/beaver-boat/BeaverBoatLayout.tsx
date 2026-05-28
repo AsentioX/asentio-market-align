@@ -288,7 +288,7 @@ const BeaverBoatLayout = () => {
                   <div className={`flex items-center gap-2 text-sm mb-2 ${r.primary ? 'text-white/80' : 'text-neutral-600'}`}>
                     <Calendar className="w-4 h-4" /> {r.date}
                   </div>
-                  <div className={`flex items-center gap-2 text-sm mb-2 ${r.primary ? 'text-white/80' : 'text-neutral-600'}`}>
+                  <div className={`flex items-center gap-2 text-sm ${r.primary ? 'text-white/80 mb-2' : 'text-neutral-600 mb-6'}`}>
                     <MapPin className="w-4 h-4" /> {r.location}
                   </div>
                   {r.primary && (
@@ -308,11 +308,6 @@ const BeaverBoatLayout = () => {
                         <Globe className="w-4 h-4 shrink-0" />
                         <a href="https://www.dragonboatsf.com/" target="_blank" rel="noreferrer" className="underline hover:text-white">Event website</a>
                       </div>
-                    </div>
-                  )}
-                  {!r.primary && (
-                    <div className={`flex items-center gap-2 text-sm mb-6 ${r.primary ? 'text-white/80' : 'text-neutral-600'}`}>
-                      <MapPin className="w-4 h-4" /> {r.location}
                     </div>
                   )}
                   <a href={r.maps} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition ${r.primary ? 'bg-white text-black hover:bg-[#C0C0C0]' : 'bg-black text-white hover:bg-[#A31F34]'}`}>
