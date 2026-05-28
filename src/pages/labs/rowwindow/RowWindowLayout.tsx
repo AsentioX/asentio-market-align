@@ -1164,7 +1164,7 @@ const OnWaterView = ({
       <PiecesWidget
         currentPiece={currentPiece}
         pieces={pieces}
-        onClear={clearPieces}
+        onClear={onClearPieces}
         sessionActive={sessionState === 'active'}
       />
 
