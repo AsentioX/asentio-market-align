@@ -206,6 +206,16 @@ const RowWindowLayout = () => {
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
+  // Auto-detect workout pieces from turnaround + speed pickup.
+  // Lives on the layout so endSession() can snapshot pieces into the saved row.
+  const pieceDetector = usePieceDetector({
+    active: sessionState === 'active',
+    headingDeg: liveHeading,
+    speedMs: liveSpeedMs,
+    spm,
+    distanceMeters: liveDistance ?? 0,
+  });
+
   // Tick every second when on water tab so timers/instruments feel live (today only)
   useEffect(() => {
     if (!isToday) return; // freeze "now" on future dates
