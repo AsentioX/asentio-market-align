@@ -744,6 +744,8 @@ export default function Pipeline() {
                 <th className="text-right px-3 py-2.5 font-semibold">Failed</th>
                 <th className="text-left px-3 py-2.5 font-semibold">Started</th>
                 <th className="text-left px-3 py-2.5 font-semibold">Duration</th>
+                <th className="text-right px-3 py-2.5 font-semibold">Progress</th>
+                <th className="text-right px-5 py-2.5 font-semibold">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -752,6 +754,16 @@ export default function Pipeline() {
                   r.finished_at && r.started_at
                     ? `${Math.round((new Date(r.finished_at).getTime() - new Date(r.started_at).getTime()) / 1000)}s`
                     : r.status === 'parsing' || r.status === 'inserting' ? 'running…' : '—';
+                const pct = r.file_size && r.file_size > 0
+                  ? Math.min(100, Math.round(((r.bytes_processed ?? 0) / r.file_size) * 100))
+                  : null;
+                // A run is resumable if it failed or has been silently abandoned (still "inserting"
+                // but no recent finished_at) and we have a storage_path to resume from.
+                const canResume = !!r.storage_path && (
+                  r.status === 'failed' ||
+                  (r.status === 'inserting' && !r.finished_at &&
+                    Date.now() - new Date(r.started_at).getTime() > 5 * 60 * 1000)
+                );
                 return (
                   <tr key={r.id} className="border-t" style={{ borderColor: 'hsl(var(--cf-border))' }}>
                     <td className="px-5 py-3 font-medium text-xs truncate max-w-[300px]">{r.file_name ?? '—'}</td>
@@ -769,6 +781,20 @@ export default function Pipeline() {
                       <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" /> {fmtTime(r.started_at)}</span>
                     </td>
                     <td className="px-3 py-3 text-xs tabular-nums" style={{ color: 'hsl(var(--cf-text-muted))' }}>{dur}</td>
+                    <td className="px-3 py-3 text-xs tabular-nums text-right" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+                      {pct !== null ? `${pct}%` : '—'}
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      {canResume ? (
+                        <button
+                          onClick={() => resumeRun(r.id)}
+                          className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1"
+                          style={{ background: 'hsl(var(--cf-primary-soft))', color: 'hsl(var(--cf-primary))' }}
+                        >
+                          <RefreshCw className="w-3 h-3" /> Resume
+                        </button>
+                      ) : null}
+                    </td>
                   </tr>
                 );
               })}
