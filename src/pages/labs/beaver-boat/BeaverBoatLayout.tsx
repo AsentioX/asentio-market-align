@@ -320,10 +320,10 @@ const BeaverBoatLayout = () => {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 bg-white">
+      <section className="py-14 sm:py-20 bg-white">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Novice FAQ</div>
-          <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-10">First Time? Read This.</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight mb-8 sm:mb-10">First Time? Read This.</h2>
           <div className="space-y-3">
             {faqs.map((f, i) => (
               <div key={i} className="border-2 border-black/10 rounded-xl overflow-hidden">
