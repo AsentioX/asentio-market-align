@@ -70,6 +70,8 @@ interface RowSession {
   track: TrackPoint[];
   speedSeries: { t: number; speedMs: number; pace: number }[];
   hrSeries: { t: number; bpm: number }[];
+  /** Auto-detected workout pieces (turnaround + speed pickup). */
+  pieces?: Piece[];
 }
 
 const startOfToday = () => {
