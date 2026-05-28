@@ -637,7 +637,7 @@ const RowWindowLayout = () => {
 
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-20 border-t border-slate-200 bg-[hsl(210_40%_99%)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed bottom-0 inset-x-0 z-[600] border-t border-slate-200 bg-[hsl(210_40%_99%)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
         <div className="max-w-6xl mx-auto grid grid-cols-3">
           <TabButton
             active={tab === 'pre'}
