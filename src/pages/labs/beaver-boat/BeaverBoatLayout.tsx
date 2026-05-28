@@ -298,7 +298,7 @@ const BeaverBoatLayout = () => {
                         <div className="flex items-center gap-2 text-sm text-white/80">
                           <Clock className="w-4 h-4 shrink-0 text-[#FF000D]" />
                           <span className="font-bold text-[#FF000D]">Registration deadline:</span>
-                          <span>May 31, 2026</span>
+                          <span className="text-[#FF000D]">May 31, 2026</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-white/80">
                           <Calendar className="w-4 h-4 shrink-0" /> Practice: June 7 (Sun) & June 13 (Sat)
