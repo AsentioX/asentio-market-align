@@ -183,14 +183,14 @@ const BeaverBoatLayout = () => {
     <div className="min-h-screen bg-white text-black">
       {/* Top bar */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-black/10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Beaver Boat Club" className="h-10 w-10 object-contain" />
-            <span className="font-bold tracking-tight hidden sm:block">Beaver Boat Club</span>
+        <div className="container mx-auto px-4 h-14 sm:h-16 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <img src={logo} alt="Beaver Boat Club" className="h-8 w-8 sm:h-10 sm:w-10 object-contain shrink-0" />
+            <span className="font-bold tracking-tight truncate text-sm sm:text-base">Beaver Boat Club</span>
           </div>
           <button
             onClick={openSignup}
-            className={`px-4 py-2 rounded-md text-sm font-bold text-white transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] animate-pulse' : 'bg-[#A31F34]'}`}
+            className={`shrink-0 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-bold text-white transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] animate-pulse' : 'bg-[#A31F34]'}`}
           >
             Join Us
           </button>
