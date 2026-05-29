@@ -840,15 +840,33 @@ export default function Pipeline() {
                       {pct !== null ? `${pct}%` : '—'}
                     </td>
                     <td className="px-5 py-3 text-right">
-                      {canResume ? (
+                      <div className="inline-flex items-center gap-1.5 justify-end">
+                        {canResume ? (
+                          <button
+                            onClick={() => resumeRun(r.id)}
+                            className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1"
+                            style={{ background: 'hsl(var(--cf-primary-soft))', color: 'hsl(var(--cf-primary))' }}
+                          >
+                            <RefreshCw className="w-3 h-3" /> Resume
+                          </button>
+                        ) : null}
+                        {(r.status === 'parsing' || r.status === 'inserting' || r.status === 'pending') ? (
+                          <button
+                            onClick={() => stopRun(r.id)}
+                            className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1"
+                            style={{ background: 'hsl(var(--cf-warning) / 0.15)', color: 'hsl(var(--cf-warning))' }}
+                          >
+                            Stop
+                          </button>
+                        ) : null}
                         <button
-                          onClick={() => resumeRun(r.id)}
-                          className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1"
-                          style={{ background: 'hsl(var(--cf-primary-soft))', color: 'hsl(var(--cf-primary))' }}
+                          onClick={() => deleteRun(r.id)}
+                          className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1 opacity-70 hover:opacity-100"
+                          style={{ background: 'hsl(var(--cf-surface-alt))', color: 'hsl(var(--cf-text-muted))' }}
                         >
-                          <RefreshCw className="w-3 h-3" /> Resume
+                          Delete
                         </button>
-                      ) : null}
+                      </div>
                     </td>
                   </tr>
                 );
