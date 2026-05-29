@@ -103,19 +103,28 @@ export function CFProvider({ children }: { children: ReactNode }) {
   const reloadFromDb = useCallback(async () => {
     setIsLoadingDb(true);
     try {
-      const { data, error, count } = await supabase
-        .from('cf_contractors')
-        .select('*', { count: 'exact' })
-        .order('last_verified_date', { ascending: false })
-        .limit(5000);
-      if (!error && data) {
-        setState((p) => ({ ...p, contractors: data.map(mapDbRow) }));
-        setDataSource(data.length > 0 ? 'database' : 'empty');
-        console.info(`[CF] Loaded ${data.length} contractors from database (total: ${count})`);
-      } else {
-        setState((p) => ({ ...p, contractors: [] }));
-        setDataSource('empty');
+      const PAGE = 1000;
+      const MAX_ROWS = 50000; // safety cap to avoid runaway client memory
+      let from = 0;
+      let all: any[] = [];
+      let totalCount: number | null = null;
+      // Page through PostgREST's 1000-row cap.
+      while (from < MAX_ROWS) {
+        const { data, error, count } = await supabase
+          .from('cf_contractors')
+          .select('*', { count: 'exact' })
+          .order('last_verified_date', { ascending: false })
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (totalCount == null) totalCount = count ?? null;
+        if (!data || data.length === 0) break;
+        all = all.concat(data);
+        if (data.length < PAGE) break;
+        from += PAGE;
       }
+      setState((p) => ({ ...p, contractors: all.map(mapDbRow) }));
+      setDataSource(all.length > 0 ? 'database' : 'empty');
+      console.info(`[CF] Loaded ${all.length} contractors from database (total: ${totalCount})`);
     } catch (e) {
       console.warn('[CF] DB load failed', e);
       setState((p) => ({ ...p, contractors: [] }));
