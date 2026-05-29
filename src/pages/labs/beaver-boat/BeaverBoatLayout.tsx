@@ -118,11 +118,6 @@ const BeaverBoatLayout = () => {
   const { items: galleryDb } = useGallery();
   const urgent = regCountdown.diff < 1000 * 60 * 60 * 24 * 30; // <30 days to reg close
   const [signupOpen, setSignupOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [step, setStep] = useState(1);
-  const [experience, setExperience] = useState(1); // 0 never, 1 once, 2 many
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [sponsorMsg, setSponsorMsg] = useState({ name: '', email: '', company: '', message: '' });
   const [sponsorSent, setSponsorSent] = useState(false);
@@ -130,53 +125,66 @@ const BeaverBoatLayout = () => {
   const [contactSent, setContactSent] = useState(false);
   const [contactSending, setContactSending] = useState(false);
   const [contactError, setContactError] = useState('');
+  const [joinMsg, setJoinMsg] = useState({ name: '', email: '', message: '' });
+  const [joinSent, setJoinSent] = useState(false);
+  const [joinSending, setJoinSending] = useState(false);
+  const [joinError, setJoinError] = useState('');
+
+  const sendNotification = (kind: string, p: { name: string; email: string; message: string }) => {
+    supabase.functions.invoke('send-transactional-email', {
+      body: {
+        templateName: 'beaver-boat-contact',
+        recipientEmail: p.email,
+        idempotencyKey: `bb-${kind}-${p.email}-${Date.now()}`,
+        templateData: { name: p.name, message: p.message, kind },
+      },
+    }).catch(() => {});
+  };
 
   const submitContact = async (e: React.FormEvent) => {
     e.preventDefault();
     setContactError('');
     setContactSending(true);
-    const { error } = await supabase.from('beaver_boat_messages').insert({
+    const payload = {
       name: contactMsg.name.trim(),
       email: contactMsg.email.trim(),
       message: contactMsg.message.trim(),
-    });
+    };
+    const { error } = await supabase.from('beaver_boat_messages').insert(payload);
     setContactSending(false);
     if (error) {
       setContactError(error.message);
       return;
     }
+    sendNotification('Contact', payload);
     setContactSent(true);
     setContactMsg({ name: '', email: '', message: '' });
   };
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) {
-        setUser(data.session.user);
-        setEmail(data.session.user.email || '');
-      }
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        setEmail(session.user.email || '');
-      }
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
-
-  const expLabel = ['Never', 'Once Before', 'Many Times'][experience];
+  const submitJoin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setJoinError('');
+    setJoinSending(true);
+    const payload = {
+      name: joinMsg.name.trim(),
+      email: joinMsg.email.trim(),
+      message: joinMsg.message.trim() || 'Interested in joining the crew.',
+    };
+    const { error } = await supabase.from('beaver_boat_messages').insert(payload);
+    setJoinSending(false);
+    if (error) {
+      setJoinError(error.message);
+      return;
+    }
+    sendNotification('Join', payload);
+    setJoinSent(true);
+  };
 
   const openSignup = () => {
     setSignupOpen(true);
-    setStep(user ? 1 : 0);
-  };
-
-  const handleGoogle = async () => {
-    await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.href });
-  };
-  const handleApple = async () => {
-    await lovable.auth.signInWithOAuth('apple', { redirect_uri: window.location.href });
+    setJoinSent(false);
+    setJoinError('');
+    setJoinMsg({ name: '', email: '', message: '' });
   };
 
   return (
