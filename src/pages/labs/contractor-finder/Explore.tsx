@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCF, exportToCSV } from './useCFStore';
+import { useContractorQuery, fetchAllMatching, SortKey } from './useContractorQuery';
 import { Contractor, ContractorType, SegmentFilters, LicenseStatus, CompanySize, BusinessMaturity } from './types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -11,6 +12,7 @@ import {
 import { ConfidenceMeter, LicenseStatusBadge, SourceBadgePill, CompletenessIcons, relativeTime } from './components/Atoms';
 import { ContractorDetailDrawer } from './components/ContractorDetailDrawer';
 import { tradeLabel, formatTrade } from './tradeLabels';
+
 
 // Friendly contractor types mapped to the CSLB code we display next to them.
 // (Filter logic continues to match on the friendly name; the code is for readability.)
@@ -36,7 +38,7 @@ type ViewMode = 'cards' | 'list' | 'map';
 
 export default function Explore() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { contractors, applyFilters, saveSegment } = useCF();
+  const { saveSegment } = useCF();
   const [filters, setFilters] = useState<SegmentFilters>({});
   const [view, setView] = useState<ViewMode>('cards');
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('id'));
@@ -45,29 +47,19 @@ export default function Explore() {
   const [nlRationale, setNlRationale] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [segmentName, setSegmentName] = useState('');
-  const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'reviews' | 'confidence' | 'recent'>('confidence');
+  const [savingSegment, setSavingSegment] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [sortBy, setSortBy] = useState<SortKey>('confidence');
 
   useEffect(() => {
     const id = searchParams.get('id');
     if (id) setSelectedId(id);
   }, [searchParams]);
 
-  const results = useMemo(() => {
-    let list = applyFilters(filters);
-    list = [...list].sort((a, b) => {
-      switch (sortBy) {
-        case 'rating': return (b.review_rating ?? 0) - (a.review_rating ?? 0);
-        case 'reviews': return (b.review_count ?? 0) - (a.review_count ?? 0);
-        case 'recent': return new Date(b.last_verified_date).getTime() - new Date(a.last_verified_date).getTime();
-        case 'confidence':
-        default:
-          return b.confidence_score - a.confidence_score;
-      }
-    });
-    return list;
-  }, [filters, applyFilters, sortBy]);
+  // Server-side query against full DB (244k+ rows) with filters/sort/pagination.
+  const { rows: results, total, loading, loadingMore, hasMore, loadMore } = useContractorQuery(filters, sortBy);
 
-  const selected = useMemo(() => contractors.find((c) => c.contractor_id === selectedId) ?? null, [contractors, selectedId]);
+  const selected = useMemo(() => results.find((c) => c.contractor_id === selectedId) ?? null, [results, selectedId]);
 
   const toggleArr = <T,>(arr: T[] | undefined, v: T): T[] => {
     const cur = arr ?? [];
@@ -116,17 +108,40 @@ export default function Explore() {
     (filters.hasPhone ? 1 : 0) +
     (filters.minConfidence ? 1 : 0);
 
-  const handleSaveSegment = () => {
-    if (!segmentName.trim()) return;
-    saveSegment({
-      name: segmentName.trim(),
-      filters,
-      contractor_ids: results.map((r) => r.contractor_id),
-    });
-    toast.success(`Saved "${segmentName}"`, { description: `${results.length} contractors in segment.` });
-    setSegmentName('');
-    setShowSaveModal(false);
+  const handleExportCSV = async () => {
+    if (total === 0) return;
+    setExporting(true);
+    try {
+      const all = await fetchAllMatching(filters, sortBy);
+      exportToCSV(all);
+      toast.success(`Exported ${all.length.toLocaleString()} contractors`);
+    } catch (e: any) {
+      toast.error('Export failed', { description: e?.message });
+    } finally {
+      setExporting(false);
+    }
   };
+
+  const handleSaveSegment = async () => {
+    if (!segmentName.trim()) return;
+    setSavingSegment(true);
+    try {
+      const all = await fetchAllMatching(filters, sortBy);
+      saveSegment({
+        name: segmentName.trim(),
+        filters,
+        contractor_ids: all.map((r) => r.contractor_id),
+      });
+      toast.success(`Saved "${segmentName}"`, { description: `${all.length.toLocaleString()} contractors in segment.` });
+      setSegmentName('');
+      setShowSaveModal(false);
+    } catch (e: any) {
+      toast.error('Save failed', { description: e?.message });
+    } finally {
+      setSavingSegment(false);
+    }
+  };
+
 
   return (
     <div className="space-y-5">
@@ -135,26 +150,30 @@ export default function Explore() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Explore Contractors</h1>
           <p className="text-sm" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-            Search across {contractors.length.toLocaleString()} licensed contractors. Showing <strong>{results.length}</strong> matches.
+            {loading ? 'Searching…' : (
+              <>Showing <strong>{results.length.toLocaleString()}</strong> of <strong>{total.toLocaleString()}</strong> matching contractors.</>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowSaveModal(true)}
-            disabled={results.length === 0}
+            disabled={total === 0 || loading}
             className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg disabled:opacity-50"
             style={{ border: '1px solid hsl(var(--cf-border))', background: 'hsl(var(--cf-surface))' }}
           >
             <BookmarkPlus className="w-4 h-4" /> Save Segment
           </button>
           <button
-            onClick={() => exportToCSV(results)}
-            disabled={results.length === 0}
+            onClick={handleExportCSV}
+            disabled={total === 0 || loading || exporting}
             className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-lg text-white disabled:opacity-50"
             style={{ background: 'hsl(var(--cf-primary))' }}
           >
-            <Download className="w-4 h-4" /> Export CSV
+            {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            {exporting ? 'Exporting…' : 'Export CSV'}
           </button>
+
         </div>
       </div>
 
@@ -336,7 +355,12 @@ export default function Explore() {
           </div>
 
           {/* Results */}
-          {results.length === 0 ? (
+          {loading ? (
+            <div className="rounded-xl py-24 text-center" style={{ background: 'hsl(var(--cf-surface))', border: '1px dashed hsl(var(--cf-border))' }}>
+              <Loader2 className="w-6 h-6 mx-auto mb-3 animate-spin" style={{ color: 'hsl(var(--cf-text-subtle))' }} />
+              <p className="text-sm font-medium">Searching contractors…</p>
+            </div>
+          ) : results.length === 0 ? (
             <div className="rounded-xl py-24 text-center" style={{ background: 'hsl(var(--cf-surface))', border: '1px dashed hsl(var(--cf-border))' }}>
               <Users className="w-10 h-10 mx-auto mb-3" style={{ color: 'hsl(var(--cf-text-subtle))' }} />
               <p className="text-sm font-medium">No contractors match these filters</p>
@@ -353,6 +377,21 @@ export default function Explore() {
           ) : (
             <MapView contractors={results} selectedId={selectedId} onSelect={setSelectedId} />
           )}
+
+          {!loading && hasMore && (
+            <div className="flex justify-center pt-2">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-50"
+                style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+              >
+                {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {loadingMore ? 'Loading…' : `Load more (${(total - results.length).toLocaleString()} remaining)`}
+              </button>
+            </div>
+          )}
+
         </section>
       </div>
 
@@ -364,7 +403,7 @@ export default function Explore() {
           <div onClick={(e) => e.stopPropagation()} className="rounded-xl p-6 w-full max-w-md" style={{ background: 'hsl(var(--cf-surface))' }}>
             <h3 className="font-semibold mb-3 flex items-center gap-2"><Bookmark className="w-4 h-4" /> Save segment</h3>
             <p className="text-xs mb-4" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-              Save these {results.length} contractors and active filters as a reusable list.
+              Save all {total.toLocaleString()} matching contractors and the active filters as a reusable list.
             </p>
             <input
               autoFocus
@@ -379,11 +418,15 @@ export default function Explore() {
               <button onClick={() => setShowSaveModal(false)} className="text-sm px-3 py-2">Cancel</button>
               <button
                 onClick={handleSaveSegment}
-                disabled={!segmentName.trim()}
-                className="text-sm font-semibold text-white px-4 py-2 rounded-md disabled:opacity-50"
+                disabled={!segmentName.trim() || savingSegment}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2 rounded-md disabled:opacity-50"
                 style={{ background: 'hsl(var(--cf-primary))' }}
-              >Save</button>
+              >
+                {savingSegment ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {savingSegment ? 'Saving…' : 'Save'}
+              </button>
             </div>
+
           </div>
         </div>
       )}
