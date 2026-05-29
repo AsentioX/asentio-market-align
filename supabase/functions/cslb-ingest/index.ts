@@ -376,15 +376,49 @@ async function processChunk(runId: string) {
 
     await flush();
 
-    // If we got here, we reached EOF.
+    // ── Post-ingest verification report ──────────────────────────────────────
+    // Compare the CSV's data-row count against the contractors table count
+    // and surface any rows that were skipped because they were missing a
+    // license_number.
     bytesProcessed = fileSize;
+
+    const csvDataRows = totalRows + skippedRows;
+    const { count: dbRowCount, error: countErr } = await admin
+      .from('cf_contractors')
+      .select('*', { count: 'exact', head: true });
+    if (countErr) console.error('verification count failed', countErr.message);
+
+    const dbCount = dbRowCount ?? 0;
+    const rowCountDelta = dbCount - csvDataRows;
+    const checks = {
+      row_count_match: dbCount >= totalRows, // every parseable CSV row should have an upserted contractor
+      no_missing_license_numbers: skippedRows === 0,
+    };
+    const verification = {
+      ran_at: new Date().toISOString(),
+      csv_data_rows: csvDataRows,
+      csv_parseable_rows: totalRows,
+      csv_rows_missing_license: skippedRows,
+      db_row_count: dbCount,
+      row_count_delta: rowCountDelta,
+      inserted_in_run: inserted,
+      failed_in_run: failed,
+      checks,
+      passed: checks.row_count_match && checks.no_missing_license_numbers,
+      skipped_samples: skippedSamples,
+      notes: countErr ? `db count failed: ${countErr.message}` : null,
+    };
+
+    const finalStatus = failed === totalRows && totalRows > 0 ? 'failed' : 'complete';
     await admin.from('cf_ingest_runs').update({
-      status: failed === totalRows && totalRows > 0 ? 'failed' : 'complete',
+      status: finalStatus,
       bytes_processed: bytesProcessed,
       inserted_rows: inserted,
       failed_rows: failed,
       total_rows: totalRows,
+      skipped_rows: skippedRows,
       error_message: lastError || null,
+      verification,
       finished_at: new Date().toISOString(),
     }).eq('id', runId);
     return { done: true, bytesProcessed, inserted, totalRows };
