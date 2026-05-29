@@ -38,7 +38,7 @@ type ViewMode = 'cards' | 'list' | 'map';
 
 export default function Explore() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { contractors, applyFilters, saveSegment } = useCF();
+  const { saveSegment } = useCF();
   const [filters, setFilters] = useState<SegmentFilters>({});
   const [view, setView] = useState<ViewMode>('cards');
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('id'));
@@ -47,29 +47,19 @@ export default function Explore() {
   const [nlRationale, setNlRationale] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [segmentName, setSegmentName] = useState('');
-  const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'reviews' | 'confidence' | 'recent'>('confidence');
+  const [savingSegment, setSavingSegment] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [sortBy, setSortBy] = useState<SortKey>('confidence');
 
   useEffect(() => {
     const id = searchParams.get('id');
     if (id) setSelectedId(id);
   }, [searchParams]);
 
-  const results = useMemo(() => {
-    let list = applyFilters(filters);
-    list = [...list].sort((a, b) => {
-      switch (sortBy) {
-        case 'rating': return (b.review_rating ?? 0) - (a.review_rating ?? 0);
-        case 'reviews': return (b.review_count ?? 0) - (a.review_count ?? 0);
-        case 'recent': return new Date(b.last_verified_date).getTime() - new Date(a.last_verified_date).getTime();
-        case 'confidence':
-        default:
-          return b.confidence_score - a.confidence_score;
-      }
-    });
-    return list;
-  }, [filters, applyFilters, sortBy]);
+  // Server-side query against full DB (244k+ rows) with filters/sort/pagination.
+  const { rows: results, total, loading, loadingMore, hasMore, loadMore } = useContractorQuery(filters, sortBy);
 
-  const selected = useMemo(() => contractors.find((c) => c.contractor_id === selectedId) ?? null, [contractors, selectedId]);
+  const selected = useMemo(() => results.find((c) => c.contractor_id === selectedId) ?? null, [results, selectedId]);
 
   const toggleArr = <T,>(arr: T[] | undefined, v: T): T[] => {
     const cur = arr ?? [];
@@ -118,17 +108,40 @@ export default function Explore() {
     (filters.hasPhone ? 1 : 0) +
     (filters.minConfidence ? 1 : 0);
 
-  const handleSaveSegment = () => {
-    if (!segmentName.trim()) return;
-    saveSegment({
-      name: segmentName.trim(),
-      filters,
-      contractor_ids: results.map((r) => r.contractor_id),
-    });
-    toast.success(`Saved "${segmentName}"`, { description: `${results.length} contractors in segment.` });
-    setSegmentName('');
-    setShowSaveModal(false);
+  const handleExportCSV = async () => {
+    if (total === 0) return;
+    setExporting(true);
+    try {
+      const all = await fetchAllMatching(filters, sortBy);
+      exportToCSV(all);
+      toast.success(`Exported ${all.length.toLocaleString()} contractors`);
+    } catch (e: any) {
+      toast.error('Export failed', { description: e?.message });
+    } finally {
+      setExporting(false);
+    }
   };
+
+  const handleSaveSegment = async () => {
+    if (!segmentName.trim()) return;
+    setSavingSegment(true);
+    try {
+      const all = await fetchAllMatching(filters, sortBy);
+      saveSegment({
+        name: segmentName.trim(),
+        filters,
+        contractor_ids: all.map((r) => r.contractor_id),
+      });
+      toast.success(`Saved "${segmentName}"`, { description: `${all.length.toLocaleString()} contractors in segment.` });
+      setSegmentName('');
+      setShowSaveModal(false);
+    } catch (e: any) {
+      toast.error('Save failed', { description: e?.message });
+    } finally {
+      setSavingSegment(false);
+    }
+  };
+
 
   return (
     <div className="space-y-5">
