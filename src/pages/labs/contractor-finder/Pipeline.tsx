@@ -524,6 +524,117 @@ export default function Pipeline() {
         </div>
       </div>
 
+      {/* Auto-enrichment — runs discovery + extraction continuously across the whole DB */}
+      <div className="rounded-xl p-6" style={{
+        background: 'hsl(var(--cf-surface))',
+        border: `1px solid hsl(${autoState?.is_running ? 'var(--cf-success)' : 'var(--cf-border)'})`,
+      }}>
+        <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="w-4 h-4" style={{ color: 'hsl(var(--cf-success))' }} />
+              <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'hsl(var(--cf-success))' }}>
+                Auto-Enrichment · Stages 2 + 3
+              </span>
+              {autoState?.is_running && (
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded inline-flex items-center gap-1" style={{ background: 'hsl(var(--cf-success))', color: 'white' }}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> RUNNING
+                </span>
+              )}
+            </div>
+            <h3 className="font-semibold text-base">Populate every contractor's website &amp; email automatically</h3>
+            <p className="text-xs mt-1 max-w-2xl" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              Self-chaining background loop: on each tick it runs one website-discovery batch (contractors missing a website) and one email-extraction batch (contractors with a website but no email yet), then re-invokes itself. Stops automatically when no work remains, or when you press Stop.
+            </p>
+          </div>
+        </div>
+
+        {/* Live progress stats */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-5">
+          {[
+            { label: 'Phase', value: autoState?.phase ?? 'idle', isText: true, color: 'var(--cf-primary)' },
+            { label: 'Ticks', value: autoState?.ticks ?? 0, color: 'var(--cf-text-muted)' },
+            { label: 'Websites found', value: autoState?.websites_found ?? 0, color: 'var(--cf-accent)' },
+            { label: 'Emails found', value: autoState?.emails_found ?? 0, color: 'var(--cf-success)' },
+            { label: 'Last tick', value: fmtTime(autoState?.last_tick_at ?? null), isText: true, color: 'var(--cf-text-muted)' },
+          ].map((s) => (
+            <div key={s.label} className="rounded-lg p-3" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: 'hsl(var(--cf-text-subtle))' }}>{s.label}</div>
+              <div className={`font-bold tabular-nums ${s.isText ? 'text-sm capitalize' : 'text-xl'}`} style={{ color: `hsl(${s.color})` }}>
+                {typeof s.value === 'number' ? s.value.toLocaleString() : s.value}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {autoState?.message && (
+          <div className="rounded-lg px-3 py-2 mb-4 text-xs" style={{ background: 'hsl(var(--cf-surface-alt))', color: 'hsl(var(--cf-text-muted))' }}>
+            {autoState.message}
+          </div>
+        )}
+
+        <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold" style={{ color: 'hsl(var(--cf-text-muted))' }}>Discovery batch</label>
+              <select
+                value={autoDiscoveryBatch}
+                onChange={(e) => setAutoDiscoveryBatch(Number(e.target.value))}
+                disabled={autoState?.is_running || autoBusy}
+                className="text-xs px-2 py-1 rounded-md"
+                style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+              >
+                {[10, 25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold" style={{ color: 'hsl(var(--cf-text-muted))' }}>Extraction batch</label>
+              <select
+                value={autoExtractionBatch}
+                onChange={(e) => setAutoExtractionBatch(Number(e.target.value))}
+                disabled={autoState?.is_running || autoBusy}
+                className="text-xs px-2 py-1 rounded-md"
+                style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+              >
+                {[10, 25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+
+            {autoState?.is_running ? (
+              <button
+                onClick={stopAutoEnrich}
+                disabled={autoBusy}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+                style={{ background: 'hsl(var(--cf-warning))' }}
+              >
+                {autoBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <StopCircle className="w-3.5 h-3.5" />}
+                Stop auto-enrichment
+              </button>
+            ) : (
+              <button
+                onClick={startAutoEnrich}
+                disabled={!isAuthed || autoBusy || ((emailStats?.missingWebsite ?? 0) === 0 && (emailStats?.pending ?? 0) === 0)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+                style={{ background: 'hsl(var(--cf-success))' }}
+              >
+                {autoBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                Start auto-enrichment
+              </button>
+            )}
+
+            <div className="text-[11px]" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              Remaining: <strong>{(emailStats?.missingWebsite ?? 0).toLocaleString()}</strong> websites ·{' '}
+              <strong>{(emailStats?.pending ?? 0).toLocaleString()}</strong> emails pending
+            </div>
+          </div>
+          {!isAuthed && (
+            <div className="text-[11px] mt-2" style={{ color: 'hsl(var(--cf-warning))' }}>
+              Admin sign-in required.
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Stage 2 — Website discovery via Firecrawl Search */}
       <div className="rounded-xl p-6" style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}>
         <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
