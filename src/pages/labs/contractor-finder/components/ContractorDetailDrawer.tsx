@@ -25,10 +25,35 @@ export function ContractorDetailDrawer({ contractor, onClose }: { contractor: Co
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [showSegmentPicker, setShowSegmentPicker] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [extractedEmail, setExtractedEmail] = useState<string | null>(null);
+  const [extracting, setExtracting] = useState(false);
 
   useEffect(() => {
     setSummary(null);
+    setExtractedEmail(null);
   }, [contractor.contractor_id]);
+
+  const extractEmail = async () => {
+    setExtracting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cf-extract-email-single', {
+        body: { contractorId: contractor.contractor_id },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      if ((data as any)?.email) {
+        setExtractedEmail((data as any).email);
+        toast.success('Email extracted', { description: (data as any).email });
+      } else {
+        toast.warning('No email found on website');
+      }
+    } catch (e: any) {
+      toast.error('Extraction failed', { description: e?.message });
+    } finally {
+      setExtracting(false);
+    }
+  };
+
 
   const generateSummary = async () => {
     setLoadingSummary(true);
@@ -154,18 +179,35 @@ export function ContractorDetailDrawer({ contractor, onClose }: { contractor: Co
           }>
             <div className="grid grid-cols-1 gap-2 text-sm">
               <ContactRow icon={Phone} value={contractor.phone} />
-              {contractor.email && (
+              {(contractor.email || extractedEmail) ? (
                 <ContactRow
                   icon={Mail}
-                  value={contractor.email}
-                  badge={contractor.email_verified ? 'Verified' : undefined}
-                  href={`mailto:${contractor.email}`}
+                  value={extractedEmail || contractor.email!}
+                  badge={extractedEmail ? 'Just extracted' : (contractor.email_verified ? 'Verified' : undefined)}
+                  href={`mailto:${extractedEmail || contractor.email}`}
                 />
+              ) : (
+                <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-md" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
+                  <span className="text-xs flex items-center gap-2" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+                    <Mail className="w-3.5 h-3.5" /> No email on file
+                  </span>
+                  <button
+                    onClick={extractEmail}
+                    disabled={extracting || !contractor.website}
+                    title={!contractor.website ? 'Requires a website on file' : 'Scrape website for contact email'}
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-md text-white disabled:opacity-50"
+                    style={{ background: 'hsl(var(--cf-primary))' }}
+                  >
+                    {extracting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                    {extracting ? 'Extracting…' : 'Extract email'}
+                  </button>
+                </div>
               )}
               {contractor.website && <ContactRow icon={Globe} value={contractor.website} href={contractor.website} external />}
               <ContactRow icon={MapPin} value={`${contractor.address ? contractor.address + ', ' : ''}${contractor.city}, ${contractor.state} ${contractor.zip_code}`} />
             </div>
           </Section>
+
 
           {/* License */}
           <Section title="Licensing & Insurance">
