@@ -735,6 +735,9 @@ export default function Pipeline() {
         </div>
       )}
 
+      {/* Post-ingest verification report (latest completed run) */}
+      <VerificationPanel runs={runs} />
+
       {/* Ingestion runs */}
       <div className="rounded-xl overflow-hidden" style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}>
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid hsl(var(--cf-border))' }}>
