@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2 } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -139,6 +139,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Dashboard', 'Finance', 'AI'],
     link: '/labs/asentio-os',
+  },
+  {
+    name: 'Robotic$',
+    description: 'Premium landing page for a Physical AI Operating System — deploy autonomous workers across security, cleaning, logistics, and inspection.',
+    icon: <Bot className="w-8 h-8" />,
+    status: 'live',
+    tags: ['Physical AI', 'Robotics', 'Enterprise'],
+    link: '/labs/robotics',
   },
 ];
 
