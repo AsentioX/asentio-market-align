@@ -201,6 +201,7 @@ async function processChunk(runId: string) {
   let inserted: number = Number(run.inserted_rows ?? 0);
   let failed: number = Number(run.failed_rows ?? 0);
   let totalRows: number = Number(run.total_rows ?? 0);
+  let skippedRows: number = Number(run.skipped_rows ?? 0);
   let lastError = '';
   let headerIdx: Map<string, number> | null = run.headers_json
     ? buildHeaderIndexFromObj(run.headers_json as Record<string, number>)
@@ -237,13 +238,24 @@ async function processChunk(runId: string) {
     }
   };
 
+  // Sample of CSV row numbers (1-indexed within data rows) that were skipped
+  // because they had no license_number. Capped to avoid unbounded growth.
+  const skippedSamples: { row: number; business_name: string | null }[] =
+    Array.isArray((run.verification as { skipped_samples?: unknown })?.skipped_samples)
+      ? ((run.verification as { skipped_samples: { row: number; business_name: string | null }[] }).skipped_samples)
+      : [];
+  const MAX_SKIPPED_SAMPLES = 50;
+
   const persistProgress = async (extraStatus?: string) => {
     const update: Record<string, unknown> = {
       bytes_processed: bytesProcessed,
       inserted_rows: inserted,
       failed_rows: failed,
       total_rows: totalRows,
+      skipped_rows: skippedRows,
       error_message: lastError || null,
+      // Persist the running skipped-sample buffer so a resumed run can keep building on it.
+      verification: { in_progress: true, skipped_samples: skippedSamples },
     };
     if (extraStatus) update.status = extraStatus;
     await admin.from('cf_ingest_runs').update(update).eq('id', runId);
@@ -272,13 +284,25 @@ async function processChunk(runId: string) {
             headerIdx.forEach((v, k) => { headerObj[k] = v; });
             await admin.from('cf_ingest_runs').update({ headers_json: headerObj }).eq('id', runId);
           } else {
-            const rec = mapRow(parseLine(line), headerIdx);
+            const cells = parseLine(line);
+            const rec = mapRow(cells, headerIdx);
             if (rec) {
               batch.push(rec);
               totalRows++;
               rowsThisChunk++;
               if (batch.length >= BATCH_SIZE) {
                 await flush();
+              }
+            } else {
+              // No license_number — flag for the verification report
+              skippedRows++;
+              if (skippedSamples.length < MAX_SKIPPED_SAMPLES) {
+                const businessIdx = headerIdx.get('businessname');
+                const bn = businessIdx !== undefined ? (cells[businessIdx] ?? null) : null;
+                skippedSamples.push({
+                  row: totalRows + skippedRows,
+                  business_name: bn && bn.length ? bn : null,
+                });
               }
             }
           }
@@ -313,8 +337,20 @@ async function processChunk(runId: string) {
       const remaining = buffer.replace(/\r?\n?$/, '');
       if (!headerIdx) headerIdx = buildHeaderIndex(parseLine(remaining));
       else {
-        const rec = mapRow(parseLine(remaining), headerIdx);
+        const cells = parseLine(remaining);
+        const rec = mapRow(cells, headerIdx);
         if (rec) { batch.push(rec); totalRows++; }
+        else {
+          skippedRows++;
+          if (skippedSamples.length < MAX_SKIPPED_SAMPLES) {
+            const businessIdx = headerIdx.get('businessname');
+            const bn = businessIdx !== undefined ? (cells[businessIdx] ?? null) : null;
+            skippedSamples.push({
+              row: totalRows + skippedRows,
+              business_name: bn && bn.length ? bn : null,
+            });
+          }
+        }
       }
       consumedInSlice += enc.encode(remaining).length;
       bytesProcessed = (run.bytes_processed ?? 0) + consumedInSlice;
@@ -342,15 +378,49 @@ async function processChunk(runId: string) {
 
     await flush();
 
-    // If we got here, we reached EOF.
+    // ── Post-ingest verification report ──────────────────────────────────────
+    // Compare the CSV's data-row count against the contractors table count
+    // and surface any rows that were skipped because they were missing a
+    // license_number.
     bytesProcessed = fileSize;
+
+    const csvDataRows = totalRows + skippedRows;
+    const { count: dbRowCount, error: countErr } = await admin
+      .from('cf_contractors')
+      .select('*', { count: 'exact', head: true });
+    if (countErr) console.error('verification count failed', countErr.message);
+
+    const dbCount = dbRowCount ?? 0;
+    const rowCountDelta = dbCount - csvDataRows;
+    const checks = {
+      row_count_match: dbCount >= totalRows, // every parseable CSV row should have an upserted contractor
+      no_missing_license_numbers: skippedRows === 0,
+    };
+    const verification = {
+      ran_at: new Date().toISOString(),
+      csv_data_rows: csvDataRows,
+      csv_parseable_rows: totalRows,
+      csv_rows_missing_license: skippedRows,
+      db_row_count: dbCount,
+      row_count_delta: rowCountDelta,
+      inserted_in_run: inserted,
+      failed_in_run: failed,
+      checks,
+      passed: checks.row_count_match && checks.no_missing_license_numbers,
+      skipped_samples: skippedSamples,
+      notes: countErr ? `db count failed: ${countErr.message}` : null,
+    };
+
+    const finalStatus = failed === totalRows && totalRows > 0 ? 'failed' : 'complete';
     await admin.from('cf_ingest_runs').update({
-      status: failed === totalRows && totalRows > 0 ? 'failed' : 'complete',
+      status: finalStatus,
       bytes_processed: bytesProcessed,
       inserted_rows: inserted,
       failed_rows: failed,
       total_rows: totalRows,
+      skipped_rows: skippedRows,
       error_message: lastError || null,
+      verification,
       finished_at: new Date().toISOString(),
     }).eq('id', runId);
     return { done: true, bytesProcessed, inserted, totalRows };

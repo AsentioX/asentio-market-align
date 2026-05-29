@@ -484,12 +484,14 @@ export type Database = {
           headers_json: Json | null
           id: string
           inserted_rows: number | null
+          skipped_rows: number
           source: string
           started_at: string
           status: string
           storage_path: string | null
           total_rows: number | null
           updated_rows: number | null
+          verification: Json | null
         }
         Insert: {
           bytes_processed?: number
@@ -502,12 +504,14 @@ export type Database = {
           headers_json?: Json | null
           id?: string
           inserted_rows?: number | null
+          skipped_rows?: number
           source?: string
           started_at?: string
           status?: string
           storage_path?: string | null
           total_rows?: number | null
           updated_rows?: number | null
+          verification?: Json | null
         }
         Update: {
           bytes_processed?: number
@@ -520,12 +524,14 @@ export type Database = {
           headers_json?: Json | null
           id?: string
           inserted_rows?: number | null
+          skipped_rows?: number
           source?: string
           started_at?: string
           status?: string
           storage_path?: string | null
           total_rows?: number | null
           updated_rows?: number | null
+          verification?: Json | null
         }
         Relationships: []
       }
