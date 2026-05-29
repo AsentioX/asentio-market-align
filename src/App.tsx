@@ -107,6 +107,7 @@ const AppContent = () => {
       <main>
         <Routes>
           <Route path="/admin" element={<BeaverBoatAdmin />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="*" element={<BeaverBoatLayout />} />
         </Routes>
       </main>
