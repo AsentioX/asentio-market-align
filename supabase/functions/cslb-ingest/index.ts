@@ -335,8 +335,20 @@ async function processChunk(runId: string) {
       const remaining = buffer.replace(/\r?\n?$/, '');
       if (!headerIdx) headerIdx = buildHeaderIndex(parseLine(remaining));
       else {
-        const rec = mapRow(parseLine(remaining), headerIdx);
+        const cells = parseLine(remaining);
+        const rec = mapRow(cells, headerIdx);
         if (rec) { batch.push(rec); totalRows++; }
+        else {
+          skippedRows++;
+          if (skippedSamples.length < MAX_SKIPPED_SAMPLES) {
+            const businessIdx = headerIdx.get('businessname');
+            const bn = businessIdx !== undefined ? (cells[businessIdx] ?? null) : null;
+            skippedSamples.push({
+              row: totalRows + skippedRows,
+              business_name: bn && bn.length ? bn : null,
+            });
+          }
+        }
       }
       consumedInSlice += enc.encode(remaining).length;
       bytesProcessed = (run.bytes_processed ?? 0) + consumedInSlice;
