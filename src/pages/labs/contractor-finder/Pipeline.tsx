@@ -248,6 +248,40 @@ export default function Pipeline() {
     }
   };
 
+  // Mark a run as cancelled so the self-chaining edge function bails on its next tick.
+  const stopRun = async (runId: string) => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    const { error } = await supabase
+      .from('cf_ingest_runs')
+      .update({ status: 'cancelled', error_message: 'Stopped by user', finished_at: new Date().toISOString() })
+      .eq('id', runId);
+    if (error) {
+      toast({ title: 'Stop failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: 'Run stopped', description: 'The ingest run has been cancelled.' });
+    await loadRuns();
+  };
+
+  // Delete an ingest run record entirely (does NOT remove already-inserted contractors).
+  const deleteRun = async (runId: string) => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    if (!confirm('Delete this ingest run record? Contractors already inserted will remain in the database.')) return;
+    const { error } = await supabase.from('cf_ingest_runs').delete().eq('id', runId);
+    if (error) {
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: 'Run deleted' });
+    await loadRuns();
+  };
+
   // Stage 3 — bulk-attach websites via CSV (license_number,website)
   const handleWebsiteCsv = async (file: File) => {
     if (!isAuthed) {
@@ -806,15 +840,33 @@ export default function Pipeline() {
                       {pct !== null ? `${pct}%` : '—'}
                     </td>
                     <td className="px-5 py-3 text-right">
-                      {canResume ? (
+                      <div className="inline-flex items-center gap-1.5 justify-end">
+                        {canResume ? (
+                          <button
+                            onClick={() => resumeRun(r.id)}
+                            className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1"
+                            style={{ background: 'hsl(var(--cf-primary-soft))', color: 'hsl(var(--cf-primary))' }}
+                          >
+                            <RefreshCw className="w-3 h-3" /> Resume
+                          </button>
+                        ) : null}
+                        {(r.status === 'parsing' || r.status === 'inserting' || r.status === 'pending') ? (
+                          <button
+                            onClick={() => stopRun(r.id)}
+                            className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1"
+                            style={{ background: 'hsl(var(--cf-warning) / 0.15)', color: 'hsl(var(--cf-warning))' }}
+                          >
+                            Stop
+                          </button>
+                        ) : null}
                         <button
-                          onClick={() => resumeRun(r.id)}
-                          className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1"
-                          style={{ background: 'hsl(var(--cf-primary-soft))', color: 'hsl(var(--cf-primary))' }}
+                          onClick={() => deleteRun(r.id)}
+                          className="text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1 opacity-70 hover:opacity-100"
+                          style={{ background: 'hsl(var(--cf-surface-alt))', color: 'hsl(var(--cf-text-muted))' }}
                         >
-                          <RefreshCw className="w-3 h-3" /> Resume
+                          Delete
                         </button>
-                      ) : null}
+                      </div>
                     </td>
                   </tr>
                 );

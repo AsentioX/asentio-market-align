@@ -195,6 +195,10 @@ async function processChunk(runId: string) {
   const { data: run, error: runErr } = await admin
     .from('cf_ingest_runs').select('*').eq('id', runId).single();
   if (runErr || !run) throw new Error(`run not found: ${runErr?.message}`);
+  if (run.status === 'cancelled') {
+    console.log(`run ${runId} is cancelled — aborting chunk`);
+    return { done: true, bytesProcessed: run.bytes_processed ?? 0, inserted: run.inserted_rows ?? 0, totalRows: run.total_rows ?? 0 };
+  }
 
   const storage_path = run.storage_path as string;
   let bytesProcessed: number = Number(run.bytes_processed ?? 0);
