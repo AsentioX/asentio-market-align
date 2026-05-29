@@ -845,3 +845,148 @@ function RunStatusPill({ status }: { status: string }) {
     </span>
   );
 }
+
+function VerificationPanel({ runs }: { runs: IngestRun[] }) {
+  // Pick the most recent run that produced a final report; fall back to any with partial verification.
+  const run =
+    runs.find((r) => r.status === 'complete' && r.verification && !r.verification.in_progress) ??
+    runs.find((r) => !!r.verification);
+  if (!run || !run.verification) return null;
+  const v = run.verification;
+  const passed = !!v.passed;
+  const accent = passed ? 'var(--cf-success)' : 'var(--cf-warning)';
+  const Icon = passed ? CheckCircle2 : AlertTriangle;
+  const checkRow = (label: string, ok: boolean | undefined, detail: string) => (
+    <div className="flex items-start gap-2 text-xs py-1.5">
+      {ok ? (
+        <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'hsl(var(--cf-success))' }} />
+      ) : (
+        <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'hsl(var(--cf-warning))' }} />
+      )}
+      <div>
+        <div className="font-semibold">{label}</div>
+        <div style={{ color: 'hsl(var(--cf-text-muted))' }}>{detail}</div>
+      </div>
+    </div>
+  );
+  return (
+    <div className="rounded-xl p-6" style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}>
+      <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Icon className="w-4 h-4" style={{ color: `hsl(${accent})` }} />
+            <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: `hsl(${accent})` }}>
+              Post-Ingest Verification
+            </span>
+            <span
+              className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+              style={{ background: `hsl(${accent})`, color: 'white' }}
+            >
+              {v.in_progress ? 'IN PROGRESS' : passed ? 'PASSED' : 'ATTENTION'}
+            </span>
+          </div>
+          <h3 className="font-semibold text-base">CSV ↔ database reconciliation</h3>
+          <p className="text-xs mt-1" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+            Latest run · {run.file_name ?? '—'}
+            {v.ran_at ? <> · ran {new Date(v.ran_at).toLocaleString()}</> : null}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <Metric label="CSV data rows" value={v.csv_data_rows} />
+        <Metric label="Contractors in DB" value={v.db_row_count} />
+        <Metric
+          label="Row count Δ (DB − CSV)"
+          value={v.row_count_delta}
+          tone={v.row_count_delta && v.row_count_delta < 0 ? 'warning' : 'default'}
+        />
+        <Metric
+          label="Missing license_number"
+          value={v.csv_rows_missing_license}
+          tone={(v.csv_rows_missing_license ?? 0) > 0 ? 'warning' : 'success'}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+          <div className="text-[11px] uppercase tracking-wide font-semibold mb-2" style={{ color: 'hsl(var(--cf-text-subtle))' }}>
+            Checks
+          </div>
+          {checkRow(
+            'Row count match',
+            v.checks?.row_count_match,
+            `Database holds ${v.db_row_count?.toLocaleString() ?? 0} contractor${(v.db_row_count ?? 0) === 1 ? '' : 's'} vs ${v.csv_parseable_rows?.toLocaleString() ?? 0} parseable CSV row${(v.csv_parseable_rows ?? 0) === 1 ? '' : 's'}.`,
+          )}
+          {checkRow(
+            'No missing license numbers',
+            v.checks?.no_missing_license_numbers,
+            (v.csv_rows_missing_license ?? 0) === 0
+              ? 'Every CSV row had a usable license_number.'
+              : `${v.csv_rows_missing_license?.toLocaleString()} CSV row${v.csv_rows_missing_license === 1 ? '' : 's'} had no license_number and were skipped.`,
+          )}
+          {v.notes ? (
+            <div className="text-[11px] mt-2" style={{ color: 'hsl(var(--cf-warning))' }}>
+              {v.notes}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+          <div className="text-[11px] uppercase tracking-wide font-semibold mb-2" style={{ color: 'hsl(var(--cf-text-subtle))' }}>
+            Skipped rows (sample, up to 50)
+          </div>
+          {(v.skipped_samples?.length ?? 0) === 0 ? (
+            <div className="text-xs" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              No skipped rows — every CSV row had a license_number.
+            </div>
+          ) : (
+            <div className="max-h-48 overflow-y-auto pr-1">
+              <table className="w-full text-[11px]">
+                <thead style={{ color: 'hsl(var(--cf-text-subtle))' }}>
+                  <tr>
+                    <th className="text-left font-semibold pb-1">CSV row</th>
+                    <th className="text-left font-semibold pb-1">Business name (if any)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {v.skipped_samples!.map((s, i) => (
+                    <tr key={i} className="border-t" style={{ borderColor: 'hsl(var(--cf-border))' }}>
+                      <td className="py-1 tabular-nums">{s.row.toLocaleString()}</td>
+                      <td className="py-1" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+                        {s.business_name ?? <span className="italic">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Metric({
+  label,
+  value,
+  tone = 'default',
+}: {
+  label: string;
+  value: number | undefined | null;
+  tone?: 'default' | 'success' | 'warning';
+}) {
+  const color =
+    tone === 'success' ? 'hsl(var(--cf-success))' : tone === 'warning' ? 'hsl(var(--cf-warning))' : 'inherit';
+  return (
+    <div className="rounded-lg p-3" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+      <div className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: 'hsl(var(--cf-text-subtle))' }}>
+        {label}
+      </div>
+      <div className="text-xl font-bold tabular-nums" style={{ color }}>
+        {value === undefined || value === null ? '—' : value.toLocaleString()}
+      </div>
+    </div>
+  );
+}
