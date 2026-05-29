@@ -239,10 +239,21 @@ export default function Pipeline() {
     loadStats();
     loadEmailStats();
     loadExtractionRuns();
+    loadAutoState();
     supabase.auth.getSession().then(({ data }) => setIsAuthed(!!data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setIsAuthed(!!session));
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  // Poll auto-enrich state + email stats while the background job is running
+  useEffect(() => {
+    if (!autoState?.is_running) return;
+    const interval = setInterval(() => {
+      loadAutoState();
+      loadEmailStats();
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [autoState?.is_running]);
 
   // Poll the most recent run while it's processing
   useEffect(() => {
