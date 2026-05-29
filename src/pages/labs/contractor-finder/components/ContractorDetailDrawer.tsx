@@ -25,10 +25,35 @@ export function ContractorDetailDrawer({ contractor, onClose }: { contractor: Co
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [showSegmentPicker, setShowSegmentPicker] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [extractedEmail, setExtractedEmail] = useState<string | null>(null);
+  const [extracting, setExtracting] = useState(false);
 
   useEffect(() => {
     setSummary(null);
+    setExtractedEmail(null);
   }, [contractor.contractor_id]);
+
+  const extractEmail = async () => {
+    setExtracting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cf-extract-email-single', {
+        body: { contractorId: contractor.contractor_id },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      if ((data as any)?.email) {
+        setExtractedEmail((data as any).email);
+        toast.success('Email extracted', { description: (data as any).email });
+      } else {
+        toast.warning('No email found on website');
+      }
+    } catch (e: any) {
+      toast.error('Extraction failed', { description: e?.message });
+    } finally {
+      setExtracting(false);
+    }
+  };
+
 
   const generateSummary = async () => {
     setLoadingSummary(true);
