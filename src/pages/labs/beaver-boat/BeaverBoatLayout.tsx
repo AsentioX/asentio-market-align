@@ -75,7 +75,7 @@ const useCountdown = (target: number) => {
 const races = [
   {
     title: '2026 San Francisco Dragon Boat Festival',
-    date: 'June 20–21, 2026',
+    date: 'June 20, 2026',
     location: 'Lake Merced Park, San Francisco',
     maps: 'https://maps.app.goo.gl/v4oGVuHdx9eFBe9SA',
     primary: true,
@@ -243,7 +243,7 @@ const BeaverBoatLayout = () => {
                 <div className="min-w-0">
                   <div className="text-[10px] sm:text-xs font-bold text-[#FF000D] uppercase tracking-widest">Countdown to</div>
                   <div className="text-white font-bold text-base sm:text-lg leading-tight">SF Dragon Boat Festival</div>
-                  <div className="text-white/60 text-xs sm:text-sm">June 20 & 21, 2026</div>
+                  <div className="text-white/60 text-xs sm:text-sm">June 20, 2026</div>
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-2 md:gap-3">
