@@ -150,26 +150,30 @@ export default function Explore() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Explore Contractors</h1>
           <p className="text-sm" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-            Search across {contractors.length.toLocaleString()} licensed contractors. Showing <strong>{results.length}</strong> matches.
+            {loading ? 'Searching…' : (
+              <>Showing <strong>{results.length.toLocaleString()}</strong> of <strong>{total.toLocaleString()}</strong> matching contractors.</>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowSaveModal(true)}
-            disabled={results.length === 0}
+            disabled={total === 0 || loading}
             className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg disabled:opacity-50"
             style={{ border: '1px solid hsl(var(--cf-border))', background: 'hsl(var(--cf-surface))' }}
           >
             <BookmarkPlus className="w-4 h-4" /> Save Segment
           </button>
           <button
-            onClick={() => exportToCSV(results)}
-            disabled={results.length === 0}
+            onClick={handleExportCSV}
+            disabled={total === 0 || loading || exporting}
             className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-lg text-white disabled:opacity-50"
             style={{ background: 'hsl(var(--cf-primary))' }}
           >
-            <Download className="w-4 h-4" /> Export CSV
+            {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            {exporting ? 'Exporting…' : 'Export CSV'}
           </button>
+
         </div>
       </div>
 
