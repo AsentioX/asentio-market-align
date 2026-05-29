@@ -254,6 +254,8 @@ async function processChunk(runId: string) {
       total_rows: totalRows,
       skipped_rows: skippedRows,
       error_message: lastError || null,
+      // Persist the running skipped-sample buffer so a resumed run can keep building on it.
+      verification: { in_progress: true, skipped_samples: skippedSamples },
     };
     if (extraStatus) update.status = extraStatus;
     await admin.from('cf_ingest_runs').update(update).eq('id', runId);
