@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.pp-scrape-offers]
 verify_jwt = false
+
+[functions.process-email-queue]
+verify_jwt = true
