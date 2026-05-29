@@ -282,13 +282,25 @@ async function processChunk(runId: string) {
             headerIdx.forEach((v, k) => { headerObj[k] = v; });
             await admin.from('cf_ingest_runs').update({ headers_json: headerObj }).eq('id', runId);
           } else {
-            const rec = mapRow(parseLine(line), headerIdx);
+            const cells = parseLine(line);
+            const rec = mapRow(cells, headerIdx);
             if (rec) {
               batch.push(rec);
               totalRows++;
               rowsThisChunk++;
               if (batch.length >= BATCH_SIZE) {
                 await flush();
+              }
+            } else {
+              // No license_number — flag for the verification report
+              skippedRows++;
+              if (skippedSamples.length < MAX_SKIPPED_SAMPLES) {
+                const businessIdx = headerIdx.get('businessname');
+                const bn = businessIdx !== undefined ? (cells[businessIdx] ?? null) : null;
+                skippedSamples.push({
+                  row: totalRows + skippedRows,
+                  business_name: bn && bn.length ? bn : null,
+                });
               }
             }
           }
