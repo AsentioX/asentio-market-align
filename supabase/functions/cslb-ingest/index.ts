@@ -201,6 +201,7 @@ async function processChunk(runId: string) {
   let inserted: number = Number(run.inserted_rows ?? 0);
   let failed: number = Number(run.failed_rows ?? 0);
   let totalRows: number = Number(run.total_rows ?? 0);
+  let skippedRows: number = Number(run.skipped_rows ?? 0);
   let lastError = '';
   let headerIdx: Map<string, number> | null = run.headers_json
     ? buildHeaderIndexFromObj(run.headers_json as Record<string, number>)
