@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCF, exportToCSV } from './useCFStore';
+import { useContractorQuery, fetchAllMatching, SortKey } from './useContractorQuery';
 import { Contractor, ContractorType, SegmentFilters, LicenseStatus, CompanySize, BusinessMaturity } from './types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -11,6 +12,7 @@ import {
 import { ConfidenceMeter, LicenseStatusBadge, SourceBadgePill, CompletenessIcons, relativeTime } from './components/Atoms';
 import { ContractorDetailDrawer } from './components/ContractorDetailDrawer';
 import { tradeLabel, formatTrade } from './tradeLabels';
+
 
 // Friendly contractor types mapped to the CSLB code we display next to them.
 // (Filter logic continues to match on the friendly name; the code is for readability.)
