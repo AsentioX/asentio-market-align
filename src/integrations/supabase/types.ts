@@ -262,6 +262,54 @@ export type Database = {
         }
         Relationships: []
       }
+      cf_auto_enrich_state: {
+        Row: {
+          discovery_batch: number
+          emails_found: number
+          extraction_batch: number
+          finished_at: string | null
+          id: number
+          is_running: boolean
+          last_tick_at: string | null
+          message: string | null
+          phase: string
+          started_at: string | null
+          ticks: number
+          updated_at: string
+          websites_found: number
+        }
+        Insert: {
+          discovery_batch?: number
+          emails_found?: number
+          extraction_batch?: number
+          finished_at?: string | null
+          id?: number
+          is_running?: boolean
+          last_tick_at?: string | null
+          message?: string | null
+          phase?: string
+          started_at?: string | null
+          ticks?: number
+          updated_at?: string
+          websites_found?: number
+        }
+        Update: {
+          discovery_batch?: number
+          emails_found?: number
+          extraction_batch?: number
+          finished_at?: string | null
+          id?: number
+          is_running?: boolean
+          last_tick_at?: string | null
+          message?: string | null
+          phase?: string
+          started_at?: string | null
+          ticks?: number
+          updated_at?: string
+          websites_found?: number
+        }
+        Relationships: []
+      }
       cf_contractors: {
         Row: {
           address: string | null

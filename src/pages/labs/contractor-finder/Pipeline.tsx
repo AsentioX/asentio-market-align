@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play, Search } from 'lucide-react';
+import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play, Search, Zap, StopCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCF } from './useCFStore';
 import { useToast } from '@/hooks/use-toast';
@@ -84,6 +84,74 @@ export default function Pipeline() {
   const [discoveryLimit, setDiscoveryLimit] = useState(25);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const websiteCsvRef = useRef<HTMLInputElement>(null);
+
+  // Auto-enrichment background job state (singleton row in cf_auto_enrich_state)
+  interface AutoEnrichState {
+    is_running: boolean;
+    phase: string;
+    discovery_batch: number;
+    extraction_batch: number;
+    websites_found: number;
+    emails_found: number;
+    ticks: number;
+    message: string | null;
+    started_at: string | null;
+    last_tick_at: string | null;
+    finished_at: string | null;
+  }
+  const [autoState, setAutoState] = useState<AutoEnrichState | null>(null);
+  const [autoBusy, setAutoBusy] = useState(false);
+  const [autoDiscoveryBatch, setAutoDiscoveryBatch] = useState(25);
+  const [autoExtractionBatch, setAutoExtractionBatch] = useState(25);
+
+  const loadAutoState = async () => {
+    const { data } = await supabase
+      .from('cf_auto_enrich_state')
+      .select('is_running, phase, discovery_batch, extraction_batch, websites_found, emails_found, ticks, message, started_at, last_tick_at, finished_at')
+      .eq('id', 1)
+      .maybeSingle();
+    if (data) {
+      setAutoState(data as AutoEnrichState);
+      setAutoDiscoveryBatch(data.discovery_batch);
+      setAutoExtractionBatch(data.extraction_batch);
+    }
+  };
+
+  const startAutoEnrich = async () => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setAutoBusy(true);
+    try {
+      const { error } = await supabase.functions.invoke('cf-auto-enrich', {
+        body: { action: 'start', discoveryBatch: autoDiscoveryBatch, extractionBatch: autoExtractionBatch },
+      });
+      if (error) throw error;
+      toast({ title: 'Auto-enrichment started', description: 'Discovery + extraction will run in the background until every contractor is processed or you stop it.' });
+      await loadAutoState();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Failed to start', description: msg, variant: 'destructive' });
+    } finally {
+      setAutoBusy(false);
+    }
+  };
+
+  const stopAutoEnrich = async () => {
+    setAutoBusy(true);
+    try {
+      const { error } = await supabase.functions.invoke('cf-auto-enrich', { body: { action: 'stop' } });
+      if (error) throw error;
+      toast({ title: 'Auto-enrichment stopping', description: 'The job will halt after the current tick.' });
+      await loadAutoState();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Failed to stop', description: msg, variant: 'destructive' });
+    } finally {
+      setAutoBusy(false);
+    }
+  };
 
   const loadRuns = async () => {
     const { data } = await supabase
@@ -171,10 +239,21 @@ export default function Pipeline() {
     loadStats();
     loadEmailStats();
     loadExtractionRuns();
+    loadAutoState();
     supabase.auth.getSession().then(({ data }) => setIsAuthed(!!data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setIsAuthed(!!session));
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  // Poll auto-enrich state + email stats while the background job is running
+  useEffect(() => {
+    if (!autoState?.is_running) return;
+    const interval = setInterval(() => {
+      loadAutoState();
+      loadEmailStats();
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [autoState?.is_running]);
 
   // Poll the most recent run while it's processing
   useEffect(() => {
@@ -442,6 +521,117 @@ export default function Pipeline() {
               )}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Auto-enrichment — runs discovery + extraction continuously across the whole DB */}
+      <div className="rounded-xl p-6" style={{
+        background: 'hsl(var(--cf-surface))',
+        border: `1px solid hsl(${autoState?.is_running ? 'var(--cf-success)' : 'var(--cf-border)'})`,
+      }}>
+        <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="w-4 h-4" style={{ color: 'hsl(var(--cf-success))' }} />
+              <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'hsl(var(--cf-success))' }}>
+                Auto-Enrichment · Stages 2 + 3
+              </span>
+              {autoState?.is_running && (
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded inline-flex items-center gap-1" style={{ background: 'hsl(var(--cf-success))', color: 'white' }}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> RUNNING
+                </span>
+              )}
+            </div>
+            <h3 className="font-semibold text-base">Populate every contractor's website &amp; email automatically</h3>
+            <p className="text-xs mt-1 max-w-2xl" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              Self-chaining background loop: on each tick it runs one website-discovery batch (contractors missing a website) and one email-extraction batch (contractors with a website but no email yet), then re-invokes itself. Stops automatically when no work remains, or when you press Stop.
+            </p>
+          </div>
+        </div>
+
+        {/* Live progress stats */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-5">
+          {[
+            { label: 'Phase', value: autoState?.phase ?? 'idle', isText: true, color: 'var(--cf-primary)' },
+            { label: 'Ticks', value: autoState?.ticks ?? 0, color: 'var(--cf-text-muted)' },
+            { label: 'Websites found', value: autoState?.websites_found ?? 0, color: 'var(--cf-accent)' },
+            { label: 'Emails found', value: autoState?.emails_found ?? 0, color: 'var(--cf-success)' },
+            { label: 'Last tick', value: fmtTime(autoState?.last_tick_at ?? null), isText: true, color: 'var(--cf-text-muted)' },
+          ].map((s) => (
+            <div key={s.label} className="rounded-lg p-3" style={{ background: 'hsl(var(--cf-surface-alt))' }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: 'hsl(var(--cf-text-subtle))' }}>{s.label}</div>
+              <div className={`font-bold tabular-nums ${s.isText ? 'text-sm capitalize' : 'text-xl'}`} style={{ color: `hsl(${s.color})` }}>
+                {typeof s.value === 'number' ? s.value.toLocaleString() : s.value}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {autoState?.message && (
+          <div className="rounded-lg px-3 py-2 mb-4 text-xs" style={{ background: 'hsl(var(--cf-surface-alt))', color: 'hsl(var(--cf-text-muted))' }}>
+            {autoState.message}
+          </div>
+        )}
+
+        <div className="rounded-lg p-4" style={{ background: 'hsl(var(--cf-surface-alt))', border: '1px dashed hsl(var(--cf-border))' }}>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold" style={{ color: 'hsl(var(--cf-text-muted))' }}>Discovery batch</label>
+              <select
+                value={autoDiscoveryBatch}
+                onChange={(e) => setAutoDiscoveryBatch(Number(e.target.value))}
+                disabled={autoState?.is_running || autoBusy}
+                className="text-xs px-2 py-1 rounded-md"
+                style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+              >
+                {[10, 25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold" style={{ color: 'hsl(var(--cf-text-muted))' }}>Extraction batch</label>
+              <select
+                value={autoExtractionBatch}
+                onChange={(e) => setAutoExtractionBatch(Number(e.target.value))}
+                disabled={autoState?.is_running || autoBusy}
+                className="text-xs px-2 py-1 rounded-md"
+                style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+              >
+                {[10, 25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+
+            {autoState?.is_running ? (
+              <button
+                onClick={stopAutoEnrich}
+                disabled={autoBusy}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+                style={{ background: 'hsl(var(--cf-warning))' }}
+              >
+                {autoBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <StopCircle className="w-3.5 h-3.5" />}
+                Stop auto-enrichment
+              </button>
+            ) : (
+              <button
+                onClick={startAutoEnrich}
+                disabled={!isAuthed || autoBusy || ((emailStats?.missingWebsite ?? 0) === 0 && (emailStats?.pending ?? 0) === 0)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+                style={{ background: 'hsl(var(--cf-success))' }}
+              >
+                {autoBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                Start auto-enrichment
+              </button>
+            )}
+
+            <div className="text-[11px]" style={{ color: 'hsl(var(--cf-text-muted))' }}>
+              Remaining: <strong>{(emailStats?.missingWebsite ?? 0).toLocaleString()}</strong> websites ·{' '}
+              <strong>{(emailStats?.pending ?? 0).toLocaleString()}</strong> emails pending
+            </div>
+          </div>
+          {!isAuthed && (
+            <div className="text-[11px] mt-2" style={{ color: 'hsl(var(--cf-warning))' }}>
+              Admin sign-in required.
+            </div>
+          )}
         </div>
       </div>
 
