@@ -14,6 +14,7 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
+import Unsubscribe from "./pages/Unsubscribe";
 import Directory from "./pages/Directory";
 import ProductDetail from "./pages/ProductDetail";
 import CompanyDetail from "./pages/CompanyDetail";
@@ -106,6 +107,7 @@ const AppContent = () => {
       <main>
         <Routes>
           <Route path="/admin" element={<BeaverBoatAdmin />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="*" element={<BeaverBoatLayout />} />
         </Routes>
       </main>
@@ -121,6 +123,7 @@ const AppContent = () => {
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
           <Route path="/xr-directory" element={<Directory />} />
           <Route path="/xr-directory/company/:companyName" element={<CompanyDetail />} />
