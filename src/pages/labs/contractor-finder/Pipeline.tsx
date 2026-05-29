@@ -248,6 +248,40 @@ export default function Pipeline() {
     }
   };
 
+  // Mark a run as cancelled so the self-chaining edge function bails on its next tick.
+  const stopRun = async (runId: string) => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    const { error } = await supabase
+      .from('cf_ingest_runs')
+      .update({ status: 'cancelled', error_message: 'Stopped by user', finished_at: new Date().toISOString() })
+      .eq('id', runId);
+    if (error) {
+      toast({ title: 'Stop failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: 'Run stopped', description: 'The ingest run has been cancelled.' });
+    await loadRuns();
+  };
+
+  // Delete an ingest run record entirely (does NOT remove already-inserted contractors).
+  const deleteRun = async (runId: string) => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    if (!confirm('Delete this ingest run record? Contractors already inserted will remain in the database.')) return;
+    const { error } = await supabase.from('cf_ingest_runs').delete().eq('id', runId);
+    if (error) {
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: 'Run deleted' });
+    await loadRuns();
+  };
+
   // Stage 3 — bulk-attach websites via CSV (license_number,website)
   const handleWebsiteCsv = async (file: File) => {
     if (!isAuthed) {
