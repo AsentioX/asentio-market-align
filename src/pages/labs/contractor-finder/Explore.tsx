@@ -355,7 +355,12 @@ export default function Explore() {
           </div>
 
           {/* Results */}
-          {results.length === 0 ? (
+          {loading ? (
+            <div className="rounded-xl py-24 text-center" style={{ background: 'hsl(var(--cf-surface))', border: '1px dashed hsl(var(--cf-border))' }}>
+              <Loader2 className="w-6 h-6 mx-auto mb-3 animate-spin" style={{ color: 'hsl(var(--cf-text-subtle))' }} />
+              <p className="text-sm font-medium">Searching contractors…</p>
+            </div>
+          ) : results.length === 0 ? (
             <div className="rounded-xl py-24 text-center" style={{ background: 'hsl(var(--cf-surface))', border: '1px dashed hsl(var(--cf-border))' }}>
               <Users className="w-10 h-10 mx-auto mb-3" style={{ color: 'hsl(var(--cf-text-subtle))' }} />
               <p className="text-sm font-medium">No contractors match these filters</p>
@@ -372,6 +377,21 @@ export default function Explore() {
           ) : (
             <MapView contractors={results} selectedId={selectedId} onSelect={setSelectedId} />
           )}
+
+          {!loading && hasMore && (
+            <div className="flex justify-center pt-2">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-50"
+                style={{ background: 'hsl(var(--cf-surface))', border: '1px solid hsl(var(--cf-border))' }}
+              >
+                {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {loadingMore ? 'Loading…' : `Load more (${(total - results.length).toLocaleString()} remaining)`}
+              </button>
+            </div>
+          )}
+
         </section>
       </div>
 
