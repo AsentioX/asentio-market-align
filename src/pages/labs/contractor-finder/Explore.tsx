@@ -403,7 +403,7 @@ export default function Explore() {
           <div onClick={(e) => e.stopPropagation()} className="rounded-xl p-6 w-full max-w-md" style={{ background: 'hsl(var(--cf-surface))' }}>
             <h3 className="font-semibold mb-3 flex items-center gap-2"><Bookmark className="w-4 h-4" /> Save segment</h3>
             <p className="text-xs mb-4" style={{ color: 'hsl(var(--cf-text-muted))' }}>
-              Save these {results.length} contractors and active filters as a reusable list.
+              Save all {total.toLocaleString()} matching contractors and the active filters as a reusable list.
             </p>
             <input
               autoFocus
@@ -418,11 +418,15 @@ export default function Explore() {
               <button onClick={() => setShowSaveModal(false)} className="text-sm px-3 py-2">Cancel</button>
               <button
                 onClick={handleSaveSegment}
-                disabled={!segmentName.trim()}
-                className="text-sm font-semibold text-white px-4 py-2 rounded-md disabled:opacity-50"
+                disabled={!segmentName.trim() || savingSegment}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2 rounded-md disabled:opacity-50"
                 style={{ background: 'hsl(var(--cf-primary))' }}
-              >Save</button>
+              >
+                {savingSegment ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {savingSegment ? 'Saving…' : 'Save'}
+              </button>
             </div>
+
           </div>
         </div>
       )}
