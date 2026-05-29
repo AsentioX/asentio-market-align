@@ -290,25 +290,37 @@ const BeaverBoatLayout = () => {
                   </a>
                   {r.primary && (
                     <>
+                      <div className="flex items-start gap-2 text-sm text-white/80 flex-wrap mb-2">
+                        <Clock className="w-4 h-4 shrink-0 text-[#FF000D] mt-0.5" />
+                        <span className="font-bold text-[#FF000D]">Registration deadline:</span>
+                        <span className="text-[#FF000D]">May 31, 2026</span>
+                      </div>
                       <div className="border-t border-white/20 my-2" />
-                      <div className="space-y-2 mb-6">
-                        <div className="flex items-start gap-2 text-sm text-white/80 flex-wrap">
-                          <Clock className="w-4 h-4 shrink-0 text-[#FF000D] mt-0.5" />
-                          <span className="font-bold text-[#FF000D]">Registration deadline:</span>
-                          <span className="text-[#FF000D]">May 31, 2026</span>
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                          <div className="flex items-start gap-2 text-sm text-white/80">
+                            <Calendar className="w-4 h-4 shrink-0 mt-0.5" />
+                            <span>Practice: June 7 (Sun)</span>
+                          </div>
+                          <div className="flex items-start gap-2 text-sm text-white/80 flex-wrap mt-1">
+                            <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
+                            <a href="https://maps.app.goo.gl/cE7qAEukWG8Qv1RZ9" target="_blank" rel="noreferrer" className="underline hover:text-white break-words">Bair Island Aquatic Center</a>
+                          </div>
                         </div>
-                        <div className="flex items-start gap-2 text-sm text-white/80">
-                          <Calendar className="w-4 h-4 shrink-0 mt-0.5" /> <span>Practice: June 7 (Sun) & June 13 (Sat)</span>
+                        <div>
+                          <div className="flex items-start gap-2 text-sm text-white/80">
+                            <Calendar className="w-4 h-4 shrink-0 mt-0.5" />
+                            <span>Practice: June 13 (Sat)</span>
+                          </div>
+                          <div className="flex items-start gap-2 text-sm text-white/80 flex-wrap mt-1">
+                            <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
+                            <a href="https://maps.app.goo.gl/v4oGVuHdx9eFBe9SA" target="_blank" rel="noreferrer" className="underline hover:text-white break-words">Lake Merced</a>
+                          </div>
                         </div>
-                      <div className="flex items-start gap-2 text-sm text-white/80 flex-wrap">
-                        <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-                        <span>Practice location:</span>
-                        <a href="https://maps.app.goo.gl/cE7qAEukWG8Qv1RZ9" target="_blank" rel="noreferrer" className="underline hover:text-white break-words">Bair Island Aquatic Center</a>
                       </div>
                       <div className="flex items-start gap-2 text-sm text-white/80">
                         <Globe className="w-4 h-4 shrink-0 mt-0.5" />
-                        <a href="https://www.dragonboatsf.com/" target="_blank" rel="noreferrer" className="underline hover:text-white">Event website</a>
-                      </div>
+                        <a href="https://www.dragonboatsf.com/" target="_blank" rel="noreferrer" className="underline hover:text-white">SF Dragon Boat Festival Website</a>
                       </div>
                     </>
                   )}
