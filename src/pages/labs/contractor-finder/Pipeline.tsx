@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play, Search } from 'lucide-react';
+import { Database, CheckCircle2, AlertTriangle, RefreshCw, Award, Clock, Activity, ArrowDown, Upload, ExternalLink, FileText, Loader2, Globe, Mail, Link2, Play, Search, Zap, StopCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCF } from './useCFStore';
 import { useToast } from '@/hooks/use-toast';
