@@ -85,6 +85,74 @@ export default function Pipeline() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const websiteCsvRef = useRef<HTMLInputElement>(null);
 
+  // Auto-enrichment background job state (singleton row in cf_auto_enrich_state)
+  interface AutoEnrichState {
+    is_running: boolean;
+    phase: string;
+    discovery_batch: number;
+    extraction_batch: number;
+    websites_found: number;
+    emails_found: number;
+    ticks: number;
+    message: string | null;
+    started_at: string | null;
+    last_tick_at: string | null;
+    finished_at: string | null;
+  }
+  const [autoState, setAutoState] = useState<AutoEnrichState | null>(null);
+  const [autoBusy, setAutoBusy] = useState(false);
+  const [autoDiscoveryBatch, setAutoDiscoveryBatch] = useState(25);
+  const [autoExtractionBatch, setAutoExtractionBatch] = useState(25);
+
+  const loadAutoState = async () => {
+    const { data } = await supabase
+      .from('cf_auto_enrich_state')
+      .select('is_running, phase, discovery_batch, extraction_batch, websites_found, emails_found, ticks, message, started_at, last_tick_at, finished_at')
+      .eq('id', 1)
+      .maybeSingle();
+    if (data) {
+      setAutoState(data as AutoEnrichState);
+      setAutoDiscoveryBatch(data.discovery_batch);
+      setAutoExtractionBatch(data.extraction_batch);
+    }
+  };
+
+  const startAutoEnrich = async () => {
+    if (!isAuthed) {
+      toast({ title: 'Sign in required', description: 'Admin sign-in required.', variant: 'destructive' });
+      return;
+    }
+    setAutoBusy(true);
+    try {
+      const { error } = await supabase.functions.invoke('cf-auto-enrich', {
+        body: { action: 'start', discoveryBatch: autoDiscoveryBatch, extractionBatch: autoExtractionBatch },
+      });
+      if (error) throw error;
+      toast({ title: 'Auto-enrichment started', description: 'Discovery + extraction will run in the background until every contractor is processed or you stop it.' });
+      await loadAutoState();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Failed to start', description: msg, variant: 'destructive' });
+    } finally {
+      setAutoBusy(false);
+    }
+  };
+
+  const stopAutoEnrich = async () => {
+    setAutoBusy(true);
+    try {
+      const { error } = await supabase.functions.invoke('cf-auto-enrich', { body: { action: 'stop' } });
+      if (error) throw error;
+      toast({ title: 'Auto-enrichment stopping', description: 'The job will halt after the current tick.' });
+      await loadAutoState();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Failed to stop', description: msg, variant: 'destructive' });
+    } finally {
+      setAutoBusy(false);
+    }
+  };
+
   const loadRuns = async () => {
     const { data } = await supabase
       .from('cf_ingest_runs')
