@@ -238,12 +238,21 @@ async function processChunk(runId: string) {
     }
   };
 
+  // Sample of CSV row numbers (1-indexed within data rows) that were skipped
+  // because they had no license_number. Capped to avoid unbounded growth.
+  const skippedSamples: { row: number; business_name: string | null }[] =
+    Array.isArray((run.verification as { skipped_samples?: unknown })?.skipped_samples)
+      ? ((run.verification as { skipped_samples: { row: number; business_name: string | null }[] }).skipped_samples)
+      : [];
+  const MAX_SKIPPED_SAMPLES = 50;
+
   const persistProgress = async (extraStatus?: string) => {
     const update: Record<string, unknown> = {
       bytes_processed: bytesProcessed,
       inserted_rows: inserted,
       failed_rows: failed,
       total_rows: totalRows,
+      skipped_rows: skippedRows,
       error_message: lastError || null,
     };
     if (extraStatus) update.status = extraStatus;
