@@ -325,9 +325,19 @@ const BeaverBoatLayout = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-start gap-2 text-sm text-white/80">
+                      <div className="flex items-start gap-2 text-sm text-white/80 mb-4">
                         <Globe className="w-4 h-4 shrink-0 mt-0.5" />
                         <a href="https://www.dragonboatsf.com/" target="_blank" rel="noreferrer" className="underline hover:text-white">SF Dragon Boat Festival Website</a>
+                      </div>
+                      <div className="flex justify-end">
+                        <a
+                          href="https://www.mitcnc.org/events/249348"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF000D] hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors"
+                        >
+                          SIGN UP
+                        </a>
                       </div>
                     </>
                   )}
