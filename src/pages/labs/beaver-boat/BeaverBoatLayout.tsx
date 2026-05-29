@@ -325,11 +325,11 @@ const BeaverBoatLayout = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-start gap-2 text-sm text-white/80 mb-4">
-                        <Globe className="w-4 h-4 shrink-0 mt-0.5" />
-                        <a href="https://www.dragonboatsf.com/" target="_blank" rel="noreferrer" className="underline hover:text-white">SF Dragon Boat Festival Website</a>
-                      </div>
-                      <div className="flex justify-end">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-start gap-2 text-sm text-white/80">
+                          <Globe className="w-4 h-4 shrink-0 mt-0.5" />
+                          <a href="https://www.dragonboatsf.com/" target="_blank" rel="noreferrer" className="underline hover:text-white">SF Dragon Boat Festival Website</a>
+                        </div>
                         <a
                           href="https://www.mitcnc.org/events/249348"
                           target="_blank"
