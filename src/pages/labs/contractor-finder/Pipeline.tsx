@@ -4,6 +4,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCF } from './useCFStore';
 import { useToast } from '@/hooks/use-toast';
 
+interface VerificationReport {
+  ran_at?: string;
+  csv_data_rows?: number;
+  csv_parseable_rows?: number;
+  csv_rows_missing_license?: number;
+  db_row_count?: number;
+  row_count_delta?: number;
+  inserted_in_run?: number;
+  failed_in_run?: number;
+  checks?: { row_count_match?: boolean; no_missing_license_numbers?: boolean };
+  passed?: boolean;
+  skipped_samples?: { row: number; business_name: string | null }[];
+  notes?: string | null;
+  in_progress?: boolean;
+}
+
 interface IngestRun {
   id: string;
   source: string;
@@ -18,6 +34,8 @@ interface IngestRun {
   bytes_processed?: number | null;
   file_size?: number | null;
   storage_path?: string | null;
+  skipped_rows?: number | null;
+  verification?: VerificationReport | null;
 }
 
 interface Stats {
