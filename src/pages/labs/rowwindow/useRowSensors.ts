@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createStrokeDetectorState, processStrokeSample } from './strokeDetector';
 
 // =============================================================================
 // useRowSensors — real device sensors for RowWindow's On-Water instruments.
@@ -115,18 +116,10 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   const hrHandlerRef = useRef<((e: Event) => void) | null>(null);
   const trackingRef = useRef(tracking);
   const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
-  // Stroke-detection state — kept in refs so the listener doesn't re-subscribe.
-  const strokeStateRef = useRef<{
-    lpAccel: number;
-    baseline: number;
-    // Rolling mean-square of the dynamic (high-pass) signal → adaptive threshold.
-    rms: number;
-    lastPeakT: number;
-    lastDynamic: number;
-    rising: boolean;
-    sawFirstSample: boolean;
-    intervals: number[];
-  }>({ lpAccel: 0, baseline: 0, rms: 0, lastPeakT: 0, lastDynamic: 0, rising: false, sawFirstSample: false, intervals: [] });
+  // Stroke-detection state — pure detector lives in ./strokeDetector.ts;
+  // we keep its state in a ref so the listener doesn't re-subscribe.
+  const strokeStateRef = useRef(createStrokeDetectorState());
+  const sawFirstMotionRef = useRef(false);
 
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
 
@@ -388,57 +381,20 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     const handler = (e: DeviceMotionEvent) => {
       const a = e.accelerationIncludingGravity ?? e.acceleration;
       if (!a || a.x == null || a.y == null || a.z == null) return;
-      const mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-      const st = strokeStateRef.current;
 
-      // Mark the sensor "live" as soon as we receive ANY sample so the UI
-      // shows the accelerometer is working even before the first stroke peak.
-      if (!st.sawFirstSample) {
-        st.sawFirstSample = true;
+      // Mark the sensor "live" on the first sample so the UI confirms the
+      // accelerometer is delivering data before the first stroke is detected.
+      if (!sawFirstMotionRef.current) {
+        sawFirstMotionRef.current = true;
         setState(s => (s.motionStatus === 'live' ? s : { ...s, motionStatus: 'live' }));
       }
 
-      // Cascaded one-pole filters: lpAccel = smoothed signal, baseline = DC.
-      st.lpAccel = st.lpAccel * 0.8 + mag * 0.2;
-      st.baseline = st.baseline * 0.985 + st.lpAccel * 0.015;
-      const dynamic = st.lpAccel - st.baseline;
-
-      // Rolling RMS of the dynamic signal → adaptive threshold. Floors at 0.18
-      // m/s² so a perfectly still phone doesn't fire on noise.
-      st.rms = Math.sqrt(st.rms * st.rms * 0.95 + dynamic * dynamic * 0.05);
-      const THRESHOLD = Math.max(0.18, st.rms * 1.3);
-
       const now = e.timeStamp ? performance.timeOrigin + e.timeStamp : Date.now();
-      const MIN_INTERVAL_MS = 700;  // ≤ ~85 spm cap (covers race cadence)
-      const MAX_INTERVAL_MS = 6000; // ≥ 10 spm floor
-
-      // Edge-detect a downward zero-crossing AFTER having crossed the threshold —
-      // i.e. count one peak per rocking cycle, not one per noisy bump.
-      if (dynamic > THRESHOLD) st.rising = true;
-      const peak = st.rising && dynamic < st.lastDynamic && st.lastDynamic > THRESHOLD;
-
-      if (peak && now - st.lastPeakT > MIN_INTERVAL_MS) {
-        st.rising = false;
-        if (st.lastPeakT !== 0) {
-          const interval = now - st.lastPeakT;
-          if (interval < MAX_INTERVAL_MS) {
-            st.intervals.push(interval);
-            if (st.intervals.length > 6) st.intervals.shift();
-            const avg = st.intervals.reduce((a, b) => a + b, 0) / st.intervals.length;
-            const spm = Math.round(60000 / avg);
-            setState(s => ({ ...s, spm }));
-          } else {
-            st.intervals = [];
-            setState(s => ({ ...s, spm: null }));
-          }
-        }
-        st.lastPeakT = now;
-      } else if (st.lastPeakT !== 0 && now - st.lastPeakT > MAX_INTERVAL_MS) {
-        st.intervals = [];
-        st.lastPeakT = 0;
-        setState(s => (s.spm === null ? s : { ...s, spm: null }));
-      }
-      st.lastDynamic = dynamic;
+      const res = processStrokeSample(strokeStateRef.current, {
+        ax: a.x, ay: a.y, az: a.z, t: now,
+      });
+      // Only push state updates when SPM changes — avoids 60 Hz re-renders.
+      setState(s => (s.spm === res.spm ? s : { ...s, spm: res.spm }));
     };
     motionHandlerRef.current = handler;
     window.addEventListener('devicemotion', handler);
