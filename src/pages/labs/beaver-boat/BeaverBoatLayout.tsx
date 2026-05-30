@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, ChevronDown, X, Mail, Phone, Check, Globe, Clock } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, ChevronDown, X, Mail, Phone, Check, Globe, Clock, Instagram } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useGallery } from './useGallery';
 import logo from './assets/logo.png';
