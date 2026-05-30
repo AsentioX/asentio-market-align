@@ -428,6 +428,30 @@ const BeaverBoatLayout = () => {
         </div>
       </section>
 
+      {/* Sponsors Carousel */}
+      <section className="py-10 sm:py-14 bg-[#A31F34] text-white overflow-hidden">
+        <div className="container mx-auto px-4 mb-6 sm:mb-7 text-center">
+          <div className="text-xs font-bold text-white/70 uppercase tracking-widest mb-3">Our Sponsors</div>
+        </div>
+        <div className="relative w-full">
+          <div className="flex gap-12 sm:gap-20 animate-[scroll-x_30s_linear_infinite] w-max">
+            {[...sponsors, ...sponsors, ...sponsors].map((s, i) => (
+              <div key={i} className="relative flex items-center justify-center shrink-0 px-6">
+                <img
+                  src={s.logo}
+                  alt={s.name}
+                  className="h-14 sm:h-20 md:h-24 w-auto object-contain"
+                />
+                <span className="absolute -top-1 -right-1 bg-white text-[#A31F34] text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-full tracking-widest">
+                  {s.year}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <style>{`@keyframes scroll-x { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }`}</style>
+      </section>
+
       {/* Sponsors */}
       <section className="py-14 sm:py-20 bg-gradient-to-br from-[#A31F34] to-black text-white">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
