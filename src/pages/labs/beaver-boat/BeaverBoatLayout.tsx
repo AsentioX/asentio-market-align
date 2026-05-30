@@ -406,11 +406,8 @@ const BeaverBoatLayout = () => {
                     <img src={g.media_url} alt={g.label} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0" />
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+                  <div className="absolute bottom-3 left-3 right-3">
                     <span className="text-sm text-white font-bold truncate">{g.label}</span>
-                    <span className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${g.item_type === 'race' ? 'bg-[#FF000D] text-white' : 'bg-[#C0C0C0] text-black'}`}>
-                      {g.item_type}
-                    </span>
                   </div>
                 </div>
               ))
@@ -420,10 +417,7 @@ const BeaverBoatLayout = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-[#A31F34]/20 to-transparent opacity-0 group-hover:opacity-100 transition" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                     <img src={logo} alt="" className="w-16 h-16 object-contain opacity-30 mb-3" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${g.type === 'race' ? 'bg-[#FF000D] text-white' : 'bg-[#C0C0C0] text-black'}`}>
-                      {g.type === 'race' ? 'Race' : 'Practice'}
-                    </span>
-                    <span className="text-sm text-white/80 mt-2 text-center font-medium">{g.label}</span>
+                    <span className="text-sm text-white/80 text-center font-medium">{g.label}</span>
                   </div>
                 </div>
               ))
