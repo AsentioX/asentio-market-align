@@ -5,6 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGallery } from './useGallery';
 import logo from './assets/logo.png';
 import raceFestivalBg from '@/assets/beaver-boat/race-festival.jpg';
+import sponsorSuzhouShiny from '@/assets/beaver-boat/sponsor-suzhou-shiny.png';
+import sponsorDragonArmada from '@/assets/beaver-boat/sponsor-dragon-armada.png';
+
+const sponsors2025 = [
+  { name: 'Suzhou Shiny', logo: sponsorSuzhouShiny },
+  { name: 'Dragon Armada', logo: sponsorDragonArmada },
+];
 
 const RACE_DATE = new Date('2026-06-20T08:00:00-07:00').getTime();
 const REG_DEADLINE = new Date('2026-05-31T23:59:59-07:00').getTime();
