@@ -25,7 +25,6 @@ const BeaverBoatAdmin = () => {
   const [busy, setBusy] = useState(false);
 
   const [label, setLabel] = useState('');
-  const [itemType, setItemType] = useState<'race' | 'practice'>('race');
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -111,7 +110,7 @@ const BeaverBoatAdmin = () => {
       const { error: insErr } = await supabase.from('beaver_boat_gallery').insert({
         user_id: user.id,
         label: label || file.name,
-        item_type: itemType,
+        item_type: 'race',
         media_url: pub.publicUrl,
         media_kind: kind,
       });
@@ -267,27 +266,6 @@ const BeaverBoatAdmin = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1.5">Type</label>
-            <div className="grid grid-cols-2 gap-2">
-              {(['race', 'practice'] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setItemType(t)}
-                  className={`py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition ${
-                    itemType === t
-                      ? t === 'race'
-                        ? 'bg-[#FF000D] text-white'
-                        : 'bg-[#C0C0C0] text-black'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1.5">File</label>
