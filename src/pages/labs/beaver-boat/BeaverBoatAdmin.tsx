@@ -315,9 +315,6 @@ const BeaverBoatAdmin = () => {
                     ) : (
                       <img src={g.media_url} alt={g.label} className="w-full h-full object-cover" />
                     )}
-                    <span className={`absolute top-2 left-2 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${g.item_type === 'race' ? 'bg-[#FF000D] text-white' : 'bg-[#C0C0C0] text-black'}`}>
-                      {g.item_type}
-                    </span>
                     <span className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1.5">
                       {g.media_kind === 'video' ? <Video className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
                     </span>
