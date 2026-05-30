@@ -382,7 +382,7 @@ const BeaverBoatLayout = () => {
               <p className="text-white/60 text-base sm:text-lg">Catch the crew in action.</p>
             </div>
             <Link
-              to="/labs/beaver-boat/admin"
+              to={typeof window !== 'undefined' && (window.location.hostname === 'beaverboatclub.org' || window.location.hostname === 'www.beaverboatclub.org') ? '/admin' : '/labs/beaver-boat/admin'}
               className="text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white border border-white/15 hover:border-white/40 px-3 py-2 rounded-lg transition"
             >
               CMS Login
