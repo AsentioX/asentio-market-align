@@ -377,7 +377,7 @@ const BeaverBoatLayout = () => {
         </div>
         <div className="relative w-full">
           <div className="flex gap-12 sm:gap-20 animate-[scroll-x_30s_linear_infinite] w-max">
-            {[...sponsors2025, ...sponsors2025, ...sponsors2025].map((s, i) => (
+            {[...sponsors, ...sponsors, ...sponsors].map((s, i) => (
               <div key={i} className="relative flex items-center justify-center shrink-0 px-6">
                 <img
                   src={s.logo}
@@ -385,7 +385,7 @@ const BeaverBoatLayout = () => {
                   className="h-20 sm:h-28 md:h-32 w-auto object-contain"
                 />
                 <span className="absolute -top-1 -right-1 bg-white text-[#A31F34] text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-full tracking-widest">
-                  2025
+                  {s.year}
                 </span>
               </div>
             ))}
