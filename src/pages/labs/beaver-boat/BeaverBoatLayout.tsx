@@ -128,6 +128,16 @@ const BeaverBoatLayout = () => {
   const [joinSent, setJoinSent] = useState(false);
   const [joinSending, setJoinSending] = useState(false);
   const [joinError, setJoinError] = useState('');
+  const [lightbox, setLightbox] = useState<{ url: string; kind: 'image' | 'video'; label: string } | null>(null);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightbox(null); };
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [lightbox]);
 
   const sendNotification = (kind: string, p: { name: string; email: string; message: string }) => {
     supabase.functions.invoke('send-transactional-email', {
@@ -391,16 +401,19 @@ const BeaverBoatLayout = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-7">
             {galleryDb.length > 0 ? (
               galleryDb.map((g) => (
-                <div key={g.id} className="aspect-[4/3] rounded-xl bg-neutral-900 border border-white/10 overflow-hidden relative group">
+                <button
+                  type="button"
+                  key={g.id}
+                  onClick={() => setLightbox({ url: g.media_url, kind: g.media_kind, label: g.label })}
+                  className="aspect-[4/3] rounded-xl bg-neutral-900 border border-white/10 overflow-hidden relative group text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF000D]"
+                >
                   {g.media_kind === 'video' ? (
                     <video
                       src={g.media_url}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover pointer-events-none"
                       muted
                       loop
                       playsInline
-                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
-                      onMouseLeave={(e) => (e.currentTarget as HTMLVideoElement).pause()}
                     />
                   ) : (
                     <img src={g.media_url} alt={g.label} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
@@ -409,7 +422,7 @@ const BeaverBoatLayout = () => {
                   <div className="absolute bottom-3 left-3 right-3">
                     <span className="text-sm text-white font-bold truncate">{g.label}</span>
                   </div>
-                </div>
+                </button>
               ))
             ) : (
               galleryItems.map((g, i) => (
@@ -619,6 +632,45 @@ const BeaverBoatLayout = () => {
                   </button>
                 </form>
               </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Gallery lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="max-w-5xl w-full max-h-full flex flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
+            {lightbox.kind === 'video' ? (
+              <video
+                src={lightbox.url}
+                className="max-w-full max-h-[80vh] rounded-xl shadow-2xl"
+                controls
+                autoPlay
+                playsInline
+              />
+            ) : (
+              <img
+                src={lightbox.url}
+                alt={lightbox.label}
+                className="max-w-full max-h-[80vh] rounded-xl shadow-2xl object-contain"
+              />
+            )}
+            {lightbox.label && (
+              <div className="text-white/90 text-sm sm:text-base font-medium text-center px-4">
+                {lightbox.label}
+              </div>
             )}
           </div>
         </div>
