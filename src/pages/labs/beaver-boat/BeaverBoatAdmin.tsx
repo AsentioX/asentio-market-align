@@ -332,30 +332,24 @@ const BeaverBoatAdmin = () => {
                     <span className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1.5">
                       {g.media_kind === 'video' ? <Video className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
                     </span>
-                    {g.user_id === user.id && (
-                      <button
-                        onClick={() => handleDelete(g)}
-                        className="absolute bottom-2 right-2 bg-white/95 text-[#A31F34] rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition shadow"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleDelete(g)}
+                      className="absolute bottom-2 right-2 bg-white/95 text-[#A31F34] rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition shadow"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  {g.user_id === user.id ? (
-                    <input
-                      type="text"
-                      defaultValue={g.label}
-                      onBlur={(e) => handleUpdateLabel(g, e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-                      }}
-                      className="w-full p-2.5 text-xs font-medium bg-transparent border-t border-black/5 focus:outline-none focus:bg-[#A31F34]/5 focus:border-[#A31F34]/30"
-                      title="Click to edit caption"
-                    />
-                  ) : (
-                    <div className="p-2.5 text-xs font-medium truncate">{g.label}</div>
-                  )}
+                  <input
+                    type="text"
+                    defaultValue={g.label}
+                    onBlur={(e) => handleUpdateLabel(g, e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                    }}
+                    className="w-full p-2.5 text-xs font-medium bg-transparent border-t border-black/5 focus:outline-none focus:bg-[#A31F34]/5 focus:border-[#A31F34]/30"
+                    title="Click to edit caption"
+                  />
                 </div>
               ))}
             </div>
