@@ -25,7 +25,6 @@ const BeaverBoatAdmin = () => {
   const [busy, setBusy] = useState(false);
 
   const [label, setLabel] = useState('');
-  const [itemType, setItemType] = useState<'race' | 'practice'>('race');
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
