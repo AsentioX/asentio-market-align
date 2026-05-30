@@ -251,6 +251,15 @@ const BeaverBoatLayout = () => {
                 <span className="w-2 h-2 rounded-full bg-[#FF000D] animate-pulse" />
                 MIT Alumni · SF Bay Area
               </div>
+              <a
+                href="https://instagram.com/beaverboatclub"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-white/90 hover:bg-white/20 transition mb-4 sm:mb-5 w-fit"
+              >
+                <Instagram className="w-4 h-4" />
+                @beaverboatclub
+              </a>
               <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.05] mb-4 sm:mb-5">
                 Beaver Boat Club
                 <span className="block text-[#C0C0C0] text-xl sm:text-2xl md:text-3xl font-bold mt-2 sm:mt-3">
