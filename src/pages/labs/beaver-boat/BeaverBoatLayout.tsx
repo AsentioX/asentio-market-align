@@ -7,10 +7,14 @@ import logo from './assets/logo.png';
 import raceFestivalBg from '@/assets/beaver-boat/race-festival.jpg';
 import sponsorSuzhouShiny from '@/assets/beaver-boat/sponsor-suzhou-shiny.png';
 import sponsorDragonArmada from '@/assets/beaver-boat/sponsor-dragon-armada.png';
+import sponsorShiny2026 from '@/assets/beaver-boat/sponsor-shiny-2026.png';
+import sponsorDailyNews2026 from '@/assets/beaver-boat/sponsor-dailynews-2026.png';
 
-const sponsors2025 = [
-  { name: 'Suzhou Shiny', logo: sponsorSuzhouShiny },
-  { name: 'Dragon Armada', logo: sponsorDragonArmada },
+const sponsors = [
+  { name: 'Suzhou Shiny', logo: sponsorSuzhouShiny, year: '2025' },
+  { name: 'Dragon Armada', logo: sponsorDragonArmada, year: '2025' },
+  { name: 'Shiny', logo: sponsorShiny2026, year: '2026' },
+  { name: 'Daily News', logo: sponsorDailyNews2026, year: '2026' },
 ];
 
 const RACE_DATE = new Date('2026-06-20T08:00:00-07:00').getTime();
