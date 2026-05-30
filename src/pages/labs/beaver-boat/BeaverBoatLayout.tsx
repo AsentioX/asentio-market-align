@@ -128,6 +128,7 @@ const BeaverBoatLayout = () => {
   const { items: galleryDb } = useGallery();
   const urgent = regCountdown.diff < 1000 * 60 * 60 * 24 * 30; // <30 days to reg close
   const [signupOpen, setSignupOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [sponsorMsg, setSponsorMsg] = useState({ name: '', email: '', company: '', message: '' });
   const [sponsorSent, setSponsorSent] = useState(false);
@@ -207,6 +208,13 @@ const BeaverBoatLayout = () => {
     setJoinMsg({ name: '', email: '', message: '' });
   };
 
+  const openContact = () => {
+    setContactOpen(true);
+    setContactSent(false);
+    setContactError('');
+    setContactMsg({ name: '', email: '', message: '' });
+  };
+
   return (
     <div className="min-h-screen bg-white text-black">
       {/* Top bar */}
@@ -216,12 +224,20 @@ const BeaverBoatLayout = () => {
             <img src={logo} alt="Beaver Boat Club" className="h-8 w-8 sm:h-10 sm:w-10 object-contain shrink-0" />
             <span className="font-bold tracking-tight truncate text-sm sm:text-base">Beaver Boat Club</span>
           </div>
-          <button
-            onClick={openSignup}
-            className={`shrink-0 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-bold text-white transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] animate-pulse' : 'bg-[#A31F34]'}`}
-          >
-            Join Us
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <button
+              onClick={openContact}
+              className="px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-bold text-[#A31F34] border border-[#A31F34] hover:bg-[#A31F34] hover:text-white transition"
+            >
+              Contact Us
+            </button>
+            <button
+              onClick={openSignup}
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-bold text-white transition-transform hover:scale-105 ${urgent ? 'bg-[#FF000D] animate-pulse' : 'bg-[#A31F34]'}`}
+            >
+              Join Us
+            </button>
+          </div>
         </div>
       </header>
 
