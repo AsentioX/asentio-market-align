@@ -5,6 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGallery } from './useGallery';
 import logo from './assets/logo.png';
 import raceFestivalBg from '@/assets/beaver-boat/race-festival.jpg';
+import sponsorSuzhouShiny from '@/assets/beaver-boat/sponsor-suzhou-shiny.png';
+import sponsorDragonArmada from '@/assets/beaver-boat/sponsor-dragon-armada.png';
+
+const sponsors2025 = [
+  { name: 'Suzhou Shiny', logo: sponsorSuzhouShiny },
+  { name: 'Dragon Armada', logo: sponsorDragonArmada },
+];
 
 const RACE_DATE = new Date('2026-06-20T08:00:00-07:00').getTime();
 const REG_DEADLINE = new Date('2026-05-31T23:59:59-07:00').getTime();
@@ -358,29 +365,31 @@ const BeaverBoatLayout = () => {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-14 sm:py-20 bg-white">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Novice FAQ</div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight mb-8 sm:mb-10">First Time? Read This.</h2>
-          <div className="space-y-3">
-            {faqs.map((f, i) => (
-              <div key={i} className="border-2 border-black/10 rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left font-bold hover:bg-[#F5F5F5] text-sm sm:text-base"
-                >
-                  <span>{f.q}</span>
-                  <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
-                </button>
-                {openFaq === i && (
-                  <div className="px-5 pb-5 text-neutral-700 leading-relaxed">{f.a}</div>
-                )}
+      {/* Sponsors Carousel — 2025 */}
+      <section className="py-14 sm:py-20 bg-[#A31F34] text-white overflow-hidden">
+        <div className="container mx-auto px-4 mb-8 sm:mb-10 text-center">
+          <div className="text-xs font-bold text-white/70 uppercase tracking-widest mb-3">Our Sponsors</div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">Powered By</h2>
+        </div>
+        <div className="relative w-full">
+          <div className="flex gap-12 sm:gap-20 animate-[scroll-x_30s_linear_infinite] w-max">
+            {[...sponsors2025, ...sponsors2025, ...sponsors2025].map((s, i) => (
+              <div key={i} className="relative flex items-center justify-center shrink-0 px-6">
+                <img
+                  src={s.logo}
+                  alt={s.name}
+                  className="h-20 sm:h-28 md:h-32 w-auto object-contain"
+                />
+                <span className="absolute -top-1 -right-1 bg-white text-[#A31F34] text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-full tracking-widest">
+                  2025
+                </span>
               </div>
             ))}
           </div>
         </div>
+        <style>{`@keyframes scroll-x { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }`}</style>
       </section>
+
 
       {/* Gallery */}
       <section className="py-14 sm:py-20 bg-black text-white">
@@ -545,6 +554,30 @@ const BeaverBoatLayout = () => {
               </button>
             </form>
           )}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-14 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Novice FAQ</div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight mb-8 sm:mb-10">First Time? Read This.</h2>
+          <div className="space-y-3">
+            {faqs.map((f, i) => (
+              <div key={i} className="border-2 border-black/10 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left font-bold hover:bg-[#F5F5F5] text-sm sm:text-base"
+                >
+                  <span>{f.q}</span>
+                  <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                {openFaq === i && (
+                  <div className="px-5 pb-5 text-neutral-700 leading-relaxed">{f.a}</div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
