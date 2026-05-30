@@ -128,6 +128,16 @@ const BeaverBoatLayout = () => {
   const [joinSent, setJoinSent] = useState(false);
   const [joinSending, setJoinSending] = useState(false);
   const [joinError, setJoinError] = useState('');
+  const [lightbox, setLightbox] = useState<{ url: string; kind: 'image' | 'video'; label: string } | null>(null);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightbox(null); };
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [lightbox]);
 
   const sendNotification = (kind: string, p: { name: string; email: string; message: string }) => {
     supabase.functions.invoke('send-transactional-email', {
