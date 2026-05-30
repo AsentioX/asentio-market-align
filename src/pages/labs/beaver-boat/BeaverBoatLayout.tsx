@@ -373,7 +373,6 @@ const BeaverBoatLayout = () => {
       <section className="py-14 sm:py-20 bg-[#A31F34] text-white overflow-hidden">
         <div className="container mx-auto px-4 mb-8 sm:mb-10 text-center">
           <div className="text-xs font-bold text-white/70 uppercase tracking-widest mb-3">Our Sponsors</div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">Powered By</h2>
         </div>
         <div className="relative w-full">
           <div className="flex gap-12 sm:gap-20 animate-[scroll-x_30s_linear_infinite] w-max">
