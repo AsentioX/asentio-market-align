@@ -342,7 +342,20 @@ const BeaverBoatAdmin = () => {
                       </button>
                     )}
                   </div>
-                  <div className="p-2.5 text-xs font-medium truncate">{g.label}</div>
+                  {g.user_id === user.id ? (
+                    <input
+                      type="text"
+                      defaultValue={g.label}
+                      onBlur={(e) => handleUpdateLabel(g, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                      }}
+                      className="w-full p-2.5 text-xs font-medium bg-transparent border-t border-black/5 focus:outline-none focus:bg-[#A31F34]/5 focus:border-[#A31F34]/30"
+                      title="Click to edit caption"
+                    />
+                  ) : (
+                    <div className="p-2.5 text-xs font-medium truncate">{g.label}</div>
+                  )}
                 </div>
               ))}
             </div>
