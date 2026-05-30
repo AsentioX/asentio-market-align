@@ -401,16 +401,19 @@ const BeaverBoatLayout = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-7">
             {galleryDb.length > 0 ? (
               galleryDb.map((g) => (
-                <div key={g.id} className="aspect-[4/3] rounded-xl bg-neutral-900 border border-white/10 overflow-hidden relative group">
+                <button
+                  type="button"
+                  key={g.id}
+                  onClick={() => setLightbox({ url: g.media_url, kind: g.media_kind, label: g.label })}
+                  className="aspect-[4/3] rounded-xl bg-neutral-900 border border-white/10 overflow-hidden relative group text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF000D]"
+                >
                   {g.media_kind === 'video' ? (
                     <video
                       src={g.media_url}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover pointer-events-none"
                       muted
                       loop
                       playsInline
-                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
-                      onMouseLeave={(e) => (e.currentTarget as HTMLVideoElement).pause()}
                     />
                   ) : (
                     <img src={g.media_url} alt={g.label} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
@@ -419,7 +422,7 @@ const BeaverBoatLayout = () => {
                   <div className="absolute bottom-3 left-3 right-3">
                     <span className="text-sm text-white font-bold truncate">{g.label}</span>
                   </div>
-                </div>
+                </button>
               ))
             ) : (
               galleryItems.map((g, i) => (
