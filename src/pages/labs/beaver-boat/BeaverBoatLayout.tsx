@@ -557,6 +557,30 @@ const BeaverBoatLayout = () => {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="py-14 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="text-xs font-bold text-[#A31F34] uppercase tracking-widest mb-3">Novice FAQ</div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black tracking-tight mb-8 sm:mb-10">First Time? Read This.</h2>
+          <div className="space-y-3">
+            {faqs.map((f, i) => (
+              <div key={i} className="border-2 border-black/10 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left font-bold hover:bg-[#F5F5F5] text-sm sm:text-base"
+                >
+                  <span>{f.q}</span>
+                  <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                {openFaq === i && (
+                  <div className="px-5 pb-5 text-neutral-700 leading-relaxed">{f.a}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-black text-white/60 py-10 text-center text-sm">
         <img src={logo} alt="" className="w-16 h-16 mx-auto mb-4 object-contain" />
