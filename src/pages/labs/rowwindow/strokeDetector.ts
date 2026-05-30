@@ -10,67 +10,59 @@
 //   harmonics from the recovery slide.
 //
 // Algorithm
-//   1. Lazy-initialize DC tracker to the first sample (avoids the cold-start
-//      transient where lpAccel jumps from 0 → ~9.8 m/s² and fires a spurious
-//      peak before the first real stroke).
+//   1. Lazy-init filters to the first sample → no 0 → 9.8 startup transient
+//      that would otherwise fire a spurious peak before the first real stroke.
 //   2. Cascade two one-pole filters: a fast low-pass (signal) and a very slow
 //      one-pole (baseline). dynamic = signal − baseline removes gravity DC
-//      regardless of phone orientation.
-//   3. Track rolling RMS of the dynamic signal slowly so the adaptive
-//      threshold doesn't collapse around each stroke peak.
-//   4. Peak gating: arm on threshold crossing, fire on local-max, then
-//      *require the signal to return below* THRESHOLD * 0.4 before re-arming.
-//      Combined with a minimum inter-peak interval, this eliminates the
-//      double-counting that pure derivative tests suffer from.
-//   5. Reject intervals that deviate > 2× from the running median — these are
-//      missed peaks (double interval) or noise spikes (half interval).
-//   6. Report the median of the last N accepted intervals; median is much
-//      more robust than mean to a single bad interval.
+//      regardless of phone orientation, and tracks slow drift (e.g. heel).
+//   3. Rolling RMS of the dynamic signal (slow) → adaptive threshold.
+//   4. Peak gating: arm on threshold crossing, fire on local-max — but
+//      require the signal to swing back *below baseline* (true zero-crossing)
+//      before another peak can arm. This eliminates the double-counting on
+//      the recovery half-cycle that pure threshold detectors suffer from.
+//   5. Minimum inter-peak interval enforces a physiological cap (≤ 54 spm).
+//   6. Reject intervals deviating > 1.8× from running median (missed/extra
+//      peak) and report median of last N intervals — robust to one bad sample.
 // =============================================================================
 
 export interface StrokeDetectorState {
   initialized: boolean;
   lpAccel: number;
   baseline: number;
-  rms: number;          // RMS of the dynamic (DC-removed) signal
-  lastPeakT: number;    // ms timestamp of the most recent accepted peak
+  rms: number;
+  lastPeakT: number;
   lastDynamic: number;
-  rising: boolean;      // armed: we've crossed threshold and are awaiting peak
-  refractory: boolean;  // waiting for signal to drop low enough to re-arm
-  intervals: number[];  // accepted inter-peak intervals (ms)
+  rising: boolean;
+  refractory: boolean;
+  intervals: number[];
+  warmupSamples: number;
 }
 
 export interface StrokeDetectorTunings {
-  /** Fast smoothing on the raw magnitude. alpha for new sample. */
   signalAlpha: number;
-  /** Baseline (DC) tracker — must be much slower than a stroke (~2 s). */
   baselineAlpha: number;
-  /** RMS tracker for adaptive threshold. */
   rmsAlpha: number;
-  /** Threshold multiplier over rolling RMS. */
   thresholdMul: number;
-  /** Absolute floor for threshold (m/s²). */
   thresholdFloor: number;
-  /** Fraction of THRESHOLD the signal must drop below to re-arm. */
-  rearmFraction: number;
-  /** Minimum inter-peak interval in ms (caps max spm). 700 ms → 85 spm. */
+  /** Magnitude (m/s²) the signal must dip *below baseline* to re-arm. */
+  rearmAbs: number;
   minIntervalMs: number;
-  /** Maximum inter-peak interval in ms (floors min spm). 6000 ms → 10 spm. */
   maxIntervalMs: number;
-  /** How many recent intervals to keep for median spm. */
   windowSize: number;
+  warmupSamples: number;
 }
 
 export const DEFAULT_TUNINGS: StrokeDetectorTunings = {
-  signalAlpha: 0.2,
-  baselineAlpha: 0.002,   // ~500-sample TC; ~8 s at 60 Hz — well above stroke period
-  rmsAlpha: 0.01,         // ~100-sample TC; ~1.7 s at 60 Hz — slow enough not to chase peaks
-  thresholdMul: 1.3,
-  thresholdFloor: 0.18,
-  rearmFraction: 0.4,
-  minIntervalMs: 700,
-  maxIntervalMs: 6000,
-  windowSize: 6,
+  signalAlpha: 0.18,      // ~5-sample TC @60Hz — kills jitter, preserves stroke shape
+  baselineAlpha: 0.0015,  // ~660-sample TC → ~11 s, well above any stroke period
+  rmsAlpha: 0.004,        // ~250-sample TC → ~4 s, doesn't chase individual peaks
+  thresholdMul: 1.0,      // sin-wave peak > RMS by sqrt(2), so 1.0 leaves margin
+  thresholdFloor: 0.25,
+  rearmAbs: 0.15,         // true zero-crossing (below baseline) required to re-arm
+  minIntervalMs: 1100,    // 54 spm cap — above realistic max race cadence (~48)
+  maxIntervalMs: 6000,    // 10 spm floor
+  windowSize: 8,
+  warmupSamples: 30,      // ~0.5 s @60Hz — let baseline settle before peak hunting
 };
 
 export function createStrokeDetectorState(): StrokeDetectorState {
@@ -84,31 +76,22 @@ export function createStrokeDetectorState(): StrokeDetectorState {
     rising: false,
     refractory: false,
     intervals: [],
+    warmupSamples: 0,
   };
 }
 
 export interface StrokeSample {
-  /** Accelerometer magnitude (m/s²), incl. gravity. */
   mag: number;
-  /** Sample timestamp in ms. */
   t: number;
 }
 
 export interface StrokeDetectorResult {
-  /** Strokes per minute (median of recent intervals) or null if not enough data. */
   spm: number | null;
-  /** True if a fresh peak was registered on this sample. */
   peak: boolean;
-  /** Current adaptive threshold value, for debug/visualization. */
   threshold: number;
-  /** Current dynamic (DC-removed, smoothed) signal value. */
   dynamic: number;
 }
 
-/**
- * Feed one accelerometer sample. Mutates `state` in place and returns the
- * current SPM estimate (or null if not enough strokes yet).
- */
 export function processStrokeSample(
   state: StrokeDetectorState,
   sample: StrokeSample,
@@ -117,13 +100,13 @@ export function processStrokeSample(
   const { mag, t } = sample;
   const T = tunings;
 
-  // Lazy init — avoids 0 → 9.8 startup transient.
   if (!state.initialized) {
     state.lpAccel = mag;
     state.baseline = mag;
     state.rms = 0;
     state.initialized = true;
     state.lastDynamic = 0;
+    state.warmupSamples = 0;
     return { spm: null, peak: false, threshold: T.thresholdFloor, dynamic: 0 };
   }
 
@@ -131,45 +114,45 @@ export function processStrokeSample(
   state.baseline = state.baseline * (1 - T.baselineAlpha) + state.lpAccel * T.baselineAlpha;
   const dynamic = state.lpAccel - state.baseline;
 
-  // RMS over the dynamic signal (slow).
   state.rms = Math.sqrt(state.rms * state.rms * (1 - T.rmsAlpha) + dynamic * dynamic * T.rmsAlpha);
   const threshold = Math.max(T.thresholdFloor, state.rms * T.thresholdMul);
 
   let peak = false;
+  state.warmupSamples++;
+  const warm = state.warmupSamples > T.warmupSamples;
 
-  // Re-arm gate: after a peak, require the signal to drop well below threshold
-  // before considering the next peak. This kills double-counting on the small
-  // secondary bump that often follows the main drive.
-  if (state.refractory) {
-    if (dynamic < threshold * T.rearmFraction) {
-      state.refractory = false;
-    }
-  } else {
-    if (dynamic > threshold) state.rising = true;
-    const isLocalMax = state.rising && dynamic < state.lastDynamic && state.lastDynamic > threshold;
+  if (warm) {
+    if (state.refractory) {
+      // Require true zero-crossing back through baseline (slightly negative).
+      if (dynamic < -T.rearmAbs) {
+        state.refractory = false;
+        state.rising = false;
+      }
+    } else {
+      if (dynamic > threshold) state.rising = true;
+      const isLocalMax = state.rising && dynamic < state.lastDynamic && state.lastDynamic > threshold;
 
-    if (isLocalMax && (state.lastPeakT === 0 || t - state.lastPeakT > T.minIntervalMs)) {
-      peak = true;
-      state.rising = false;
-      state.refractory = true;
+      if (isLocalMax && (state.lastPeakT === 0 || t - state.lastPeakT > T.minIntervalMs)) {
+        peak = true;
+        state.rising = false;
+        state.refractory = true;
 
-      if (state.lastPeakT !== 0) {
-        const interval = t - state.lastPeakT;
-        if (interval > T.minIntervalMs && interval < T.maxIntervalMs) {
-          // Outlier rejection vs. running median.
-          const med = median(state.intervals);
-          const accept = med === null || (interval < med * 2 && interval > med * 0.5);
-          if (accept) {
-            state.intervals.push(interval);
-            if (state.intervals.length > T.windowSize) state.intervals.shift();
+        if (state.lastPeakT !== 0) {
+          const interval = t - state.lastPeakT;
+          if (interval > T.minIntervalMs && interval < T.maxIntervalMs) {
+            const med = median(state.intervals);
+            const accept = med === null || (interval < med * 1.8 && interval > med * 0.55);
+            if (accept) {
+              state.intervals.push(interval);
+              if (state.intervals.length > T.windowSize) state.intervals.shift();
+            }
           }
         }
+        state.lastPeakT = t;
       }
-      state.lastPeakT = t;
     }
   }
 
-  // Drop spm if we've gone too long without a peak.
   if (state.lastPeakT !== 0 && t - state.lastPeakT > T.maxIntervalMs) {
     state.intervals = [];
     state.lastPeakT = 0;
@@ -180,7 +163,6 @@ export function processStrokeSample(
   state.lastDynamic = dynamic;
 
   const med = median(state.intervals);
-  // Need at least 2 accepted intervals (≈3 strokes) before reporting.
   const spm = med !== null && state.intervals.length >= 2 ? Math.round(60_000 / med) : null;
 
   return { spm, peak, threshold, dynamic };
