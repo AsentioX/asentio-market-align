@@ -115,18 +115,10 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   const hrHandlerRef = useRef<((e: Event) => void) | null>(null);
   const trackingRef = useRef(tracking);
   const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
-  // Stroke-detection state — kept in refs so the listener doesn't re-subscribe.
-  const strokeStateRef = useRef<{
-    lpAccel: number;
-    baseline: number;
-    // Rolling mean-square of the dynamic (high-pass) signal → adaptive threshold.
-    rms: number;
-    lastPeakT: number;
-    lastDynamic: number;
-    rising: boolean;
-    sawFirstSample: boolean;
-    intervals: number[];
-  }>({ lpAccel: 0, baseline: 0, rms: 0, lastPeakT: 0, lastDynamic: 0, rising: false, sawFirstSample: false, intervals: [] });
+  // Stroke-detection state — pure detector lives in ./strokeDetector.ts;
+  // we keep its state in a ref so the listener doesn't re-subscribe.
+  const strokeStateRef = useRef(createStrokeDetectorState());
+  const sawFirstMotionRef = useRef(false);
 
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
 
