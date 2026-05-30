@@ -147,6 +147,20 @@ const BeaverBoatAdmin = () => {
     reload();
   };
 
+  const handleUpdateLabel = async (item: any, newLabel: string) => {
+    const trimmed = newLabel.trim();
+    if (trimmed === item.label) return;
+    const { error } = await supabase
+      .from('beaver_boat_gallery')
+      .update({ label: trimmed || 'Untitled' })
+      .eq('id', item.id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    reload();
+  };
+
   // -- LOGIN SCREEN ---------------------------------------------------------
   if (!user) {
     return (
