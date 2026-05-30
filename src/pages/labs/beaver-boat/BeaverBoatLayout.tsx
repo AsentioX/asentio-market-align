@@ -541,6 +541,7 @@ const BeaverBoatLayout = () => {
         <img src={logo} alt="" className="w-16 h-16 mx-auto mb-4 object-contain" />
         <p className="font-bold text-white">Beaver Boat Club</p>
         <p>MIT Alumni Dragonboat Team · San Francisco Bay Area</p>
+        <p className="mt-2">© 2026</p>
         <a
           href="https://www.instagram.com/beaverboatclub/"
           target="_blank"
@@ -617,6 +618,76 @@ const BeaverBoatLayout = () => {
                     className="w-full px-6 py-3 rounded-lg bg-[#A31F34] text-white font-black hover:bg-[#FF000D] transition disabled:opacity-50"
                   >
                     {joinSending ? 'Sending…' : 'Send'}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Contact Us Modal */}
+      {contactOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setContactOpen(false)}>
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 relative max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setContactOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-black">
+              <X className="w-5 h-5" />
+            </button>
+
+            {contactSent ? (
+              <div className="text-center py-4">
+                <div className="w-16 h-16 mx-auto rounded-full bg-[#A31F34] flex items-center justify-center mb-4">
+                  <Check className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-black mb-2">Message Received</h3>
+                <p className="text-neutral-600 mb-5">Thanks! A crew admin will get back to you shortly.</p>
+                <button
+                  onClick={() => setContactOpen(false)}
+                  className="px-8 py-3 rounded-lg bg-black text-white font-black hover:bg-[#A31F34] transition"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-2xl font-black text-center mb-2">Get in Touch</h3>
+                <p className="text-center text-neutral-600 mb-6">Questions about practice, partnerships, or paddling with us? Send a note straight to the captain's inbox.</p>
+                <form onSubmit={submitContact} className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <input
+                      required
+                      maxLength={120}
+                      value={contactMsg.name}
+                      onChange={(e) => setContactMsg({ ...contactMsg, name: e.target.value })}
+                      placeholder="Your name"
+                      className="w-full px-4 py-3 rounded-lg border-2 border-black/10 bg-white focus:border-[#A31F34] outline-none"
+                    />
+                    <input
+                      required
+                      type="email"
+                      maxLength={255}
+                      value={contactMsg.email}
+                      onChange={(e) => setContactMsg({ ...contactMsg, email: e.target.value })}
+                      placeholder="Email"
+                      className="w-full px-4 py-3 rounded-lg border-2 border-black/10 bg-white focus:border-[#A31F34] outline-none"
+                    />
+                  </div>
+                  <textarea
+                    required
+                    maxLength={4000}
+                    rows={5}
+                    value={contactMsg.message}
+                    onChange={(e) => setContactMsg({ ...contactMsg, message: e.target.value })}
+                    placeholder="What's on your mind?"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-black/10 bg-white focus:border-[#A31F34] outline-none resize-none"
+                  />
+                  {contactError && <div className="text-sm text-[#A31F34]">{contactError}</div>}
+                  <button
+                    type="submit"
+                    disabled={contactSending}
+                    className="w-full px-6 py-4 rounded-lg bg-[#A31F34] text-white font-black text-lg hover:bg-[#FF000D] transition disabled:opacity-60"
+                  >
+                    {contactSending ? 'Sending…' : 'Send Message'}
                   </button>
                 </form>
               </>
