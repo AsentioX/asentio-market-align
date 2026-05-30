@@ -636,6 +636,45 @@ const BeaverBoatLayout = () => {
           </div>
         </div>
       )}
+
+      {/* Gallery lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="max-w-5xl w-full max-h-full flex flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
+            {lightbox.kind === 'video' ? (
+              <video
+                src={lightbox.url}
+                className="max-w-full max-h-[80vh] rounded-xl shadow-2xl"
+                controls
+                autoPlay
+                playsInline
+              />
+            ) : (
+              <img
+                src={lightbox.url}
+                alt={lightbox.label}
+                className="max-w-full max-h-[80vh] rounded-xl shadow-2xl object-contain"
+              />
+            )}
+            {lightbox.label && (
+              <div className="text-white/90 text-sm sm:text-base font-medium text-center px-4">
+                {lightbox.label}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
