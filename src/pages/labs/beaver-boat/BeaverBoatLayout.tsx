@@ -255,20 +255,11 @@ const BeaverBoatLayout = () => {
                 href="https://instagram.com/beaverboatclub"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-white/90 hover:bg-white/20 transition mb-4 sm:mb-5 w-fit"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white transition mb-4 sm:mb-5"
               >
-                <Instagram className="w-4 h-4" />
+                <Instagram className="w-5 h-5" />
                 @beaverboatclub
               </a>
-              <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.05] mb-4 sm:mb-5">
-                Beaver Boat Club
-                <span className="block text-[#C0C0C0] text-xl sm:text-2xl md:text-3xl font-bold mt-2 sm:mt-3">
-                  MIT Alumni Dragonboat Team
-                </span>
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 max-w-lg">
-                We are a novice boat — <span className="text-white font-bold">no experience necessary.</span> Just show up, paddle hard, and join a crew that competes across the Bay.
-              </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3">
                 <button
                   onClick={openSignup}
