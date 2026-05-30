@@ -7,10 +7,14 @@ import logo from './assets/logo.png';
 import raceFestivalBg from '@/assets/beaver-boat/race-festival.jpg';
 import sponsorSuzhouShiny from '@/assets/beaver-boat/sponsor-suzhou-shiny.png';
 import sponsorDragonArmada from '@/assets/beaver-boat/sponsor-dragon-armada.png';
+import sponsorShiny2026 from '@/assets/beaver-boat/sponsor-shiny-2026.png';
+import sponsorDailyNews2026 from '@/assets/beaver-boat/sponsor-dailynews-2026.png';
 
-const sponsors2025 = [
-  { name: 'Suzhou Shiny', logo: sponsorSuzhouShiny },
-  { name: 'Dragon Armada', logo: sponsorDragonArmada },
+const sponsors = [
+  { name: 'Suzhou Shiny', logo: sponsorSuzhouShiny, year: '2025' },
+  { name: 'Dragon Armada', logo: sponsorDragonArmada, year: '2025' },
+  { name: 'Shiny', logo: sponsorShiny2026, year: '2026' },
+  { name: 'Daily News', logo: sponsorDailyNews2026, year: '2026' },
 ];
 
 const RACE_DATE = new Date('2026-06-20T08:00:00-07:00').getTime();
@@ -373,7 +377,7 @@ const BeaverBoatLayout = () => {
         </div>
         <div className="relative w-full">
           <div className="flex gap-12 sm:gap-20 animate-[scroll-x_30s_linear_infinite] w-max">
-            {[...sponsors2025, ...sponsors2025, ...sponsors2025].map((s, i) => (
+            {[...sponsors, ...sponsors, ...sponsors].map((s, i) => (
               <div key={i} className="relative flex items-center justify-center shrink-0 px-6">
                 <img
                   src={s.logo}
@@ -381,7 +385,7 @@ const BeaverBoatLayout = () => {
                   className="h-20 sm:h-28 md:h-32 w-auto object-contain"
                 />
                 <span className="absolute -top-1 -right-1 bg-white text-[#A31F34] text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-full tracking-widest">
-                  2025
+                  {s.year}
                 </span>
               </div>
             ))}
