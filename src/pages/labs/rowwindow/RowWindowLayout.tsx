@@ -1343,7 +1343,7 @@ const HorizontalCompass = ({
 
   return (
     <div className="relative w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[56px]" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[96px]" preserveAspectRatio="none">
         <defs>
           {/* Edge fade — content disappears into black margins */}
           <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
@@ -1353,7 +1353,7 @@ const HorizontalCompass = ({
             <stop offset="100%" stopColor="hsl(0 0% 4%)" stopOpacity="1" />
           </linearGradient>
           <radialGradient id="pointer-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor={ORANGE} stopOpacity="0.35" />
+            <stop offset="0%" stopColor={ORANGE} stopOpacity="0.4" />
             <stop offset="100%" stopColor={ORANGE} stopOpacity="0" />
           </radialGradient>
           {/* Drift warning gradients — red glow growing in from each side */}
@@ -1371,17 +1371,17 @@ const HorizontalCompass = ({
         <rect x="0" y="0" width={W} height={H} rx="6" fill="hsl(0 0% 4%)" />
 
         {/* Pointer glow halo behind center */}
-        <ellipse cx={cx} cy={labelRowY - 4} rx="40" ry="14" fill="url(#pointer-glow)" />
+        <ellipse cx={cx} cy={H / 2} rx="56" ry="28" fill="url(#pointer-glow)" />
 
         {/* Ticks + labels */}
-        <g opacity={headingDeg !== null ? 1 : 0.4}>
+        <g opacity={headingDeg !== null ? 1 : 0.45}>
           {ticks.map((t, i) => {
             const x = xFor(t.deg);
             if (x < -10 || x > W + 10) return null;
-            const tickH = t.major ? 12 : 6;
+            const tickH = t.major ? tickMajorH : tickMinorH;
             // Distance-from-center fade for both ticks and labels
             const distFromCenter = Math.abs(x - cx);
-            const fadeOpacity = Math.max(0.25, 1 - distFromCenter / (W / 2.2));
+            const fadeOpacity = Math.max(0.3, 1 - distFromCenter / (W / 2.2));
             // The centered label gets the orange highlight
             const isCentered = distFromCenter < pxPerDeg * 2.5 && t.major;
             return (
@@ -1389,8 +1389,8 @@ const HorizontalCompass = ({
                 <line
                   x1={x} x2={x}
                   y1={tickRowY} y2={tickRowY + tickH}
-                  stroke="hsl(0 0% 92%)"
-                  strokeWidth={t.major ? 1.4 : 0.8}
+                  stroke="hsl(0 0% 100%)"
+                  strokeWidth={t.major ? 3 : 2}
                   strokeLinecap="round"
                 />
                 {t.label ? (
@@ -1398,11 +1398,11 @@ const HorizontalCompass = ({
                     x={x}
                     y={labelRowY}
                     textAnchor="middle"
-                    fontSize={t.cardinal ? 14 : 12}
-                    fontWeight="600"
-                    fill={isCentered ? ORANGE : 'hsl(0 0% 78%)'}
+                    fontSize={t.cardinal ? 56 : 44}
+                    fontWeight="800"
+                    fill={isCentered ? ORANGE : 'hsl(0 0% 100%)'}
                     fontFamily={labelFont}
-                    letterSpacing="0.08em"
+                    letterSpacing="0.02em"
                   >
                     {t.label}
                   </text>
@@ -1430,21 +1430,19 @@ const HorizontalCompass = ({
 
         {/* Target heading marker (subtle dashed line) */}
         {targetVisible && (
-          <line x1={targetX} x2={targetX} y1={tickRowY} y2={tickRowY + 14}
-            stroke="hsl(150 75% 55%)" strokeWidth="1.2" strokeDasharray="2 2" opacity="0.8" />
+          <line x1={targetX} x2={targetX} y1={tickRowY} y2={H - 4}
+            stroke="hsl(150 75% 55%)" strokeWidth="2" strokeDasharray="4 3" opacity="0.7" />
         )}
 
-        {/* Center pointer — orange diamond above the centered label */}
+        {/* Center pointer — orange diamond at the very top */}
         <g>
-          {/* diamond pointer */}
           <polygon
-            points={`${cx},2 ${cx + 7},10 ${cx},18 ${cx - 7},10`}
+            points={`${cx},0 ${cx + 9},10 ${cx},20 ${cx - 9},10`}
             fill={ORANGE}
             stroke="hsl(0 0% 4%)"
-            strokeWidth="1.2"
+            strokeWidth="1.5"
           />
-          {/* small dot in pointer */}
-          <circle cx={cx} cy={10} r="1.6" fill="hsl(0 0% 4%)" />
+          <circle cx={cx} cy={10} r="2" fill="hsl(0 0% 4%)" />
         </g>
       </svg>
     </div>
