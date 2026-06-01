@@ -1199,33 +1199,33 @@ const OnWaterView = ({
             pulse={sessionState === 'active' && heartRate !== null}
           />
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-3">
-          <div className="flex flex-row items-stretch divide-x divide-slate-200">
+        <div className="rounded-2xl border border-white/15 bg-white/5 p-3">
+          <div className="flex flex-row items-stretch divide-x divide-white/15">
             <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
-              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
                 <Waves className="w-4 h-4" />
                 Tide
               </div>
-              <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5 leading-tight mt-1">
+              <div className="text-2xl font-bold text-white flex items-center gap-1.5 leading-tight mt-1">
                 {tide.height.toFixed(2)} ft
-                {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-500" aria-label="Rising" />}
-                {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-500" aria-label="Falling" />}
+                {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-400" aria-label="Rising" />}
+                {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-400" aria-label="Falling" />}
               </div>
               <div className={`text-[11px] mt-0.5 ${
-                direction === 'Flood' ? 'text-emerald-700'
-                : direction === 'Ebb' ? 'text-amber-700'
-                : 'text-slate-600'
+                direction === 'Flood' ? 'text-emerald-300'
+                : direction === 'Ebb' ? 'text-amber-300'
+                : 'text-white/60'
               }`}>
                 {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
               </div>
             </div>
             {lowTideMarker && (
               <div className="flex-1 px-3 sm:px-4 py-2">
-                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
                   <ArrowDown className="w-4 h-4" />
                   Low tide
                 </div>
-                <div className="text-xl font-semibold text-slate-900 leading-tight mt-1">
+                <div className="text-2xl font-bold text-white leading-tight mt-1">
                   {lowTideMarker.mode === 'to' ? 'in ' : ''}
                   {(() => {
                     const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
@@ -1234,19 +1234,19 @@ const OnWaterView = ({
                     return h > 0 ? `${h}h ${m}m` : `${m}m`;
                   })()}
                 </div>
-                <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
+                <div className="text-[11px] text-white/60 mt-0.5 font-mono">
                   {lowTideMarker.mode === 'to' ? 'at ' : 'since '}
                   {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
               </div>
             )}
             <div className="flex-1 px-3 sm:px-4 py-2">
-              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
                 <Wind className="w-4 h-4" />
                 Wind
               </div>
-              <div className="text-xl font-semibold mt-1 text-slate-900 leading-tight">{wind.speedKnots} kt</div>
-              <div className="text-[11px] text-slate-600 mt-0.5">from {wind.directionLabel}</div>
+              <div className="text-2xl font-bold mt-1 text-white leading-tight">{wind.speedKnots} kt</div>
+              <div className="text-[11px] text-white/60 mt-0.5">from {wind.directionLabel}</div>
             </div>
           </div>
         </div>
