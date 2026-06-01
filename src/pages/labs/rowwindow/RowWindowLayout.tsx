@@ -1292,7 +1292,7 @@ const HorizontalCompass = ({
   // Visible field of view in degrees
   const FOV = 130;
   const W = 320; // viewBox width
-  const H = 56;  // viewBox height
+  const H = 96;  // viewBox height (taller — labels span full height)
   const pxPerDeg = W / FOV;
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
@@ -1321,9 +1321,11 @@ const HorizontalCompass = ({
   const targetVisible = targetX >= 4 && targetX <= W - 4;
   const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
-  // Find the centered label (closest major within FOV)
-  const tickRowY = 14;
-  const labelRowY = 44;
+  // Tick row sits at the very top; labels span almost the full remaining height.
+  const tickRowY = 4;
+  const tickMajorH = 14;
+  const tickMinorH = 8;
+  const labelRowY = H * 0.78; // baseline for the big labels (fills the height)
   const ORANGE = 'hsl(22 95% 58%)';
 
   // Drift from target — used to glow left/right side red as boat veers off line.
