@@ -1093,17 +1093,17 @@ const OnWaterView = ({
 
   if (sessionState === 'idle') {
     return (
-      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 text-center">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center mb-4">
-          <Activity className="w-8 h-8 text-cyan-700" />
+      <section className="rounded-2xl border border-white/15 bg-white/5 p-5 text-center">
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center mb-4">
+          <Activity className="w-8 h-8 text-cyan-300" />
         </div>
-        <h2 className="text-xl font-semibold">On-Water Instruments</h2>
-        <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
+        <h2 className="text-xl font-semibold text-white">On-Water Instruments</h2>
+        <p className="text-sm text-white/70 mt-2 max-w-md mx-auto">
           Start a session to track strokes per minute, heading, lane position, pace, and heart rate while you row.
         </p>
         <button
           onClick={onStart}
-          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40 font-semibold text-sm inline-flex items-center gap-2 transition"
+          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/25 hover:bg-cyan-500/40 text-cyan-100 border border-cyan-400/50 font-semibold text-sm inline-flex items-center gap-2 transition"
         >
           <Play className="w-4 h-4" /> Start Row
         </button>
