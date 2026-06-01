@@ -579,17 +579,17 @@ const RowWindowLayout = () => {
         {tab === 'on' && (
           <>
             {sessionState !== 'idle' && (
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
-                <div className="text-xs text-slate-700">
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5">
+                <div className="text-xs text-white/80">
                   <span className="font-semibold">Mock GPS simulator</span>
-                  <span className="text-slate-500 ml-1.5">drives a fake boat along your waypoints</span>
+                  <span className="text-white/50 ml-1.5">drives a fake boat along your waypoints</span>
                 </div>
                 <button
                   onClick={() => setMockEnabled((v) => !v)}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium border transition ${
                     mockEnabled
-                      ? 'bg-cyan-600 text-white border-cyan-700 hover:bg-cyan-700'
-                      : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-50'
+                      ? 'bg-cyan-500 text-black border-cyan-400 hover:bg-cyan-400'
+                      : 'bg-white/10 text-white border-white/20 hover:bg-white/15'
                   }`}
                 >
                   {mockEnabled ? 'Simulator ON' : 'Simulator OFF'}
