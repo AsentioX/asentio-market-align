@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot, Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -147,6 +147,14 @@ const labApps: LabApp[] = [
     status: 'live',
     tags: ['Physical AI', 'Robotics', 'Enterprise'],
     link: '/labs/robotics',
+  },
+  {
+    name: 'Smart Vision',
+    description: 'Turnkey edge AI smart-vision packages. Pre-loaded BrainFrame edge nodes, on-the-fly capsule generation, and scalable camera grids.',
+    icon: <Camera className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Edge AI', 'Computer Vision', 'Enterprise'],
+    link: '/labs/smart-vision',
   },
 ];
 
