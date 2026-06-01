@@ -1124,15 +1124,15 @@ const OnWaterView = ({
             type="button"
             onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
             disabled={headingDeg === null}
-            className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
+            className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-white/70 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-white/5 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
             title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
           >
-            <span className="text-cyan-700 normal-case tracking-normal text-[11px] font-medium">
+            <span className="text-cyan-300 normal-case tracking-normal text-[11px] font-medium">
               {headingDeg !== null ? 'Tap to set current heading as center' : 'Enable compass to set center'}
             </span>
           </button>
         ) : (
-          <div className="text-center text-[10px] uppercase tracking-[0.15em] text-slate-500 font-medium">
+          <div className="text-center text-[10px] uppercase tracking-[0.15em] text-white/60 font-medium">
             <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
           </div>
         )}
