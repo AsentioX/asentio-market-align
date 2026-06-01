@@ -65,6 +65,7 @@ import CareKitsLayout from "./pages/labs/carekits/CareKitsLayout";
 import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
 import BeaverBoatAdmin from "./pages/labs/beaver-boat/BeaverBoatAdmin";
 import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
+import SmartVisionLayout from "./pages/labs/smart-vision/SmartVisionLayout";
 import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
 import CFExplore from "./pages/labs/contractor-finder/Explore";
 import CFSegments from "./pages/labs/contractor-finder/Segments";
@@ -94,7 +95,7 @@ const isBeaverBoatHost = () => {
 const AppContent = () => {
   const location = useLocation();
   const beaverHost = isBeaverBoatHost();
-  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics');
+  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics') || location.pathname.startsWith('/labs/smart-vision');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -160,6 +161,7 @@ const AppContent = () => {
           <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
           <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
           <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
+          <Route path="/labs/smart-vision" element={<SmartVisionLayout />} />
           <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
             <Route index element={<CFDashboard />} />
             <Route path="explore" element={<CFExplore />} />
