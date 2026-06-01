@@ -416,9 +416,9 @@ const RowWindowLayout = () => {
   }[assessment.status];
 
   return (
-    <div className="min-h-screen bg-[hsl(210_40%_97%)] text-slate-900 pb-24">
+    <div className={`min-h-screen pb-24 ${tab === 'on' ? 'bg-black text-white' : 'bg-[hsl(210_40%_97%)] text-slate-900'}`}>
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-[hsl(210_40%_99%)]/80 backdrop-blur-md sticky top-0 z-10">
+      <header className={`border-b backdrop-blur-md sticky top-0 z-10 ${tab === 'on' ? 'border-white/10 bg-black/80' : 'border-slate-200 bg-[hsl(210_40%_99%)]/80'}`}>
         <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative flex items-center gap-2">
@@ -579,17 +579,17 @@ const RowWindowLayout = () => {
         {tab === 'on' && (
           <>
             {sessionState !== 'idle' && (
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
-                <div className="text-xs text-slate-700">
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5">
+                <div className="text-xs text-white/80">
                   <span className="font-semibold">Mock GPS simulator</span>
-                  <span className="text-slate-500 ml-1.5">drives a fake boat along your waypoints</span>
+                  <span className="text-white/50 ml-1.5">drives a fake boat along your waypoints</span>
                 </div>
                 <button
                   onClick={() => setMockEnabled((v) => !v)}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium border transition ${
                     mockEnabled
-                      ? 'bg-cyan-600 text-white border-cyan-700 hover:bg-cyan-700'
-                      : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-50'
+                      ? 'bg-cyan-500 text-black border-cyan-400 hover:bg-cyan-400'
+                      : 'bg-white/10 text-white border-white/20 hover:bg-white/15'
                   }`}
                 >
                   {mockEnabled ? 'Simulator ON' : 'Simulator OFF'}
@@ -653,7 +653,7 @@ const RowWindowLayout = () => {
 
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-[600] border-t border-slate-200 bg-[hsl(210_40%_99%)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
+      <nav className={`fixed bottom-0 inset-x-0 z-[600] border-t backdrop-blur-md pb-[env(safe-area-inset-bottom)] ${tab === 'on' ? 'border-white/10 bg-black/95' : 'border-slate-200 bg-[hsl(210_40%_99%)]/95'}`}>
         <div className="max-w-6xl mx-auto grid grid-cols-3">
           <TabButton
             active={tab === 'pre'}
@@ -1093,17 +1093,17 @@ const OnWaterView = ({
 
   if (sessionState === 'idle') {
     return (
-      <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 text-center">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center mb-4">
-          <Activity className="w-8 h-8 text-cyan-700" />
+      <section className="rounded-2xl border border-white/15 bg-white/5 p-5 text-center">
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center mb-4">
+          <Activity className="w-8 h-8 text-cyan-300" />
         </div>
-        <h2 className="text-xl font-semibold">On-Water Instruments</h2>
-        <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
+        <h2 className="text-xl font-semibold text-white">On-Water Instruments</h2>
+        <p className="text-sm text-white/70 mt-2 max-w-md mx-auto">
           Start a session to track strokes per minute, heading, lane position, pace, and heart rate while you row.
         </p>
         <button
           onClick={onStart}
-          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-800 border border-cyan-400/40 font-semibold text-sm inline-flex items-center gap-2 transition"
+          className="mt-6 px-6 py-3 rounded-xl bg-cyan-500/25 hover:bg-cyan-500/40 text-cyan-100 border border-cyan-400/50 font-semibold text-sm inline-flex items-center gap-2 transition"
         >
           <Play className="w-4 h-4" /> Start Row
         </button>
@@ -1124,15 +1124,15 @@ const OnWaterView = ({
             type="button"
             onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
             disabled={headingDeg === null}
-            className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-slate-600 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-cyan-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
+            className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-white/70 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-white/5 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
             title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
           >
-            <span className="text-cyan-700 normal-case tracking-normal text-[11px] font-medium">
+            <span className="text-cyan-300 normal-case tracking-normal text-[11px] font-medium">
               {headingDeg !== null ? 'Tap to set current heading as center' : 'Enable compass to set center'}
             </span>
           </button>
         ) : (
-          <div className="text-center text-[10px] uppercase tracking-[0.15em] text-slate-500 font-medium">
+          <div className="text-center text-[10px] uppercase tracking-[0.15em] text-white/60 font-medium">
             <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
           </div>
         )}
@@ -1199,33 +1199,33 @@ const OnWaterView = ({
             pulse={sessionState === 'active' && heartRate !== null}
           />
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-3">
-          <div className="flex flex-row items-stretch divide-x divide-slate-200">
+        <div className="rounded-2xl border border-white/15 bg-white/5 p-3">
+          <div className="flex flex-row items-stretch divide-x divide-white/15">
             <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
-              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
                 <Waves className="w-4 h-4" />
                 Tide
               </div>
-              <div className="text-xl font-semibold text-slate-900 flex items-center gap-1.5 leading-tight mt-1">
+              <div className="text-2xl font-bold text-white flex items-center gap-1.5 leading-tight mt-1">
                 {tide.height.toFixed(2)} ft
-                {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-500" aria-label="Rising" />}
-                {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-500" aria-label="Falling" />}
+                {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-400" aria-label="Rising" />}
+                {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-400" aria-label="Falling" />}
               </div>
               <div className={`text-[11px] mt-0.5 ${
-                direction === 'Flood' ? 'text-emerald-700'
-                : direction === 'Ebb' ? 'text-amber-700'
-                : 'text-slate-600'
+                direction === 'Flood' ? 'text-emerald-300'
+                : direction === 'Ebb' ? 'text-amber-300'
+                : 'text-white/60'
               }`}>
                 {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
               </div>
             </div>
             {lowTideMarker && (
               <div className="flex-1 px-3 sm:px-4 py-2">
-                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
                   <ArrowDown className="w-4 h-4" />
                   Low tide
                 </div>
-                <div className="text-xl font-semibold text-slate-900 leading-tight mt-1">
+                <div className="text-2xl font-bold text-white leading-tight mt-1">
                   {lowTideMarker.mode === 'to' ? 'in ' : ''}
                   {(() => {
                     const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
@@ -1234,19 +1234,19 @@ const OnWaterView = ({
                     return h > 0 ? `${h}h ${m}m` : `${m}m`;
                   })()}
                 </div>
-                <div className="text-[11px] text-slate-600 mt-0.5 font-mono">
+                <div className="text-[11px] text-white/60 mt-0.5 font-mono">
                   {lowTideMarker.mode === 'to' ? 'at ' : 'since '}
                   {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                 </div>
               </div>
             )}
             <div className="flex-1 px-3 sm:px-4 py-2">
-              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-600">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
                 <Wind className="w-4 h-4" />
                 Wind
               </div>
-              <div className="text-xl font-semibold mt-1 text-slate-900 leading-tight">{wind.speedKnots} kt</div>
-              <div className="text-[11px] text-slate-600 mt-0.5">from {wind.directionLabel}</div>
+              <div className="text-2xl font-bold mt-1 text-white leading-tight">{wind.speedKnots} kt</div>
+              <div className="text-[11px] text-white/60 mt-0.5">from {wind.directionLabel}</div>
             </div>
           </div>
         </div>
@@ -1256,13 +1256,13 @@ const OnWaterView = ({
       <div className="flex gap-2">
         <button
           onClick={onPauseResume}
-          className="flex-1 px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+          className="flex-1 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
         >
           {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
         </button>
         <button
           onClick={onEnd}
-          className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 border border-rose-500/30 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+          className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 border border-rose-500/40 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
         >
           <Square className="w-4 h-4" /> End Row
         </button>
@@ -1292,7 +1292,7 @@ const HorizontalCompass = ({
   // Visible field of view in degrees
   const FOV = 130;
   const W = 320; // viewBox width
-  const H = 56;  // viewBox height
+  const H = 96;  // viewBox height (taller — labels span full height)
   const pxPerDeg = W / FOV;
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
@@ -1321,9 +1321,11 @@ const HorizontalCompass = ({
   const targetVisible = targetX >= 4 && targetX <= W - 4;
   const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
-  // Find the centered label (closest major within FOV)
-  const tickRowY = 14;
-  const labelRowY = 44;
+  // Tick row sits at the very top; labels span almost the full remaining height.
+  const tickRowY = 4;
+  const tickMajorH = 14;
+  const tickMinorH = 8;
+  const labelRowY = H * 0.78; // baseline for the big labels (fills the height)
   const ORANGE = 'hsl(22 95% 58%)';
 
   // Drift from target — used to glow left/right side red as boat veers off line.
@@ -1341,7 +1343,7 @@ const HorizontalCompass = ({
 
   return (
     <div className="relative w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[56px]" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[96px]" preserveAspectRatio="none">
         <defs>
           {/* Edge fade — content disappears into black margins */}
           <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
@@ -1351,7 +1353,7 @@ const HorizontalCompass = ({
             <stop offset="100%" stopColor="hsl(0 0% 4%)" stopOpacity="1" />
           </linearGradient>
           <radialGradient id="pointer-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor={ORANGE} stopOpacity="0.35" />
+            <stop offset="0%" stopColor={ORANGE} stopOpacity="0.4" />
             <stop offset="100%" stopColor={ORANGE} stopOpacity="0" />
           </radialGradient>
           {/* Drift warning gradients — red glow growing in from each side */}
@@ -1369,17 +1371,17 @@ const HorizontalCompass = ({
         <rect x="0" y="0" width={W} height={H} rx="6" fill="hsl(0 0% 4%)" />
 
         {/* Pointer glow halo behind center */}
-        <ellipse cx={cx} cy={labelRowY - 4} rx="40" ry="14" fill="url(#pointer-glow)" />
+        <ellipse cx={cx} cy={H / 2} rx="56" ry="28" fill="url(#pointer-glow)" />
 
         {/* Ticks + labels */}
-        <g opacity={headingDeg !== null ? 1 : 0.4}>
+        <g opacity={headingDeg !== null ? 1 : 0.45}>
           {ticks.map((t, i) => {
             const x = xFor(t.deg);
             if (x < -10 || x > W + 10) return null;
-            const tickH = t.major ? 12 : 6;
+            const tickH = t.major ? tickMajorH : tickMinorH;
             // Distance-from-center fade for both ticks and labels
             const distFromCenter = Math.abs(x - cx);
-            const fadeOpacity = Math.max(0.25, 1 - distFromCenter / (W / 2.2));
+            const fadeOpacity = Math.max(0.3, 1 - distFromCenter / (W / 2.2));
             // The centered label gets the orange highlight
             const isCentered = distFromCenter < pxPerDeg * 2.5 && t.major;
             return (
@@ -1387,8 +1389,8 @@ const HorizontalCompass = ({
                 <line
                   x1={x} x2={x}
                   y1={tickRowY} y2={tickRowY + tickH}
-                  stroke="hsl(0 0% 92%)"
-                  strokeWidth={t.major ? 1.4 : 0.8}
+                  stroke="hsl(0 0% 100%)"
+                  strokeWidth={t.major ? 3 : 2}
                   strokeLinecap="round"
                 />
                 {t.label ? (
@@ -1396,11 +1398,11 @@ const HorizontalCompass = ({
                     x={x}
                     y={labelRowY}
                     textAnchor="middle"
-                    fontSize={t.cardinal ? 14 : 12}
-                    fontWeight="600"
-                    fill={isCentered ? ORANGE : 'hsl(0 0% 78%)'}
+                    fontSize={t.cardinal ? 56 : 44}
+                    fontWeight="800"
+                    fill={isCentered ? ORANGE : 'hsl(0 0% 100%)'}
                     fontFamily={labelFont}
-                    letterSpacing="0.08em"
+                    letterSpacing="0.02em"
                   >
                     {t.label}
                   </text>
@@ -1428,21 +1430,19 @@ const HorizontalCompass = ({
 
         {/* Target heading marker (subtle dashed line) */}
         {targetVisible && (
-          <line x1={targetX} x2={targetX} y1={tickRowY} y2={tickRowY + 14}
-            stroke="hsl(150 75% 55%)" strokeWidth="1.2" strokeDasharray="2 2" opacity="0.8" />
+          <line x1={targetX} x2={targetX} y1={tickRowY} y2={H - 4}
+            stroke="hsl(150 75% 55%)" strokeWidth="2" strokeDasharray="4 3" opacity="0.7" />
         )}
 
-        {/* Center pointer — orange diamond above the centered label */}
+        {/* Center pointer — orange diamond at the very top */}
         <g>
-          {/* diamond pointer */}
           <polygon
-            points={`${cx},2 ${cx + 7},10 ${cx},18 ${cx - 7},10`}
+            points={`${cx},0 ${cx + 9},10 ${cx},20 ${cx - 9},10`}
             fill={ORANGE}
             stroke="hsl(0 0% 4%)"
-            strokeWidth="1.2"
+            strokeWidth="1.5"
           />
-          {/* small dot in pointer */}
-          <circle cx={cx} cy={10} r="1.6" fill="hsl(0 0% 4%)" />
+          <circle cx={cx} cy={10} r="2" fill="hsl(0 0% 4%)" />
         </g>
       </svg>
     </div>
@@ -1901,15 +1901,15 @@ const InlineStat = ({ icon, label, value, sub }: { icon: React.ReactNode; label:
 );
 
 const BigStat = ({
-  icon, label, value, sub, accent = 'text-slate-900', mono = false, pulse = false,
+  icon, label, value, sub, accent, mono = false, pulse = false,
 }: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
-  <div className="px-1 py-2 border-b border-slate-200">
-    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-600">
+  <div className="px-2 py-3 border-b border-white/15">
+    <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-white/70 font-semibold">
       <span className={pulse ? 'animate-pulse' : ''}>{icon}</span>
       {label}
     </div>
-    <div className={`${mono ? 'font-mono' : ''} text-4xl md:text-5xl font-bold mt-1 leading-none ${accent}`}>{value}</div>
-    {sub && <div className="text-[11px] text-slate-600 mt-1.5">{sub}</div>}
+    <div className={`${mono ? 'font-mono' : ''} text-7xl md:text-8xl font-black mt-1 leading-[0.95] tracking-tight text-white`}>{value}</div>
+    {sub && <div className="text-xs text-white/60 mt-1.5 uppercase tracking-wider">{sub}</div>}
   </div>
 );
 
