@@ -416,9 +416,9 @@ const RowWindowLayout = () => {
   }[assessment.status];
 
   return (
-    <div className="min-h-screen bg-[hsl(210_40%_97%)] text-slate-900 pb-24">
+    <div className={`min-h-screen pb-24 ${tab === 'on' ? 'bg-black text-white' : 'bg-[hsl(210_40%_97%)] text-slate-900'}`}>
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-[hsl(210_40%_99%)]/80 backdrop-blur-md sticky top-0 z-10">
+      <header className={`border-b backdrop-blur-md sticky top-0 z-10 ${tab === 'on' ? 'border-white/10 bg-black/80' : 'border-slate-200 bg-[hsl(210_40%_99%)]/80'}`}>
         <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative flex items-center gap-2">
