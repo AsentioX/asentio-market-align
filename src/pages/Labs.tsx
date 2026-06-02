@@ -156,6 +156,14 @@ const labApps: LabApp[] = [
     tags: ['Edge AI', 'Computer Vision', 'Enterprise'],
     link: '/labs/smart-vision',
   },
+  {
+    name: 'Savor by Justgrapes',
+    description: 'The AI wine companion for smart glasses + mobile. Discover wines you\'ll love, demystify menus, and turn every bottle into a memory.',
+    icon: <Wine className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Consumer', 'AI', 'Smart Glasses'],
+    link: '/labs/justgrapes',
+  },
 ];
 
 const statusColors: Record<string, string> = {
