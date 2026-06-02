@@ -1377,7 +1377,6 @@ const HorizontalCompass = ({
           {ticks.map((t, i) => {
             const x = xFor(t.deg);
             if (x < -10 || x > W + 10) return null;
-            const tickH = t.major ? tickMajorH : tickMinorH;
             // Distance-from-center fade for both ticks and labels
             const distFromCenter = Math.abs(x - cx);
             const fadeOpacity = Math.max(0.3, 1 - distFromCenter / (W / 2.2));
@@ -1385,18 +1384,22 @@ const HorizontalCompass = ({
             const isCentered = distFromCenter < pxPerDeg * 2.5 && t.major;
             return (
               <g key={i} opacity={fadeOpacity}>
-                <line
-                  x1={x} x2={x}
-                  y1={tickRowY} y2={tickRowY + tickH}
-                  stroke="hsl(0 0% 100%)"
-                  strokeWidth={t.major ? 3 : 2}
-                  strokeLinecap="round"
-                />
+                {/* Full-height tick — hidden behind labels */}
+                {!t.label && (
+                  <line
+                    x1={x} x2={x}
+                    y1={tickTop} y2={tickBottom}
+                    stroke="hsl(0 0% 100%)"
+                    strokeWidth={t.major ? 4 : 2}
+                    strokeLinecap="round"
+                  />
+                )}
                 {t.label ? (
                   <text
                     x={x}
-                    y={labelRowY}
+                    y={labelY}
                     textAnchor="middle"
+                    dominantBaseline="central"
                     fontSize={t.cardinal ? 56 : 44}
                     fontWeight="800"
                     fill={isCentered ? ORANGE : 'hsl(0 0% 100%)'}
