@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot, Camera } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot, Camera, Glasses } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -155,6 +155,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Edge AI', 'Computer Vision', 'Enterprise'],
     link: '/labs/smart-vision',
+  },
+  {
+    name: 'JustGrapes AI',
+    description: 'Companion app for AI-powered smart glasses. Ambient intelligence that recognizes you, remembers for you, and acts on your behalf.',
+    icon: <Glasses className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Smart Glasses', 'AI Agent', 'Wearable'],
+    link: '/labs/justgrapes',
   },
 ];
 
