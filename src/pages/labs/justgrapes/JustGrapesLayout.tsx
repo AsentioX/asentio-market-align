@@ -750,15 +750,40 @@ const MeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
       ))}
     </div>
 
-    {/* Full taste profile */}
-    <SectionTitle eyebrow="Taste profile" title="The shape of what you love" />
-    <div className="mx-5 rounded-3xl p-6 space-y-4" style={{ background: C.cream, border: `1px solid ${C.line}` }}>
-      <TasteAxis left="Fresh" right="Rich" value={62} />
-      <TasteAxis left="Fruit" right="Earth" value={35} />
-      <TasteAxis left="Light" right="Bold" value={55} />
-      <TasteAxis left="Classic" right="Adventurous" value={70} />
-      <TasteAxis left="Casual" right="Special Occasion" value={48} />
+    {/* Style mix — Justgrapes 4-style system */}
+    <SectionTitle eyebrow="Style mix" title="How you drink, by Justgrapes style" />
+    <div className="mx-5 rounded-3xl p-6 space-y-3.5" style={{ background: C.cream, border: `1px solid ${C.line}` }}>
+      {MAYA_STYLE_MIX.map(s => <StyleBar key={s.label} {...s} />)}
+      <p className="text-[12px] pt-1" style={{ color: C.mute, fontFamily: fontBody }}>
+        Fresh = light-bodied · Smooth = medium-bodied · Rich = full-bodied · Special = fortified, sweet & sparkling.
+      </p>
     </div>
+
+    {/* Flavor wheel — 8 Justgrapes descriptors */}
+    <SectionTitle eyebrow="Flavor profile" title="Your eight-flavor signature" />
+    <div className="mx-5 rounded-3xl p-6" style={{ background: C.cream, border: `1px solid ${C.line}` }}>
+      <div className="grid grid-cols-4 gap-3">
+        {FLAVORS.map(f => {
+          const w = MAYA_TOP_FLAVORS.find(m => m.key === f.key)?.weight ?? 0.15;
+          return (
+            <div key={f.key} className="flex flex-col items-center text-center gap-1.5">
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center text-[20px]"
+                style={{
+                  background: `rgba(107,31,42,${0.08 + w * 0.55})`,
+                  border: `1px solid rgba(107,31,42,${0.15 + w * 0.5})`,
+                }}
+              >
+                {f.emoji}
+              </div>
+              <div className="text-[11px] font-semibold" style={{ color: C.ink, fontFamily: fontBody }}>{f.label}</div>
+              <div className="text-[10px]" style={{ color: C.mute, fontFamily: fontBody }}>{Math.round(w * 100)}%</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
 
     {/* Companion entry */}
     <div className="px-5 mt-6">
