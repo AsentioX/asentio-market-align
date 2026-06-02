@@ -163,6 +163,7 @@ const AppContent = () => {
           <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
           <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
           <Route path="/labs/smart-vision" element={<SmartVisionLayout />} />
+          <Route path="/labs/justgrapes" element={<JustGrapesLayout />} />
           <Route path="/labs/contractor-finder" element={<ContractorFinderLayout />}>
             <Route index element={<CFDashboard />} />
             <Route path="explore" element={<CFExplore />} />
