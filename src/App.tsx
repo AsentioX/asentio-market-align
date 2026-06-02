@@ -66,6 +66,7 @@ import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
 import BeaverBoatAdmin from "./pages/labs/beaver-boat/BeaverBoatAdmin";
 import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
 import SmartVisionLayout from "./pages/labs/smart-vision/SmartVisionLayout";
+import JustGrapesLayout from "./pages/labs/justgrapes/JustGrapesLayout";
 import CFDashboard from "./pages/labs/contractor-finder/Dashboard";
 import CFExplore from "./pages/labs/contractor-finder/Explore";
 import CFSegments from "./pages/labs/contractor-finder/Segments";
