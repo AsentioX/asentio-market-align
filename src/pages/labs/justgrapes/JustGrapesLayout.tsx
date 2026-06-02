@@ -303,19 +303,83 @@ const HomeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
       <img src={IMG.avatar} className="w-11 h-11 rounded-full object-cover ring-2" style={{ ['--tw-ring-color' as any]: C.line }} alt="" />
     </div>
 
+const StyleBar = ({ label, body, value, dark = false }: { label: string; body: string; value: number; dark?: boolean }) => (
+  <div>
+    <div className="flex items-baseline justify-between mb-1">
+      <div className="flex items-baseline gap-2">
+        <span className="text-[13px] font-semibold" style={{ fontFamily: fontDisplay, color: dark ? C.cream : C.ink }}>{label}</span>
+        <span className="text-[10px] uppercase tracking-[0.14em]" style={{ color: dark ? C.goldSoft : C.mute, fontFamily: fontBody }}>{body}</span>
+      </div>
+      <span className="text-[11px] tabular-nums" style={{ color: dark ? C.goldSoft : C.mute, fontFamily: fontBody }}>{value}%</span>
+    </div>
+    <div className="relative h-[6px] rounded-full overflow-hidden" style={{ background: dark ? 'rgba(247,241,232,0.18)' : C.line }}>
+      <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${value}%`, background: dark ? C.goldSoft : C.burgundy }} />
+    </div>
+  </div>
+);
+
+const FlavorChips = ({ flavors, dark = false }: { flavors: { key: string; label: string; emoji: string; weight: number }[]; dark?: boolean }) => (
+  <div className="flex flex-wrap gap-1.5">
+    {flavors.map(f => (
+      <span
+        key={f.key}
+        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium"
+        style={{
+          background: dark ? 'rgba(247,241,232,0.12)' : C.creamSoft,
+          color: dark ? C.cream : C.inkSoft,
+          border: dark ? `1px solid rgba(217,185,122,0.35)` : `1px solid ${C.line}`,
+          opacity: 0.5 + f.weight * 0.5,
+          fontFamily: fontBody,
+        }}
+      >
+        <span>{f.emoji}</span>{f.label}
+      </span>
+    ))}
+  </div>
+);
+
+// Maya's profile mock (drives Home + Me screens)
+const MAYA_STYLE_MIX = [
+  { label: 'Fresh',   body: 'Light',   value: 30 },
+  { label: 'Smooth',  body: 'Medium',  value: 62 },
+  { label: 'Rich',    body: 'Full',    value: 45 },
+  { label: 'Special', body: 'Fortified & other', value: 12 },
+];
+const MAYA_TOP_FLAVORS = [
+  { key: 'fruity',    label: 'Fruity',    emoji: '🍒',   weight: 1.0 },
+  { key: 'floral',    label: 'Floral',    emoji: '🌸',   weight: 0.7 },
+  { key: 'minerally', label: 'Minerally', emoji: '🪨',  weight: 0.6 },
+  { key: 'spicy',     label: 'Spicy',     emoji: '🌶️',  weight: 0.5 },
+  { key: 'oaky',      label: 'Oaky',      emoji: '🪵',   weight: 0.4 },
+];
+
+const HomeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
+  <div className="pb-28">
+    {/* Greeting */}
+    <div className="px-5 pt-10 pb-2 flex items-center justify-between">
+      <div>
+        <div className="text-[11px] uppercase tracking-[0.18em]" style={{ color: C.gold, fontFamily: fontBody }}>Tuesday evening</div>
+        <h1 className="text-[30px] leading-tight mt-1" style={{ fontFamily: fontDisplay, color: C.ink, fontWeight: 500, letterSpacing: '-0.01em' }}>
+          Hello, Maya
+        </h1>
+      </div>
+      <img src={IMG.avatar} className="w-11 h-11 rounded-full object-cover ring-2" style={{ ['--tw-ring-color' as any]: C.line }} alt="" />
+    </div>
+
     {/* Taste card */}
     <div className="mx-5 mt-5 rounded-[28px] overflow-hidden relative" style={{ background: C.burgundyDeep, color: C.cream }}>
       <img src={IMG.vineyard} alt="" className="absolute inset-0 w-full h-full object-cover opacity-25" />
       <div className="relative p-6">
         <div className="text-[10px] uppercase tracking-[0.22em] mb-2" style={{ color: C.goldSoft, fontFamily: fontBody }}>Your taste · this season</div>
         <p className="text-[20px] leading-snug" style={{ fontFamily: fontDisplay, fontWeight: 400, letterSpacing: '-0.005em' }}>
-          You tend to enjoy <em style={{ color: C.goldSoft }}>smooth, fruit-forward</em> wines that pair well with dinner gatherings.
+          You live in the <em style={{ color: C.goldSoft }}>Smooth</em> zone — medium-bodied reds with a fruity, slightly floral lift.
         </p>
-        <div className="mt-5 space-y-3.5">
-          <TasteAxis left="Fresh" right="Rich" value={62} />
-          <TasteAxis left="Fruit" right="Earth" value={35} />
-          <TasteAxis left="Light" right="Bold" value={55} />
-          <TasteAxis left="Classic" right="Adventurous" value={70} />
+        <div className="mt-5 space-y-3">
+          {MAYA_STYLE_MIX.map(s => <StyleBar key={s.label} {...s} dark />)}
+        </div>
+        <div className="mt-5">
+          <div className="text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: C.goldSoft, fontFamily: fontBody }}>Flavors you gravitate to</div>
+          <FlavorChips flavors={MAYA_TOP_FLAVORS} dark />
         </div>
         <button onClick={() => goto('me')} className="mt-5 text-[12px] inline-flex items-center gap-1.5 underline-offset-4" style={{ color: C.goldSoft, fontFamily: fontBody }}>
           See full taste profile <ChevronRight className="w-3.5 h-3.5" />
