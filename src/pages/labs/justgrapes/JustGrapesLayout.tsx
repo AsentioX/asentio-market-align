@@ -99,18 +99,45 @@ const IMG = {
 };
 
 /* =========================================================
+   JUSTGRAPES TAXONOMY
+   - Wine Styles: Fresh (light-bodied) · Smooth (medium-bodied)
+                  · Rich (full-bodied) · Special (fortified & other)
+   - 8 Flavor descriptors: Fruity, Floral, Grassy, Minerally,
+                           Oaky, Toasty, Nutty, Spicy
+   ========================================================= */
+const WINE_STYLES = [
+  { key: 'fresh',   label: 'Fresh',   body: 'Light-bodied',      blurb: 'Bright, lively, crisp',           img: IMG.fresh },
+  { key: 'smooth',  label: 'Smooth',  body: 'Medium-bodied',     blurb: 'Balanced, easygoing',             img: IMG.smooth },
+  { key: 'rich',    label: 'Rich',    body: 'Full-bodied',       blurb: 'Deep, layered, intense',          img: IMG.bold },
+  { key: 'special', label: 'Special', body: 'Fortified & other', blurb: 'Port, sherry, sweet, sparkling',  img: IMG.anniversary },
+] as const;
+
+const FLAVORS = [
+  { key: 'fruity',    label: 'Fruity',    emoji: '🍒' },
+  { key: 'floral',    label: 'Floral',    emoji: '🌸' },
+  { key: 'grassy',    label: 'Grassy',    emoji: '🌿' },
+  { key: 'minerally', label: 'Minerally', emoji: '🪨' },
+  { key: 'oaky',      label: 'Oaky',      emoji: '🪵' },
+  { key: 'toasty',    label: 'Toasty',    emoji: '🔥' },
+  { key: 'nutty',     label: 'Nutty',     emoji: '🌰' },
+  { key: 'spicy',     label: 'Spicy',     emoji: '🌶️' },
+] as const;
+
+/* =========================================================
    ONBOARDING
    ========================================================= */
 const onboardingSteps = [
   {
-    key: 'feel',
-    question: 'Which sounds more appealing tonight?',
+    key: 'style',
+    question: 'Which style draws you in tonight?',
     multi: false,
-    options: [
-      { label: 'Fresh & Crisp', img: IMG.fresh, sub: 'Bright, lively, refreshing' },
-      { label: 'Smooth & Balanced', img: IMG.smooth, sub: 'Easygoing and approachable' },
-      { label: 'Rich & Bold', img: IMG.bold, sub: 'Deep, layered, intense' },
-    ],
+    options: WINE_STYLES.map(s => ({ label: s.label, img: s.img, sub: `${s.body} · ${s.blurb}` })),
+  },
+  {
+    key: 'flavors',
+    question: 'Which flavors do you tend to love?',
+    multi: true,
+    options: FLAVORS.map(f => ({ label: `${f.emoji}  ${f.label}`, img: IMG.vineyard })),
   },
   {
     key: 'food',
