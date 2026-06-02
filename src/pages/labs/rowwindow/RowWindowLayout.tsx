@@ -1152,8 +1152,8 @@ const OnWaterView = ({
         <BigStat
           icon={<Route className="w-4 h-4" />}
           label="Distance"
-          value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)} km` : DASH}
-          sub={distanceMeters !== null ? `${Math.round(distanceMeters)} m` : 'GPS not connected'}
+          value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)}` : DASH}
+          sub={distanceMeters !== null ? 'km' : 'GPS not connected'}
           accent="text-cyan-800"
           mono
         />
