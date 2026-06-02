@@ -428,13 +428,18 @@ const QuickAction = ({ icon, title, sub, tint, onClick }: any) => (
 /* =========================================================
    DISCOVER FEED
    ========================================================= */
+// Each card carries Justgrapes Style (Fresh / Smooth / Rich / Special)
+// and up to 3 flavor descriptors from the 8-flavor system.
 const discoverCards = [
-  { name: 'Domaine Verde', kind: 'Smooth red · Pinot vibe', img: IMG.bottleRed, match: 94, price: '$24', reason: "Because you enjoy smooth red wines with pasta.", occasion: 'Pasta night', pairing: 'Wild mushroom rigatoni' },
-  { name: 'Côte Lumière', kind: 'Crisp white', img: IMG.bottleWhite, match: 91, price: '$19', reason: 'Because you liked last month\'s seaside white.', occasion: 'Friday dinner', pairing: 'Pan-seared salmon' },
-  { name: 'Maison Belle', kind: 'Bright rosé', img: IMG.bottleRose, match: 88, price: '$17', reason: 'Perfect for entertaining a group on the patio.', occasion: 'Sunday picnic', pairing: 'Charcuterie & olives' },
-  { name: 'Quinta Rosso', kind: 'Bold & berry-forward', img: IMG.bottleRed, match: 96, price: '$32', reason: 'Perfect for your anniversary dinner next week.', occasion: 'Celebration', pairing: 'Ribeye & roasted root veg' },
-  { name: 'Vigna Antica', kind: 'Smooth & balanced', img: IMG.bottleRed, match: 89, price: '$22', reason: 'Because you\'ve been exploring Italian reds.', occasion: 'Date night', pairing: 'Truffle pasta' },
+  { name: 'Domaine Verde',  style: 'Smooth',  body: 'Medium-bodied red',   flavors: ['fruity','floral','oaky'],          img: IMG.bottleRed,   match: 94, price: '$24', reason: "Smooth medium-bodied red — fruity with a floral lift. Your zone.",  occasion: 'Pasta night',  pairing: 'Wild mushroom rigatoni' },
+  { name: 'Côte Lumière',   style: 'Fresh',   body: 'Light-bodied white',  flavors: ['grassy','minerally','floral'],     img: IMG.bottleWhite, match: 91, price: '$19', reason: 'Fresh & crisp with a flinty mineral edge. Built for seafood nights.', occasion: 'Friday dinner', pairing: 'Pan-seared salmon' },
+  { name: 'Maison Belle',   style: 'Fresh',   body: 'Light-bodied rosé',   flavors: ['fruity','floral'],                  img: IMG.bottleRose,  match: 88, price: '$17', reason: 'Bright and floral — easy on the patio with a crowd.',                 occasion: 'Sunday picnic', pairing: 'Charcuterie & olives' },
+  { name: 'Quinta Rosso',   style: 'Rich',    body: 'Full-bodied red',     flavors: ['fruity','spicy','toasty'],          img: IMG.bottleRed,   match: 96, price: '$32', reason: 'Rich, berry-forward, gently spicy. Made for a ribeye.',                occasion: 'Celebration',   pairing: 'Ribeye & roasted root veg' },
+  { name: 'Vigna Antica',   style: 'Smooth',  body: 'Medium-bodied red',   flavors: ['fruity','nutty','oaky'],            img: IMG.bottleRed,   match: 89, price: '$22', reason: "A smooth Italian red — fruit-forward with subtle nutty oak.",         occasion: 'Date night',    pairing: 'Truffle pasta' },
+  { name: 'Porto Velho',    style: 'Special', body: 'Fortified — Tawny Port', flavors: ['nutty','toasty','fruity'],       img: IMG.bottleRed,   match: 85, price: '$28', reason: 'A Special pour — nutty and toasty. A small treat after dinner.',     occasion: 'Nightcap',      pairing: 'Dark chocolate & nuts' },
 ];
+
+const flavorMeta = (key: string) => FLAVORS.find(f => f.key === key);
 
 const DiscoverCard = ({ card, small = false }: { card: typeof discoverCards[number]; small?: boolean }) => (
   <div
@@ -446,17 +451,29 @@ const DiscoverCard = ({ card, small = false }: { card: typeof discoverCards[numb
       <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.45) 100%)' }} />
       <div className="absolute top-3 left-3 flex gap-1.5">
         <Chip tone="ink"><Sparkles className="w-3 h-3" /> {card.match}% match</Chip>
+        <Chip tone="gold">{card.style}</Chip>
       </div>
       <div className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)', color: C.burgundy }}>
         <Heart className="w-4 h-4" />
       </div>
       <div className="absolute bottom-3 left-3 right-3 text-white">
-        <div className="text-[11px] opacity-90" style={{ fontFamily: fontBody }}>{card.kind}</div>
+        <div className="text-[11px] opacity-90" style={{ fontFamily: fontBody }}>{card.body}</div>
         <div className="text-[19px] leading-tight" style={{ fontFamily: fontDisplay, fontWeight: 500 }}>{card.name}</div>
       </div>
     </div>
     <div className="p-4">
       <p className="text-[13px] leading-snug" style={{ color: C.inkSoft, fontFamily: fontBody }}>{card.reason}</p>
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
+        {card.flavors.map(fk => {
+          const f = flavorMeta(fk);
+          if (!f) return null;
+          return (
+            <span key={fk} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px]" style={{ background: C.creamSoft, border: `1px solid ${C.line}`, color: C.inkSoft, fontFamily: fontBody }}>
+              <span>{f.emoji}</span>{f.label}
+            </span>
+          );
+        })}
+      </div>
       <div className="mt-3 flex flex-wrap gap-1.5">
         <Chip tone="gold"><Calendar className="w-3 h-3" /> {card.occasion}</Chip>
         <Chip tone="cream"><UtensilsCrossed className="w-3 h-3" /> {card.pairing}</Chip>
