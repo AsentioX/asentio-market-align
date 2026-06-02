@@ -1432,7 +1432,7 @@ const HorizontalCompass = ({
 
         {/* Target heading marker (subtle dashed line) */}
         {targetVisible && (
-          <line x1={targetX} x2={targetX} y1={tickRowY} y2={H - 4}
+          <line x1={targetX} x2={targetX} y1={tickTop} y2={tickBottom}
             stroke="hsl(150 75% 55%)" strokeWidth="2" strokeDasharray="4 3" opacity="0.7" />
         )}
 
