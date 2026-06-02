@@ -1321,11 +1321,10 @@ const HorizontalCompass = ({
   const targetVisible = targetX >= 4 && targetX <= W - 4;
   const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
-  // Tick row sits at the very top; labels span almost the full remaining height.
-  const tickRowY = 4;
-  const tickMajorH = 14;
-  const tickMinorH = 8;
-  const labelRowY = H * 0.78; // baseline for the big labels (fills the height)
+  // Ticks span the full height of the strip; labels sit inline (vertically centered) between them.
+  const tickTop = 6;
+  const tickBottom = H - 6;
+  const labelY = H / 2;
   const ORANGE = 'hsl(22 95% 58%)';
 
   // Drift from target — used to glow left/right side red as boat veers off line.
