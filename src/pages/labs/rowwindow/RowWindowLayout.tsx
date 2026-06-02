@@ -1903,12 +1903,12 @@ const InlineStat = ({ icon, label, value, sub }: { icon: React.ReactNode; label:
 const BigStat = ({
   icon, label, value, sub, accent, mono = false, pulse = false,
 }: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
-  <div className="px-2 py-3 border-b border-white/15">
+  <div className="px-2 py-3 border-b border-white/15 min-w-0">
     <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-white/70 font-semibold">
       <span className={pulse ? 'animate-pulse' : ''}>{icon}</span>
       {label}
     </div>
-    <div className={`${mono ? 'font-mono' : ''} text-7xl md:text-8xl font-black mt-1 leading-[0.95] tracking-tight text-white`}>{value}</div>
+    <div className={`${mono ? 'font-mono' : ''} text-5xl md:text-7xl lg:text-8xl font-black mt-1 leading-[0.95] tracking-tight text-white whitespace-nowrap`}>{value}</div>
     {sub && <div className="text-xs text-white/60 mt-1.5 uppercase tracking-wider">{sub}</div>}
   </div>
 );
