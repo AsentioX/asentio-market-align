@@ -1176,6 +1176,16 @@ const OnWaterView = ({
         />
       </section>
 
+      {/* Heart rate */}
+      <BigStat
+        icon={<Heart className="w-4 h-4" />}
+        label="Heart Rate"
+        value={heartRate !== null ? `${heartRate}` : DASH}
+        sub={heartRate !== null ? 'bpm' : 'Not connected'}
+        accent="text-rose-700"
+        pulse={sessionState === 'active' && heartRate !== null}
+      />
+
       {/* Auto-detected workout pieces (turnaround + speed pickup) */}
       <PiecesWidget
         currentPiece={currentPiece}
@@ -1184,21 +1194,8 @@ const OnWaterView = ({
         sessionActive={sessionState === 'active'}
       />
 
-
-
-
-      {/* Heart rate + environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
+      {/* Environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
       <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-stretch">
-        <div className="grid grid-cols-1">
-          <BigStat
-            icon={<Heart className="w-4 h-4" />}
-            label="Heart Rate"
-            value={heartRate !== null ? `${heartRate}` : DASH}
-            sub={heartRate !== null ? 'bpm' : 'Not connected'}
-            accent="text-rose-700"
-            pulse={sessionState === 'active' && heartRate !== null}
-          />
-        </div>
         <div className="rounded-2xl border border-white/15 bg-white/5 p-3">
           <div className="flex flex-row items-stretch divide-x divide-white/15">
             <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
