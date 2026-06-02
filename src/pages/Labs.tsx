@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot, Camera } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot, Camera, Wine } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -155,6 +155,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Edge AI', 'Computer Vision', 'Enterprise'],
     link: '/labs/smart-vision',
+  },
+  {
+    name: 'Savor by Justgrapes',
+    description: 'The AI wine companion for smart glasses + mobile. Discover wines you\'ll love, demystify menus, and turn every bottle into a memory.',
+    icon: <Wine className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Consumer', 'AI', 'Smart Glasses'],
+    link: '/labs/justgrapes',
   },
 ];
 
