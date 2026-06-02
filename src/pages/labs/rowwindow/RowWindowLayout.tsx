@@ -1321,11 +1321,10 @@ const HorizontalCompass = ({
   const targetVisible = targetX >= 4 && targetX <= W - 4;
   const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
-  // Tick row sits at the very top; labels span almost the full remaining height.
-  const tickRowY = 4;
-  const tickMajorH = 14;
-  const tickMinorH = 8;
-  const labelRowY = H * 0.78; // baseline for the big labels (fills the height)
+  // Ticks span the full height of the strip; labels sit inline (vertically centered) between them.
+  const tickTop = 6;
+  const tickBottom = H - 6;
+  const labelY = H / 2;
   const ORANGE = 'hsl(22 95% 58%)';
 
   // Drift from target — used to glow left/right side red as boat veers off line.
@@ -1378,7 +1377,6 @@ const HorizontalCompass = ({
           {ticks.map((t, i) => {
             const x = xFor(t.deg);
             if (x < -10 || x > W + 10) return null;
-            const tickH = t.major ? tickMajorH : tickMinorH;
             // Distance-from-center fade for both ticks and labels
             const distFromCenter = Math.abs(x - cx);
             const fadeOpacity = Math.max(0.3, 1 - distFromCenter / (W / 2.2));
@@ -1386,18 +1384,22 @@ const HorizontalCompass = ({
             const isCentered = distFromCenter < pxPerDeg * 2.5 && t.major;
             return (
               <g key={i} opacity={fadeOpacity}>
-                <line
-                  x1={x} x2={x}
-                  y1={tickRowY} y2={tickRowY + tickH}
-                  stroke="hsl(0 0% 100%)"
-                  strokeWidth={t.major ? 3 : 2}
-                  strokeLinecap="round"
-                />
+                {/* Full-height tick — hidden behind labels */}
+                {!t.label && (
+                  <line
+                    x1={x} x2={x}
+                    y1={tickTop} y2={tickBottom}
+                    stroke="hsl(0 0% 100%)"
+                    strokeWidth={t.major ? 4 : 2}
+                    strokeLinecap="round"
+                  />
+                )}
                 {t.label ? (
                   <text
                     x={x}
-                    y={labelRowY}
+                    y={labelY}
                     textAnchor="middle"
+                    dominantBaseline="central"
                     fontSize={t.cardinal ? 56 : 44}
                     fontWeight="800"
                     fill={isCentered ? ORANGE : 'hsl(0 0% 100%)'}
@@ -1430,7 +1432,7 @@ const HorizontalCompass = ({
 
         {/* Target heading marker (subtle dashed line) */}
         {targetVisible && (
-          <line x1={targetX} x2={targetX} y1={tickRowY} y2={H - 4}
+          <line x1={targetX} x2={targetX} y1={tickTop} y2={tickBottom}
             stroke="hsl(150 75% 55%)" strokeWidth="2" strokeDasharray="4 3" opacity="0.7" />
         )}
 
