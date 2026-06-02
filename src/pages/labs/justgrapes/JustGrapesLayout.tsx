@@ -99,18 +99,45 @@ const IMG = {
 };
 
 /* =========================================================
+   JUSTGRAPES TAXONOMY
+   - Wine Styles: Fresh (light-bodied) · Smooth (medium-bodied)
+                  · Rich (full-bodied) · Special (fortified & other)
+   - 8 Flavor descriptors: Fruity, Floral, Grassy, Minerally,
+                           Oaky, Toasty, Nutty, Spicy
+   ========================================================= */
+const WINE_STYLES = [
+  { key: 'fresh',   label: 'Fresh',   body: 'Light-bodied',      blurb: 'Bright, lively, crisp',           img: IMG.fresh },
+  { key: 'smooth',  label: 'Smooth',  body: 'Medium-bodied',     blurb: 'Balanced, easygoing',             img: IMG.smooth },
+  { key: 'rich',    label: 'Rich',    body: 'Full-bodied',       blurb: 'Deep, layered, intense',          img: IMG.bold },
+  { key: 'special', label: 'Special', body: 'Fortified & other', blurb: 'Port, sherry, sweet, sparkling',  img: IMG.anniversary },
+] as const;
+
+const FLAVORS = [
+  { key: 'fruity',    label: 'Fruity',    emoji: '🍒' },
+  { key: 'floral',    label: 'Floral',    emoji: '🌸' },
+  { key: 'grassy',    label: 'Grassy',    emoji: '🌿' },
+  { key: 'minerally', label: 'Minerally', emoji: '🪨' },
+  { key: 'oaky',      label: 'Oaky',      emoji: '🪵' },
+  { key: 'toasty',    label: 'Toasty',    emoji: '🔥' },
+  { key: 'nutty',     label: 'Nutty',     emoji: '🌰' },
+  { key: 'spicy',     label: 'Spicy',     emoji: '🌶️' },
+] as const;
+
+/* =========================================================
    ONBOARDING
    ========================================================= */
 const onboardingSteps = [
   {
-    key: 'feel',
-    question: 'Which sounds more appealing tonight?',
+    key: 'style',
+    question: 'Which style draws you in tonight?',
     multi: false,
-    options: [
-      { label: 'Fresh & Crisp', img: IMG.fresh, sub: 'Bright, lively, refreshing' },
-      { label: 'Smooth & Balanced', img: IMG.smooth, sub: 'Easygoing and approachable' },
-      { label: 'Rich & Bold', img: IMG.bold, sub: 'Deep, layered, intense' },
-    ],
+    options: WINE_STYLES.map(s => ({ label: s.label, img: s.img, sub: `${s.body} · ${s.blurb}` })),
+  },
+  {
+    key: 'flavors',
+    question: 'Which flavors do you tend to love?',
+    multi: true,
+    options: FLAVORS.map(f => ({ label: `${f.emoji}  ${f.label}`, img: IMG.vineyard })),
   },
   {
     key: 'food',
@@ -263,6 +290,57 @@ const TasteAxis = ({ left, right, value }: { left: string; right: string; value:
   </div>
 );
 
+const StyleBar = ({ label, body, value, dark = false }: { label: string; body: string; value: number; dark?: boolean }) => (
+  <div>
+    <div className="flex items-baseline justify-between mb-1">
+      <div className="flex items-baseline gap-2">
+        <span className="text-[13px] font-semibold" style={{ fontFamily: fontDisplay, color: dark ? C.cream : C.ink }}>{label}</span>
+        <span className="text-[10px] uppercase tracking-[0.14em]" style={{ color: dark ? C.goldSoft : C.mute, fontFamily: fontBody }}>{body}</span>
+      </div>
+      <span className="text-[11px] tabular-nums" style={{ color: dark ? C.goldSoft : C.mute, fontFamily: fontBody }}>{value}%</span>
+    </div>
+    <div className="relative h-[6px] rounded-full overflow-hidden" style={{ background: dark ? 'rgba(247,241,232,0.18)' : C.line }}>
+      <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${value}%`, background: dark ? C.goldSoft : C.burgundy }} />
+    </div>
+  </div>
+);
+
+const FlavorChips = ({ flavors, dark = false }: { flavors: { key: string; label: string; emoji: string; weight: number }[]; dark?: boolean }) => (
+  <div className="flex flex-wrap gap-1.5">
+    {flavors.map(f => (
+      <span
+        key={f.key}
+        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium"
+        style={{
+          background: dark ? 'rgba(247,241,232,0.12)' : C.creamSoft,
+          color: dark ? C.cream : C.inkSoft,
+          border: dark ? `1px solid rgba(217,185,122,0.35)` : `1px solid ${C.line}`,
+          opacity: 0.5 + f.weight * 0.5,
+          fontFamily: fontBody,
+        }}
+      >
+        <span>{f.emoji}</span>{f.label}
+      </span>
+    ))}
+  </div>
+);
+
+// Maya's profile mock (drives Home + Me screens)
+const MAYA_STYLE_MIX = [
+  { label: 'Fresh',   body: 'Light',   value: 30 },
+  { label: 'Smooth',  body: 'Medium',  value: 62 },
+  { label: 'Rich',    body: 'Full',    value: 45 },
+  { label: 'Special', body: 'Fortified & other', value: 12 },
+];
+const MAYA_TOP_FLAVORS = [
+  { key: 'fruity',    label: 'Fruity',    emoji: '🍒',   weight: 1.0 },
+  { key: 'floral',    label: 'Floral',    emoji: '🌸',   weight: 0.7 },
+  { key: 'minerally', label: 'Minerally', emoji: '🪨',  weight: 0.6 },
+  { key: 'spicy',     label: 'Spicy',     emoji: '🌶️',  weight: 0.5 },
+  { key: 'oaky',      label: 'Oaky',      emoji: '🪵',   weight: 0.4 },
+];
+
+
 const HomeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
   <div className="pb-28">
     {/* Greeting */}
@@ -282,13 +360,14 @@ const HomeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
       <div className="relative p-6">
         <div className="text-[10px] uppercase tracking-[0.22em] mb-2" style={{ color: C.goldSoft, fontFamily: fontBody }}>Your taste · this season</div>
         <p className="text-[20px] leading-snug" style={{ fontFamily: fontDisplay, fontWeight: 400, letterSpacing: '-0.005em' }}>
-          You tend to enjoy <em style={{ color: C.goldSoft }}>smooth, fruit-forward</em> wines that pair well with dinner gatherings.
+          You live in the <em style={{ color: C.goldSoft }}>Smooth</em> zone — medium-bodied reds with a fruity, slightly floral lift.
         </p>
-        <div className="mt-5 space-y-3.5">
-          <TasteAxis left="Fresh" right="Rich" value={62} />
-          <TasteAxis left="Fruit" right="Earth" value={35} />
-          <TasteAxis left="Light" right="Bold" value={55} />
-          <TasteAxis left="Classic" right="Adventurous" value={70} />
+        <div className="mt-5 space-y-3">
+          {MAYA_STYLE_MIX.map(s => <StyleBar key={s.label} {...s} dark />)}
+        </div>
+        <div className="mt-5">
+          <div className="text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: C.goldSoft, fontFamily: fontBody }}>Flavors you gravitate to</div>
+          <FlavorChips flavors={MAYA_TOP_FLAVORS} dark />
         </div>
         <button onClick={() => goto('me')} className="mt-5 text-[12px] inline-flex items-center gap-1.5 underline-offset-4" style={{ color: C.goldSoft, fontFamily: fontBody }}>
           See full taste profile <ChevronRight className="w-3.5 h-3.5" />
@@ -349,13 +428,18 @@ const QuickAction = ({ icon, title, sub, tint, onClick }: any) => (
 /* =========================================================
    DISCOVER FEED
    ========================================================= */
+// Each card carries Justgrapes Style (Fresh / Smooth / Rich / Special)
+// and up to 3 flavor descriptors from the 8-flavor system.
 const discoverCards = [
-  { name: 'Domaine Verde', kind: 'Smooth red · Pinot vibe', img: IMG.bottleRed, match: 94, price: '$24', reason: "Because you enjoy smooth red wines with pasta.", occasion: 'Pasta night', pairing: 'Wild mushroom rigatoni' },
-  { name: 'Côte Lumière', kind: 'Crisp white', img: IMG.bottleWhite, match: 91, price: '$19', reason: 'Because you liked last month\'s seaside white.', occasion: 'Friday dinner', pairing: 'Pan-seared salmon' },
-  { name: 'Maison Belle', kind: 'Bright rosé', img: IMG.bottleRose, match: 88, price: '$17', reason: 'Perfect for entertaining a group on the patio.', occasion: 'Sunday picnic', pairing: 'Charcuterie & olives' },
-  { name: 'Quinta Rosso', kind: 'Bold & berry-forward', img: IMG.bottleRed, match: 96, price: '$32', reason: 'Perfect for your anniversary dinner next week.', occasion: 'Celebration', pairing: 'Ribeye & roasted root veg' },
-  { name: 'Vigna Antica', kind: 'Smooth & balanced', img: IMG.bottleRed, match: 89, price: '$22', reason: 'Because you\'ve been exploring Italian reds.', occasion: 'Date night', pairing: 'Truffle pasta' },
+  { name: 'Domaine Verde',  style: 'Smooth',  body: 'Medium-bodied red',   flavors: ['fruity','floral','oaky'],          img: IMG.bottleRed,   match: 94, price: '$24', reason: "Smooth medium-bodied red — fruity with a floral lift. Your zone.",  occasion: 'Pasta night',  pairing: 'Wild mushroom rigatoni' },
+  { name: 'Côte Lumière',   style: 'Fresh',   body: 'Light-bodied white',  flavors: ['grassy','minerally','floral'],     img: IMG.bottleWhite, match: 91, price: '$19', reason: 'Fresh & crisp with a flinty mineral edge. Built for seafood nights.', occasion: 'Friday dinner', pairing: 'Pan-seared salmon' },
+  { name: 'Maison Belle',   style: 'Fresh',   body: 'Light-bodied rosé',   flavors: ['fruity','floral'],                  img: IMG.bottleRose,  match: 88, price: '$17', reason: 'Bright and floral — easy on the patio with a crowd.',                 occasion: 'Sunday picnic', pairing: 'Charcuterie & olives' },
+  { name: 'Quinta Rosso',   style: 'Rich',    body: 'Full-bodied red',     flavors: ['fruity','spicy','toasty'],          img: IMG.bottleRed,   match: 96, price: '$32', reason: 'Rich, berry-forward, gently spicy. Made for a ribeye.',                occasion: 'Celebration',   pairing: 'Ribeye & roasted root veg' },
+  { name: 'Vigna Antica',   style: 'Smooth',  body: 'Medium-bodied red',   flavors: ['fruity','nutty','oaky'],            img: IMG.bottleRed,   match: 89, price: '$22', reason: "A smooth Italian red — fruit-forward with subtle nutty oak.",         occasion: 'Date night',    pairing: 'Truffle pasta' },
+  { name: 'Porto Velho',    style: 'Special', body: 'Fortified — Tawny Port', flavors: ['nutty','toasty','fruity'],       img: IMG.bottleRed,   match: 85, price: '$28', reason: 'A Special pour — nutty and toasty. A small treat after dinner.',     occasion: 'Nightcap',      pairing: 'Dark chocolate & nuts' },
 ];
+
+const flavorMeta = (key: string) => FLAVORS.find(f => f.key === key);
 
 const DiscoverCard = ({ card, small = false }: { card: typeof discoverCards[number]; small?: boolean }) => (
   <div
@@ -367,17 +451,29 @@ const DiscoverCard = ({ card, small = false }: { card: typeof discoverCards[numb
       <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.45) 100%)' }} />
       <div className="absolute top-3 left-3 flex gap-1.5">
         <Chip tone="ink"><Sparkles className="w-3 h-3" /> {card.match}% match</Chip>
+        <Chip tone="gold">{card.style}</Chip>
       </div>
       <div className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)', color: C.burgundy }}>
         <Heart className="w-4 h-4" />
       </div>
       <div className="absolute bottom-3 left-3 right-3 text-white">
-        <div className="text-[11px] opacity-90" style={{ fontFamily: fontBody }}>{card.kind}</div>
+        <div className="text-[11px] opacity-90" style={{ fontFamily: fontBody }}>{card.body}</div>
         <div className="text-[19px] leading-tight" style={{ fontFamily: fontDisplay, fontWeight: 500 }}>{card.name}</div>
       </div>
     </div>
     <div className="p-4">
       <p className="text-[13px] leading-snug" style={{ color: C.inkSoft, fontFamily: fontBody }}>{card.reason}</p>
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
+        {card.flavors.map(fk => {
+          const f = flavorMeta(fk);
+          if (!f) return null;
+          return (
+            <span key={fk} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px]" style={{ background: C.creamSoft, border: `1px solid ${C.line}`, color: C.inkSoft, fontFamily: fontBody }}>
+              <span>{f.emoji}</span>{f.label}
+            </span>
+          );
+        })}
+      </div>
       <div className="mt-3 flex flex-wrap gap-1.5">
         <Chip tone="gold"><Calendar className="w-3 h-3" /> {card.occasion}</Chip>
         <Chip tone="cream"><UtensilsCrossed className="w-3 h-3" /> {card.pairing}</Chip>
@@ -654,15 +750,40 @@ const MeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
       ))}
     </div>
 
-    {/* Full taste profile */}
-    <SectionTitle eyebrow="Taste profile" title="The shape of what you love" />
-    <div className="mx-5 rounded-3xl p-6 space-y-4" style={{ background: C.cream, border: `1px solid ${C.line}` }}>
-      <TasteAxis left="Fresh" right="Rich" value={62} />
-      <TasteAxis left="Fruit" right="Earth" value={35} />
-      <TasteAxis left="Light" right="Bold" value={55} />
-      <TasteAxis left="Classic" right="Adventurous" value={70} />
-      <TasteAxis left="Casual" right="Special Occasion" value={48} />
+    {/* Style mix — Justgrapes 4-style system */}
+    <SectionTitle eyebrow="Style mix" title="How you drink, by Justgrapes style" />
+    <div className="mx-5 rounded-3xl p-6 space-y-3.5" style={{ background: C.cream, border: `1px solid ${C.line}` }}>
+      {MAYA_STYLE_MIX.map(s => <StyleBar key={s.label} {...s} />)}
+      <p className="text-[12px] pt-1" style={{ color: C.mute, fontFamily: fontBody }}>
+        Fresh = light-bodied · Smooth = medium-bodied · Rich = full-bodied · Special = fortified, sweet & sparkling.
+      </p>
     </div>
+
+    {/* Flavor wheel — 8 Justgrapes descriptors */}
+    <SectionTitle eyebrow="Flavor profile" title="Your eight-flavor signature" />
+    <div className="mx-5 rounded-3xl p-6" style={{ background: C.cream, border: `1px solid ${C.line}` }}>
+      <div className="grid grid-cols-4 gap-3">
+        {FLAVORS.map(f => {
+          const w = MAYA_TOP_FLAVORS.find(m => m.key === f.key)?.weight ?? 0.15;
+          return (
+            <div key={f.key} className="flex flex-col items-center text-center gap-1.5">
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center text-[20px]"
+                style={{
+                  background: `rgba(107,31,42,${0.08 + w * 0.55})`,
+                  border: `1px solid rgba(107,31,42,${0.15 + w * 0.5})`,
+                }}
+              >
+                {f.emoji}
+              </div>
+              <div className="text-[11px] font-semibold" style={{ color: C.ink, fontFamily: fontBody }}>{f.label}</div>
+              <div className="text-[10px]" style={{ color: C.mute, fontFamily: fontBody }}>{Math.round(w * 100)}%</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
 
     {/* Companion entry */}
     <div className="px-5 mt-6">
