@@ -290,19 +290,6 @@ const TasteAxis = ({ left, right, value }: { left: string; right: string; value:
   </div>
 );
 
-const HomeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
-  <div className="pb-28">
-    {/* Greeting */}
-    <div className="px-5 pt-10 pb-2 flex items-center justify-between">
-      <div>
-        <div className="text-[11px] uppercase tracking-[0.18em]" style={{ color: C.gold, fontFamily: fontBody }}>Tuesday evening</div>
-        <h1 className="text-[30px] leading-tight mt-1" style={{ fontFamily: fontDisplay, color: C.ink, fontWeight: 500, letterSpacing: '-0.01em' }}>
-          Hello, Maya
-        </h1>
-      </div>
-      <img src={IMG.avatar} className="w-11 h-11 rounded-full object-cover ring-2" style={{ ['--tw-ring-color' as any]: C.line }} alt="" />
-    </div>
-
 const StyleBar = ({ label, body, value, dark = false }: { label: string; body: string; value: number; dark?: boolean }) => (
   <div>
     <div className="flex items-baseline justify-between mb-1">
@@ -352,6 +339,7 @@ const MAYA_TOP_FLAVORS = [
   { key: 'spicy',     label: 'Spicy',     emoji: '🌶️',  weight: 0.5 },
   { key: 'oaky',      label: 'Oaky',      emoji: '🪵',   weight: 0.4 },
 ];
+
 
 const HomeScreen = ({ goto }: { goto: (t: Tab) => void }) => (
   <div className="pb-28">
