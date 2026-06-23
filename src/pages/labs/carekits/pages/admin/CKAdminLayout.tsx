@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAdmin } from '../../lib/useAdmin';
 import { supabase } from '@/integrations/supabase/client';
+import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 import { LayoutDashboard, Package, Tags, FileText, BarChart3, ClipboardCheck, LogOut, ArrowLeft } from 'lucide-react';
 
