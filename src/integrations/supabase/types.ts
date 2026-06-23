@@ -583,6 +583,293 @@ export type Database = {
         }
         Relationships: []
       }
+      ck_articles: {
+        Row: {
+          body: string | null
+          cover_image_url: string | null
+          created_at: string
+          id: string
+          is_published: boolean
+          related_categories: string[]
+          slug: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          related_categories?: string[]
+          slug: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          related_categories?: string[]
+          slug?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ck_assessment_results: {
+        Row: {
+          answers: Json
+          budget_range: string | null
+          cognitive_risk_score: number
+          created_at: string
+          email: string | null
+          fall_risk_score: number
+          home_safety_risk_score: number
+          id: string
+          kit_name: string | null
+          medication_risk_score: number
+          parent_name: string | null
+          privacy_preference_score: number
+          recommended_categories: string[]
+          recommended_product_ids: string[]
+          risk_tags: string[]
+          routine_visibility_score: number
+          social_isolation_score: number
+          tech_comfort_score: number
+          user_id: string | null
+        }
+        Insert: {
+          answers?: Json
+          budget_range?: string | null
+          cognitive_risk_score?: number
+          created_at?: string
+          email?: string | null
+          fall_risk_score?: number
+          home_safety_risk_score?: number
+          id?: string
+          kit_name?: string | null
+          medication_risk_score?: number
+          parent_name?: string | null
+          privacy_preference_score?: number
+          recommended_categories?: string[]
+          recommended_product_ids?: string[]
+          risk_tags?: string[]
+          routine_visibility_score?: number
+          social_isolation_score?: number
+          tech_comfort_score?: number
+          user_id?: string | null
+        }
+        Update: {
+          answers?: Json
+          budget_range?: string | null
+          cognitive_risk_score?: number
+          created_at?: string
+          email?: string | null
+          fall_risk_score?: number
+          home_safety_risk_score?: number
+          id?: string
+          kit_name?: string | null
+          medication_risk_score?: number
+          parent_name?: string | null
+          privacy_preference_score?: number
+          recommended_categories?: string[]
+          recommended_product_ids?: string[]
+          risk_tags?: string[]
+          routine_visibility_score?: number
+          social_isolation_score?: number
+          tech_comfort_score?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ck_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ck_outbound_clicks: {
+        Row: {
+          affiliate_url: string | null
+          assessment_result_id: string | null
+          clicked_at: string
+          id: string
+          partner_name: string | null
+          product_id: string | null
+          referrer: string | null
+          user_email: string | null
+        }
+        Insert: {
+          affiliate_url?: string | null
+          assessment_result_id?: string | null
+          clicked_at?: string
+          id?: string
+          partner_name?: string | null
+          product_id?: string | null
+          referrer?: string | null
+          user_email?: string | null
+        }
+        Update: {
+          affiliate_url?: string | null
+          assessment_result_id?: string | null
+          clicked_at?: string
+          id?: string
+          partner_name?: string | null
+          product_id?: string | null
+          referrer?: string | null
+          user_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ck_outbound_clicks_assessment_result_id_fkey"
+            columns: ["assessment_result_id"]
+            isOneToOne: false
+            referencedRelation: "ck_assessment_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ck_outbound_clicks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "ck_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ck_products: {
+        Row: {
+          affiliate_url: string | null
+          best_for_tags: string[]
+          brand: string | null
+          caregiver_peace_of_mind_score: number | null
+          category_id: string | null
+          cons: string[]
+          created_at: string
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          is_published: boolean
+          long_description: string | null
+          monthly_cost: number | null
+          name: string
+          overall_score: number | null
+          partner_name: string | null
+          price: number | null
+          price_max: number | null
+          privacy_level: string | null
+          pros: string[]
+          requires_subscription: boolean
+          requires_wearable: boolean
+          risk_tags: string[]
+          senior_comfort_score: number | null
+          setup_difficulty: string | null
+          short_description: string | null
+          updated_at: string
+          uses_camera: boolean
+        }
+        Insert: {
+          affiliate_url?: string | null
+          best_for_tags?: string[]
+          brand?: string | null
+          caregiver_peace_of_mind_score?: number | null
+          category_id?: string | null
+          cons?: string[]
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_published?: boolean
+          long_description?: string | null
+          monthly_cost?: number | null
+          name: string
+          overall_score?: number | null
+          partner_name?: string | null
+          price?: number | null
+          price_max?: number | null
+          privacy_level?: string | null
+          pros?: string[]
+          requires_subscription?: boolean
+          requires_wearable?: boolean
+          risk_tags?: string[]
+          senior_comfort_score?: number | null
+          setup_difficulty?: string | null
+          short_description?: string | null
+          updated_at?: string
+          uses_camera?: boolean
+        }
+        Update: {
+          affiliate_url?: string | null
+          best_for_tags?: string[]
+          brand?: string | null
+          caregiver_peace_of_mind_score?: number | null
+          category_id?: string | null
+          cons?: string[]
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_published?: boolean
+          long_description?: string | null
+          monthly_cost?: number | null
+          name?: string
+          overall_score?: number | null
+          partner_name?: string | null
+          price?: number | null
+          price_max?: number | null
+          privacy_level?: string | null
+          pros?: string[]
+          requires_subscription?: boolean
+          requires_wearable?: boolean
+          risk_tags?: string[]
+          senior_comfort_score?: number | null
+          setup_difficulty?: string | null
+          short_description?: string | null
+          updated_at?: string
+          uses_camera?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ck_products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "ck_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_contacts: {
         Row: {
           company: string | null
@@ -4804,6 +5091,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      is_ck_admin: { Args: { _user_id: string }; Returns: boolean }
       is_gov_admin: { Args: { _user_id: string }; Returns: boolean }
       is_perkpath_admin: { Args: { _user_id: string }; Returns: boolean }
       is_wobuddy_admin: { Args: { _user_id: string }; Returns: boolean }

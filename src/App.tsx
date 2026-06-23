@@ -62,6 +62,21 @@ import X1SmartLayout from "./pages/labs/x1-smart/X1SmartLayout";
 import VerdantLanding from "./pages/labs/verdant/VerdantLanding";
 import RoboticsLanding from "./pages/labs/robotics/RoboticsLanding";
 import CareKitsLayout from "./pages/labs/carekits/CareKitsLayout";
+import CKHome from "./pages/labs/carekits/pages/CKHome";
+import CKQuiz from "./pages/labs/carekits/pages/CKQuiz";
+import CKResults from "./pages/labs/carekits/pages/CKResults";
+import CKMarketplace from "./pages/labs/carekits/pages/CKMarketplace";
+import CKProductDetail from "./pages/labs/carekits/pages/CKProductDetail";
+import CKSaved from "./pages/labs/carekits/pages/CKSaved";
+import CKArticle from "./pages/labs/carekits/pages/CKArticle";
+import CKAdminLayout from "./pages/labs/carekits/pages/admin/CKAdminLayout";
+import CKAdminDashboard from "./pages/labs/carekits/pages/admin/CKAdminDashboard";
+import CKAdminProducts from "./pages/labs/carekits/pages/admin/CKAdminProducts";
+import CKAdminProductEdit from "./pages/labs/carekits/pages/admin/CKAdminProductEdit";
+import CKAdminCategories from "./pages/labs/carekits/pages/admin/CKAdminCategories";
+import CKAdminAssessments from "./pages/labs/carekits/pages/admin/CKAdminAssessments";
+import CKAdminAnalytics from "./pages/labs/carekits/pages/admin/CKAdminAnalytics";
+import CKAdminArticles from "./pages/labs/carekits/pages/admin/CKAdminArticles";
 import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
 import BeaverBoatAdmin from "./pages/labs/beaver-boat/BeaverBoatAdmin";
 import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
@@ -158,7 +173,25 @@ const AppContent = () => {
           <Route path="/labs/x1-smart" element={<X1SmartLayout />} />
           <Route path="/labs/verdant" element={<VerdantLanding />} />
           <Route path="/labs/robotics" element={<RoboticsLanding />} />
-          <Route path="/labs/carekits" element={<CareKitsLayout />} />
+          <Route path="/labs/carekits" element={<CareKitsLayout />}>
+            <Route index element={<CKHome />} />
+            <Route path="quiz" element={<CKQuiz />} />
+            <Route path="results/:id" element={<CKResults />} />
+            <Route path="marketplace" element={<CKMarketplace />} />
+            <Route path="product/:id" element={<CKProductDetail />} />
+            <Route path="saved" element={<CKSaved />} />
+            <Route path="learn/:slug" element={<CKArticle />} />
+            <Route path="admin" element={<CKAdminLayout />}>
+              <Route index element={<CKAdminDashboard />} />
+              <Route path="products" element={<CKAdminProducts />} />
+              <Route path="products/new" element={<CKAdminProductEdit />} />
+              <Route path="products/:id" element={<CKAdminProductEdit />} />
+              <Route path="categories" element={<CKAdminCategories />} />
+              <Route path="articles" element={<CKAdminArticles />} />
+              <Route path="assessments" element={<CKAdminAssessments />} />
+              <Route path="analytics" element={<CKAdminAnalytics />} />
+            </Route>
+          </Route>
           <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
           <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
           <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
