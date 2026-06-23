@@ -173,7 +173,25 @@ const AppContent = () => {
           <Route path="/labs/x1-smart" element={<X1SmartLayout />} />
           <Route path="/labs/verdant" element={<VerdantLanding />} />
           <Route path="/labs/robotics" element={<RoboticsLanding />} />
-          <Route path="/labs/carekits" element={<CareKitsLayout />} />
+          <Route path="/labs/carekits" element={<CareKitsLayout />}>
+            <Route index element={<CKHome />} />
+            <Route path="quiz" element={<CKQuiz />} />
+            <Route path="results/:id" element={<CKResults />} />
+            <Route path="marketplace" element={<CKMarketplace />} />
+            <Route path="product/:id" element={<CKProductDetail />} />
+            <Route path="saved" element={<CKSaved />} />
+            <Route path="learn/:slug" element={<CKArticle />} />
+            <Route path="admin" element={<CKAdminLayout />}>
+              <Route index element={<CKAdminDashboard />} />
+              <Route path="products" element={<CKAdminProducts />} />
+              <Route path="products/new" element={<CKAdminProductEdit />} />
+              <Route path="products/:id" element={<CKAdminProductEdit />} />
+              <Route path="categories" element={<CKAdminCategories />} />
+              <Route path="articles" element={<CKAdminArticles />} />
+              <Route path="assessments" element={<CKAdminAssessments />} />
+              <Route path="analytics" element={<CKAdminAnalytics />} />
+            </Route>
+          </Route>
           <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
           <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
           <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
