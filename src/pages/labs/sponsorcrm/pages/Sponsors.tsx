@@ -89,7 +89,7 @@ export default function Sponsors() {
               return (
                 <tr key={s.id} className="border-t border-slate-100 hover:bg-slate-50">
                   <td className="px-4 py-3">
-                    <Link to={`/labs/sponsorcrm/sponsors/${s.id}`} className="flex items-center gap-2 font-medium text-slate-900 hover:underline">
+                    <Link to={`/labs/rhcrm/sponsors/${s.id}`} className="flex items-center gap-2 font-medium text-slate-900 hover:underline">
                       <Building2 className="w-4 h-4 text-slate-400" /> {s.company_name}
                     </Link>
                     {s.industry && <div className="text-xs text-slate-500 mt-0.5 ml-6">{s.industry}</div>}

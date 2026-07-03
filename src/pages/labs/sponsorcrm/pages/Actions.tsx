@@ -50,7 +50,7 @@ export default function Actions() {
               </button>
               <div className="flex-1 min-w-0">
                 <div className={`text-sm ${a.status === 'done' ? 'line-through text-slate-400' : 'text-slate-900'}`}>{a.title}</div>
-                <Link to={`/labs/sponsorcrm/sponsors/${a.sponsor_id}`} className="text-xs text-slate-500 hover:underline">{sponsorName(a.sponsor_id)}</Link>
+                <Link to={`/labs/rhcrm/sponsors/${a.sponsor_id}`} className="text-xs text-slate-500 hover:underline">{sponsorName(a.sponsor_id)}</Link>
               </div>
               <div className="text-xs text-slate-500 hidden sm:block">{a.owner_name ?? '—'}</div>
               <div className={`text-xs w-20 text-right ${overdue ? 'text-rose-600 font-medium' : 'text-slate-500'}`}>

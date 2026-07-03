@@ -42,7 +42,7 @@ export default function SponsorDetail() {
 
   return (
     <div className="p-8 max-w-5xl">
-      <Link to="/labs/sponsorcrm/sponsors" className="text-sm text-slate-500 hover:text-slate-900 flex items-center gap-1 mb-4"><ArrowLeft className="w-4 h-4" /> All sponsors</Link>
+      <Link to="/labs/rhcrm/sponsors" className="text-sm text-slate-500 hover:text-slate-900 flex items-center gap-1 mb-4"><ArrowLeft className="w-4 h-4" /> All sponsors</Link>
 
       <div className="flex items-start justify-between gap-4 mb-6">
         <div className="min-w-0">

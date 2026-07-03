@@ -59,7 +59,7 @@ export default function Dashboard() {
 
       <Section title="Needs attention · no next action" icon={<Sparkles className="w-4 h-4 text-amber-500" />} empty={noAction.length === 0 ? 'Every sponsor has a next action. Excellent.' : undefined}>
         {noAction.map(s => (
-          <Link key={s.id} to={`/labs/sponsorcrm/sponsors/${s.id}`} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0">
+          <Link key={s.id} to={`/labs/rhcrm/sponsors/${s.id}`} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0">
             <div className="flex items-center gap-3">
               <Building2 className="w-4 h-4 text-slate-400" />
               <span className="font-medium text-slate-900">{s.company_name}</span>
@@ -74,7 +74,7 @@ export default function Dashboard() {
         <h2 className="text-sm font-semibold text-slate-900 mb-3">Pipeline summary</h2>
         <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
           {stageCounts.map(s => (
-            <Link key={s.key} to="/labs/sponsorcrm/pipeline" className="p-3 rounded-lg border border-slate-200 hover:border-slate-300 bg-white">
+            <Link key={s.key} to="/labs/rhcrm/pipeline" className="p-3 rounded-lg border border-slate-200 hover:border-slate-300 bg-white">
               <div className="text-2xl font-semibold text-slate-900">{s.count}</div>
               <div className="text-[11px] text-slate-500 mt-1">{s.label}</div>
             </Link>
@@ -109,7 +109,7 @@ function Section({ title, icon, children, empty }: { title: string; icon: React.
 function ActionRow({ sponsor, sponsorId, title, priority, due, owner, overdue }: { sponsor: string; sponsorId: string; title: string; priority: string; due: string | null; owner: string | null; overdue?: boolean }) {
   const d = due ? daysUntil(due) : null;
   return (
-    <Link to={`/labs/sponsorcrm/sponsors/${sponsorId}`} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0">
+    <Link to={`/labs/rhcrm/sponsors/${sponsorId}`} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0">
       <div className="min-w-0">
         <div className="flex items-center gap-2">
           {priority === 'high' && <span className="w-2 h-2 rounded-full bg-rose-500" />}
@@ -130,7 +130,7 @@ function SponsorRow({ s, sponsors, actions }: any) {
   const color = healthColor(score);
   const dot = color === 'green' ? 'bg-emerald-500' : color === 'yellow' ? 'bg-amber-500' : 'bg-rose-500';
   return (
-    <Link to={`/labs/sponsorcrm/sponsors/${s.id}`} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0">
+    <Link to={`/labs/rhcrm/sponsors/${s.id}`} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0">
       <div className="flex items-center gap-3 min-w-0">
         <span className={`w-2 h-2 rounded-full ${dot}`} />
         <span className="font-medium text-slate-900 truncate">{s.company_name}</span>

@@ -66,7 +66,7 @@ export default function Team() {
         <div className="mt-6 p-4 border border-slate-200 rounded-lg bg-slate-50">
           <div className="text-sm font-medium text-slate-900 mb-2">Add a teammate</div>
           <p className="text-xs text-slate-500 mb-3">
-            Ask them to sign in at <code>/labs/sponsorcrm</code> with their email. They'll see "Awaiting access" — refresh this page and their account will show up (they self-register when they attempt to sign in). Then set their role here.
+            Ask them to sign in at <code>/labs/rhcrm</code> with their email. They'll see "Awaiting access" — refresh this page and their account will show up (they self-register when they attempt to sign in). Then set their role here.
           </p>
           <p className="text-xs text-slate-500">Alternatively: they can create an account and you can promote them from the list above.</p>
         </div>

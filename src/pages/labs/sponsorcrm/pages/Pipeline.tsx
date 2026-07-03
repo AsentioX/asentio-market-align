@@ -35,7 +35,7 @@ export default function Pipeline() {
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 space-y-2">
                   {items.map(s => (
-                    <Link key={s.id} to={`/labs/sponsorcrm/sponsors/${s.id}`}
+                    <Link key={s.id} to={`/labs/rhcrm/sponsors/${s.id}`}
                       draggable
                       onDragStart={() => setDragId(s.id)}
                       className="block bg-white border border-slate-200 rounded-md p-3 shadow-sm hover:shadow cursor-grab active:cursor-grabbing">

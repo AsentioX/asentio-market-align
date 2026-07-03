@@ -14,7 +14,7 @@ function Shell() {
       <div className="max-w-md text-center space-y-4">
         <div className="text-2xl font-semibold text-slate-900">Awaiting access</div>
         <p className="text-slate-600">Your account ({user.email}) is not yet on the sponsorship team. Ask a chair to invite you from the Team page.</p>
-        <Button variant="outline" onClick={async () => { await signOut(); nav('/labs/sponsorcrm'); }}>Sign out</Button>
+        <Button variant="outline" onClick={async () => { await signOut(); nav('/labs/rhcrm'); }}>Sign out</Button>
       </div>
     </div>
   );
@@ -34,11 +34,11 @@ function Shell() {
             <div className="text-[11px] text-slate-500">MIT Reality Hack</div>
           </div>
         </div>
-        <NavLink to="/labs/sponsorcrm" end className={link}><LayoutDashboard className="w-4 h-4" /> Today</NavLink>
-        <NavLink to="/labs/sponsorcrm/pipeline" className={link}><KanbanSquare className="w-4 h-4" /> Pipeline</NavLink>
-        <NavLink to="/labs/sponsorcrm/sponsors" className={link}><Building2 className="w-4 h-4" /> Sponsors</NavLink>
-        <NavLink to="/labs/sponsorcrm/actions" className={link}><CheckSquare className="w-4 h-4" /> Actions</NavLink>
-        <NavLink to="/labs/sponsorcrm/team" className={link}><Users className="w-4 h-4" /> Team</NavLink>
+        <NavLink to="/labs/rhcrm" end className={link}><LayoutDashboard className="w-4 h-4" /> Today</NavLink>
+        <NavLink to="/labs/rhcrm/pipeline" className={link}><KanbanSquare className="w-4 h-4" /> Pipeline</NavLink>
+        <NavLink to="/labs/rhcrm/sponsors" className={link}><Building2 className="w-4 h-4" /> Sponsors</NavLink>
+        <NavLink to="/labs/rhcrm/actions" className={link}><CheckSquare className="w-4 h-4" /> Actions</NavLink>
+        <NavLink to="/labs/rhcrm/team" className={link}><Users className="w-4 h-4" /> Team</NavLink>
         <div className="mt-auto pt-4 border-t border-slate-200">
           <div className="px-2 pb-2">
             <div className="text-xs font-medium text-slate-900 truncate">{user.email}</div>
