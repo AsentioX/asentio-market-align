@@ -77,6 +77,13 @@ import CKAdminCategories from "./pages/labs/carekits/pages/admin/CKAdminCategori
 import CKAdminAssessments from "./pages/labs/carekits/pages/admin/CKAdminAssessments";
 import CKAdminAnalytics from "./pages/labs/carekits/pages/admin/CKAdminAnalytics";
 import CKAdminArticles from "./pages/labs/carekits/pages/admin/CKAdminArticles";
+import SponsorCRMLayout from "./pages/labs/sponsorcrm/SponsorCRMLayout";
+import ScrmDashboard from "./pages/labs/sponsorcrm/pages/Dashboard";
+import ScrmPipeline from "./pages/labs/sponsorcrm/pages/Pipeline";
+import ScrmSponsors from "./pages/labs/sponsorcrm/pages/Sponsors";
+import ScrmSponsorDetail from "./pages/labs/sponsorcrm/pages/SponsorDetail";
+import ScrmActions from "./pages/labs/sponsorcrm/pages/Actions";
+import ScrmTeam from "./pages/labs/sponsorcrm/pages/Team";
 import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
 import BeaverBoatAdmin from "./pages/labs/beaver-boat/BeaverBoatAdmin";
 import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
@@ -111,7 +118,7 @@ const isBeaverBoatHost = () => {
 const AppContent = () => {
   const location = useLocation();
   const beaverHost = isBeaverBoatHost();
-  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics') || location.pathname.startsWith('/labs/smart-vision') || location.pathname.startsWith('/labs/justgrapes');
+  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics') || location.pathname.startsWith('/labs/smart-vision') || location.pathname.startsWith('/labs/justgrapes') || location.pathname.startsWith('/labs/sponsorcrm');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -191,6 +198,14 @@ const AppContent = () => {
               <Route path="assessments" element={<CKAdminAssessments />} />
               <Route path="analytics" element={<CKAdminAnalytics />} />
             </Route>
+          </Route>
+          <Route path="/labs/sponsorcrm" element={<SponsorCRMLayout />}>
+            <Route index element={<ScrmDashboard />} />
+            <Route path="pipeline" element={<ScrmPipeline />} />
+            <Route path="sponsors" element={<ScrmSponsors />} />
+            <Route path="sponsors/:id" element={<ScrmSponsorDetail />} />
+            <Route path="actions" element={<ScrmActions />} />
+            <Route path="team" element={<ScrmTeam />} />
           </Route>
           <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
           <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
