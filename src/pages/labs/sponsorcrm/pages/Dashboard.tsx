@@ -19,7 +19,7 @@ export default function Dashboard() {
   const waitingMit = sponsors.filter(s => open.some(a => a.sponsor_id === s.id && a.waiting_on === 'mit'));
   const waitingSponsor = sponsors.filter(s => open.some(a => a.sponsor_id === s.id && a.waiting_on === 'sponsor'));
 
-  const activeStages = STAGES.filter(s => s.key !== 'closed_lost').map(s => s.key);
+  const activeStages: string[] = STAGES.filter(s => s.key !== 'closed_lost').map(s => s.key);
   const noAction = sponsors.filter(s => activeStages.includes(s.stage) && !open.some(a => a.sponsor_id === s.id));
 
   const sponsorName = (id: string) => sponsors.find(s => s.id === id)?.company_name ?? '';
