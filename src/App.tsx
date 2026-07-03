@@ -77,6 +77,13 @@ import CKAdminCategories from "./pages/labs/carekits/pages/admin/CKAdminCategori
 import CKAdminAssessments from "./pages/labs/carekits/pages/admin/CKAdminAssessments";
 import CKAdminAnalytics from "./pages/labs/carekits/pages/admin/CKAdminAnalytics";
 import CKAdminArticles from "./pages/labs/carekits/pages/admin/CKAdminArticles";
+import SponsorCRMLayout from "./pages/labs/sponsorcrm/SponsorCRMLayout";
+import ScrmDashboard from "./pages/labs/sponsorcrm/pages/Dashboard";
+import ScrmPipeline from "./pages/labs/sponsorcrm/pages/Pipeline";
+import ScrmSponsors from "./pages/labs/sponsorcrm/pages/Sponsors";
+import ScrmSponsorDetail from "./pages/labs/sponsorcrm/pages/SponsorDetail";
+import ScrmActions from "./pages/labs/sponsorcrm/pages/Actions";
+import ScrmTeam from "./pages/labs/sponsorcrm/pages/Team";
 import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
 import BeaverBoatAdmin from "./pages/labs/beaver-boat/BeaverBoatAdmin";
 import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
