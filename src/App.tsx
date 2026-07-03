@@ -199,6 +199,14 @@ const AppContent = () => {
               <Route path="analytics" element={<CKAdminAnalytics />} />
             </Route>
           </Route>
+          <Route path="/labs/sponsorcrm" element={<SponsorCRMLayout />}>
+            <Route index element={<ScrmDashboard />} />
+            <Route path="pipeline" element={<ScrmPipeline />} />
+            <Route path="sponsors" element={<ScrmSponsors />} />
+            <Route path="sponsors/:id" element={<ScrmSponsorDetail />} />
+            <Route path="actions" element={<ScrmActions />} />
+            <Route path="team" element={<ScrmTeam />} />
+          </Route>
           <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
           <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
           <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
