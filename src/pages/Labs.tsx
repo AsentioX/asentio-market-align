@@ -164,6 +164,15 @@ const labApps: LabApp[] = [
     tags: ['Consumer', 'AI', 'Smart Glasses'],
     link: '/labs/justgrapes',
   },
+  {
+    name: 'RHCRM',
+    description: 'Lightweight mission control for sponsorship teams. AI meeting summaries, action extraction, and a pipeline built for volunteer committees.',
+    icon: <Briefcase className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['CRM', 'Sponsorship', 'AI'],
+    link: '/labs/rhcrm',
+  },
+
 ];
 
 const statusColors: Record<string, string> = {
