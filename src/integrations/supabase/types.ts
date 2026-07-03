@@ -3554,6 +3554,308 @@ export type Database = {
         }
         Relationships: []
       }
+      scrm_actions: {
+        Row: {
+          category: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          due_date: string | null
+          id: string
+          notes: string | null
+          owner_id: string | null
+          owner_name: string | null
+          priority: string
+          sponsor_id: string
+          status: string
+          template_key: string | null
+          title: string
+          updated_at: string
+          waiting_on: string | null
+        }
+        Insert: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          owner_name?: string | null
+          priority?: string
+          sponsor_id: string
+          status?: string
+          template_key?: string | null
+          title: string
+          updated_at?: string
+          waiting_on?: string | null
+        }
+        Update: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          owner_name?: string | null
+          priority?: string
+          sponsor_id?: string
+          status?: string
+          template_key?: string | null
+          title?: string
+          updated_at?: string
+          waiting_on?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrm_actions_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "scrm_sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scrm_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          influence: string | null
+          is_decision_maker: boolean | null
+          linkedin: string | null
+          name: string
+          notes: string | null
+          role: string | null
+          sponsor_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          influence?: string | null
+          is_decision_maker?: boolean | null
+          linkedin?: string | null
+          name: string
+          notes?: string | null
+          role?: string | null
+          sponsor_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          influence?: string | null
+          is_decision_maker?: boolean | null
+          linkedin?: string | null
+          name?: string
+          notes?: string | null
+          role?: string | null
+          sponsor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrm_contacts_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "scrm_sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scrm_deliverables: {
+        Row: {
+          category: string
+          created_at: string
+          due_date: string | null
+          id: string
+          notes: string | null
+          owner_id: string | null
+          sponsor_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          sponsor_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          sponsor_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrm_deliverables_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "scrm_sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scrm_meetings: {
+        Row: {
+          attendees: string | null
+          created_at: string
+          created_by: string | null
+          extracted_actions: Json | null
+          id: string
+          meeting_date: string | null
+          minutes: string | null
+          source: string | null
+          sponsor_id: string
+          summary: Json | null
+          title: string
+          transcript: string | null
+        }
+        Insert: {
+          attendees?: string | null
+          created_at?: string
+          created_by?: string | null
+          extracted_actions?: Json | null
+          id?: string
+          meeting_date?: string | null
+          minutes?: string | null
+          source?: string | null
+          sponsor_id: string
+          summary?: Json | null
+          title: string
+          transcript?: string | null
+        }
+        Update: {
+          attendees?: string | null
+          created_at?: string
+          created_by?: string | null
+          extracted_actions?: Json | null
+          id?: string
+          meeting_date?: string | null
+          minutes?: string | null
+          source?: string | null
+          sponsor_id?: string
+          summary?: Json | null
+          title?: string
+          transcript?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrm_meetings_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "scrm_sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scrm_sponsors: {
+        Row: {
+          company_name: string
+          created_at: string
+          created_by: string | null
+          estimated_value: number | null
+          headquarters: string | null
+          id: string
+          industry: string | null
+          last_contact_at: string | null
+          logo_url: string | null
+          motivations: Json | null
+          notes: string | null
+          owner_id: string | null
+          priority: string
+          probability: number | null
+          relationship_strength: number | null
+          stage: string
+          tier_target: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          created_by?: string | null
+          estimated_value?: number | null
+          headquarters?: string | null
+          id?: string
+          industry?: string | null
+          last_contact_at?: string | null
+          logo_url?: string | null
+          motivations?: Json | null
+          notes?: string | null
+          owner_id?: string | null
+          priority?: string
+          probability?: number | null
+          relationship_strength?: number | null
+          stage?: string
+          tier_target?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          created_by?: string | null
+          estimated_value?: number | null
+          headquarters?: string | null
+          id?: string
+          industry?: string | null
+          last_contact_at?: string | null
+          logo_url?: string | null
+          motivations?: Json | null
+          notes?: string | null
+          owner_id?: string | null
+          priority?: string
+          probability?: number | null
+          relationship_strength?: number | null
+          stage?: string
+          tier_target?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      scrm_user_roles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          role: Database["public"]["Enums"]["scrm_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["scrm_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["scrm_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -5117,6 +5419,14 @@ export type Database = {
           read_ct: number
         }[]
       }
+      scrm_has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["scrm_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      scrm_is_member: { Args: { _user_id: string }; Returns: boolean }
       wobuddy_user_owns_day: { Args: { _day_id: string }; Returns: boolean }
       wobuddy_user_owns_goal: { Args: { _goal_id: string }; Returns: boolean }
       wobuddy_user_owns_plan: { Args: { _plan_id: string }; Returns: boolean }
@@ -5188,6 +5498,7 @@ export type Database = {
       pp_pillar: "work" | "home" | "play"
       pp_source_kind: "program_site" | "search_query" | "rss_feed"
       schedule_role: "hacker" | "sponsor" | "press" | "mentor" | "organizer"
+      scrm_role: "chair" | "committee" | "ops" | "leadership"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5378,6 +5689,7 @@ export const Constants = {
       pp_pillar: ["work", "home", "play"],
       pp_source_kind: ["program_site", "search_query", "rss_feed"],
       schedule_role: ["hacker", "sponsor", "press", "mentor", "organizer"],
+      scrm_role: ["chair", "committee", "ops", "leadership"],
     },
   },
 } as const
