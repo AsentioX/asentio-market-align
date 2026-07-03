@@ -15,7 +15,7 @@ export function Login() {
 
   const google = async () => {
     setBusy(true);
-    const res = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin + '/labs/sponsorcrm' });
+    const res = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin + '/labs/rhcrm' });
     setBusy(false);
     if (res.error) toast.error(res.error.message);
   };
@@ -24,7 +24,7 @@ export function Login() {
     e.preventDefault(); setBusy(true);
     const fn = mode === 'signin'
       ? supabase.auth.signInWithPassword({ email, password })
-      : supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + '/labs/sponsorcrm' } });
+      : supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + '/labs/rhcrm' } });
     const { error } = await fn;
     setBusy(false);
     if (error) toast.error(error.message);
