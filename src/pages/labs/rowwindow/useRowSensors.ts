@@ -417,8 +417,23 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
       const res = processStrokeSample(strokeStateRef.current, {
         ax: a.x, ay: a.y, az: a.z, t: now,
       });
-      // Only push state updates when SPM changes — avoids 60 Hz re-renders.
-      setState(s => (s.spm === res.spm ? s : { ...s, spm: res.spm }));
+
+      latestConfidenceRef.current = res.confidence;
+
+      const frame = getLatestDebugFrame(strokeStateRef.current);
+      if (frame) {
+        pushFrame(recorderRef.current, frame);
+        debugSubsRef.current.forEach((cb) => cb(frame));
+      }
+
+      // Only push state updates when SPM changes or confidence shifts enough to
+      // matter — avoids 60 Hz re-renders.
+      setState(s => {
+        const confRounded = Math.round(res.confidence * 20) / 20;
+        const prevConfRounded = s.spmConfidence !== null ? Math.round(s.spmConfidence * 20) / 20 : null;
+        if (s.spm === res.spm && confRounded === prevConfRounded) return s;
+        return { ...s, spm: res.spm, spmConfidence: res.confidence };
+      });
     };
     motionHandlerRef.current = handler;
     window.addEventListener('devicemotion', handler);
@@ -430,6 +445,18 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
     await requestMotion();
     requestPosition();
   }, [requestCompass, requestMotion, requestPosition]);
+
+  // Debug/recording API for the optional stroke debug panel.
+  const subscribeStrokeDebug = useCallback((cb: (frame: DebugFrame) => void) => {
+    debugSubsRef.current.add(cb);
+    return () => { debugSubsRef.current.delete(cb); };
+  }, []);
+  const startStrokeRecording = useCallback(() => startRecording(recorderRef.current), []);
+  const stopStrokeRecording = useCallback(() => stopRecording(recorderRef.current), []);
+  const exportStrokeRecording = useCallback((meta: Record<string, unknown> = {}) =>
+    exportJson(recorderRef.current, { ...meta, activity }),
+  [activity]);
+  const isStrokeRecording = useCallback(() => recorderRef.current.active, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -467,6 +494,11 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
     connectHeartRate,
     disconnectHeartRate,
     resetDistance,
+    subscribeStrokeDebug,
+    startStrokeRecording,
+    stopStrokeRecording,
+    exportStrokeRecording,
+    isStrokeRecording,
   };
 }
 
