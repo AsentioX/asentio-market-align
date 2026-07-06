@@ -15,7 +15,7 @@ import { createPCAAxis, maybeUpdateAxis, projectOnAxis, type PCAAxis } from './p
 import { createBandPassFilter, updateBandPass, type BandPassFilter } from './bandPassFilter';
 import { createAdaptiveThreshold, updateThreshold, type AdaptiveThreshold } from './adaptiveThreshold';
 import { createPeakDetector, processPeak, type PeakDetectorState } from './peakDetector';
-import { createIntervalValidator, reset as resetValidator, type IntervalValidator } from './intervalValidator';
+import { createIntervalValidator, reset as resetValidator, validateInterval, median, type IntervalValidator } from './intervalValidator';
 import { createSPMEstimator, pushPeak, tick, type SPMEstimator } from './spmEstimator';
 import { computeConfidence } from './confidence';
 
@@ -165,7 +165,10 @@ export function processSample(det: StrokeDetector, sample: StrokeSample): Detect
     resetValidator(det.validator);
   }
 
-  const spm = det.spm.intervals.length >= 2 ? Math.round(60_000 / median(det.spm.intervals)) : null;
+  const medInterval = median(det.spm.intervals);
+  const spm = det.spm.intervals.length >= 2 && medInterval !== null && medInterval > 0
+    ? Math.round(60_000 / medInterval)
+    : null;
   const confidence = computeConfidence({
     intervals: det.spm.intervals,
     recentPeakHeights: det.peakHeights,
@@ -193,15 +196,4 @@ export function processSample(det: StrokeDetector, sample: StrokeSample): Detect
   };
 
   return { spm, confidence, peak, rejected, debug };
-}
-
-// Local median (avoids importing intervalValidator's helper into external
-// code — intervalValidator re-exports it if a downstream module needs it).
-function validateInterval(v: IntervalValidator, intervalMs: number) {
-  return (require('./intervalValidator') as typeof import('./intervalValidator')).validateInterval(v, intervalMs);
-}
-function median(arr: number[]): number {
-  const sorted = [...arr].sort((a, b) => a - b);
-  const mid = sorted.length >> 1;
-  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
