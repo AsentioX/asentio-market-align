@@ -94,7 +94,7 @@ interface UseRowSensorsOptions {
 const HR_SERVICE = 'heart_rate';
 const HR_MEASUREMENT_CHAR = 'heart_rate_measurement';
 
-export function useRowSensors({ tracking }: UseRowSensorsOptions) {
+export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOptions) {
   const [state, setState] = useState<RowSensorState>({
     headingDeg: null,
     headingStatus: 'idle',
@@ -107,6 +107,8 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     heartRateStatus: 'idle',
     heartRateDeviceName: null,
     spm: null,
+    spmConfidence: null,
+    activity,
     motionStatus: 'idle',
   });
 
@@ -128,8 +130,22 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   // we keep its state in a ref so the listener doesn't re-subscribe.
   const strokeStateRef = useRef(createStrokeDetectorState());
   const sawFirstMotionRef = useRef(false);
+  // Latest confidence held in a ref so we can throttle re-renders alongside SPM.
+  const latestConfidenceRef = useRef<number>(0);
+  // Optional developer recorder — off by default.
+  const recorderRef = useRef<Recorder>(createRecorder());
+  // Debug frame subscribers (used by StrokeDebugPanel). Kept out of React state
+  // so a 60 Hz stream doesn't trigger renders.
+  const debugSubsRef = useRef<Set<(frame: DebugFrame) => void>>(new Set());
 
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
+
+  // Live-swap the stroke profile when the caller changes activity.
+  useEffect(() => {
+    const detector = (strokeStateRef.current as unknown as { detector: Parameters<typeof setProfile>[0] }).detector;
+    if (detector) setProfile(detector, PROFILES[activity]);
+    setState(s => (s.activity === activity ? s : { ...s, activity }));
+  }, [activity]);
 
   // -------------------------------------------------------------------------
   // Compass heading
