@@ -612,6 +612,7 @@ const RowWindowLayout = () => {
               elapsedMs={elapsedMs}
               distanceMeters={liveDistance}
               spm={spm}
+              spmConfidence={spmConfidence}
               speedMs={liveSpeedMs}
               headingDeg={liveHeading}
               targetHeadingDeg={targetHeadingDeg}
