@@ -37,6 +37,8 @@ import { LiveTrackingMap } from './LiveTrackingMap';
 import { PostRowMap } from './PostRowMap';
 import { usePieceDetector, type Piece } from './usePieceDetector';
 import { PiecesWidget } from './PiecesWidget';
+import { StrokeDebugPanel } from './StrokeDebugPanel';
+import type { ActivityId } from './stroke/profiles';
 
 const DURATIONS = [60, 90, 120, 150];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -167,9 +169,17 @@ const RowWindowLayout = () => {
   const maxSpmRef = useRef<number>(0);
   const maxLaneOffsetRef = useRef<number>(0);
 
+  // Stroke-detector activity profile — surfaced via ?activity=… for now
+  // (kayak/canoe/dragonBoat presets exist in stroke/profiles.ts).
+  const [activity, setActivity] = useState<ActivityId>(() => {
+    if (typeof window === 'undefined') return 'rowing';
+    const q = new URLSearchParams(window.location.search).get('activity');
+    return (q === 'kayak' || q === 'canoe' || q === 'dragonBoat') ? q : 'rowing';
+  });
+
   // Real device sensors (compass, GPS, BLE heart-rate). Values are null when
   // the corresponding sensor is not live — the UI renders an em-dash.
-  const sensors = useRowSensors({ tracking: sessionState === 'active' });
+  const sensors = useRowSensors({ tracking: sessionState === 'active', activity });
 
   // Waypoints — shared across all 3 tabs, persisted to localStorage.
   const waypointsHook = useWaypoints();
@@ -205,6 +215,7 @@ const RowWindowLayout = () => {
   const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
   // Stroke rate now comes from the device accelerometer (peak-detection).
   const spm: number | null = sensors.motionStatus === 'live' ? sensors.spm : null;
+  const spmConfidence: number | null = sensors.motionStatus === 'live' ? sensors.spmConfidence : null;
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
