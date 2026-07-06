@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createStrokeDetectorState, processStrokeSample } from './strokeDetector';
+import { createStrokeDetectorState, processStrokeSample, getLatestDebugFrame } from './strokeDetector';
+import { setProfile } from './stroke';
+import { PROFILES, type ActivityId } from './stroke/profiles';
+import type { DebugFrame } from './stroke/types';
+import { createRecorder, startRecording, stopRecording, pushFrame, exportJson, type Recorder } from './stroke/recorder';
 
 // =============================================================================
 // useRowSensors — real device sensors for RowWindow's On-Water instruments.
@@ -74,12 +78,16 @@ export interface RowSensorState {
   // Stroke rate derived from device accelerometer (peak-detection on the
   // dominant rocking axis of the boat). null until enough peaks are seen.
   spm: number | null;
+  spmConfidence: number | null;
+  activity: ActivityId;
   motionStatus: SensorStatus;
 }
 
 interface UseRowSensorsOptions {
   // While true, GPS distance accumulates. Flip false to pause/stop.
   tracking: boolean;
+  /** Which paddlesport preset to load into the stroke detector. */
+  activity?: ActivityId;
 }
 
 // Web Bluetooth GATT identifiers for the standard Heart Rate Service.
