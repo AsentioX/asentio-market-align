@@ -148,3 +148,103 @@ function runSuite(label: string, tunings: StrokeDetectorTunings) {
 }
 
 runSuite('DEFAULT_TUNINGS', DEFAULT_TUNINGS);
+
+// -----------------------------------------------------------------------------
+// Modern pipeline: run cadence sweeps against each activity profile so tuning
+// regressions surface immediately.
+// -----------------------------------------------------------------------------
+
+interface ModernSim extends SimOptions {
+  vibHz?: number;
+  vibAmp?: number;
+}
+
+function simulateModern(opts: ModernSim, profileId: keyof typeof PROFILES) {
+  const dt = 1000 / opts.sampleHz;
+  const nSamples = Math.floor(opts.durationSec * opts.sampleHz);
+  const rand = mulberry32(opts.seed);
+  const detector = createDetector(PROFILES[profileId]);
+  const sn = Math.sqrt(opts.sx ** 2 + opts.sy ** 2 + opts.sz ** 2);
+  const sx = opts.sx / sn, sy = opts.sy / sn, sz = opts.sz / sn;
+  let phase = 0;
+  const readings: { t: number; spm: number; truth: number; conf: number }[] = [];
+
+  for (let i = 0; i < nSamples; i++) {
+    const t = i * dt;
+    const currentSpm = opts.trueSpm + (opts.spmDriftPerMin * (t / 60000));
+    const freqHz = currentSpm / 60;
+    phase += 2 * Math.PI * freqHz * (dt / 1000);
+
+    const stroke = opts.amplitude * Math.sin(phase);
+    const harmonic = opts.amplitude * opts.harmonicFrac * Math.sin(2 * phase + 0.6);
+    const vib = opts.vibHz && opts.vibAmp
+      ? opts.vibAmp * Math.sin(2 * Math.PI * opts.vibHz * (t / 1000))
+      : 0;
+    const dyn = stroke + harmonic;
+
+    const ax = opts.gx + dyn * sx + vib + opts.noiseStd * gauss(rand);
+    const ay = opts.gy + dyn * sy + vib + opts.noiseStd * gauss(rand);
+    const az = opts.gz + dyn * sz + vib + opts.noiseStd * gauss(rand);
+
+    const res = processSample(detector, { ax, ay, az, t });
+    if (res.spm !== null && i % opts.sampleHz === 0) {
+      readings.push({ t, spm: res.spm, truth: currentSpm, conf: res.confidence });
+    }
+  }
+
+  const stable = readings.filter((r) => r.t > opts.durationSec * 1000 * 0.5);
+  const meanErr = stable.length
+    ? stable.reduce((acc, r) => acc + Math.abs(r.spm - r.truth), 0) / stable.length
+    : null;
+  const meanConf = stable.length
+    ? stable.reduce((acc, r) => acc + r.conf, 0) / stable.length
+    : 0;
+  return { meanErr, meanConf, lastSpm: readings.at(-1)?.spm ?? null };
+}
+
+function runModernSuite(label: string, profileId: keyof typeof PROFILES, cases: { name: string; opts: Partial<ModernSim> }[]) {
+  console.log(`\n=== ${label} (${PROFILES[profileId].label}) ===`);
+  console.log(pad('case', 28), pad('truth', 8), pad('spm', 8), pad('|err|', 8), pad('conf', 8));
+  const defaults: ModernSim = {
+    trueSpm: 28, durationSec: 45, sampleHz: 60,
+    amplitude: 2.5, noiseStd: 0.3, harmonicFrac: 0.3,
+    gx: 0, gy: 9.8, gz: 0, sx: 1, sy: 0, sz: 0.3,
+    spmDriftPerMin: 0, seed: 42,
+  };
+  let totalErr = 0, totalConf = 0, count = 0;
+  for (const c of cases) {
+    const opts: ModernSim = { ...defaults, ...c.opts };
+    const r = simulateModern(opts, profileId);
+    if (r.meanErr !== null) { totalErr += r.meanErr; totalConf += r.meanConf; count++; }
+    console.log(
+      pad(c.name, 28),
+      pad(opts.trueSpm.toFixed(1), 8),
+      pad(r.lastSpm ?? '-', 8),
+      pad(r.meanErr?.toFixed(2) ?? '-', 8),
+      pad(r.meanConf.toFixed(2), 8),
+    );
+  }
+  const avgErr = count ? (totalErr / count).toFixed(2) : '-';
+  const avgConf = count ? (totalConf / count).toFixed(2) : '-';
+  console.log(`  → mean |err|: ${avgErr} spm   mean conf: ${avgConf}`);
+}
+
+runModernSuite('MODERN rowing sweep', 'rowing', [
+  { name: 'clean 18',    opts: { trueSpm: 18, noiseStd: 0.15 } },
+  { name: 'clean 24',    opts: { trueSpm: 24, noiseStd: 0.2 } },
+  { name: 'clean 30',    opts: { trueSpm: 30, noiseStd: 0.3 } },
+  { name: 'clean 36',    opts: { trueSpm: 36, noiseStd: 0.4 } },
+  { name: 'noisy 28',    opts: { trueSpm: 28, noiseStd: 1.2 } },
+  { name: 'small amp 26',opts: { trueSpm: 26, amplitude: 0.8, noiseStd: 0.2 } },
+  { name: 'tilted 30',   opts: { trueSpm: 30, gx: 3, gy: 8, gz: 4, sx: 0.7, sy: 0.2, sz: 0.7 } },
+  { name: 'vibration 30',opts: { trueSpm: 30, vibHz: 8, vibAmp: 0.6 } },
+  { name: 'drift 24→32', opts: { trueSpm: 24, spmDriftPerMin: 8, durationSec: 60 } },
+]);
+
+runModernSuite('MODERN kayak sweep', 'kayak', [
+  { name: 'kayak 45',  opts: { trueSpm: 45, noiseStd: 0.25 } },
+  { name: 'kayak 55',  opts: { trueSpm: 55, noiseStd: 0.3 } },
+  { name: 'kayak 65',  opts: { trueSpm: 65, noiseStd: 0.35 } },
+  { name: 'kayak 75',  opts: { trueSpm: 75, noiseStd: 0.4 } },
+]);
+
