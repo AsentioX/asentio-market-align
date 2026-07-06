@@ -6,6 +6,8 @@ import {
   DEFAULT_TUNINGS,
   type StrokeDetectorTunings,
 } from '../src/pages/labs/rowwindow/strokeDetector';
+import { createDetector, processSample } from '../src/pages/labs/rowwindow/stroke';
+import { PROFILES } from '../src/pages/labs/rowwindow/stroke/profiles';
 
 interface SimOptions {
   trueSpm: number;
