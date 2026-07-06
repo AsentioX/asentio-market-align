@@ -1,190 +1,109 @@
-# Evolve X1 Smart → Intelligent Home OS
 
-We keep the existing shell (`X1SmartLayout` with AiHome/AiSpaces toggle + 4 tabs) and evolve each surface in place. We add **one new tab — Timeline / Memory** — and a global **Autonomy Level** selector that the whole system reads from.
+# Improve Stroke Rate (SPM) Detection
 
-Nothing gets thrown away. The existing mock data files (`residentialData.ts`, `commercialData.ts`) are extended, not replaced.
+Rebuild `strokeDetector.ts` as a modular sensor-fusion pipeline that stays a drop-in replacement for `useRowSensors`, then add a confidence score, activity presets, a live debug panel, and an optional recording mode.
 
----
+## What changes for the user
 
-## 1. Add a 5th tab: Timeline / Memory
+- SPM readings become more accurate and less jumpy across phone orientations, boat vibration, and light vs hard rowing.
+- New confidence indicator (0–1) so the UI can hide unreliable numbers.
+- Activity picker (Rowing / Kayak / Canoe / Dragon Boat) tunes the detector for each sport's cadence.
+- Hidden dev debug panel on `/labs/rowwindow` with live graphs and a "record session" button that downloads a JSON of the raw signals for offline tuning.
 
-In `X1SmartLayout.tsx`, add `Timeline` to the `TABS` array (icon: `Clock`). Create `screens/TimelineMemory.tsx`:
+Everything else in the app stays the same.
 
-- Vertical chronological rail with day separators ("Today", "Yesterday", "Mon Apr 21")
-- Each row: time · pill (AI action / User action / Observation) · who · where · one-line summary
-- Filter chips at top: **Person**, **Space**, **Type** (events / decisions / automations)
-- Two **Insight cards** pinned at the top of the rail:
-  - "Back-door activity ↑ 40% this week"
-  - "You've been arriving home ~35 min later than your 30-day average"
-- Visual treatment: muted timeline ticks on the left, color of the row dot encodes type (violet=AI, indigo=user, stone=passive)
+## New file layout
 
-Data: derive from existing `RES_FEED` / `COM_FEED`, plus a small `TIMELINE_INSIGHTS` array we append to the data files.
-
----
-
-## 2. Intelligence Feed → Decision Engine
-
-Edit `screens/IntelligenceFeed.tsx`. Keep the hero, tabs, and card structure. Upgrade:
-
-**Urgency rail (left edge of card)**
-- `critical` → solid red bar + soft pulsing glow, persistent (cannot be collapsed away)
-- `high` (Important) → orange bar
-- `normal` / `low` (Informational) → thin neutral bar
-
-**New "Why it matters" line** under the title (one sentence, derived from `reasoning[0]` or a new `whyItMatters` field on events).
-
-**Action source badge** in the meta row — small pill next to the kind label:
-- `AI` (violet) for `kind: 'action' | 'suggestion'`
-- `You` (indigo) for user-triggered (new field `actor: 'ai' | 'user' | 'system'`)
-- `Passive` (stone) for `insight` / `identity` observations
-
-**Inline action set** expands beyond the single suggested-action button. For security/anomaly events:
-- Primary: the existing suggested action
-- Secondary chips: **View camera**, **Lock all doors**, **Ignore / label person**
-
-**Countdown actions** (the "system-driven behavior"). Add an optional `pendingAction` to events:
-```
-pendingAction: { label: 'Locking back door', countdownSec: 30 }
-```
-Renders a thin progress bar + "Locking back door in 24s — Cancel" button. On expiry, toast "Back door locked by X1." If user cancels, toast "Cancelled. X1 won't auto-lock again tonight."
-
-**System voice line** at bottom of the hero, varies by overall state:
-- Calm: "Everything looks calm at home."
-- Watch: "I'm keeping an eye on the back door."
-- Urgent: "Something needs your attention at Warehouse B."
-
----
-
-## 3. People → Trust + Intent
-
-Edit `screens/residential/ResidentialPeople.tsx` and `screens/commercial/CommercialPeople.tsx`. Extend `Person` type with:
-
-```
-trust: 'trusted' | 'familiar' | 'unknown' | 'suspicious'
-intent?: string         // "Likely delivering package"
-intentConfidence?: number
-visitFrequency?: string // "3× this week"
-typicalTimes?: string   // "Mon–Fri, 8–10am"
-anomalies?: string[]    // ["First nighttime visit"]
-linkedAutomations?: { id: string; label: string }[]
+```text
+src/pages/labs/rowwindow/stroke/
+  index.ts                  // public API: createDetector, processSample, presets
+  types.ts                  // Sample, DetectorResult, DebugFrame, ActivityProfile
+  profiles.ts               // rowing / kayak / canoe / dragonBoat configs
+  gravityFilter.ts          // time-based per-axis LPF (tau = 3s)
+  covarianceTracker.ts      // 3x3 exponentially-weighted covariance
+  pcaAxis.ts                // dominant eigenvector via power iteration, sign lock
+  bandPassFilter.ts         // biquad HP (0.2 Hz) + LP (2 Hz), dt-aware
+  adaptiveThreshold.ts      // RMS + baseline + positive/negative thresholds
+  peakDetector.ts           // slope + prominence + adaptive re-arm
+  intervalValidator.ts      // rolling median + MAD gate
+  spmEstimator.ts           // rolling median of accepted intervals
+  confidence.ts             // rhythm + peak-quality + periodicity + sensor score
+  recorder.ts               // optional ring-buffer + JSON export
 ```
 
-**Card upgrades:**
-- Trust badge in top-right corner (color-coded shield: emerald/indigo/amber/rose)
-- Intent line under name with a small sparkle icon: *"Likely arriving home — 92%"*
-- Behavior strip: 3 mini-stats (visits this week · typical window · anomaly count)
+`strokeDetector.ts` becomes a thin re-export that keeps the current
+`createStrokeDetectorState` / `processStrokeSample` signatures alive so
+`useRowSensors.ts` and `scripts/test-stroke-detector.ts` don't break.
 
-**Profile drawer (existing detail view):**
-- New "Why X1 acted" section listing recent decisions about this person with reasoning
-- Linked automations list (clickable → jumps to Autonomy tab)
-- Anomaly callouts in amber
+## Pipeline (per sample)
 
----
+1. **Gravity removal** — per-axis LPF with `alpha = dt / (tau + dt)`, `tau = 3s`. Uses the sample's real timestamp; no fixed-rate assumption.
+2. **Covariance tracker** — update 6 unique entries of the 3×3 covariance with exponential weight (`tau = 2s`).
+3. **PCA axis** — every 10 samples, run 5 power-iteration steps on the covariance to get the dominant eigenvector. Sign-lock against the previous axis (`if dot < 0 → flip`). Between updates, reuse the last axis.
+4. **Projection** — signed scalar `l · axis`.
+5. **Band-pass** — biquad high-pass at 0.2 Hz then low-pass at 2 Hz. Coefficients recomputed when `dt` drifts >10 %. Passband tuned per activity profile.
+6. **Baseline & RMS** — very slow baseline subtracted from band-pass output; rolling RMS (`tau ≈ 5s`).
+7. **Peak detector** — accepts a peak only when all hold:
+   - Local maximum (`prev > prev-1` and `prev > current`)
+   - `prev > max(minPositive, RMS * posGain)`
+   - Rising slope before, falling slope after
+   - Prominence ≥ RMS × `minProminence`
+   - Elapsed since last peak ≥ `minIntervalMs`
+   - Re-arm needed: signal must dip below `-max(minNegative, RMS * negGain)` before the next peak.
+8. **Interval validator** — keep last 20 intervals; reject any that fall outside `median ± 3 × MAD`. Rejected intervals are still emitted in debug data.
+9. **SPM estimator** — rolling median of the last 8–12 accepted intervals; `spm = round(60000 / median)`.
+10. **Confidence** — weighted blend, clamped 0–1:
+    - Rhythm consistency: `1 - min(1, MAD / median)` (weight 0.35)
+    - Peak quality: `min(1, meanPeakHeight / RMS / 3)` (weight 0.25)
+    - Periodicity: alternating-sign ratio in last 12 peaks vs troughs (weight 0.20)
+    - Sensor health: not clipping, not saturated with high-freq energy (weight 0.20)
 
-## 4. Spaces → Adaptive States
+## Activity profiles
 
-Edit `screens/residential/ResidentialSpaces.tsx` and `screens/commercial/CommercialSpaces.tsx`. Replace the static `mode` field with an evolving `adaptiveState`:
+`profiles.ts` exports a config object per sport with expected SPM range, band-pass corners, min/max interval, and threshold gains:
 
-```
-adaptiveState: {
-  current: 'evening-winddown' | 'quiet-night' | 'hosting-guests'
-         | 'away-expecting-delivery' | 'business-hours' | 'after-hours-secure'
-  confidence: number
-  enteredAt: string
-  reason: string  // "No motion detected for 20 min"
-  next?: { state: string; etaMin: number; reason: string }
-}
-```
+- Rowing: 10–42 SPM, band 0.15–1.2 Hz, `minInterval = 1200 ms`
+- Kayak: 30–90 SPM, band 0.4–2 Hz, `minInterval = 550 ms`
+- Canoe: 20–70 SPM, band 0.3–1.5 Hz, `minInterval = 750 ms`
+- Dragon Boat: 40–120 SPM, band 0.6–2.5 Hz, `minInterval = 450 ms`
 
-**Per-space card upgrades:**
-- Replace the single mode chip with a **State pill** (gradient based on state) + tiny confidence dots
-- Reason line: "Switched to Evening Wind-down · No motion 20m · 87% confident"
-- "Next state" preview: "→ Quiet Night around 10:30pm"
+`useRowSensors` gains an optional `activity` option (defaults to `rowing`) and passes it into `createDetector`. `RowWindowLayout` gets a small activity selector in the pre-session sheet.
 
-**State Timeline strip** at the top of the Spaces tab:
-- Horizontal mini-timeline showing today's state transitions per space
-- Hover/tap a segment for the transition reason
+## Confidence + activity UI
 
----
+- `RowSensorState` gains `spmConfidence: number | null` and echoes back `activity`.
+- The stroke card in `RowWindowLayout` dims the value and shows a small "warming up" state whenever `confidence < 0.4`.
+- Post-session summary uses accepted intervals only.
 
-## 5. Autonomy → Outcomes + Levels
+## Debug panel
 
-Edit `screens/residential/ResidentialAutonomy.tsx` and `screens/commercial/CommercialAutonomy.tsx`. Two big changes:
+New `StrokeDebugPanel.tsx` mounted only when `?debug=stroke` is in the URL:
 
-**a) Autonomy Level selector (top of tab, also surfaced as a small chip in the header)**
+- Live sparklines for: raw XYZ, gravity XYZ, linear XYZ, projection, band-pass output, baseline, RMS, positive/negative thresholds, detected peaks (dot markers), rejected peaks (red markers), current SPM, confidence.
+- Uses a shared 512-frame ring buffer fed from the detector's `debug` output.
+- "Start recording" button → writes samples to `recorder.ts`; "Download JSON" exports timestamped session for offline analysis.
 
-Three-segment control reading the existing `AUTONOMY_LEVELS`:
-- **Assist** — suggestions only
-- **Semi-Autonomous** — ask before acting (default)
-- **Full Autonomy** — act on high-confidence, review after
+## Compatibility & tests
 
-Stored in component state (no backend persistence — this is a prototype lab). Layout header chip shows current level so it's visible from any tab.
+- Keep the existing exports (`createStrokeDetectorState`, `processStrokeSample`, `DEFAULT_TUNINGS`, `StrokeDetectorTunings`) so `scripts/test-stroke-detector.ts` still compiles. Internally they delegate to the new modular detector using the rowing profile.
+- Extend `scripts/test-stroke-detector.ts` with:
+  - Cadence sweep 16–40 SPM at multiple noise levels
+  - Random phone-tilt sweep
+  - Vibration overlay at 8 Hz
+  - Kayak profile sweep 45–75 SPM
+  - Assert average error < 1 SPM and confidence > 0.7 for clean signals.
 
-**b) Goals → Rules (outcome-based UI)**
+## Deliverables (in order)
 
-Replace the IF/THEN rule list with a **Goals stack**:
+1. `stroke/` modules + `profiles.ts` + `types.ts`.
+2. New pipeline wired through `stroke/index.ts`; `strokeDetector.ts` becomes a compatibility shim.
+3. `useRowSensors` returns `spmConfidence`, accepts `activity`, and forwards debug frames through a ref.
+4. Activity selector in the pre-session sheet; confidence-aware SPM tile in `RowWindowLayout`.
+5. `StrokeDebugPanel` + `recorder.ts` behind `?debug=stroke`.
+6. Expanded synthetic test script; run and confirm targets.
 
-```
-Goal: "Keep my home secure at night"
-  Generated rules (3) · Based on 23 nights of behavior
-  ▸ Lock all doors at 10pm                 92% confidence
-  ▸ Arm cameras when last person leaves    88% confidence
-  ▸ Alert on unknown faces after dark      95% confidence
-```
+## Non-goals
 
-Each generated rule card shows:
-- Confidence bar (0–100%)
-- Reasoning line ("Based on 23 of last 30 nights")
-- Impact tags: 🛡 Security · ⚡ Energy · ✨ Convenience
-- Per-rule action: **Enable** / **Modify** / **Skip**
-
-Predefined goals to seed: *Keep my home secure at night*, *Make mornings smooth*, *Optimize energy usage*, plus a "+ New goal" tile.
-
----
-
-## 6. System Personality (microcopy pass)
-
-A small `systemVoice.ts` helper that returns lines based on overall state:
-- Greetings vary by hour and threat level
-- Action narration uses first person: "I noticed something unusual near the back door."
-- Urgency tone scale: calm → watchful → direct
-- Wired into: hero greeting, Decision Engine countdown actions, toast notifications, state transitions
-
----
-
-## 7. Motion + visual polish
-
-- State pills animate gradient on transition (already using framer-motion)
-- Critical decision cards get a subtle pulsing left rail
-- Countdown actions show a sweeping progress bar
-- Timeline rows fade-in with stagger
-- Keep the existing warm `#fafaf7` palette and gradient blob backgrounds — no visual reset
-
----
-
-## Files
-
-**New**
-- `src/pages/labs/x1-smart/screens/TimelineMemory.tsx`
-- `src/pages/labs/x1-smart/systemVoice.ts`
-
-**Edited**
-- `src/pages/labs/x1-smart/X1SmartLayout.tsx` — add Timeline tab, autonomy-level chip
-- `src/pages/labs/x1-smart/x1Data.ts` — extend types (`trust`, `intent`, `adaptiveState`, `pendingAction`, `actor`, `whyItMatters`, goals)
-- `src/pages/labs/x1-smart/residentialData.ts` — add trust/intent/state/goal fields to mock data
-- `src/pages/labs/x1-smart/commercialData.ts` — same
-- `src/pages/labs/x1-smart/screens/IntelligenceFeed.tsx` — decision-engine upgrades
-- `src/pages/labs/x1-smart/screens/residential/ResidentialPeople.tsx`
-- `src/pages/labs/x1-smart/screens/commercial/CommercialPeople.tsx`
-- `src/pages/labs/x1-smart/screens/residential/ResidentialSpaces.tsx`
-- `src/pages/labs/x1-smart/screens/commercial/CommercialSpaces.tsx`
-- `src/pages/labs/x1-smart/screens/residential/ResidentialAutonomy.tsx`
-- `src/pages/labs/x1-smart/screens/commercial/ResidentialAutonomy.tsx` *(commercial file)*
-
----
-
-## Out of scope (call out so expectations match)
-
-- No new backend tables — this stays a prototype lab (per Labs Prototyping principle: clickable polish over backend complexity)
-- No floorplan/spatial overlay or conversational AI panel in this pass — those are listed as "optional" in the brief and would each be substantial additions; can follow as a v2 once you've reacted to this evolution
-- Autonomy level + countdown cancellations are session-only state
+- No GPS-fusion for stroke detection yet (confidence formula leaves a hook but doesn't consume speed).
+- No changes to heart rate, compass, GPS, tide, or piece-detection code.
+- No UI redesign beyond the activity selector, confidence dimming, and the hidden debug panel.

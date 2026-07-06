@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createStrokeDetectorState, processStrokeSample } from './strokeDetector';
+import { createStrokeDetectorState, processStrokeSample, getLatestDebugFrame } from './strokeDetector';
+import { setProfile } from './stroke';
+import { PROFILES, type ActivityId } from './stroke/profiles';
+import type { DebugFrame } from './stroke/types';
+import { createRecorder, startRecording, stopRecording, pushFrame, exportJson, type Recorder } from './stroke/recorder';
 
 // =============================================================================
 // useRowSensors — real device sensors for RowWindow's On-Water instruments.
@@ -74,19 +78,23 @@ export interface RowSensorState {
   // Stroke rate derived from device accelerometer (peak-detection on the
   // dominant rocking axis of the boat). null until enough peaks are seen.
   spm: number | null;
+  spmConfidence: number | null;
+  activity: ActivityId;
   motionStatus: SensorStatus;
 }
 
 interface UseRowSensorsOptions {
   // While true, GPS distance accumulates. Flip false to pause/stop.
   tracking: boolean;
+  /** Which paddlesport preset to load into the stroke detector. */
+  activity?: ActivityId;
 }
 
 // Web Bluetooth GATT identifiers for the standard Heart Rate Service.
 const HR_SERVICE = 'heart_rate';
 const HR_MEASUREMENT_CHAR = 'heart_rate_measurement';
 
-export function useRowSensors({ tracking }: UseRowSensorsOptions) {
+export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOptions) {
   const [state, setState] = useState<RowSensorState>({
     headingDeg: null,
     headingStatus: 'idle',
@@ -99,6 +107,8 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     heartRateStatus: 'idle',
     heartRateDeviceName: null,
     spm: null,
+    spmConfidence: null,
+    activity,
     motionStatus: 'idle',
   });
 
@@ -120,8 +130,22 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
   // we keep its state in a ref so the listener doesn't re-subscribe.
   const strokeStateRef = useRef(createStrokeDetectorState());
   const sawFirstMotionRef = useRef(false);
+  // Latest confidence held in a ref so we can throttle re-renders alongside SPM.
+  const latestConfidenceRef = useRef<number>(0);
+  // Optional developer recorder — off by default.
+  const recorderRef = useRef<Recorder>(createRecorder());
+  // Debug frame subscribers (used by StrokeDebugPanel). Kept out of React state
+  // so a 60 Hz stream doesn't trigger renders.
+  const debugSubsRef = useRef<Set<(frame: DebugFrame) => void>>(new Set());
 
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
+
+  // Live-swap the stroke profile when the caller changes activity.
+  useEffect(() => {
+    const detector = (strokeStateRef.current as unknown as { detector: Parameters<typeof setProfile>[0] }).detector;
+    if (detector) setProfile(detector, PROFILES[activity]);
+    setState(s => (s.activity === activity ? s : { ...s, activity }));
+  }, [activity]);
 
   // -------------------------------------------------------------------------
   // Compass heading
@@ -393,8 +417,23 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
       const res = processStrokeSample(strokeStateRef.current, {
         ax: a.x, ay: a.y, az: a.z, t: now,
       });
-      // Only push state updates when SPM changes — avoids 60 Hz re-renders.
-      setState(s => (s.spm === res.spm ? s : { ...s, spm: res.spm }));
+
+      latestConfidenceRef.current = res.confidence;
+
+      const frame = getLatestDebugFrame(strokeStateRef.current);
+      if (frame) {
+        pushFrame(recorderRef.current, frame);
+        debugSubsRef.current.forEach((cb) => cb(frame));
+      }
+
+      // Only push state updates when SPM changes or confidence shifts enough to
+      // matter — avoids 60 Hz re-renders.
+      setState(s => {
+        const confRounded = Math.round(res.confidence * 20) / 20;
+        const prevConfRounded = s.spmConfidence !== null ? Math.round(s.spmConfidence * 20) / 20 : null;
+        if (s.spm === res.spm && confRounded === prevConfRounded) return s;
+        return { ...s, spm: res.spm, spmConfidence: res.confidence };
+      });
     };
     motionHandlerRef.current = handler;
     window.addEventListener('devicemotion', handler);
@@ -406,6 +445,18 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     await requestMotion();
     requestPosition();
   }, [requestCompass, requestMotion, requestPosition]);
+
+  // Debug/recording API for the optional stroke debug panel.
+  const subscribeStrokeDebug = useCallback((cb: (frame: DebugFrame) => void) => {
+    debugSubsRef.current.add(cb);
+    return () => { debugSubsRef.current.delete(cb); };
+  }, []);
+  const startStrokeRecording = useCallback(() => startRecording(recorderRef.current), []);
+  const stopStrokeRecording = useCallback(() => stopRecording(recorderRef.current), []);
+  const exportStrokeRecording = useCallback((meta: Record<string, unknown> = {}) =>
+    exportJson(recorderRef.current, { ...meta, activity }),
+  [activity]);
+  const isStrokeRecording = useCallback(() => recorderRef.current.active, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -443,6 +494,11 @@ export function useRowSensors({ tracking }: UseRowSensorsOptions) {
     connectHeartRate,
     disconnectHeartRate,
     resetDistance,
+    subscribeStrokeDebug,
+    startStrokeRecording,
+    stopStrokeRecording,
+    exportStrokeRecording,
+    isStrokeRecording,
   };
 }
 

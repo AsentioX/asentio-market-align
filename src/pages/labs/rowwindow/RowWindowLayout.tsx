@@ -37,6 +37,8 @@ import { LiveTrackingMap } from './LiveTrackingMap';
 import { PostRowMap } from './PostRowMap';
 import { usePieceDetector, type Piece } from './usePieceDetector';
 import { PiecesWidget } from './PiecesWidget';
+import { StrokeDebugPanel } from './StrokeDebugPanel';
+import type { ActivityId } from './stroke/profiles';
 
 const DURATIONS = [60, 90, 120, 150];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -167,9 +169,17 @@ const RowWindowLayout = () => {
   const maxSpmRef = useRef<number>(0);
   const maxLaneOffsetRef = useRef<number>(0);
 
+  // Stroke-detector activity profile — surfaced via ?activity=… for now
+  // (kayak/canoe/dragonBoat presets exist in stroke/profiles.ts).
+  const [activity, setActivity] = useState<ActivityId>(() => {
+    if (typeof window === 'undefined') return 'rowing';
+    const q = new URLSearchParams(window.location.search).get('activity');
+    return (q === 'kayak' || q === 'canoe' || q === 'dragonBoat') ? q : 'rowing';
+  });
+
   // Real device sensors (compass, GPS, BLE heart-rate). Values are null when
   // the corresponding sensor is not live — the UI renders an em-dash.
-  const sensors = useRowSensors({ tracking: sessionState === 'active' });
+  const sensors = useRowSensors({ tracking: sessionState === 'active', activity });
 
   // Waypoints — shared across all 3 tabs, persisted to localStorage.
   const waypointsHook = useWaypoints();
@@ -205,6 +215,7 @@ const RowWindowLayout = () => {
   const liveHeartRate: number | null = sensors.heartRateStatus === 'live' ? sensors.heartRate : null;
   // Stroke rate now comes from the device accelerometer (peak-detection).
   const spm: number | null = sensors.motionStatus === 'live' ? sensors.spm : null;
+  const spmConfidence: number | null = sensors.motionStatus === 'live' ? sensors.spmConfidence : null;
   const laneOffsetMeters: number | null = null;
   const [targetHeadingDeg, setTargetHeadingDeg] = useState<number>(45);
 
@@ -601,6 +612,7 @@ const RowWindowLayout = () => {
               elapsedMs={elapsedMs}
               distanceMeters={liveDistance}
               spm={spm}
+              spmConfidence={spmConfidence}
               speedMs={liveSpeedMs}
               headingDeg={liveHeading}
               targetHeadingDeg={targetHeadingDeg}
@@ -679,6 +691,18 @@ const RowWindowLayout = () => {
           />
         </div>
       </nav>
+
+      {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === 'stroke' && (
+        <StrokeDebugPanel
+          subscribe={sensors.subscribeStrokeDebug}
+          activity={activity}
+          onActivityChange={setActivity}
+          startRecording={sensors.startStrokeRecording}
+          stopRecording={sensors.stopStrokeRecording}
+          isRecording={sensors.isStrokeRecording}
+          exportRecording={sensors.exportStrokeRecording}
+        />
+      )}
     </div>
   );
 };
@@ -1051,6 +1075,7 @@ interface OnWaterViewProps {
   elapsedMs: number;
   distanceMeters: number | null;
   spm: number | null;
+  spmConfidence: number | null;
   speedMs: number | null;
   headingDeg: number | null;
   targetHeadingDeg: number;
@@ -1074,7 +1099,7 @@ interface OnWaterViewProps {
 }
 
 const OnWaterView = ({
-  sessionState, elapsedMs, distanceMeters, spm, speedMs, headingDeg, targetHeadingDeg, onSetTarget,
+  sessionState, elapsedMs, distanceMeters, spm, spmConfidence, speedMs, headingDeg, targetHeadingDeg, onSetTarget,
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
@@ -1160,11 +1185,17 @@ const OnWaterView = ({
         <BigStat
           icon={<Activity className="w-4 h-4" />}
           label="Stroke Rate"
-          value={spm !== null ? `${Math.round(spm)}` : DASH}
-          sub="strokes / min"
+          value={spm !== null && (spmConfidence ?? 0) >= 0.4 ? `${Math.round(spm)}` : DASH}
+          sub={
+            spm === null
+              ? 'strokes / min'
+              : (spmConfidence ?? 0) < 0.4
+                ? 'warming up…'
+                : `strokes / min · ${Math.round((spmConfidence ?? 0) * 100)}%`
+          }
           accent="text-cyan-800"
           mono
-          pulse={sessionState === 'active' && spm !== null}
+          pulse={sessionState === 'active' && spm !== null && (spmConfidence ?? 0) >= 0.4}
         />
         <BigStat
           icon={<Gauge className="w-4 h-4" />}
