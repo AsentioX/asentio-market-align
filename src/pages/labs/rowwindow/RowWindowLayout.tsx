@@ -1063,6 +1063,7 @@ interface OnWaterViewProps {
   elapsedMs: number;
   distanceMeters: number | null;
   spm: number | null;
+  spmConfidence: number | null;
   speedMs: number | null;
   headingDeg: number | null;
   targetHeadingDeg: number;
@@ -1086,7 +1087,7 @@ interface OnWaterViewProps {
 }
 
 const OnWaterView = ({
-  sessionState, elapsedMs, distanceMeters, spm, speedMs, headingDeg, targetHeadingDeg, onSetTarget,
+  sessionState, elapsedMs, distanceMeters, spm, spmConfidence, speedMs, headingDeg, targetHeadingDeg, onSetTarget,
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
   onStart, onPauseResume, onEnd,
   sensors,
