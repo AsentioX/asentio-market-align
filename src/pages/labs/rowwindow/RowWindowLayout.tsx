@@ -1173,11 +1173,17 @@ const OnWaterView = ({
         <BigStat
           icon={<Activity className="w-4 h-4" />}
           label="Stroke Rate"
-          value={spm !== null ? `${Math.round(spm)}` : DASH}
-          sub="strokes / min"
+          value={spm !== null && (spmConfidence ?? 0) >= 0.4 ? `${Math.round(spm)}` : DASH}
+          sub={
+            spm === null
+              ? 'strokes / min'
+              : (spmConfidence ?? 0) < 0.4
+                ? 'warming up…'
+                : `strokes / min · ${Math.round((spmConfidence ?? 0) * 100)}%`
+          }
           accent="text-cyan-800"
           mono
-          pulse={sessionState === 'active' && spm !== null}
+          pulse={sessionState === 'active' && spm !== null && (spmConfidence ?? 0) >= 0.4}
         />
         <BigStat
           icon={<Gauge className="w-4 h-4" />}
