@@ -691,6 +691,18 @@ const RowWindowLayout = () => {
           />
         </div>
       </nav>
+
+      {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === 'stroke' && (
+        <StrokeDebugPanel
+          subscribe={sensors.subscribeStrokeDebug}
+          activity={activity}
+          onActivityChange={setActivity}
+          startRecording={sensors.startStrokeRecording}
+          stopRecording={sensors.stopStrokeRecording}
+          isRecording={sensors.isStrokeRecording}
+          exportRecording={sensors.exportStrokeRecording}
+        />
+      )}
     </div>
   );
 };
