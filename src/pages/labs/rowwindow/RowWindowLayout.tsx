@@ -1156,167 +1156,197 @@ const OnWaterView = ({
     );
   }
 
-  return (
-    <>
-      {/* Heading — full-width compass at top, no panel chrome */}
-      <section className="-mt-1 space-y-1">
-        {/* Compass strip — scales with screen width */}
-        <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
+  const compassSection = (
+    <section className="-mt-1 space-y-1">
+      <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
+      {laneOffsetMeters === null ? (
+        <button
+          type="button"
+          onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
+          disabled={headingDeg === null}
+          className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-white/70 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-white/5 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
+          title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
+        >
+          <span className="text-cyan-300 normal-case tracking-normal text-[11px] font-medium">
+            {headingDeg !== null ? 'Tap to set current heading as center' : 'Enable compass to set center'}
+          </span>
+        </button>
+      ) : (
+        <div className="text-center text-[10px] uppercase tracking-[0.15em] text-white/60 font-medium">
+          <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
+        </div>
+      )}
+    </section>
+  );
 
-        {/* Footer — Tap to set current heading as the new target center (when no GPS lane data). */}
-        {laneOffsetMeters === null ? (
-          <button
-            type="button"
-            onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
-            disabled={headingDeg === null}
-            className="w-full text-center text-[10px] uppercase tracking-[0.15em] text-white/70 font-semibold rounded-md px-2 py-1 -mx-2 hover:bg-white/5 disabled:hover:bg-transparent disabled:cursor-not-allowed transition"
-            title={headingDeg !== null ? 'Tap to set current heading as target' : 'Enable compass to set target'}
-          >
-            <span className="text-cyan-300 normal-case tracking-normal text-[11px] font-medium">
-              {headingDeg !== null ? 'Tap to set current heading as center' : 'Enable compass to set center'}
-            </span>
-          </button>
-        ) : (
-          <div className="text-center text-[10px] uppercase tracking-[0.15em] text-white/60 font-medium">
-            <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
-          </div>
-        )}
-      </section>
-
-      {children}
-
-      {/* Primary metrics row */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0">
-        <BigStat
-          icon={<Timer className="w-4 h-4" />}
-          label="Elapsed"
-          value={formatElapsed(elapsedMs)}
-          accent="text-cyan-800"
-          mono
-        />
-        <BigStat
-          icon={<Route className="w-4 h-4" />}
-          label="Distance"
-          value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)}` : DASH}
-          sub={distanceMeters !== null ? 'km' : 'GPS not connected'}
-          accent="text-cyan-800"
-          mono
-        />
-        <BigStat
-          icon={<Activity className="w-4 h-4" />}
-          label="Stroke Rate"
-          value={spm !== null && (spmConfidence ?? 0) >= 0.4 ? `${Math.round(spm)}` : DASH}
-          sub={
-            spm === null
-              ? 'strokes / min'
-              : (spmConfidence ?? 0) < 0.4
-                ? 'warming up…'
-                : `strokes / min · ${Math.round((spmConfidence ?? 0) * 100)}%`
-          }
-          accent="text-cyan-800"
-          mono
-          pulse={sessionState === 'active' && spm !== null && (spmConfidence ?? 0) >= 0.4}
-        />
-        <BigStat
-          icon={<Gauge className="w-4 h-4" />}
-          label="Pace"
-          value={paceLabel}
-          sub={paceLabel === DASH ? (speedMs === null ? 'GPS not connected' : 'Waiting for movement') : '/ 500 m'}
-          accent="text-cyan-800"
-          mono
-        />
-      </section>
-
-      {/* Heart rate */}
+  const metricsSection = (
+    <section className={orientation === 'landscape' ? 'grid grid-cols-4 gap-x-3 gap-y-0' : 'grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0'}>
       <BigStat
-        icon={<Heart className="w-4 h-4" />}
-        label="Heart Rate"
-        value={heartRate !== null ? `${heartRate}` : DASH}
-        sub={heartRate !== null ? 'bpm' : 'Not connected'}
-        accent="text-rose-700"
-        pulse={sessionState === 'active' && heartRate !== null}
+        icon={<Timer className="w-4 h-4" />}
+        label="Elapsed"
+        value={formatElapsed(elapsedMs)}
+        accent="text-cyan-800"
+        mono
       />
-
-      {/* Auto-detected workout pieces (turnaround + speed pickup) */}
-      <PiecesWidget
-        currentPiece={currentPiece}
-        pieces={pieces}
-        onClear={onClearPieces}
-        sessionActive={sessionState === 'active'}
+      <BigStat
+        icon={<Route className="w-4 h-4" />}
+        label="Distance"
+        value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)}` : DASH}
+        sub={distanceMeters !== null ? 'km' : 'GPS not connected'}
+        accent="text-cyan-800"
+        mono
       />
+      <BigStat
+        icon={<Activity className="w-4 h-4" />}
+        label="Stroke Rate"
+        value={spm !== null && (spmConfidence ?? 0) >= 0.4 ? `${Math.round(spm)}` : DASH}
+        sub={
+          spm === null
+            ? 'strokes / min'
+            : (spmConfidence ?? 0) < 0.4
+              ? 'warming up…'
+              : `strokes / min · ${Math.round((spmConfidence ?? 0) * 100)}%`
+        }
+        accent="text-cyan-800"
+        mono
+        pulse={sessionState === 'active' && spm !== null && (spmConfidence ?? 0) >= 0.4}
+      />
+      <BigStat
+        icon={<Gauge className="w-4 h-4" />}
+        label="Pace"
+        value={paceLabel}
+        sub={paceLabel === DASH ? (speedMs === null ? 'GPS not connected' : 'Waiting for movement') : '/ 500 m'}
+        accent="text-cyan-800"
+        mono
+      />
+    </section>
+  );
 
-      {/* Environment (Tide / Low Tide / Wind grouped like Pre-Row) */}
-      <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-stretch">
-        <div className="rounded-2xl border border-white/15 bg-white/5 p-3">
-          <div className="flex flex-row items-stretch divide-x divide-white/15">
-            <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
-              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
-                <Waves className="w-4 h-4" />
-                Tide
-              </div>
-              <div className="text-2xl font-bold text-white flex items-center gap-1.5 leading-tight mt-1">
-                {tide.height.toFixed(2)} ft
-                {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-400" aria-label="Rising" />}
-                {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-400" aria-label="Falling" />}
-              </div>
-              <div className={`text-[11px] mt-0.5 ${
-                direction === 'Flood' ? 'text-emerald-300'
-                : direction === 'Ebb' ? 'text-amber-300'
-                : 'text-white/60'
-              }`}>
-                {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
-              </div>
+  const heartRateSection = (
+    <BigStat
+      icon={<Heart className="w-4 h-4" />}
+      label="Heart Rate"
+      value={heartRate !== null ? `${heartRate}` : DASH}
+      sub={heartRate !== null ? 'bpm' : 'Not connected'}
+      accent="text-rose-700"
+      pulse={sessionState === 'active' && heartRate !== null}
+    />
+  );
+
+  const piecesSection = (
+    <PiecesWidget
+      currentPiece={currentPiece}
+      pieces={pieces}
+      onClear={onClearPieces}
+      sessionActive={sessionState === 'active'}
+    />
+  );
+
+  const environmentSection = (
+    <section className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-stretch">
+      <div className="rounded-2xl border border-white/15 bg-white/5 p-3">
+        <div className="flex flex-row items-stretch divide-x divide-white/15">
+          <div className="flex-1 px-3 sm:px-4 py-2 first:pl-0">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
+              <Waves className="w-4 h-4" />
+              Tide
             </div>
-            {lowTideMarker && (
-              <div className="flex-1 px-3 sm:px-4 py-2">
-                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
-                  <ArrowDown className="w-4 h-4" />
-                  Low tide
-                </div>
-                <div className="text-2xl font-bold text-white leading-tight mt-1">
-                  {lowTideMarker.mode === 'to' ? 'in ' : ''}
-                  {(() => {
-                    const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
-                    const h = Math.floor(mins / 60);
-                    const m = mins % 60;
-                    return h > 0 ? `${h}h ${m}m` : `${m}m`;
-                  })()}
-                </div>
-                <div className="text-[11px] text-white/60 mt-0.5 font-mono">
-                  {lowTideMarker.mode === 'to' ? 'at ' : 'since '}
-                  {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-                </div>
-              </div>
-            )}
+            <div className="text-2xl font-bold text-white flex items-center gap-1.5 leading-tight mt-1">
+              {tide.height.toFixed(2)} ft
+              {direction === 'Flood' && <ArrowUp className="w-4 h-4 text-emerald-400" aria-label="Rising" />}
+              {direction === 'Ebb' && <ArrowDown className="w-4 h-4 text-amber-400" aria-label="Falling" />}
+            </div>
+            <div className={`text-[11px] mt-0.5 ${
+              direction === 'Flood' ? 'text-emerald-300'
+              : direction === 'Ebb' ? 'text-amber-300'
+              : 'text-white/60'
+            }`}>
+              {direction === 'Flood' ? 'Rising' : direction === 'Ebb' ? 'Falling' : 'Slack'}
+            </div>
+          </div>
+          {lowTideMarker && (
             <div className="flex-1 px-3 sm:px-4 py-2">
               <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
-                <Wind className="w-4 h-4" />
-                Wind
+                <ArrowDown className="w-4 h-4" />
+                Low tide
               </div>
-              <div className="text-2xl font-bold mt-1 text-white leading-tight">{wind.speedKnots} kt</div>
-              <div className="text-[11px] text-white/60 mt-0.5">from {wind.directionLabel}</div>
+              <div className="text-2xl font-bold text-white leading-tight mt-1">
+                {lowTideMarker.mode === 'to' ? 'in ' : ''}
+                {(() => {
+                  const mins = Math.max(0, Math.round(Math.abs(lowTideMarker.t - now) / 60_000));
+                  const h = Math.floor(mins / 60);
+                  const m = mins % 60;
+                  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+                })()}
+              </div>
+              <div className="text-[11px] text-white/60 mt-0.5 font-mono">
+                {lowTideMarker.mode === 'to' ? 'at ' : 'since '}
+                {new Date(lowTideMarker.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+              </div>
             </div>
+          )}
+          <div className="flex-1 px-3 sm:px-4 py-2">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-white/70">
+              <Wind className="w-4 h-4" />
+              Wind
+            </div>
+            <div className="text-2xl font-bold mt-1 text-white leading-tight">{wind.speedKnots} kt</div>
+            <div className="text-[11px] text-white/60 mt-0.5">from {wind.directionLabel}</div>
           </div>
         </div>
-      </section>
-
-      {/* Session controls — Pause / End Row on one line */}
-      <div className="flex gap-2">
-        <button
-          onClick={onPauseResume}
-          className="flex-1 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
-        >
-          {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
-        </button>
-        <button
-          onClick={onEnd}
-          className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 border border-rose-500/40 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
-        >
-          <Square className="w-4 h-4" /> End Row
-        </button>
       </div>
+    </section>
+  );
 
-      {/* Sensors */}
+  const controlsSection = (
+    <div className="flex gap-2">
+      <button
+        onClick={onPauseResume}
+        className="flex-1 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+      >
+        {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
+      </button>
+      <button
+        onClick={onEnd}
+        className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 border border-rose-500/40 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+      >
+        <Square className="w-4 h-4" /> End Row
+      </button>
+    </div>
+  );
+
+  if (orientation === 'landscape') {
+    // Landscape: two-column layout. Compass spans top, map + pieces on the
+    // left, primary metrics + HR + environment + controls on the right.
+    return (
+      <>
+        {compassSection}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-3 min-w-0">
+            {children}
+            {piecesSection}
+          </div>
+          <div className="space-y-3 min-w-0">
+            {metricsSection}
+            {heartRateSection}
+            {environmentSection}
+            {controlsSection}
+          </div>
+        </div>
+        <SensorsPanel sensors={sensors} />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {compassSection}
+      {children}
+      {metricsSection}
+      {heartRateSection}
+      {piecesSection}
+      {environmentSection}
+      {controlsSection}
       <SensorsPanel sensors={sensors} />
     </>
   );
