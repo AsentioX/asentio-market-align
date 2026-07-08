@@ -1098,6 +1098,25 @@ interface OnWaterViewProps {
   children?: React.ReactNode;
 }
 
+// Track viewport orientation live so the on-water layout can reflow when the
+// user rotates the phone mid-session.
+function useOrientation(): 'landscape' | 'portrait' {
+  const [o, setO] = useState<'landscape' | 'portrait'>(() => {
+    if (typeof window === 'undefined') return 'portrait';
+    return window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+  });
+  useEffect(() => {
+    const update = () => setO(window.innerWidth > window.innerHeight ? 'landscape' : 'portrait');
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+    };
+  }, []);
+  return o;
+}
+
 const OnWaterView = ({
   sessionState, elapsedMs, distanceMeters, spm, spmConfidence, speedMs, headingDeg, targetHeadingDeg, onSetTarget,
   laneOffsetMeters, heartRate, wind, tide, direction, nextLowTurn, lowTideMarker, now,
@@ -1106,6 +1125,7 @@ const OnWaterView = ({
   pieces, currentPiece, onClearPieces,
   children,
 }: OnWaterViewProps) => {
+  const orientation = useOrientation();
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   // Pace derives from real GPS ground speed (seconds per 500 m).
   const pacePer500 = speedMs && speedMs > 0.2 ? 500 / speedMs : 0;
