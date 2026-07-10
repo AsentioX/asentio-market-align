@@ -426,9 +426,13 @@ const RowWindowLayout = () => {
     red: { label: 'STOP — Do Not Launch', dotClass: 'bg-rose-500 shadow-[0_0_24px_hsl(355_85%_55%/0.7)]', textClass: 'text-rose-700' },
   }[assessment.status];
 
+  const orientation = useOrientation();
+  const hideNavInLandscape = orientation === 'landscape' && tab === 'on';
+
   return (
-    <div className={`min-h-screen pb-24 ${tab === 'on' ? 'bg-black text-white' : 'bg-[hsl(210_40%_97%)] text-slate-900'}`}>
+    <div className={`min-h-screen ${hideNavInLandscape ? '' : 'pb-24'} ${tab === 'on' ? 'bg-black text-white' : 'bg-[hsl(210_40%_97%)] text-slate-900'}`}>
       {/* Top bar */}
+      {!hideNavInLandscape && (
       <header className={`border-b backdrop-blur-md sticky top-0 z-10 ${tab === 'on' ? 'border-white/10 bg-black/80' : 'border-slate-200 bg-[hsl(210_40%_99%)]/80'}`}>
         <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
