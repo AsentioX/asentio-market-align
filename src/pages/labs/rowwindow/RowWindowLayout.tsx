@@ -1361,9 +1361,11 @@ const OnWaterView = ({
 const HorizontalCompass = ({
   headingDeg,
   targetHeadingDeg,
+  className = 'h-[96px]',
 }: {
   headingDeg: number | null;
   targetHeadingDeg: number;
+  className?: string;
 }) => {
   // Visible field of view in degrees
   const FOV = 130;
@@ -1418,7 +1420,7 @@ const HorizontalCompass = ({
 
   return (
     <div className="relative w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[96px]" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className={cn('w-full', className)} preserveAspectRatio="none">
         <defs>
           {/* Edge fade — content disappears into black margins */}
           <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
