@@ -426,9 +426,13 @@ const RowWindowLayout = () => {
     red: { label: 'STOP — Do Not Launch', dotClass: 'bg-rose-500 shadow-[0_0_24px_hsl(355_85%_55%/0.7)]', textClass: 'text-rose-700' },
   }[assessment.status];
 
+  const orientation = useOrientation();
+  const hideNavInLandscape = orientation === 'landscape' && tab === 'on';
+
   return (
-    <div className={`min-h-screen pb-24 ${tab === 'on' ? 'bg-black text-white' : 'bg-[hsl(210_40%_97%)] text-slate-900'}`}>
+    <div className={`min-h-screen ${hideNavInLandscape ? '' : 'pb-24'} ${tab === 'on' ? 'bg-black text-white' : 'bg-[hsl(210_40%_97%)] text-slate-900'}`}>
       {/* Top bar */}
+      {!hideNavInLandscape && (
       <header className={`border-b backdrop-blur-md sticky top-0 z-10 ${tab === 'on' ? 'border-white/10 bg-black/80' : 'border-slate-200 bg-[hsl(210_40%_99%)]/80'}`}>
         <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -545,6 +549,7 @@ const RowWindowLayout = () => {
           </div>
         </div>
       </header>
+      )}
 
       <main className="max-w-6xl mx-auto px-4 pt-1 pb-4 space-y-3">
         {tab === 'pre' && (
@@ -665,6 +670,7 @@ const RowWindowLayout = () => {
 
 
       {/* Bottom tab bar */}
+      {!hideNavInLandscape && (
       <nav className={`fixed bottom-0 inset-x-0 z-[600] border-t backdrop-blur-md pb-[env(safe-area-inset-bottom)] ${tab === 'on' ? 'border-white/10 bg-black/95' : 'border-slate-200 bg-[hsl(210_40%_99%)]/95'}`}>
         <div className="max-w-6xl mx-auto grid grid-cols-3">
           <TabButton
@@ -691,6 +697,7 @@ const RowWindowLayout = () => {
           />
         </div>
       </nav>
+      )}
 
       {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === 'stroke' && (
         <StrokeDebugPanel
@@ -1189,12 +1196,12 @@ const OnWaterView = ({
         mono
       />
       <BigStat
-        icon={<Route className="w-4 h-4" />}
-        label="Distance"
-        value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)}` : DASH}
-        sub={distanceMeters !== null ? 'km' : 'GPS not connected'}
-        accent="text-cyan-800"
-        mono
+        icon={<Heart className="w-4 h-4" />}
+        label="Heart Rate"
+        value={heartRate !== null ? `${heartRate}` : DASH}
+        sub={heartRate !== null ? 'bpm' : 'Not connected'}
+        accent="text-rose-700"
+        pulse={sessionState === 'active' && heartRate !== null}
       />
       <BigStat
         icon={<Activity className="w-4 h-4" />}
@@ -1220,17 +1227,6 @@ const OnWaterView = ({
         mono
       />
     </section>
-  );
-
-  const heartRateSection = (
-    <BigStat
-      icon={<Heart className="w-4 h-4" />}
-      label="Heart Rate"
-      value={heartRate !== null ? `${heartRate}` : DASH}
-      sub={heartRate !== null ? 'bpm' : 'Not connected'}
-      accent="text-rose-700"
-      pulse={sessionState === 'active' && heartRate !== null}
-    />
   );
 
   const piecesSection = (
@@ -1320,15 +1316,14 @@ const OnWaterView = ({
     // left, primary metrics + HR + environment + controls on the right.
     return (
       <>
-        {compassSection}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-3 min-w-0">
+            {compassSection}
             {children}
             {piecesSection}
           </div>
           <div className="space-y-3 min-w-0">
             {metricsSection}
-            {heartRateSection}
             {environmentSection}
             {controlsSection}
           </div>
@@ -1343,7 +1338,6 @@ const OnWaterView = ({
       {compassSection}
       {children}
       {metricsSection}
-      {heartRateSection}
       {piecesSection}
       {environmentSection}
       {controlsSection}
