@@ -549,6 +549,7 @@ const RowWindowLayout = () => {
           </div>
         </div>
       </header>
+      )}
 
       <main className="max-w-6xl mx-auto px-4 pt-1 pb-4 space-y-3">
         {tab === 'pre' && (
