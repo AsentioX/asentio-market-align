@@ -1316,15 +1316,14 @@ const OnWaterView = ({
     // left, primary metrics + HR + environment + controls on the right.
     return (
       <>
-        {compassSection}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-3 min-w-0">
+            {compassSection}
             {children}
             {piecesSection}
           </div>
           <div className="space-y-3 min-w-0">
             {metricsSection}
-            {heartRateSection}
             {environmentSection}
             {controlsSection}
           </div>
@@ -1339,7 +1338,6 @@ const OnWaterView = ({
       {compassSection}
       {children}
       {metricsSection}
-      {heartRateSection}
       {piecesSection}
       {environmentSection}
       {controlsSection}
