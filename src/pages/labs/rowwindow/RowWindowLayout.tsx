@@ -1196,12 +1196,12 @@ const OnWaterView = ({
         mono
       />
       <BigStat
-        icon={<Route className="w-4 h-4" />}
-        label="Distance"
-        value={distanceMeters !== null ? `${(distanceMeters / 1000).toFixed(2)}` : DASH}
-        sub={distanceMeters !== null ? 'km' : 'GPS not connected'}
-        accent="text-cyan-800"
-        mono
+        icon={<Heart className="w-4 h-4" />}
+        label="Heart Rate"
+        value={heartRate !== null ? `${heartRate}` : DASH}
+        sub={heartRate !== null ? 'bpm' : 'Not connected'}
+        accent="text-rose-700"
+        pulse={sessionState === 'active' && heartRate !== null}
       />
       <BigStat
         icon={<Activity className="w-4 h-4" />}
@@ -1227,17 +1227,6 @@ const OnWaterView = ({
         mono
       />
     </section>
-  );
-
-  const heartRateSection = (
-    <BigStat
-      icon={<Heart className="w-4 h-4" />}
-      label="Heart Rate"
-      value={heartRate !== null ? `${heartRate}` : DASH}
-      sub={heartRate !== null ? 'bpm' : 'Not connected'}
-      accent="text-rose-700"
-      pulse={sessionState === 'active' && heartRate !== null}
-    />
   );
 
   const piecesSection = (
