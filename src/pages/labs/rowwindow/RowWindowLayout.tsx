@@ -1191,8 +1191,9 @@ const OnWaterView = ({
   );
 
   const metricsSection = (
-    <section className={orientation === 'landscape' ? 'grid grid-cols-4 gap-x-3 gap-y-0' : 'grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0'}>
+    <section className={orientation === 'landscape' ? 'grid grid-cols-2 gap-x-3 gap-y-0' : 'grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0'}>
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Timer className="w-4 h-4" />}
         label="Elapsed"
         value={formatElapsed(elapsedMs)}
@@ -1200,6 +1201,7 @@ const OnWaterView = ({
         mono
       />
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Heart className="w-4 h-4" />}
         label="Heart Rate"
         value={heartRate !== null ? `${heartRate}` : DASH}
@@ -1208,6 +1210,7 @@ const OnWaterView = ({
         pulse={sessionState === 'active' && heartRate !== null}
       />
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Activity className="w-4 h-4" />}
         label="Stroke Rate"
         value={spm !== null && (spmConfidence ?? 0) >= 0.4 ? `${Math.round(spm)}` : DASH}
@@ -1223,6 +1226,7 @@ const OnWaterView = ({
         pulse={sessionState === 'active' && spm !== null && (spmConfidence ?? 0) >= 0.4}
       />
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Gauge className="w-4 h-4" />}
         label="Pace"
         value={paceLabel}
