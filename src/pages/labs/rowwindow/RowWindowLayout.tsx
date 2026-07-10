@@ -1164,9 +1164,13 @@ const OnWaterView = ({
   }
 
   const compassSection = (
-    <section className="-mt-1 space-y-1">
-      <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
-      {laneOffsetMeters === null ? (
+    <section className={cn('-mt-1 space-y-1', orientation === 'landscape' && 'h-[50px]')}>
+      <HorizontalCompass
+        headingDeg={headingDeg}
+        targetHeadingDeg={targetHeadingDeg}
+        className={orientation === 'landscape' ? 'h-[50px]' : 'h-[96px]'}
+      />
+      {orientation !== 'landscape' && (laneOffsetMeters === null ? (
         <button
           type="button"
           onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
@@ -1182,7 +1186,7 @@ const OnWaterView = ({
         <div className="text-center text-[10px] uppercase tracking-[0.15em] text-white/60 font-medium">
           <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
         </div>
-      )}
+      ))}
     </section>
   );
 
