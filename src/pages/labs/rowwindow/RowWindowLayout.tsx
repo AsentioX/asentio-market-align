@@ -1164,9 +1164,13 @@ const OnWaterView = ({
   }
 
   const compassSection = (
-    <section className="-mt-1 space-y-1">
-      <HorizontalCompass headingDeg={headingDeg} targetHeadingDeg={targetHeadingDeg} />
-      {laneOffsetMeters === null ? (
+    <section className={cn('-mt-1 space-y-1', orientation === 'landscape' && 'h-[50px]')}>
+      <HorizontalCompass
+        headingDeg={headingDeg}
+        targetHeadingDeg={targetHeadingDeg}
+        className={orientation === 'landscape' ? 'h-[50px]' : 'h-[96px]'}
+      />
+      {orientation !== 'landscape' && (laneOffsetMeters === null ? (
         <button
           type="button"
           onClick={() => { if (headingDeg !== null) onSetTarget(Math.round(headingDeg)); }}
@@ -1182,13 +1186,14 @@ const OnWaterView = ({
         <div className="text-center text-[10px] uppercase tracking-[0.15em] text-white/60 font-medium">
           <span className="normal-case tracking-normal">{degLabel(targetHeadingDeg)} bearing</span>
         </div>
-      )}
+      ))}
     </section>
   );
 
   const metricsSection = (
-    <section className={orientation === 'landscape' ? 'grid grid-cols-4 gap-x-3 gap-y-0' : 'grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0'}>
+    <section className={orientation === 'landscape' ? 'grid grid-cols-2 gap-x-3 gap-y-0' : 'grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0'}>
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Timer className="w-4 h-4" />}
         label="Elapsed"
         value={formatElapsed(elapsedMs)}
@@ -1196,6 +1201,7 @@ const OnWaterView = ({
         mono
       />
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Heart className="w-4 h-4" />}
         label="Heart Rate"
         value={heartRate !== null ? `${heartRate}` : DASH}
@@ -1204,6 +1210,7 @@ const OnWaterView = ({
         pulse={sessionState === 'active' && heartRate !== null}
       />
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Activity className="w-4 h-4" />}
         label="Stroke Rate"
         value={spm !== null && (spmConfidence ?? 0) >= 0.4 ? `${Math.round(spm)}` : DASH}
@@ -1219,6 +1226,7 @@ const OnWaterView = ({
         pulse={sessionState === 'active' && spm !== null && (spmConfidence ?? 0) >= 0.4}
       />
       <BigStat
+        compact={orientation === 'landscape'}
         icon={<Gauge className="w-4 h-4" />}
         label="Pace"
         value={paceLabel}
@@ -1357,9 +1365,11 @@ const OnWaterView = ({
 const HorizontalCompass = ({
   headingDeg,
   targetHeadingDeg,
+  className = 'h-[96px]',
 }: {
   headingDeg: number | null;
   targetHeadingDeg: number;
+  className?: string;
 }) => {
   // Visible field of view in degrees
   const FOV = 130;
@@ -1414,7 +1424,7 @@ const HorizontalCompass = ({
 
   return (
     <div className="relative w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[96px]" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className={cn('w-full', className)} preserveAspectRatio="none">
         <defs>
           {/* Edge fade — content disappears into black margins */}
           <linearGradient id="compass-fade" x1="0" x2="1" y1="0" y2="0">
@@ -1975,15 +1985,18 @@ const InlineStat = ({ icon, label, value, sub }: { icon: React.ReactNode; label:
 );
 
 const BigStat = ({
-  icon, label, value, sub, accent, mono = false, pulse = false,
-}: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean }) => (
-  <div className="px-2 py-3 border-b border-white/15 min-w-0">
+  icon, label, value, sub, accent, mono = false, pulse = false, compact = false,
+}: { icon: React.ReactNode; label: string; value: string; sub?: string; accent?: string; mono?: boolean; pulse?: boolean; compact?: boolean }) => (
+  <div className={cn('px-2 py-3 border-b border-white/15 min-w-0', compact && 'py-2')}>
     <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-white/70 font-semibold">
       <span className={pulse ? 'animate-pulse' : ''}>{icon}</span>
       {label}
     </div>
-    <div className={`${mono ? 'font-mono' : ''} text-5xl md:text-7xl lg:text-8xl font-black mt-1 leading-[0.95] tracking-tight text-white whitespace-nowrap`}>{value}</div>
-    {sub && <div className="text-xs text-white/60 mt-1.5 uppercase tracking-wider">{sub}</div>}
+    <div className={cn(
+      `${mono ? 'font-mono' : ''} font-black mt-1 leading-[0.95] tracking-tight text-white whitespace-nowrap`,
+      compact ? 'text-3xl md:text-4xl' : 'text-5xl md:text-7xl lg:text-8xl'
+    )}>{value}</div>
+    {sub && <div className={cn('text-xs text-white/60 mt-1.5 uppercase tracking-wider', compact && 'text-[10px] mt-1')}>{sub}</div>}
   </div>
 );
 
