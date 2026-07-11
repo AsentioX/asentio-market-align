@@ -1379,17 +1379,23 @@ const HorizontalCompass = ({
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
 
-  // Build tick marks every 5°, labels every 30°
+  // Build tick marks every 5°, labels only at cardinal/intercardinal points
   const ticks: { deg: number; label?: string; major: boolean; cardinal?: string }[] = [];
+  const CARDINALS: Record<number, string> = {
+    0: 'N',
+    45: 'NE',
+    90: 'E',
+    135: 'SE',
+    180: 'S',
+    225: 'SW',
+    270: 'W',
+    315: 'NW',
+  };
   for (let raw = -360; raw <= 720; raw += 5) {
     const norm = ((raw % 360) + 360) % 360;
+    const cardinal = CARDINALS[norm];
     const major = raw % 30 === 0;
-    let cardinal: string | undefined;
-    if (norm === 0) cardinal = 'N';
-    else if (norm === 90) cardinal = 'E';
-    else if (norm === 180) cardinal = 'S';
-    else if (norm === 270) cardinal = 'W';
-    ticks.push({ deg: raw, label: major ? (cardinal ?? String(norm)) : undefined, major, cardinal });
+    ticks.push({ deg: raw, label: cardinal, major, cardinal });
   }
 
   const xFor = (deg: number) => {
