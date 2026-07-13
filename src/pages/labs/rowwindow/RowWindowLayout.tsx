@@ -1164,11 +1164,11 @@ const OnWaterView = ({
   }
 
   const compassSection = (
-    <section className={cn('-mt-1 space-y-1', orientation === 'landscape' && 'h-[50px]')}>
+    <section className={cn('-mt-1 space-y-1', orientation === 'landscape' && 'h-[25px]')}>
       <HorizontalCompass
         headingDeg={headingDeg}
         targetHeadingDeg={targetHeadingDeg}
-        className={orientation === 'landscape' ? 'h-[50px]' : 'h-[96px]'}
+        className={orientation === 'landscape' ? 'h-[25px]' : 'h-[48px]'}
       />
       {orientation !== 'landscape' && (laneOffsetMeters === null ? (
         <button
