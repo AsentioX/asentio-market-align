@@ -1447,7 +1447,7 @@ const HorizontalCompass = ({
         <rect x="0" y="0" width={W} height={H} rx="6" fill="hsl(0 0% 4%)" />
 
         {/* Pointer glow halo behind center */}
-        <ellipse cx={cx} cy={H / 2} rx="56" ry="28" fill="url(#pointer-glow)" />
+        <ellipse cx={cx} cy={H / 2} rx="28" ry="14" fill="url(#pointer-glow)" />
 
         {/* Ticks + labels */}
         <g opacity={headingDeg !== null ? 1 : 0.45}>
