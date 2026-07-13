@@ -1164,11 +1164,11 @@ const OnWaterView = ({
   }
 
   const compassSection = (
-    <section className={cn('-mt-1 space-y-1', orientation === 'landscape' && 'h-[50px]')}>
+    <section className={cn('-mt-1 space-y-1', orientation === 'landscape' && 'h-[25px]')}>
       <HorizontalCompass
         headingDeg={headingDeg}
         targetHeadingDeg={targetHeadingDeg}
-        className={orientation === 'landscape' ? 'h-[50px]' : 'h-[96px]'}
+        className={orientation === 'landscape' ? 'h-[25px]' : 'h-[48px]'}
       />
       {orientation !== 'landscape' && (laneOffsetMeters === null ? (
         <button
@@ -1365,7 +1365,7 @@ const OnWaterView = ({
 const HorizontalCompass = ({
   headingDeg,
   targetHeadingDeg,
-  className = 'h-[96px]',
+  className = 'h-[48px]',
 }: {
   headingDeg: number | null;
   targetHeadingDeg: number;
@@ -1374,7 +1374,7 @@ const HorizontalCompass = ({
   // Visible field of view in degrees
   const FOV = 130;
   const W = 320; // viewBox width
-  const H = 96;  // viewBox height (taller — labels span full height)
+  const H = 48;  // viewBox height (taller — labels span full height)
   const pxPerDeg = W / FOV;
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
@@ -1399,8 +1399,8 @@ const HorizontalCompass = ({
   const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
   // Ticks span the full height of the strip; labels sit inline (vertically centered) between them.
-  const tickTop = 6;
-  const tickBottom = H - 6;
+  const tickTop = 3;
+  const tickBottom = H - 3;
   const labelY = H / 2;
   const ORANGE = 'hsl(22 95% 58%)';
 
@@ -1447,7 +1447,7 @@ const HorizontalCompass = ({
         <rect x="0" y="0" width={W} height={H} rx="6" fill="hsl(0 0% 4%)" />
 
         {/* Pointer glow halo behind center */}
-        <ellipse cx={cx} cy={H / 2} rx="56" ry="28" fill="url(#pointer-glow)" />
+        <ellipse cx={cx} cy={H / 2} rx="28" ry="14" fill="url(#pointer-glow)" />
 
         {/* Ticks + labels */}
         <g opacity={headingDeg !== null ? 1 : 0.45}>
@@ -1467,7 +1467,7 @@ const HorizontalCompass = ({
                     x1={x} x2={x}
                     y1={tickTop} y2={tickBottom}
                     stroke="hsl(0 0% 100%)"
-                    strokeWidth={t.major ? 4 : 2}
+                    strokeWidth={t.major ? 2 : 1}
                     strokeLinecap="round"
                   />
                 )}
@@ -1477,7 +1477,7 @@ const HorizontalCompass = ({
                     y={labelY}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={t.cardinal ? 56 : 44}
+                    fontSize={t.cardinal ? 28 : 22}
                     fontWeight="800"
                     fill={isCentered ? ORANGE : 'hsl(0 0% 100%)'}
                     fontFamily={labelFont}
@@ -1516,12 +1516,12 @@ const HorizontalCompass = ({
         {/* Center pointer — orange diamond at the very top */}
         <g>
           <polygon
-            points={`${cx},0 ${cx + 9},10 ${cx},20 ${cx - 9},10`}
+            points={`${cx},0 ${cx + 5},6 ${cx},12 ${cx - 5},6`}
             fill={ORANGE}
             stroke="hsl(0 0% 4%)"
             strokeWidth="1.5"
           />
-          <circle cx={cx} cy={10} r="2" fill="hsl(0 0% 4%)" />
+          <circle cx={cx} cy={6} r="1.5" fill="hsl(0 0% 4%)" />
         </g>
       </svg>
     </div>
