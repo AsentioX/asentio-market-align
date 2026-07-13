@@ -1467,7 +1467,7 @@ const HorizontalCompass = ({
                     x1={x} x2={x}
                     y1={tickTop} y2={tickBottom}
                     stroke="hsl(0 0% 100%)"
-                    strokeWidth={t.major ? 4 : 2}
+                    strokeWidth={t.major ? 2 : 1}
                     strokeLinecap="round"
                   />
                 )}
