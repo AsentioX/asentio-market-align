@@ -1365,7 +1365,7 @@ const OnWaterView = ({
 const HorizontalCompass = ({
   headingDeg,
   targetHeadingDeg,
-  className = 'h-[96px]',
+  className = 'h-[48px]',
 }: {
   headingDeg: number | null;
   targetHeadingDeg: number;
