@@ -1374,7 +1374,7 @@ const HorizontalCompass = ({
   // Visible field of view in degrees
   const FOV = 130;
   const W = 320; // viewBox width
-  const H = 96;  // viewBox height (taller — labels span full height)
+  const H = 48;  // viewBox height (taller — labels span full height)
   const pxPerDeg = W / FOV;
   const cx = W / 2;
   const heading = headingDeg ?? targetHeadingDeg;
