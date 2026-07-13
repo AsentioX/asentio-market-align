@@ -1516,12 +1516,12 @@ const HorizontalCompass = ({
         {/* Center pointer — orange diamond at the very top */}
         <g>
           <polygon
-            points={`${cx},0 ${cx + 9},10 ${cx},20 ${cx - 9},10`}
+            points={`${cx},0 ${cx + 5},6 ${cx},12 ${cx - 5},6`}
             fill={ORANGE}
             stroke="hsl(0 0% 4%)"
             strokeWidth="1.5"
           />
-          <circle cx={cx} cy={10} r="2" fill="hsl(0 0% 4%)" />
+          <circle cx={cx} cy={6} r="1.5" fill="hsl(0 0% 4%)" />
         </g>
       </svg>
     </div>
