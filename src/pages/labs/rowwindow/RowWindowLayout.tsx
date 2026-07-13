@@ -1194,14 +1194,6 @@ const OnWaterView = ({
     <section className={orientation === 'landscape' ? 'grid grid-cols-2 gap-x-3 gap-y-0' : 'grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0'}>
       <BigStat
         compact={orientation === 'landscape'}
-        icon={<Timer className="w-4 h-4" />}
-        label="Elapsed"
-        value={formatElapsed(elapsedMs)}
-        accent="text-cyan-800"
-        mono
-      />
-      <BigStat
-        compact={orientation === 'landscape'}
         icon={<Heart className="w-4 h-4" />}
         label="Heart Rate"
         value={heartRate !== null ? `${heartRate}` : DASH}
@@ -1231,6 +1223,14 @@ const OnWaterView = ({
         label="Pace"
         value={paceLabel}
         sub={paceLabel === DASH ? (speedMs === null ? 'GPS not connected' : 'Waiting for movement') : '/ 500 m'}
+        accent="text-cyan-800"
+        mono
+      />
+      <BigStat
+        compact={orientation === 'landscape'}
+        icon={<Timer className="w-4 h-4" />}
+        label="Elapsed"
+        value={formatElapsed(elapsedMs)}
         accent="text-cyan-800"
         mono
       />
@@ -1324,17 +1324,19 @@ const OnWaterView = ({
     // left, primary metrics + HR + environment + controls on the right.
     return (
       <>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-3 min-w-0">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-3 min-w-0 col-span-1">
             {compassSection}
             {children}
-            {piecesSection}
           </div>
-          <div className="space-y-3 min-w-0">
+          <div className="space-y-3 min-w-0 col-span-2">
             {metricsSection}
-            {environmentSection}
             {controlsSection}
           </div>
+        </div>
+        <div className="mt-[100vh] space-y-3">
+          {piecesSection}
+          {environmentSection}
         </div>
         <SensorsPanel sensors={sensors} />
       </>
