@@ -1399,8 +1399,8 @@ const HorizontalCompass = ({
   const labelFont = 'ui-sans-serif, system-ui, sans-serif';
 
   // Ticks span the full height of the strip; labels sit inline (vertically centered) between them.
-  const tickTop = 6;
-  const tickBottom = H - 6;
+  const tickTop = 3;
+  const tickBottom = H - 3;
   const labelY = H / 2;
   const ORANGE = 'hsl(22 95% 58%)';
 
