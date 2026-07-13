@@ -1194,14 +1194,6 @@ const OnWaterView = ({
     <section className={orientation === 'landscape' ? 'grid grid-cols-2 gap-x-3 gap-y-0' : 'grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-0'}>
       <BigStat
         compact={orientation === 'landscape'}
-        icon={<Timer className="w-4 h-4" />}
-        label="Elapsed"
-        value={formatElapsed(elapsedMs)}
-        accent="text-cyan-800"
-        mono
-      />
-      <BigStat
-        compact={orientation === 'landscape'}
         icon={<Heart className="w-4 h-4" />}
         label="Heart Rate"
         value={heartRate !== null ? `${heartRate}` : DASH}
@@ -1231,6 +1223,14 @@ const OnWaterView = ({
         label="Pace"
         value={paceLabel}
         sub={paceLabel === DASH ? (speedMs === null ? 'GPS not connected' : 'Waiting for movement') : '/ 500 m'}
+        accent="text-cyan-800"
+        mono
+      />
+      <BigStat
+        compact={orientation === 'landscape'}
+        icon={<Timer className="w-4 h-4" />}
+        label="Elapsed"
+        value={formatElapsed(elapsedMs)}
         accent="text-cyan-800"
         mono
       />
