@@ -1324,17 +1324,19 @@ const OnWaterView = ({
     // left, primary metrics + HR + environment + controls on the right.
     return (
       <>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-3 min-w-0">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-3 min-w-0 col-span-1">
             {compassSection}
             {children}
-            {piecesSection}
           </div>
-          <div className="space-y-3 min-w-0">
+          <div className="space-y-3 min-w-0 col-span-2">
             {metricsSection}
-            {environmentSection}
             {controlsSection}
           </div>
+        </div>
+        <div className="mt-[100vh] space-y-3">
+          {piecesSection}
+          {environmentSection}
         </div>
         <SensorsPanel sensors={sensors} />
       </>
