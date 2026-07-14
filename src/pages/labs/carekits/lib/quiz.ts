@@ -61,6 +61,10 @@ export const QUIZ: QuizQuestion[] = [
     options: [{ label: 'Yes', value: 'yes' }, { label: 'Maybe', value: 'maybe' }, { label: 'No', value: 'no' }] },
   { key: 'cameras', q: 'Would they be comfortable with cameras in the home?',
     options: [{ label: 'Yes', value: 'yes' }, { label: 'Only outside', value: 'outside' }, { label: 'No', value: 'no' }] },
+  { key: 'voiceAssistant', q: 'Do they already use Alexa, Google Home, or Siri?',
+    options: [{ label: 'Yes, comfortable', value: 'yes' }, { label: 'Tried it', value: 'some' }, { label: 'No', value: 'no' }] },
+  { key: 'overnight', q: 'Would overnight monitoring give you peace of mind?',
+    options: [{ label: 'Yes', value: 'yes' }, { label: 'Only if unobtrusive', value: 'passive' }, { label: 'No', value: 'no' }] },
   { key: 'privacy', q: 'How important is privacy to your parent?',
     options: [
       { label: 'Very important', value: 'high' },
@@ -68,7 +72,22 @@ export const QUIZ: QuizQuestion[] = [
       { label: 'Not a concern', value: 'low' },
     ]
   },
-  { key: 'budget', q: 'What is your approximate budget?',
+  { key: 'budget', q: 'What is your approximate upfront budget?',
+    options: [
+      { label: 'Under $200', value: 'xs' },
+      { label: '$200 – $500', value: 'low' },
+      { label: '$500 – $1,000', value: 'mid' },
+      { label: '$1,000+', value: 'high' },
+    ]
+  },
+  { key: 'monthlyFee', q: 'Monthly subscription preference?',
+    options: [
+      { label: 'No monthly fees', value: 'none' },
+      { label: 'Under $10/month', value: 'low' },
+      { label: 'Under $25/month', value: 'mid' },
+      { label: 'No preference', value: 'any' },
+    ]
+  },
     options: [
       { label: 'Under $300', value: 'low' },
       { label: '$300 – $800', value: 'mid' },
