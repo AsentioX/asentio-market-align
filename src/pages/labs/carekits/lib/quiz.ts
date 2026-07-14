@@ -1,9 +1,9 @@
 // Assessment quiz: questions, scoring, recommendation logic
 
 export type QuizKey =
-  | 'livesAlone' | 'fellPast12' | 'mobilityAid' | 'dailyMeds' | 'forgetsMeds'
-  | 'memoryWandering' | 'cooksAlone' | 'wearable' | 'cameras'
-  | 'privacy' | 'budget' | 'setup';
+  | 'livesAlone' | 'stairs' | 'wifi' | 'fellPast12' | 'mobilityAid' | 'dailyMeds' | 'forgetsMeds'
+  | 'memoryWandering' | 'cooksAlone' | 'wearable' | 'cameras' | 'voiceAssistant' | 'overnight'
+  | 'privacy' | 'budget' | 'monthlyFee' | 'setup';
 
 export interface QuizOption {
   label: string;
