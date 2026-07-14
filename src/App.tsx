@@ -69,6 +69,9 @@ import CKMarketplace from "./pages/labs/carekits/pages/CKMarketplace";
 import CKProductDetail from "./pages/labs/carekits/pages/CKProductDetail";
 import CKSaved from "./pages/labs/carekits/pages/CKSaved";
 import CKArticle from "./pages/labs/carekits/pages/CKArticle";
+import CKKits from "./pages/labs/carekits/pages/CKKits";
+import CKKitDetail from "./pages/labs/carekits/pages/CKKitDetail";
+import CKProblem from "./pages/labs/carekits/pages/CKProblem";
 import CKAdminLayout from "./pages/labs/carekits/pages/admin/CKAdminLayout";
 import CKAdminDashboard from "./pages/labs/carekits/pages/admin/CKAdminDashboard";
 import CKAdminProducts from "./pages/labs/carekits/pages/admin/CKAdminProducts";
@@ -188,6 +191,9 @@ const AppContent = () => {
             <Route path="product/:id" element={<CKProductDetail />} />
             <Route path="saved" element={<CKSaved />} />
             <Route path="learn/:slug" element={<CKArticle />} />
+            <Route path="kits" element={<CKKits />} />
+            <Route path="kits/:slug" element={<CKKitDetail />} />
+            <Route path="problems/:slug" element={<CKProblem />} />
             <Route path="admin" element={<CKAdminLayout />}>
               <Route index element={<CKAdminDashboard />} />
               <Route path="products" element={<CKAdminProducts />} />

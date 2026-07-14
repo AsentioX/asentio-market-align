@@ -1,9 +1,9 @@
 // Assessment quiz: questions, scoring, recommendation logic
 
 export type QuizKey =
-  | 'livesAlone' | 'fellPast12' | 'mobilityAid' | 'dailyMeds' | 'forgetsMeds'
-  | 'memoryWandering' | 'cooksAlone' | 'wearable' | 'cameras'
-  | 'privacy' | 'budget' | 'setup';
+  | 'livesAlone' | 'stairs' | 'wifi' | 'fellPast12' | 'mobilityAid' | 'dailyMeds' | 'forgetsMeds'
+  | 'memoryWandering' | 'cooksAlone' | 'wearable' | 'cameras' | 'voiceAssistant' | 'overnight'
+  | 'privacy' | 'budget' | 'monthlyFee' | 'setup';
 
 export interface QuizOption {
   label: string;
@@ -20,6 +20,10 @@ export interface QuizQuestion {
 export const QUIZ: QuizQuestion[] = [
   { key: 'livesAlone', q: 'Does your parent live alone?',
     options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }] },
+  { key: 'stairs', q: 'Does their home have stairs they use daily?',
+    options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }] },
+  { key: 'wifi', q: 'Does their home have reliable Wi-Fi?',
+    options: [{ label: 'Yes', value: 'yes' }, { label: 'Sometimes spotty', value: 'spotty' }, { label: 'No', value: 'no' }] },
   { key: 'fellPast12', q: 'Have they fallen in the past 12 months?',
     options: [
       { label: 'No', value: 'no' },
@@ -57,6 +61,10 @@ export const QUIZ: QuizQuestion[] = [
     options: [{ label: 'Yes', value: 'yes' }, { label: 'Maybe', value: 'maybe' }, { label: 'No', value: 'no' }] },
   { key: 'cameras', q: 'Would they be comfortable with cameras in the home?',
     options: [{ label: 'Yes', value: 'yes' }, { label: 'Only outside', value: 'outside' }, { label: 'No', value: 'no' }] },
+  { key: 'voiceAssistant', q: 'Do they already use Alexa, Google Home, or Siri?',
+    options: [{ label: 'Yes, comfortable', value: 'yes' }, { label: 'Tried it', value: 'some' }, { label: 'No', value: 'no' }] },
+  { key: 'overnight', q: 'Would overnight monitoring give you peace of mind?',
+    options: [{ label: 'Yes', value: 'yes' }, { label: 'Only if unobtrusive', value: 'passive' }, { label: 'No', value: 'no' }] },
   { key: 'privacy', q: 'How important is privacy to your parent?',
     options: [
       { label: 'Very important', value: 'high' },
@@ -64,11 +72,20 @@ export const QUIZ: QuizQuestion[] = [
       { label: 'Not a concern', value: 'low' },
     ]
   },
-  { key: 'budget', q: 'What is your approximate budget?',
+  { key: 'budget', q: 'What is your approximate upfront budget?',
     options: [
-      { label: 'Under $300', value: 'low' },
-      { label: '$300 – $800', value: 'mid' },
-      { label: '$800+', value: 'high' },
+      { label: 'Under $200', value: 'xs' },
+      { label: '$200 – $500', value: 'low' },
+      { label: '$500 – $1,000', value: 'mid' },
+      { label: '$1,000+', value: 'high' },
+    ]
+  },
+  { key: 'monthlyFee', q: 'Monthly subscription preference?',
+    options: [
+      { label: 'No monthly fees', value: 'none' },
+      { label: 'Under $10/month', value: 'low' },
+      { label: 'Under $25/month', value: 'mid' },
+      { label: 'No preference', value: 'any' },
     ]
   },
   { key: 'setup', q: 'Who will set up the products?',
@@ -155,9 +172,24 @@ export function scoreAnswers(a: Answers): RiskProfile {
   if (a.setup === 'parent') tech = 4;
   if (a.setup === 'caregiver') tech = 3;
   if (a.setup === 'pro') { tech = 1; tags.add('Low tech comfort'); tags.add('Caregiver setup needed'); }
+  if (a.voiceAssistant === 'yes') tech = Math.min(5, tech + 1);
+  if (a.voiceAssistant === 'no') tech = Math.max(1, tech - 1);
+
+  // Wi-Fi requirement
+  const wifiOk = a.wifi !== 'no';
+  if (!wifiOk) tags.add('Limited Wi-Fi — prefer cellular/offline devices');
+
+  // Stairs
+  if (a.stairs === 'yes') { fall += 1; tags.add('Stairs in home'); }
+
+  // Overnight monitoring
+  if (a.overnight === 'yes' || a.overnight === 'passive') {
+    tags.add('Overnight visibility desired');
+  }
 
   // Budget
   const budget = a.budget ?? 'mid';
+  const monthlyFee = a.monthlyFee ?? 'any';
 
   // ----- Recommendation logic -----
   const privacyFirst = priv >= 4;
@@ -216,10 +248,29 @@ export function scoreAnswers(a: Answers): RiskProfile {
   }
 
   // Budget shaping
+  if (budget === 'xs') {
+    cats.delete(cat('senior-tablet'));
+    cats.delete(cat('smart-lock'));
+    cats.delete(cat('smartwatch'));
+    cats.delete(cat('radar-fall'));
+  }
   if (budget === 'high') {
     cats.add(cat('voice-display'));
     cats.add(cat('senior-tablet'));
     if (!privacyFirst) cats.add(cat('smart-lock'));
+  }
+
+  // Monthly fee sensitivity — drop subscription-heavy categories
+  if (monthlyFee === 'none') {
+    cats.delete(cat('medical-alert'));
+    tags.add('Prefers no monthly fees');
+  }
+
+  // No Wi-Fi -> avoid Wi-Fi-only devices
+  if (!wifiOk) {
+    cats.delete(cat('wifi-presence'));
+    cats.delete(cat('senior-tablet'));
+    cats.add(cat('medical-alert')); // cellular fallback
   }
 
   // Always provide at least a baseline
@@ -229,13 +280,15 @@ export function scoreAnswers(a: Answers): RiskProfile {
   }
 
   // Kit name selection
-  let kit = 'Starter Safety Kit';
-  if (fall >= 3 && privacyFirst) kit = 'Privacy-First Fall Protection Kit';
-  else if (fall >= 3) kit = 'Fall Protection Kit';
-  else if (cog >= 3) kit = 'Cognitive Safety Kit';
+  let kit = 'Starter Care Kit';
+  if (fall >= 3 && privacyFirst) kit = 'Privacy-First Fall Prevention Kit';
+  else if (fall >= 3) kit = 'Fall Prevention Kit';
+  else if (cog >= 3) kit = 'Memory Support Kit';
   else if (med >= 4) kit = 'Medication Support Kit';
   else if (privacyFirst) kit = 'Privacy-First Monitoring Kit';
-  else if (budget === 'high') kit = 'Full Peace of Mind Kit';
+  else if (a.livesAlone === 'yes') kit = 'Living Alone Kit';
+  else if (budget === 'high') kit = 'Premium Smart Home Kit';
+  else if (budget === 'xs') kit = 'Budget Friendly Kit';
 
   return {
     fall_risk_score: Math.min(5, fall),
