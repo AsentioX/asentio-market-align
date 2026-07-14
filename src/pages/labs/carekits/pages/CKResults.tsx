@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Sparkles, Mail } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Sparkles, Mail, DollarSign, Clock, Wrench, Star } from 'lucide-react';
 import { fetchAssessment, fetchProductsByCategorySlugs, fetchCategories } from '../lib/api';
 import type { AssessmentResult, Product, Category } from '../lib/types';
 import { ProductCard } from '../components/ProductCard';
