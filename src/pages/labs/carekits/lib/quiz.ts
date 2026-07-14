@@ -248,10 +248,29 @@ export function scoreAnswers(a: Answers): RiskProfile {
   }
 
   // Budget shaping
+  if (budget === 'xs') {
+    cats.delete(cat('senior-tablet'));
+    cats.delete(cat('smart-lock'));
+    cats.delete(cat('smartwatch'));
+    cats.delete(cat('radar-fall'));
+  }
   if (budget === 'high') {
     cats.add(cat('voice-display'));
     cats.add(cat('senior-tablet'));
     if (!privacyFirst) cats.add(cat('smart-lock'));
+  }
+
+  // Monthly fee sensitivity — drop subscription-heavy categories
+  if (monthlyFee === 'none') {
+    cats.delete(cat('medical-alert'));
+    tags.add('Prefers no monthly fees');
+  }
+
+  // No Wi-Fi -> avoid Wi-Fi-only devices
+  if (!wifiOk) {
+    cats.delete(cat('wifi-presence'));
+    cats.delete(cat('senior-tablet'));
+    cats.add(cat('medical-alert')); // cellular fallback
   }
 
   // Always provide at least a baseline
@@ -261,13 +280,15 @@ export function scoreAnswers(a: Answers): RiskProfile {
   }
 
   // Kit name selection
-  let kit = 'Starter Safety Kit';
-  if (fall >= 3 && privacyFirst) kit = 'Privacy-First Fall Protection Kit';
-  else if (fall >= 3) kit = 'Fall Protection Kit';
-  else if (cog >= 3) kit = 'Cognitive Safety Kit';
+  let kit = 'Starter Care Kit';
+  if (fall >= 3 && privacyFirst) kit = 'Privacy-First Fall Prevention Kit';
+  else if (fall >= 3) kit = 'Fall Prevention Kit';
+  else if (cog >= 3) kit = 'Memory Support Kit';
   else if (med >= 4) kit = 'Medication Support Kit';
   else if (privacyFirst) kit = 'Privacy-First Monitoring Kit';
-  else if (budget === 'high') kit = 'Full Peace of Mind Kit';
+  else if (a.livesAlone === 'yes') kit = 'Living Alone Kit';
+  else if (budget === 'high') kit = 'Premium Smart Home Kit';
+  else if (budget === 'xs') kit = 'Budget Friendly Kit';
 
   return {
     fall_risk_score: Math.min(5, fall),
