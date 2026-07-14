@@ -186,3 +186,33 @@ function whyForProduct(p: Product, r: AssessmentResult): string {
   if (!reasons.length) reasons.push('a good baseline fit for your kit');
   return reasons.join(', ');
 }
+
+function KitMetaCard({ products, privacyFirst, techComfort }: { products: Product[]; privacyFirst: boolean; techComfort: number }) {
+  const initial = products.reduce((s, p) => s + (p.price ?? 0), 0);
+  const monthly = products.reduce((s, p) => s + (p.monthly_cost ?? 0), 0);
+  const hardest = products.reduce((h: string, p) => {
+    const rank = { easy: 1, moderate: 2, professional: 3 } as const;
+    const cur = (p.setup_difficulty ?? 'easy') as keyof typeof rank;
+    return rank[cur] > rank[(h as keyof typeof rank)] ? cur : h;
+  }, 'easy');
+  const setupMins = 15 + products.length * 8;
+  const confidence = Math.min(5, 3 + (privacyFirst ? 1 : 0) + (techComfort >= 3 ? 1 : 0));
+
+  return (
+    <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <MetaBox label="Confidence" value={<span className="text-amber-500">{'★'.repeat(confidence)}<span className="text-stone-300">{'★'.repeat(5 - confidence)}</span></span>} icon={<Star className="w-4 h-4" />} />
+      <MetaBox label="Estimated initial cost" value={initial > 0 ? `$${initial.toFixed(0)}` : 'TBD'} icon={<DollarSign className="w-4 h-4" />} />
+      <MetaBox label="Monthly cost" value={monthly > 0 ? `$${monthly.toFixed(0)}/mo` : 'No monthly fee'} icon={<DollarSign className="w-4 h-4" />} />
+      <MetaBox label="Installation" value={<span className="capitalize">{hardest} · ~{setupMins}m</span>} icon={<Wrench className="w-4 h-4" />} />
+    </section>
+  );
+}
+
+function MetaBox({ label, value, icon }: { label: string; value: React.ReactNode; icon: React.ReactNode }) {
+  return (
+    <div className="bg-white border border-stone-200 rounded-2xl p-4">
+      <div className="flex items-center gap-1.5 text-xs text-stone-500">{icon}{label}</div>
+      <div className="mt-1 text-xl font-semibold text-stone-900">{value}</div>
+    </div>
+  );
+}
