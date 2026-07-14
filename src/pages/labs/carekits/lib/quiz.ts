@@ -88,12 +88,6 @@ export const QUIZ: QuizQuestion[] = [
       { label: 'No preference', value: 'any' },
     ]
   },
-    options: [
-      { label: 'Under $300', value: 'low' },
-      { label: '$300 – $800', value: 'mid' },
-      { label: '$800+', value: 'high' },
-    ]
-  },
   { key: 'setup', q: 'Who will set up the products?',
     options: [
       { label: 'My parent', value: 'parent' },
