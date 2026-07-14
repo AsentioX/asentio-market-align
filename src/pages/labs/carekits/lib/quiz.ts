@@ -20,6 +20,10 @@ export interface QuizQuestion {
 export const QUIZ: QuizQuestion[] = [
   { key: 'livesAlone', q: 'Does your parent live alone?',
     options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }] },
+  { key: 'stairs', q: 'Does their home have stairs they use daily?',
+    options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }] },
+  { key: 'wifi', q: 'Does their home have reliable Wi-Fi?',
+    options: [{ label: 'Yes', value: 'yes' }, { label: 'Sometimes spotty', value: 'spotty' }, { label: 'No', value: 'no' }] },
   { key: 'fellPast12', q: 'Have they fallen in the past 12 months?',
     options: [
       { label: 'No', value: 'no' },
