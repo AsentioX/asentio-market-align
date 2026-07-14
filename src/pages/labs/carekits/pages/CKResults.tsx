@@ -72,6 +72,9 @@ export default function CKResults() {
         </p>
       </div>
 
+      {/* Kit meta card */}
+      <KitMetaCard products={products} privacyFirst={privacyFirst} techComfort={result.tech_comfort_score} />
+
       {/* Risk profile */}
       <section className="mt-10">
         <h2 className="text-xl md:text-2xl font-semibold mb-4">Your safety profile</h2>
