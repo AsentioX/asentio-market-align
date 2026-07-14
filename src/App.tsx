@@ -188,6 +188,9 @@ const AppContent = () => {
             <Route path="product/:id" element={<CKProductDetail />} />
             <Route path="saved" element={<CKSaved />} />
             <Route path="learn/:slug" element={<CKArticle />} />
+            <Route path="kits" element={<CKKits />} />
+            <Route path="kits/:slug" element={<CKKitDetail />} />
+            <Route path="problems/:slug" element={<CKProblem />} />
             <Route path="admin" element={<CKAdminLayout />}>
               <Route index element={<CKAdminDashboard />} />
               <Route path="products" element={<CKAdminProducts />} />
