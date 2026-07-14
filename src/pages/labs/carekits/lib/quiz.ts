@@ -172,9 +172,24 @@ export function scoreAnswers(a: Answers): RiskProfile {
   if (a.setup === 'parent') tech = 4;
   if (a.setup === 'caregiver') tech = 3;
   if (a.setup === 'pro') { tech = 1; tags.add('Low tech comfort'); tags.add('Caregiver setup needed'); }
+  if (a.voiceAssistant === 'yes') tech = Math.min(5, tech + 1);
+  if (a.voiceAssistant === 'no') tech = Math.max(1, tech - 1);
+
+  // Wi-Fi requirement
+  const wifiOk = a.wifi !== 'no';
+  if (!wifiOk) tags.add('Limited Wi-Fi — prefer cellular/offline devices');
+
+  // Stairs
+  if (a.stairs === 'yes') { fall += 1; tags.add('Stairs in home'); }
+
+  // Overnight monitoring
+  if (a.overnight === 'yes' || a.overnight === 'passive') {
+    tags.add('Overnight visibility desired');
+  }
 
   // Budget
   const budget = a.budget ?? 'mid';
+  const monthlyFee = a.monthlyFee ?? 'any';
 
   // ----- Recommendation logic -----
   const privacyFirst = priv >= 4;
