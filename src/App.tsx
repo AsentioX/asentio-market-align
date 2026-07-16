@@ -80,6 +80,12 @@ import CKAdminCategories from "./pages/labs/carekits/pages/admin/CKAdminCategori
 import CKAdminAssessments from "./pages/labs/carekits/pages/admin/CKAdminAssessments";
 import CKAdminAnalytics from "./pages/labs/carekits/pages/admin/CKAdminAnalytics";
 import CKAdminArticles from "./pages/labs/carekits/pages/admin/CKAdminArticles";
+import RaceCompanionLayout from "./pages/labs/race-companion/RaceCompanionLayout";
+import RaceToday from "./pages/labs/race-companion/screens/Today";
+import RaceSchedule from "./pages/labs/race-companion/screens/Schedule";
+import RaceAlerts from "./pages/labs/race-companion/screens/Alerts";
+import RaceSettings from "./pages/labs/race-companion/screens/Settings";
+import RaceEventDetail from "./pages/labs/race-companion/screens/EventDetail";
 import SponsorCRMLayout from "./pages/labs/rhcrm/SponsorCRMLayout";
 import ScrmDashboard from "./pages/labs/rhcrm/pages/Dashboard";
 import ScrmPipeline from "./pages/labs/rhcrm/pages/Pipeline";
@@ -121,7 +127,7 @@ const isBeaverBoatHost = () => {
 const AppContent = () => {
   const location = useLocation();
   const beaverHost = isBeaverBoatHost();
-  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics') || location.pathname.startsWith('/labs/smart-vision') || location.pathname.startsWith('/labs/justgrapes') || location.pathname.startsWith('/labs/rhcrm');
+  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics') || location.pathname.startsWith('/labs/smart-vision') || location.pathname.startsWith('/labs/justgrapes') || location.pathname.startsWith('/labs/rhcrm') || location.pathname.startsWith('/labs/race-companion');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
