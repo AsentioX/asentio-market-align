@@ -189,6 +189,13 @@ const AppContent = () => {
           <Route path="/labs/x1-smart" element={<X1SmartLayout />} />
           <Route path="/labs/verdant" element={<VerdantLanding />} />
           <Route path="/labs/robotics" element={<RoboticsLanding />} />
+          <Route path="/labs/race-companion" element={<RaceCompanionLayout />}>
+            <Route index element={<RaceToday />} />
+            <Route path="schedule" element={<RaceSchedule />} />
+            <Route path="alerts" element={<RaceAlerts />} />
+            <Route path="settings" element={<RaceSettings />} />
+            <Route path="event/:id" element={<RaceEventDetail />} />
+          </Route>
           <Route path="/labs/carekits" element={<CareKitsLayout />}>
             <Route index element={<CKHome />} />
             <Route path="quiz" element={<CKQuiz />} />
