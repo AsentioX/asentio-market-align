@@ -41,7 +41,7 @@ const Index = () => {
   const { data: companies } = useXRCompanies();
 
   useSeo({
-    title: "Asentio — The Human Interface to AI",
+    title: "Asentio — Interfacing Humans and AI",
     description:
       "Asentio tracks and advises the companies bridging the human to AI. Explore the XR Directory of devices, components, AI, platforms, applications and ecosystem.",
     canonicalPath: "/",
