@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
 import { useXRUseCases, UseCaseFilters } from '@/hooks/useXRUseCases';
-import { Package, Building, Building2, Layers } from 'lucide-react';
+import { Package, Building2, Layers, Factory, Cpu } from 'lucide-react';
 
 const Directory = () => {
   const [searchParams] = useSearchParams();
