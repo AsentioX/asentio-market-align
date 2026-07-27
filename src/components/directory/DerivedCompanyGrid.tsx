@@ -50,7 +50,7 @@ const DerivedCompanyGrid = ({ products, isLoading, kind = 'manufacturer', emptyM
       }
     });
     return Array.from(map.values()).sort((a, b) => b.productCount - a.productCount);
-  }, [products]);
+  }, [products, kind]);
 
   if (isLoading) {
     return (
@@ -63,7 +63,7 @@ const DerivedCompanyGrid = ({ products, isLoading, kind = 'manufacturer', emptyM
   if (companies.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-lg text-muted-foreground">No companies found.</p>
+        <p className="text-lg text-muted-foreground">{emptyMessage ?? 'No companies found.'}</p>
       </div>
     );
   }
