@@ -11,21 +11,8 @@ import ARBackground from "@/components/ARBackground";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
-import {
-  ArrowRight,
-  Glasses,
-  Brain,
-  Activity,
-  Compass,
-  Search,
-} from "lucide-react";
-import {
-  initSession,
-  trackPageView,
-  trackCTAClick,
-  createScrollTracker,
-  trackTimeOnPage,
-} from "@/lib/analytics";
+import { ArrowRight, Glasses, Brain, Activity, Compass, Search } from "lucide-react";
+import { initSession, trackPageView, trackCTAClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
 const CONVERGENCE = [
   {
@@ -56,7 +43,7 @@ const Index = () => {
   useSeo({
     title: "Asentio — The Human Interface to AI",
     description:
-      "Asentio tracks and advises the companies building the human interface to AI. Explore the XR Directory of devices, components, AI, platforms, applications and ecosystem.",
+      "Asentio tracks and advises the companies bridging the human to AI. Explore the XR Directory of devices, components, AI, platforms, applications and ecosystem.",
     canonicalPath: "/",
   });
 
@@ -99,12 +86,12 @@ const Index = () => {
             </h1>
 
             <p className="text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mb-4">
-              AI needs a body in the world. Glasses, wearables and sensing are becoming how people
-              actually reach intelligence — and Asentio maps the companies building it.
+              AI needs a body in the world. Glasses, wearables and sensing are becoming how people actually reach
+              intelligence.
             </p>
             <p className="text-base md:text-lg text-muted-foreground/90 max-w-2xl mb-8">
-              Start with the XR Directory: devices, components, artificial intelligence, platforms,
-              applications and the ecosystem around them.
+              Start with the XR Directory: devices, components, artificial intelligence, platforms, applications and the
+              ecosystem around them.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
@@ -118,7 +105,11 @@ const Index = () => {
                 </Button>
               </Link>
               <Link to="/work-with-us">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-base font-medium border-2">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto px-8 py-6 text-base font-medium border-2"
+                >
                   Work with Asentio
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -127,8 +118,8 @@ const Index = () => {
 
             {companyCount > 0 && (
               <p className="mt-6 text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{companyCount}</span> companies tracked
-                across six layers of the stack.
+                <span className="font-semibold text-foreground">{companyCount}</span> companies tracked across six
+                layers of the stack.
               </p>
             )}
           </div>
@@ -143,12 +134,10 @@ const Index = () => {
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-3xl mb-10">
             <div className="w-12 h-1 bg-asentio-red mb-4" />
-            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-3">
-              Browse the XR Directory
-            </h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-3">Browse the XR Directory</h2>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-              A structured view of the industry — organized by where a company sits between a person
-              and an AI system, not by marketing category.
+              A structured view of the industry organized by where a company sits between a person and an AI system, not
+              by marketing category.
             </p>
           </div>
 
@@ -176,8 +165,8 @@ const Index = () => {
               Four forces, one convergence
             </h2>
             <p className="text-primary-foreground/80 text-base md:text-lg leading-relaxed">
-              Asentio works at the point where hardware, intelligence, human behavior and market
-              strategy stop being separate problems.
+              Asentio works at the point where hardware, intelligence, human behavior and market strategy stop being
+              separate problems.
             </p>
           </div>
 
@@ -211,13 +200,10 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             <div>
               <div className="w-12 h-1 bg-asentio-red mb-4" />
-              <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">
-                Advisory for the interface era
-              </h2>
+              <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">Advisory for the interface era</h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Asentio advises device makers, AI companies, component suppliers and investors on
-                positioning, product strategy and entry into the US market — grounded in the same
-                research that powers the directory.
+                Asentio advises device makers, AI companies, component suppliers and investors on positioning, product
+                strategy and entry into the US market — grounded in the same research that powers the directory.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link to="/work-with-us">
