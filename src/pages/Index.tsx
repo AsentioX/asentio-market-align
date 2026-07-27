@@ -8,6 +8,7 @@ import AiXrStrip from "@/components/home/AiXrStrip";
 import LatestInsights from "@/components/home/LatestInsights";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import ARBackground from "@/components/ARBackground";
+import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
 import {
@@ -75,8 +76,11 @@ const Index = () => {
 
   return (
     <div className="overflow-x-hidden relative">
+      {/* ---------------- World clock marquee ---------------- */}
+      <WorldTimeMarquee />
+
       {/* ---------------- Hero: the directory front door ---------------- */}
-      <section className="relative bg-background pt-28 md:pt-36 pb-14 md:pb-20 overflow-hidden">
+      <section className="relative bg-background pt-12 md:pt-16 pb-14 md:pb-20 overflow-hidden">
         <TopographicPattern className="opacity-60" />
         <ARBackground />
         <div className="absolute top-0 left-0 w-1 h-40 bg-gradient-to-b from-asentio-red to-transparent" />
