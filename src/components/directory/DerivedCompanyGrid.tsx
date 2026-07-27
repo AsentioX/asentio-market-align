@@ -13,16 +13,26 @@ interface DerivedCompany {
   logoUrl: string | null;
 }
 
+export type CompanyKind = 'manufacturer' | 'ai-provider';
+
+const hasAI = (p: XRProduct) => {
+  const v = (p.ai_integration || '').trim().toLowerCase();
+  return !!v && v !== 'no' && v !== 'none' && v !== 'n/a';
+};
+
 interface DerivedCompanyGridProps {
   products: XRProduct[] | undefined;
   isLoading: boolean;
+  kind?: CompanyKind;
+  emptyMessage?: string;
 }
 
-const DerivedCompanyGrid = ({ products, isLoading }: DerivedCompanyGridProps) => {
+const DerivedCompanyGrid = ({ products, isLoading, kind = 'manufacturer', emptyMessage }: DerivedCompanyGridProps) => {
   const companies = useMemo(() => {
     if (!products) return [];
     const map = new Map<string, DerivedCompany>();
-    products.forEach((p) => {
+    const scoped = kind === 'ai-provider' ? products.filter(hasAI) : products;
+    scoped.forEach((p) => {
       const existing = map.get(p.company);
       if (existing) {
         existing.productCount++;
