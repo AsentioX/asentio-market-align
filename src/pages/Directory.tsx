@@ -61,14 +61,18 @@ const Directory = () => {
       
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-8">
+          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-5 mb-8">
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="w-4 h-4" />
               <span className="hidden sm:inline">Products</span>
             </TabsTrigger>
-            <TabsTrigger value="companies" className="flex items-center gap-2">
-              <Building className="w-4 h-4" />
-              <span className="hidden sm:inline">Companies</span>
+            <TabsTrigger value="manufacturers" className="flex items-center gap-2">
+              <Factory className="w-4 h-4" />
+              <span className="hidden sm:inline">Manufacturers</span>
+            </TabsTrigger>
+            <TabsTrigger value="ai-providers" className="flex items-center gap-2">
+              <Cpu className="w-4 h-4" />
+              <span className="hidden sm:inline">AI Providers</span>
             </TabsTrigger>
             <TabsTrigger value="agencies" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
@@ -90,11 +94,18 @@ const Directory = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="companies">
+          <TabsContent value="manufacturers">
             <div className="py-8">
-              <DerivedCompanyGrid products={allProducts} isLoading={allProductsLoading} />
+              <DerivedCompanyGrid products={allProducts} isLoading={allProductsLoading} kind="manufacturer" emptyMessage="No manufacturers found." />
             </div>
           </TabsContent>
+
+          <TabsContent value="ai-providers">
+            <div className="py-8">
+              <DerivedCompanyGrid products={allProducts} isLoading={allProductsLoading} kind="ai-provider" emptyMessage="No AI providers listed yet." />
+            </div>
+          </TabsContent>
+
           
           <TabsContent value="agencies">
             <div className="py-8">
