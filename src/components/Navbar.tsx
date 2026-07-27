@@ -1,71 +1,124 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Menu, X, ChevronDown } from "lucide-react";
 import LanguageToggle from "./LanguageToggle";
+import { TAXONOMY } from "@/lib/xrTaxonomy";
+
+interface NavItem {
+  label: string;
+  to: string;
+  match: (path: string) => boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: "XR Directory", to: "/xr-directory", match: (p) => p.startsWith("/xr-directory") },
+  { label: "Insights", to: "/insights", match: (p) => p.startsWith("/insights") },
+  { label: "Research", to: "/research", match: (p) => p.startsWith("/research") },
+  { label: "About", to: "/about", match: (p) => p.startsWith("/about") },
+  { label: "Work With Us", to: "/work-with-us", match: (p) => p.startsWith("/work-with-us") },
+];
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { t } = useLanguage();
+  const [directoryOpen, setDirectoryOpen] = useState(false);
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path;
-
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setDirectoryOpen(false);
+  }, [location.pathname]);
+
+  const linkTone = isScrolled ? "text-gray-700" : "text-gray-300";
+
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? "bg-white/95 shadow-md backdrop-blur-sm py-3" : "bg-transparent py-5"
-    }`}>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "bg-white/95 shadow-md backdrop-blur-sm py-3" : "bg-transparent py-5"
+      }`}
+    >
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <img 
-            src="/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" 
-            alt="asentio logo" 
+          <img
+            src="/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png"
+            alt="Asentio — the human interface to AI"
             className="h-8"
           />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/") ? "border-b-2 border-asentio-red" : ""}`}>
-            {t('nav.home')}
-          </Link>
-          <Link to="/about" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/about") ? "border-b-2 border-asentio-red" : ""}`}>
-            {t('nav.about')}
-          </Link>
-          <Link to="/services" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/services") ? "border-b-2 border-asentio-red" : ""}`}>
-            {t('nav.services')}
-          </Link>
-          <Link to="/coming-soon" className={`${isScrolled ? "text-gray-700" : "text-gray-300"} hover:text-asentio-blue transition-colors font-medium pb-1 ${isActive("/coming-soon") ? "border-b-2 border-asentio-red" : ""}`}>
-            XR Directory
-          </Link>
+        <nav className="hidden lg:flex items-center space-x-7">
+          {NAV_ITEMS.map((item) => {
+            const active = item.match(location.pathname);
+            const isDirectory = item.to === "/xr-directory";
+
+            return (
+              <div
+                key={item.to}
+                className="relative"
+                onMouseEnter={() => isDirectory && setDirectoryOpen(true)}
+                onMouseLeave={() => isDirectory && setDirectoryOpen(false)}
+              >
+                <Link
+                  to={item.to}
+                  className={`${linkTone} hover:text-asentio-blue transition-colors font-medium pb-1 inline-flex items-center gap-1 ${
+                    active ? "border-b-2 border-asentio-red" : ""
+                  }`}
+                >
+                  {item.label}
+                  {isDirectory && <ChevronDown className="w-3.5 h-3.5" />}
+                </Link>
+
+                {isDirectory && directoryOpen && (
+                  <div className="absolute left-0 top-full pt-4">
+                    <div className="w-64 bg-white rounded-lg shadow-xl border border-border py-2 animate-fade-in">
+                      {TAXONOMY.map((group) => (
+                        <Link
+                          key={group.slug}
+                          to={`/xr-directory/category/${group.slug}`}
+                          className="block px-4 py-2 hover:bg-muted transition-colors"
+                        >
+                          <span className="block text-sm font-medium text-gray-800">{group.label}</span>
+                          <span className="block text-xs text-muted-foreground">{group.blurb}</span>
+                        </Link>
+                      ))}
+                      <div className="border-t border-border mt-2 pt-2">
+                        <Link
+                          to="/xr-directory/submit"
+                          className="block px-4 py-2 text-sm font-medium text-asentio-red hover:bg-muted transition-colors"
+                        >
+                          Add Your Company
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
           <LanguageToggle />
+
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
-              {t('nav.contact')}
+              Contact
             </Button>
           </Link>
         </nav>
 
         {/* Mobile Menu Button */}
         <button
-          className={`md:hidden p-2 ${isScrolled ? "text-gray-700" : "text-gray-300"}`}
+          className={`lg:hidden p-2 ${linkTone}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle navigation"
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -73,45 +126,43 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-md py-4 animate-fade-in">
-          <div className="container mx-auto flex flex-col space-y-4">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-md py-4 animate-fade-in max-h-[80vh] overflow-y-auto">
+          <div className="container mx-auto flex flex-col space-y-1">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4 font-medium"
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <div className="px-4 pt-2 pb-1 text-xs uppercase tracking-wide text-muted-foreground">
+              Directory categories
+            </div>
+            {TAXONOMY.map((group) => (
+              <Link
+                key={group.slug}
+                to={`/xr-directory/category/${group.slug}`}
+                className="text-gray-600 text-sm hover:text-asentio-blue transition-colors py-1.5 px-6"
+              >
+                {group.label}
+              </Link>
+            ))}
+
             <Link
-              to="/"
-              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
-              onClick={() => setMobileMenuOpen(false)}
+              to="/xr-directory/submit"
+              className="text-asentio-red font-medium py-2 px-4"
             >
-              {t('nav.home')}
+              Add Your Company
             </Link>
-            <Link
-              to="/about"
-              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.about')}
-            </Link>
-            <Link
-              to="/services"
-              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.services')}
-            </Link>
-            <Link
-              to="/coming-soon"
-              className="text-gray-700 hover:text-asentio-blue transition-colors py-2 px-4"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              XR Directory
-            </Link>
-            <div className="px-4">
+
+            <div className="px-4 py-2">
               <LanguageToggle />
             </div>
-            <Link
-              to="/contact"
-              className="bg-asentio-blue text-white py-2 px-4 rounded mx-4"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.contact')}
+            <Link to="/contact" className="bg-asentio-blue text-white py-2 px-4 rounded mx-4 text-center">
+              Contact
             </Link>
           </div>
         </div>

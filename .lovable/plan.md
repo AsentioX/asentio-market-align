@@ -1,109 +1,86 @@
+## Goal
 
-# Improve Stroke Rate (SPM) Detection
+Reposition Asentio.com from a consultancy site into an intelligence platform centered on the XR Directory — "The Human Interface to AI". Phase 1 only. Existing visual identity, components, Labs, CRM and analytics are reused; nothing is rebuilt that doesn't need to be.
 
-Rebuild `strokeDetector.ts` as a modular sensor-fusion pipeline that stays a drop-in replacement for `useRowSensors`, then add a confidence score, activity presets, a live debug panel, and an optional recording mode.
+Scope decisions confirmed: build structure only (no bulk data seeding — you populate via admin), Insights ships as article shells with titles/summaries/SEO, and `xr_companies` becomes the primary directory entity with products linked to it.
 
-## What changes for the user
+---
 
-- SPM readings become more accurate and less jumpy across phone orientations, boat vibration, and light vs hard rowing.
-- New confidence indicator (0–1) so the UI can hide unreliable numbers.
-- Activity picker (Rowing / Kayak / Canoe / Dragon Boat) tunes the detector for each sport's cadence.
-- Hidden dev debug panel on `/labs/rowwindow` with live graphs and a "record session" button that downloads a JSON of the raw signals for offline tuning.
+## 1. Information architecture and navigation
 
-Everything else in the app stays the same.
+Primary nav becomes: **XR Directory | Insights | Research | About | Work With Us**, with XR Directory visually emphasized (accent-underlined, first position) and a subdued "Contact" action replaced by "Work With Us". The current nav points XR Directory at `/coming-soon` — that redirect is removed so the directory goes live.
 
-## New file layout
+Footer is restructured into four columns: Explore, Work With Us, Asentio (About, Jon Li, Labs, Contact), Connect (LinkedIn, Newsletter). Labs stays in the footer only; all `/labs/*` routes are untouched.
+
+Routes added:
 
 ```text
-src/pages/labs/rowwindow/stroke/
-  index.ts                  // public API: createDetector, processSample, presets
-  types.ts                  // Sample, DetectorResult, DebugFrame, ActivityProfile
-  profiles.ts               // rowing / kayak / canoe / dragonBoat configs
-  gravityFilter.ts          // time-based per-axis LPF (tau = 3s)
-  covarianceTracker.ts      // 3x3 exponentially-weighted covariance
-  pcaAxis.ts                // dominant eigenvector via power iteration, sign lock
-  bandPassFilter.ts         // biquad HP (0.2 Hz) + LP (2 Hz), dt-aware
-  adaptiveThreshold.ts      // RMS + baseline + positive/negative thresholds
-  peakDetector.ts           // slope + prominence + adaptive re-arm
-  intervalValidator.ts      // rolling median + MAD gate
-  spmEstimator.ts           // rolling median of accepted intervals
-  confidence.ts             // rhythm + peak-quality + periodicity + sensor score
-  recorder.ts               // optional ring-buffer + JSON export
+/xr-directory/category/[category]
+/insights, /insights/[slug]
+/research
+/about/jon-li
+/work-with-us  (+ /executive-briefings, /speaking,
+                  /executive-immersions, /strategic-advisory)
+/xr-directory/submit
 ```
 
-`strokeDetector.ts` becomes a thin re-export that keeps the current
-`createStrokeDetectorState` / `processStrokeSample` signatures alive so
-`useRowSensors.ts` and `scripts/test-stroke-detector.ts` don't break.
+`/services` redirects to `/work-with-us`. Existing `/xr-directory/company/:name` becomes the rich company page.
 
-## Pipeline (per sample)
+## 2. Homepage
 
-1. **Gravity removal** — per-axis LPF with `alpha = dt / (tau + dt)`, `tau = 3s`. Uses the sample's real timestamp; no fixed-rate assumption.
-2. **Covariance tracker** — update 6 unique entries of the 3×3 covariance with exponential weight (`tau = 2s`).
-3. **PCA axis** — every 10 samples, run 5 power-iteration steps on the covariance to get the dominant eigenvector. Sign-lock against the previous axis (`if dot < 0 → flip`). Between updates, reuse the last axis.
-4. **Projection** — signed scalar `l · axis`.
-5. **Band-pass** — biquad high-pass at 0.2 Hz then low-pass at 2 Hz. Coefficients recomputed when `dt` drifts >10 %. Passband tuned per activity profile.
-6. **Baseline & RMS** — very slow baseline subtracted from band-pass output; rolling RMS (`tau ≈ 5s`).
-7. **Peak detector** — accepts a peak only when all hold:
-   - Local maximum (`prev > prev-1` and `prev > current`)
-   - `prev > max(minPositive, RMS * posGain)`
-   - Rising slope before, falling slope after
-   - Prominence ≥ RMS × `minProminence`
-   - Elapsed since last peak ≥ `minIntervalMs`
-   - Re-arm needed: signal must dip below `-max(minNegative, RMS * negGain)` before the next peak.
-8. **Interval validator** — keep last 20 intervals; reject any that fall outside `median ± 3 × MAD`. Rejected intervals are still emitted in debug data.
-9. **SPM estimator** — rolling median of the last 8–12 accepted intervals; `spm = round(60000 / median)`.
-10. **Confidence** — weighted blend, clamped 0–1:
-    - Rhythm consistency: `1 - min(1, MAD / median)` (weight 0.35)
-    - Peak quality: `min(1, meanPeakHeight / RMS / 3)` (weight 0.25)
-    - Periodicity: alternating-sign ratio in last 12 peaks vs troughs (weight 0.20)
-    - Sensor health: not clipping, not saturated with high-freq energy (weight 0.20)
+Rebuilt as the front door to the directory, reusing existing section components and the topographic/red-accent identity:
 
-## Activity profiles
+1. **Hero** — "The Human Interface to AI" / "Discover the companies building it." / description; CTAs *Explore the XR Directory* and *Read Our Insights*. Visual: an ecosystem/stack diagram rendered in SVG (no stock photography, no brain graphics).
+2. **Featured Directory** — "Explore the Human Interface to AI": category tiles (Devices, Components, AI, Platforms, Applications, Ecosystem) that deep-link into directory-filtered results, plus a live count of tracked companies.
+3. **AI × XR discovery strip** — filter chips (AI Glasses, Multimodal AI, Vision AI, Egocentric Vision, Contextual AI, Assistants, Agents, Spatial Intelligence, Voice, Translation, Memory, Computer Vision) linking into the directory.
+4. **Human-centered framework** — "Technology Doesn't Create Markets. Human Adoption Does." with the behavior→value chain; links to `/research`.
+5. **Replacement Curve** — smartphone vs. AI glasses absorption, framed as a hypothesis.
+6. **Latest Insights** — three most recent articles.
+7. **Newsletter capture**, then a concise Work With Us band.
 
-`profiles.ts` exports a config object per sport with expected SPM range, band-pass corners, min/max interval, and threshold gains:
+The Market Map deep-dive section is Phase 2; the homepage carries only the compact stack graphic.
 
-- Rowing: 10–42 SPM, band 0.15–1.2 Hz, `minInterval = 1200 ms`
-- Kayak: 30–90 SPM, band 0.4–2 Hz, `minInterval = 550 ms`
-- Canoe: 20–70 SPM, band 0.3–1.5 Hz, `minInterval = 750 ms`
-- Dragon Boat: 40–120 SPM, band 0.6–2.5 Hz, `minInterval = 450 ms`
+## 3. Directory: company-first model
 
-`useRowSensors` gains an optional `activity` option (defaults to `rowing`) and passes it into `createDetector`. `RowWindowLayout` gets a small activity selector in the pre-session sheet.
+`xr_companies` becomes primary. Migration adds: `company_type`, `primary_category`, `subcategories[]`, `technologies[]`, `products_summary`, `target_markets[]`, `ai_capabilities[]`, `human_interface[]`, `funding_stage`, `key_investors[]`, `key_partnerships[]`, `asentio_take`, `status`. `xr_products.company_id` is added and backfilled from the existing `company` text column (10 product rows, 1 company row today) so nothing is lost.
 
-## Confidence + activity UI
+A new taxonomy module defines the six top-level groups and their children exactly as specified, used by filters, category pages, cards and admin forms.
 
-- `RowSensorState` gains `spmConfidence: number | null` and echoes back `activity`.
-- The stroke card in `RowWindowLayout` dims the value and shows a small "warming up" state whenever `confidence < 0.4`.
-- Post-session summary uses accepted intervals only.
+Directory page: search + sticky filter chips, tabs for Companies / Products / Agencies / Use Cases (Companies first). Company cards gain logo, location, type, primary category and tag pills (AI capability, human interface, market).
 
-## Debug panel
+Company detail page gets sections: Overview, Products, Technology, Human Interface, AI Capabilities, Market, Ecosystem, and a visually distinct **Asentio Take** block.
 
-New `StrokeDebugPanel.tsx` mounted only when `?debug=stroke` is in the URL:
+Category pages at `/xr-directory/category/[category]` render filtered results with dynamic title/description metadata — the SEO engine. Only real taxonomy categories get pages; no thin duplicates.
 
-- Live sparklines for: raw XYZ, gravity XYZ, linear XYZ, projection, band-pass output, baseline, RMS, positive/negative thresholds, detected peaks (dot markers), rejected peaks (red markers), current SPM, confidence.
-- Uses a shared 512-frame ring buffer fed from the detector's `debug` output.
-- "Start recording" button → writes samples to `recorder.ts`; "Download JSON" exports timestamped session for offline analysis.
+Mobile: sticky search/filter bar, horizontally scrollable chips, single-column cards. No account required to browse.
 
-## Compatibility & tests
+## 4. Insights and Research
 
-- Keep the existing exports (`createStrokeDetectorState`, `processStrokeSample`, `DEFAULT_TUNINGS`, `StrokeDetectorTunings`) so `scripts/test-stroke-detector.ts` still compiles. Internally they delegate to the new modular detector using the rowing profile.
-- Extend `scripts/test-stroke-detector.ts` with:
-  - Cadence sweep 16–40 SPM at multiple noise levels
-  - Random phone-tilt sweep
-  - Vibration overlay at 8 Hz
-  - Kayak profile sweep 45–75 SPM
-  - Assert average error < 1 SPM and confidence > 0.7 for clean signals.
+New `asentio_articles` table (slug, title, summary, body, hero image, author, published_at, categories, tags, related company ids, related categories, SEO fields, status). Index page uses a clean editorial layout; article pages support hero, body, tags, related companies pulled from the directory, and social sharing.
 
-## Deliverables (in order)
+Six shells are created from your listed themes with title, summary, hero image, tags and SEO — bodies left for you to write in the admin.
 
-1. `stroke/` modules + `profiles.ts` + `types.ts`.
-2. New pipeline wired through `stroke/index.ts`; `strokeDetector.ts` becomes a compatibility shim.
-3. `useRowSensors` returns `spmConfidence`, accepts `activity`, and forwards debug frames through a ref.
-4. Activity selector in the pre-session sheet; confidence-aware SPM tile in `RowWindowLayout`.
-5. `StrokeDebugPanel` + `recorder.ts` behind `?debug=stroke`.
-6. Expanded synthetic test script; run and confirm targets.
+`/research` ships as a structured landing page with report cards, a gated-flag field on the schema for later, and no payment integration.
 
-## Non-goals
+## 5. Work With Us, About, Jon Li
 
-- No GPS-fusion for stroke detection yet (confidence formula leaves a hook but doesn't consume speed).
-- No changes to heart rate, compass, GPS, tide, or piece-detection code.
-- No UI redesign beyond the activity selector, confidence dimming, and the hidden debug panel.
+Work With Us overview ("Bring Asentio Into the Conversation") plus four sub-pages — Executive Briefings, Speaking, Executive Immersions (Silicon Valley + China, ending in a synthesis workshop), Strategic Advisory — each with its own CTA that routes to a contact form carrying an inquiry-type parameter.
+
+About is reframed as "Understanding Humans. Anticipating Markets." Jon Li gets a dedicated speaker page: bio framed across HCI waves, speaking topics, talks, industries, articles, LinkedIn, and a prominent *Invite Jon to Speak* CTA.
+
+## 6. Newsletter, submissions and attribution
+
+New `asentio_subscribers` (email required; first name, company, role optional; source) and `asentio_submissions` (company/product payload, submitter contact, type: new vs. claim, status pending/approved/rejected). Public insert allowed, public read denied; admin review and approval queue lives in the existing admin dashboard, with approved submissions written into `xr_companies`.
+
+Inquiries and subscriptions record a `source` attribution value (xr_directory, insights, research, speaking, immersion, advisory) and flow into the existing `crm_contacts` pipeline. Existing analytics tracking is extended with directory category, filter and submission events.
+
+## Technical notes
+
+- Migrations: extend `xr_companies` and `xr_products`; create `asentio_articles`, `asentio_subscribers`, `asentio_submissions` with GRANTs and RLS (public read for published articles; public insert only for subscribers/submissions; admin-only writes via `is_ck_admin`-style profile role check).
+- Reused unchanged: design tokens in `index.css`, `TopographicPattern`, `AnimatedSection`, `LanguageContext`, existing admin dashboard shell, analytics lib, CRM hooks, all `/labs` routes and the beaver-boat host branch in `App.tsx`.
+- Translation keys are added for new nav/hero strings across the four supported languages, defaulting to English copy where no translation is supplied.
+- Not in this phase: market map deep-dive page, saved companies/watchlists, funding data ingestion, paid research.
+
+## Verification
+
+Build/typecheck clean, directory reachable from nav on desktop and mobile, category pages render correct filtered sets with unique metadata, newsletter and submission forms write rows successfully as an anonymous visitor, admin can approve a submission, and all existing Labs routes still load.
