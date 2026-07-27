@@ -112,6 +112,75 @@ export type Database = {
         }
         Relationships: []
       }
+      asentio_articles: {
+        Row: {
+          author: string
+          body: string | null
+          categories: string[]
+          created_at: string
+          hero_image_url: string | null
+          id: string
+          is_gated: boolean
+          kind: string
+          published_at: string | null
+          related_company_ids: string[]
+          related_directory_categories: string[]
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sort_order: number
+          status: string
+          summary: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string
+          body?: string | null
+          categories?: string[]
+          created_at?: string
+          hero_image_url?: string | null
+          id?: string
+          is_gated?: boolean
+          kind?: string
+          published_at?: string | null
+          related_company_ids?: string[]
+          related_directory_categories?: string[]
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sort_order?: number
+          status?: string
+          summary?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          body?: string | null
+          categories?: string[]
+          created_at?: string
+          hero_image_url?: string | null
+          id?: string
+          is_gated?: boolean
+          kind?: string
+          published_at?: string | null
+          related_company_ids?: string[]
+          related_directory_categories?: string[]
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sort_order?: number
+          status?: string
+          summary?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       asentio_clients: {
         Row: {
           created_at: string
@@ -145,6 +214,128 @@ export type Database = {
           status?: string
           tenure?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      asentio_submissions: {
+        Row: {
+          ai_capabilities: string[]
+          company_name: string
+          company_type: string | null
+          created_at: string
+          description: string | null
+          existing_company_id: string | null
+          funding_stage: string | null
+          hq_location: string | null
+          human_interface: string[]
+          id: string
+          key_investors: string[]
+          key_partnerships: string[]
+          logo_url: string | null
+          primary_category: string | null
+          products_summary: string | null
+          review_notes: string | null
+          source: string
+          status: string
+          subcategories: string[]
+          submission_type: string
+          submitter_email: string | null
+          submitter_name: string | null
+          submitter_role: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          ai_capabilities?: string[]
+          company_name: string
+          company_type?: string | null
+          created_at?: string
+          description?: string | null
+          existing_company_id?: string | null
+          funding_stage?: string | null
+          hq_location?: string | null
+          human_interface?: string[]
+          id?: string
+          key_investors?: string[]
+          key_partnerships?: string[]
+          logo_url?: string | null
+          primary_category?: string | null
+          products_summary?: string | null
+          review_notes?: string | null
+          source?: string
+          status?: string
+          subcategories?: string[]
+          submission_type?: string
+          submitter_email?: string | null
+          submitter_name?: string | null
+          submitter_role?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          ai_capabilities?: string[]
+          company_name?: string
+          company_type?: string | null
+          created_at?: string
+          description?: string | null
+          existing_company_id?: string | null
+          funding_stage?: string | null
+          hq_location?: string | null
+          human_interface?: string[]
+          id?: string
+          key_investors?: string[]
+          key_partnerships?: string[]
+          logo_url?: string | null
+          primary_category?: string | null
+          products_summary?: string | null
+          review_notes?: string | null
+          source?: string
+          status?: string
+          subcategories?: string[]
+          submission_type?: string
+          submitter_email?: string | null
+          submitter_name?: string | null
+          submitter_role?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asentio_submissions_existing_company_id_fkey"
+            columns: ["existing_company_id"]
+            isOneToOne: false
+            referencedRelation: "xr_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asentio_subscribers: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          role: string | null
+          source: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id?: string
+          role?: string | null
+          source?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          role?: string | null
+          source?: string
         }
         Relationships: []
       }
@@ -5070,56 +5261,95 @@ export type Database = {
       }
       xr_companies: {
         Row: {
+          ai_capabilities: string[] | null
+          asentio_take: string | null
           company_size: string | null
+          company_type: string | null
           created_at: string
           description: string | null
           editors_note: string | null
           end_of_life_date: string | null
           founded_year: number | null
+          funding_stage: string | null
           hq_location: string | null
+          human_interface: string[] | null
           id: string
           is_editors_pick: boolean | null
+          key_investors: string[] | null
+          key_partnerships: string[] | null
           launch_date: string | null
           logo_url: string | null
           name: string
+          primary_category: string | null
+          products_summary: string | null
           sectors: string[] | null
           slug: string
+          status: string
+          subcategories: string[] | null
+          target_markets: string[] | null
+          technologies: string[] | null
           updated_at: string
           website: string | null
         }
         Insert: {
+          ai_capabilities?: string[] | null
+          asentio_take?: string | null
           company_size?: string | null
+          company_type?: string | null
           created_at?: string
           description?: string | null
           editors_note?: string | null
           end_of_life_date?: string | null
           founded_year?: number | null
+          funding_stage?: string | null
           hq_location?: string | null
+          human_interface?: string[] | null
           id?: string
           is_editors_pick?: boolean | null
+          key_investors?: string[] | null
+          key_partnerships?: string[] | null
           launch_date?: string | null
           logo_url?: string | null
           name: string
+          primary_category?: string | null
+          products_summary?: string | null
           sectors?: string[] | null
           slug: string
+          status?: string
+          subcategories?: string[] | null
+          target_markets?: string[] | null
+          technologies?: string[] | null
           updated_at?: string
           website?: string | null
         }
         Update: {
+          ai_capabilities?: string[] | null
+          asentio_take?: string | null
           company_size?: string | null
+          company_type?: string | null
           created_at?: string
           description?: string | null
           editors_note?: string | null
           end_of_life_date?: string | null
           founded_year?: number | null
+          funding_stage?: string | null
           hq_location?: string | null
+          human_interface?: string[] | null
           id?: string
           is_editors_pick?: boolean | null
+          key_investors?: string[] | null
+          key_partnerships?: string[] | null
           launch_date?: string | null
           logo_url?: string | null
           name?: string
+          primary_category?: string | null
+          products_summary?: string | null
           sectors?: string[] | null
           slug?: string
+          status?: string
+          subcategories?: string[] | null
+          target_markets?: string[] | null
+          technologies?: string[] | null
           updated_at?: string
           website?: string | null
         }
@@ -5139,6 +5369,7 @@ export type Database = {
           cloud_dependency: string | null
           company: string
           company_hq: string | null
+          company_id: string | null
           created_at: string
           description: string | null
           developer_docs_url: string | null
@@ -5192,6 +5423,7 @@ export type Database = {
           cloud_dependency?: string | null
           company: string
           company_hq?: string | null
+          company_id?: string | null
           created_at?: string
           description?: string | null
           developer_docs_url?: string | null
@@ -5245,6 +5477,7 @@ export type Database = {
           cloud_dependency?: string | null
           company?: string
           company_hq?: string | null
+          company_id?: string | null
           created_at?: string
           description?: string | null
           developer_docs_url?: string | null
@@ -5285,7 +5518,15 @@ export type Database = {
           weight?: string | null
           wifi_bluetooth_version?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "xr_products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "xr_companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       xr_use_cases: {
         Row: {

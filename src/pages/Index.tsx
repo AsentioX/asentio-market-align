@@ -1,209 +1,238 @@
 import { useEffect } from "react";
-import Hero from "@/components/Hero";
-import AnimatedSection from "@/components/AnimatedSection";
-import ExperienceFramework from "@/components/ExperienceFramework";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
+import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
-import WorldTimeMarquee from "@/components/WorldTimeMarquee";
-import FloatingObjects from "@/components/FloatingObjects";
-import { ArrowRight, CheckCircle2, Globe, Zap, Target } from "lucide-react";
-import { initSession, trackPageView, trackCTAClick, trackEmailClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import DirectoryCategoryTiles from "@/components/home/DirectoryCategoryTiles";
+import AiXrStrip from "@/components/home/AiXrStrip";
+import LatestInsights from "@/components/home/LatestInsights";
+import NewsletterSignup from "@/components/NewsletterSignup";
+import ARBackground from "@/components/ARBackground";
+import { useXRCompanies } from "@/hooks/useXRCompanies";
+import { useSeo } from "@/hooks/useSeo";
+import {
+  ArrowRight,
+  Glasses,
+  Brain,
+  Activity,
+  Compass,
+  Search,
+} from "lucide-react";
+import {
+  initSession,
+  trackPageView,
+  trackCTAClick,
+  createScrollTracker,
+  trackTimeOnPage,
+} from "@/lib/analytics";
+
+const CONVERGENCE = [
+  {
+    icon: Glasses,
+    title: "XR & Wearables",
+    body: "Glasses, headsets, hearables and rings — the hardware that puts computing on the body.",
+  },
+  {
+    icon: Brain,
+    title: "Artificial Intelligence",
+    body: "Multimodal, contextual and on-device models that turn raw sensing into understanding.",
+  },
+  {
+    icon: Activity,
+    title: "Human-Centered Design",
+    body: "The behavior, ergonomics and trust work that decides whether any of it gets worn twice.",
+  },
+  {
+    icon: Compass,
+    title: "Market Strategy",
+    body: "Positioning, channel and go-to-market for categories that don't exist yet.",
+  },
+];
 
 const Index = () => {
-  const { t } = useLanguage();
+  const { data: companies } = useXRCompanies();
+
+  useSeo({
+    title: "Asentio — The Human Interface to AI",
+    description:
+      "Asentio tracks and advises the companies building the human interface to AI. Explore the XR Directory of devices, components, AI, platforms, applications and ecosystem.",
+    canonicalPath: "/",
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Analytics: init session (no-op if session already exists) + track page view
-    initSession().then(() => trackPageView('/'));
-    // Track time on page
+    initSession().then(() => trackPageView("/"));
     const start = Date.now();
-    // Track scroll depth
-    const onScroll = createScrollTracker('/');
-    window.addEventListener('scroll', onScroll, { passive: true });
+    const onScroll = createScrollTracker("/");
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      trackTimeOnPage(Date.now() - start, '/');
+      window.removeEventListener("scroll", onScroll);
+      trackTimeOnPage(Date.now() - start, "/");
     };
   }, []);
 
-  const expertiseItems = [
-    {
-      icon: Target,
-      titleKey: 'expertise.pmf.title',
-      descKey: 'expertise.pmf.desc',
-    },
-    {
-      icon: Globe,
-      titleKey: 'expertise.localization.title',
-      descKey: 'expertise.localization.desc',
-    },
-    {
-      icon: Zap,
-      titleKey: 'expertise.channel.title',
-      descKey: 'expertise.channel.desc',
-    },
-  ];
+  const companyCount = companies?.length ?? 0;
 
   return (
     <div className="overflow-x-hidden relative">
-      <FloatingObjects />
-      
-      {/* World Time Marquee */}
-      <WorldTimeMarquee />
-      
-      <Hero />
-      
-      {/* Expertise Section */}
-      <AnimatedSection className="py-12 md:py-24 bg-background relative">
-        <TopographicPattern className="opacity-30" />
-        
+      {/* ---------------- Hero: the directory front door ---------------- */}
+      <section className="relative bg-background pt-28 md:pt-36 pb-14 md:pb-20 overflow-hidden">
+        <TopographicPattern className="opacity-60" />
+        <ARBackground />
+        <div className="absolute top-0 left-0 w-1 h-40 bg-gradient-to-b from-asentio-red to-transparent" />
+
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          {/* Section header with red accent */}
-          <div className="max-w-3xl mx-auto text-center mb-10 md:mb-16">
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-foreground">
-              {t('expertise.title')}
-            </h2>
-          </div>
-          
-          {/* Expertise cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
-            {expertiseItems.map((item, index) => (
-              <div 
-                key={index}
-                className="group relative bg-card p-6 md:p-8 rounded-xl border border-border hover:border-asentio-red/30 transition-all duration-300 hover:shadow-xl hover:shadow-asentio-red/5"
-              >
-                {/* Hover accent */}
-                <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red rounded-l-xl transition-all duration-300 group-hover:h-full" />
-                
-                <div className="w-12 h-12 bg-asentio-blue/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-asentio-red/10 transition-colors">
-                  <item.icon className="w-6 h-6 text-asentio-blue group-hover:text-asentio-red transition-colors" />
-                </div>
-                
-                <h3 className="text-xl font-semibold mb-4 text-foreground">
-                  {t(item.titleKey)}
-                </h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  {t(item.descKey)}
-                </p>
-                <Link 
-                  to="/services" 
-                  className="inline-flex items-center gap-2 text-asentio-blue font-medium group-hover:text-asentio-red transition-colors"
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full mb-6">
+              <span className="w-2 h-2 bg-asentio-red rounded-full animate-pulse" />
+              <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase">
+                XR · AI · Wearables · Strategy
+              </span>
+            </div>
+
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight text-foreground mb-6">
+              The Human Interface to AI
+            </h1>
+
+            <p className="text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mb-4">
+              AI needs a body in the world. Glasses, wearables and sensing are becoming how people
+              actually reach intelligence — and Asentio maps the companies building it.
+            </p>
+            <p className="text-base md:text-lg text-muted-foreground/90 max-w-2xl mb-8">
+              Start with the XR Directory: devices, components, artificial intelligence, platforms,
+              applications and the ecosystem around them.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+              <Link to="/xr-directory" onClick={() => trackCTAClick("Explore the XR Directory", true)}>
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 px-8 py-6 text-base font-medium shadow-lg shadow-asentio-blue/20"
                 >
-                  {t('expertise.learn')}
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Link>
+                  <Search className="w-4 h-4 mr-2" />
+                  Explore the XR Directory
+                </Button>
+              </Link>
+              <Link to="/work-with-us">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-base font-medium border-2">
+                  Work with Asentio
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+
+            {companyCount > 0 && (
+              <p className="mt-6 text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{companyCount}</span> companies tracked
+                across six layers of the stack.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
+      </section>
+
+      {/* ---------------- Featured directory categories ---------------- */}
+      <AnimatedSection className="py-12 md:py-20 bg-muted relative">
+        <TopographicPattern className="opacity-20" />
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="max-w-3xl mb-10">
+            <div className="w-12 h-1 bg-asentio-red mb-4" />
+            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-3">
+              Browse the XR Directory
+            </h2>
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
+              A structured view of the industry — organized by where a company sits between a person
+              and an AI system, not by marketing category.
+            </p>
+          </div>
+
+          <DirectoryCategoryTiles />
+        </div>
+      </AnimatedSection>
+
+      {/* ---------------- AI × XR discovery ---------------- */}
+      <AnimatedSection className="py-12 md:py-20 bg-background relative">
+        <TopographicPattern className="opacity-25" />
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <AiXrStrip />
+        </div>
+      </AnimatedSection>
+
+      {/* ---------------- Convergence thesis ---------------- */}
+      <AnimatedSection className="py-12 md:py-20 bg-asentio-blue relative overflow-hidden">
+        <TopographicPattern variant="dark" className="opacity-100" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
+
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="max-w-3xl mb-10">
+            <div className="w-12 h-1 bg-asentio-red mb-4" />
+            <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-3">
+              Four forces, one convergence
+            </h2>
+            <p className="text-primary-foreground/80 text-base md:text-lg leading-relaxed">
+              Asentio works at the point where hardware, intelligence, human behavior and market
+              strategy stop being separate problems.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {CONVERGENCE.map((item) => (
+              <div
+                key={item.title}
+                className="bg-background/10 backdrop-blur-sm rounded-xl p-6 border border-background/20"
+              >
+                <item.icon className="w-6 h-6 text-asentio-red mb-4" />
+                <h3 className="text-primary-foreground font-semibold mb-2">{item.title}</h3>
+                <p className="text-primary-foreground/75 text-sm leading-relaxed">{item.body}</p>
               </div>
             ))}
           </div>
         </div>
       </AnimatedSection>
-      
-      {/* Our Approach Section */}
-      <AnimatedSection className="py-12 md:py-24 bg-muted relative">
+
+      {/* ---------------- Latest insights ---------------- */}
+      <AnimatedSection className="py-12 md:py-20 bg-background relative">
         <TopographicPattern className="opacity-20" />
-        
-        <div className="container mx-auto relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <ExperienceFramework />
-          </div>
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <LatestInsights limit={3} />
         </div>
       </AnimatedSection>
-      
-      {/* Partner Section */}
-      <AnimatedSection className="py-12 md:py-24 bg-asentio-blue relative overflow-hidden">
-        {/* Topographic overlay */}
-        <TopographicPattern variant="dark" className="opacity-100" />
-        
-        {/* Red accent decorations */}
-        <div className="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-asentio-red/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-24 md:w-48 h-24 md:h-48 bg-asentio-red/5 rounded-full blur-2xl" />
-        
+
+      {/* ---------------- Work with us + newsletter ---------------- */}
+      <AnimatedSection className="py-12 md:py-20 bg-muted relative">
+        <TopographicPattern className="opacity-20" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
-              <div className="text-center lg:text-left">
-                <div className="w-12 h-1 bg-asentio-red mb-4 md:mb-6 mx-auto lg:mx-0" />
-                <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-primary-foreground">
-                  {t('partner.title')}
-                </h2>
-                <p className="text-base md:text-lg text-primary-foreground/80 mb-6 md:mb-8 leading-relaxed">
-                  {t('partner.desc')}
-                </p>
-                <Link to="/services" className="inline-block">
-                  <Button 
-                    size="lg"
-                    className="bg-background text-asentio-blue hover:bg-background/90 px-6 md:px-8 py-5 md:py-6 font-medium shadow-lg"
-                  >
-                    {t('expertise.learn')}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <div>
+              <div className="w-12 h-1 bg-asentio-red mb-4" />
+              <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">
+                Advisory for the interface era
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                Asentio advises device makers, AI companies, component suppliers and investors on
+                positioning, product strategy and entry into the US market — grounded in the same
+                research that powers the directory.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link to="/work-with-us">
+                  <Button className="bg-asentio-blue hover:bg-asentio-blue/90 px-6 py-5">
+                    Engagement models
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
+                <Link to="/about/jon-li">
+                  <Button variant="outline" className="px-6 py-5 border-2">
+                    Meet Jon Li
+                  </Button>
+                </Link>
               </div>
-              
-              <div className="hidden lg:block">
-                <div className="bg-background/10 backdrop-blur-sm rounded-2xl p-8 border border-background/20">
-                  <h3 className="text-primary-foreground font-semibold text-xl mb-6">
-                    {t('partner.expertise.title')}
-                  </h3>
-                  <ul className="space-y-5">
-                    {[
-                      t('partner.expertise.market'),
-                      t('partner.expertise.team'),
-                      t('partner.expertise.insights'),
-                    ].map((item, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-asentio-red flex-shrink-0 mt-0.5" />
-                        <span className="text-primary-foreground/90">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </AnimatedSection>
-      
-      {/* CTA Section */}
-      <AnimatedSection className="py-12 md:py-24 bg-gradient-to-b from-background to-muted relative">
-        <TopographicPattern className="opacity-20" />
-        
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            {/* Red accent */}
-            <div className="w-12 h-1 bg-asentio-red mx-auto mb-4 md:mb-6" />
-            
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-foreground">
-              {t('cta.title')}
-            </h2>
-            <p className="text-base md:text-xl text-muted-foreground mb-8 md:mb-10 leading-relaxed">
-              {t('cta.desc')}
-            </p>
-            
-            <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-              <Link to="/contact" className="w-full sm:w-auto" onClick={() => trackCTAClick('Get in Touch', true)}>
-                <Button 
-                  size="lg" 
-                  className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 px-8 md:px-10 py-5 md:py-6 text-base font-medium shadow-lg shadow-asentio-blue/20 transition-all hover:shadow-xl"
-                >
-                  {t('cta.contact')}
-                </Button>
-              </Link>
-              <a href="mailto:info@asentio.com" className="w-full sm:w-auto" onClick={() => trackEmailClick('info@asentio.com')}>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="w-full sm:w-auto px-8 md:px-10 py-5 md:py-6 text-base font-medium border-2 hover:bg-muted"
-                >
-                  Email Us
-                </Button>
-              </a>
             </div>
 
+            <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+              <NewsletterSignup source="homepage" />
+            </div>
           </div>
         </div>
       </AnimatedSection>
