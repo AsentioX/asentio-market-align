@@ -167,11 +167,29 @@ const Index = () => {
       </AnimatedSection>
 
       {/* ---------------- The Human Interface Briefing ---------------- */}
-      <AnimatedSection className="py-12 md:py-20 bg-muted relative">
-        <TopographicPattern className="opacity-20" />
+      <AnimatedSection className="py-12 md:py-20 bg-asentio-blue relative overflow-hidden">
+        <TopographicPattern variant="dark" className="opacity-100" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-asentio-red/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-asentio-red/5 rounded-full blur-3xl" />
+
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
-            <NewsletterSignup source="homepage" wide />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+              <NewsletterSignup source="homepage" />
+            </div>
+            <div className="hidden md:flex items-center justify-center">
+              <div className="text-center text-primary-foreground/80">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-asentio-red/20 flex items-center justify-center">
+                  <span className="text-3xl font-bold text-asentio-red">A</span>
+                </div>
+                <p className="text-sm font-medium tracking-wider uppercase text-primary-foreground/60">
+                  Asentio Briefing
+                </p>
+                <p className="text-primary-foreground/40 text-sm mt-1">
+                  The intersection of XR, AI, wearables and strategy.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </AnimatedSection>
