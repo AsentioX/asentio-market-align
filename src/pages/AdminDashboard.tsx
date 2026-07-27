@@ -19,6 +19,7 @@ import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import CRMDashboard from '@/components/admin/CRMDashboard';
 import CaseStudiesAdmin from '@/components/admin/CaseStudiesAdmin';
+import ContentAdmin from '@/components/admin/ContentAdmin';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -189,6 +190,10 @@ const AdminDashboard = () => {
               <Layers className="w-4 h-4" />
               Use Cases ({useCases?.length || 0})
             </TabsTrigger>
+            <TabsTrigger value="content" className="flex items-center gap-2">
+              <Rss className="w-4 h-4" />
+              Insights & Submissions
+            </TabsTrigger>
             <TabsTrigger value="rss-feeds" className="flex items-center gap-2">
               <Rss className="w-4 h-4" />
               News Feeds
@@ -198,6 +203,10 @@ const AdminDashboard = () => {
               Case Studies
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="content">
+            <ContentAdmin />
+          </TabsContent>
 
           {/* CRM Tab */}
           <TabsContent value="crm">
