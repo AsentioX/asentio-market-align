@@ -122,7 +122,6 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import WorldTimeMarquee from "./components/WorldTimeMarquee";
 
 const queryClient = new QueryClient();
 
@@ -158,7 +157,6 @@ const AppContent = () => {
   return (
     <>
       {!hideNavFooter && <Navbar />}
-      {!hideNavFooter && <WorldTimeMarquee />}
       <main>
         <Routes>
           <Route path="/" element={<Index />} />
