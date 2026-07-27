@@ -18,6 +18,13 @@ import Unsubscribe from "./pages/Unsubscribe";
 import Directory from "./pages/Directory";
 import ProductDetail from "./pages/ProductDetail";
 import CompanyDetail from "./pages/CompanyDetail";
+import DirectoryCategory from "./pages/DirectoryCategory";
+import DirectorySubmit from "./pages/DirectorySubmit";
+import ArticleIndex from "./pages/ArticleIndex";
+import ArticleDetail from "./pages/ArticleDetail";
+import Research from "./pages/Research";
+import WorkWithUs from "./pages/WorkWithUs";
+import JonLi from "./pages/JonLi";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProductForm from "./pages/ProductForm";
@@ -154,11 +161,20 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
+          <Route path="/about/jon-li" element={<JonLi />} />
+          <Route path="/insights" element={<ArticleIndex kind="insight" />} />
+          <Route path="/insights/:slug" element={<ArticleDetail kind="insight" />} />
+          <Route path="/research" element={<Research />} />
+          <Route path="/research/:slug" element={<ArticleDetail kind="research" />} />
+          <Route path="/work-with-us" element={<WorkWithUs />} />
+          <Route path="/work-with-us/:slug" element={<WorkWithUs />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
           <Route path="/xr-directory" element={<Directory />} />
+          <Route path="/xr-directory/submit" element={<DirectorySubmit />} />
+          <Route path="/xr-directory/category/:groupSlug" element={<DirectoryCategory />} />
           <Route path="/xr-directory/company/:companyName" element={<CompanyDetail />} />
           <Route path="/xr-directory/agencies/:slug" element={<AgencyDetail />} />
           <Route path="/xr-directory/use-cases/:slug" element={<UseCaseDetail />} />
