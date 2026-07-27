@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { TAXONOMY } from "@/lib/xrTaxonomy";
-import NewsletterSignup from "./NewsletterSignup";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
