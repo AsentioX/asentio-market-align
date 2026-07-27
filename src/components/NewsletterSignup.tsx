@@ -11,6 +11,7 @@ interface NewsletterSignupProps {
   title?: string;
   description?: string;
   compact?: boolean;
+  wide?: boolean;
 }
 
 const NewsletterSignup = ({
@@ -19,6 +20,7 @@ const NewsletterSignup = ({
   title = 'The Human Interface Briefing',
   description = 'A regular read on where XR, AI and wearables converge — new companies, shifting categories and what it means for product and market strategy.',
   compact = false,
+  wide = false,
 }: NewsletterSignupProps) => {
   const [email, setEmail] = useState('');
   const [done, setDone] = useState(false);
@@ -52,7 +54,7 @@ const NewsletterSignup = ({
   }
 
   return (
-    <div className={compact ? '' : 'max-w-2xl'}>
+    <div className={compact ? '' : wide ? 'w-full' : 'max-w-2xl'}>
       {!compact && (
         <>
           <div className="w-12 h-1 bg-asentio-red mb-4" />

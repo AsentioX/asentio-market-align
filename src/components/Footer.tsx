@@ -13,7 +13,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 md:px-6">
         {/* Newsletter band */}
         <div className="border-b border-white/10 pb-10 mb-10">
-          <NewsletterSignup source="footer" variant="dark" />
+          <NewsletterSignup source="footer" variant="dark" title="Subscribe to updates" />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">

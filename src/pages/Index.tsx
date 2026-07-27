@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
-import DirectoryCategoryTiles from "@/components/home/DirectoryCategoryTiles";
-import AiXrStrip from "@/components/home/AiXrStrip";
 import LatestInsights from "@/components/home/LatestInsights";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import ARBackground from "@/components/ARBackground";
@@ -128,31 +126,6 @@ const Index = () => {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
       </section>
 
-      {/* ---------------- Featured directory categories ---------------- */}
-      <AnimatedSection className="py-12 md:py-20 bg-muted relative">
-        <TopographicPattern className="opacity-20" />
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-3xl mb-10">
-            <div className="w-12 h-1 bg-asentio-red mb-4" />
-            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-3">Browse the XR Directory</h2>
-            <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-              A structured view of the industry organized by where a company sits between a person and an AI system, not
-              by marketing category.
-            </p>
-          </div>
-
-          <DirectoryCategoryTiles />
-        </div>
-      </AnimatedSection>
-
-      {/* ---------------- AI × XR discovery ---------------- */}
-      <AnimatedSection className="py-12 md:py-20 bg-background relative">
-        <TopographicPattern className="opacity-25" />
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <AiXrStrip />
-        </div>
-      </AnimatedSection>
-
       {/* ---------------- Convergence thesis ---------------- */}
       <AnimatedSection className="py-12 md:py-20 bg-asentio-blue relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
@@ -193,36 +166,12 @@ const Index = () => {
         </div>
       </AnimatedSection>
 
-      {/* ---------------- Work with us + newsletter ---------------- */}
+      {/* ---------------- The Human Interface Briefing ---------------- */}
       <AnimatedSection className="py-12 md:py-20 bg-muted relative">
         <TopographicPattern className="opacity-20" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-            <div>
-              <div className="w-12 h-1 bg-asentio-red mb-4" />
-              <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">Advisory for the interface era</h2>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Asentio advises device makers, AI companies, component suppliers and investors on positioning, product
-                strategy and entry into the US market — grounded in the same research that powers the directory.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/work-with-us">
-                  <Button className="bg-asentio-blue hover:bg-asentio-blue/90 px-6 py-5">
-                    Engagement models
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-                <Link to="/about/jon-li">
-                  <Button variant="outline" className="px-6 py-5 border-2">
-                    Meet Jon Li
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
-              <NewsletterSignup source="homepage" />
-            </div>
+          <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+            <NewsletterSignup source="homepage" wide />
           </div>
         </div>
       </AnimatedSection>
