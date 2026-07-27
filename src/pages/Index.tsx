@@ -8,6 +8,7 @@ import AiXrStrip from "@/components/home/AiXrStrip";
 import LatestInsights from "@/components/home/LatestInsights";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import ARBackground from "@/components/ARBackground";
+import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
 import {
