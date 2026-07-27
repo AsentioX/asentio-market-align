@@ -13,16 +13,26 @@ interface DerivedCompany {
   logoUrl: string | null;
 }
 
+export type CompanyKind = 'manufacturer' | 'ai-provider';
+
+const hasAI = (p: XRProduct) => {
+  const v = (p.ai_integration || '').trim().toLowerCase();
+  return !!v && v !== 'no' && v !== 'none' && v !== 'n/a';
+};
+
 interface DerivedCompanyGridProps {
   products: XRProduct[] | undefined;
   isLoading: boolean;
+  kind?: CompanyKind;
+  emptyMessage?: string;
 }
 
-const DerivedCompanyGrid = ({ products, isLoading }: DerivedCompanyGridProps) => {
+const DerivedCompanyGrid = ({ products, isLoading, kind = 'manufacturer', emptyMessage }: DerivedCompanyGridProps) => {
   const companies = useMemo(() => {
     if (!products) return [];
     const map = new Map<string, DerivedCompany>();
-    products.forEach((p) => {
+    const scoped = kind === 'ai-provider' ? products.filter(hasAI) : products;
+    scoped.forEach((p) => {
       const existing = map.get(p.company);
       if (existing) {
         existing.productCount++;
@@ -40,7 +50,7 @@ const DerivedCompanyGrid = ({ products, isLoading }: DerivedCompanyGridProps) =>
       }
     });
     return Array.from(map.values()).sort((a, b) => b.productCount - a.productCount);
-  }, [products]);
+  }, [products, kind]);
 
   if (isLoading) {
     return (
@@ -53,7 +63,7 @@ const DerivedCompanyGrid = ({ products, isLoading }: DerivedCompanyGridProps) =>
   if (companies.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-lg text-muted-foreground">No companies found.</p>
+        <p className="text-lg text-muted-foreground">{emptyMessage ?? 'No companies found.'}</p>
       </div>
     );
   }
