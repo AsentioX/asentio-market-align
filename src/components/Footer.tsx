@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { TAXONOMY } from "@/lib/xrTaxonomy";
-import NewsletterSignup from "./NewsletterSignup";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,11 +10,6 @@ const Footer = () => {
   return (
     <footer className="bg-asentio-blue text-white pt-12 md:pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
-        {/* Newsletter band */}
-        <div className="border-b border-white/10 pb-10 mb-10">
-          <NewsletterSignup source="footer" variant="dark" title="Subscribe to updates" />
-        </div>
-
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
