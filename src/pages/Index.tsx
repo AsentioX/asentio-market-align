@@ -132,7 +132,7 @@ const Index = () => {
         <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
 
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-3xl mb-10">
+          <div className="max-w-3xl mb-10 md:mb-14">
             <div className="w-12 h-1 bg-asentio-red mb-4" />
             <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-3">
               Four forces, one convergence
@@ -143,17 +143,122 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {CONVERGENCE.map((item) => (
-              <div
-                key={item.title}
-                className="bg-background/10 backdrop-blur-sm rounded-xl p-6 border border-background/20"
-              >
-                <item.icon className="w-6 h-6 text-asentio-red mb-4" />
-                <h3 className="text-primary-foreground font-semibold mb-2">{item.title}</h3>
-                <p className="text-primary-foreground/75 text-sm leading-relaxed">{item.body}</p>
+          {/* Mobile: stacked with a central convergence point */}
+          <div className="md:hidden flex flex-col items-center gap-4">
+            {CONVERGENCE.map((item, i) => (
+              <div key={item.title} className="w-full">
+                <div className="bg-background/10 backdrop-blur-sm rounded-xl p-5 border border-background/20">
+                  <item.icon className="w-6 h-6 text-asentio-red mb-3" />
+                  <h3 className="text-primary-foreground font-semibold mb-1">{item.title}</h3>
+                  <p className="text-primary-foreground/75 text-sm leading-relaxed">{item.body}</p>
+                </div>
+                {i < CONVERGENCE.length - 1 && (
+                  <div className="flex justify-center py-2">
+                    <svg width="20" height="32" viewBox="0 0 20 32" fill="none">
+                      <path
+                        d="M10 0V28M10 28L3 21M10 28L17 21"
+                        stroke="rgba(255,255,255,0.35)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
             ))}
+            <div className="mt-2 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-asentio-red/20 border border-asentio-red/40 flex items-center justify-center mb-2">
+                <span className="text-asentio-red font-bold text-xs tracking-widest uppercase">Asentio</span>
+              </div>
+              <p className="text-primary-foreground/60 text-xs tracking-wide uppercase">Convergence</p>
+            </div>
+          </div>
+
+          {/* Desktop: 4 arrows converging into one central spot */}
+          <div className="hidden md:block relative w-full aspect-[2/1] max-w-6xl mx-auto">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#CF0A0A" />
+                </marker>
+              </defs>
+              <line
+                x1="16"
+                y1="16"
+                x2="42"
+                y2="42"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth="0.8"
+                markerEnd="url(#arrowhead)"
+              />
+              <line
+                x1="84"
+                y1="16"
+                x2="58"
+                y2="42"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth="0.8"
+                markerEnd="url(#arrowhead)"
+              />
+              <line
+                x1="16"
+                y1="84"
+                x2="42"
+                y2="58"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth="0.8"
+                markerEnd="url(#arrowhead)"
+              />
+              <line
+                x1="84"
+                y1="84"
+                x2="58"
+                y2="58"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth="0.8"
+                markerEnd="url(#arrowhead)"
+              />
+            </svg>
+
+            {/* Center convergence point */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+              <div className="w-24 h-24 lg:w-28 lg:h-28 rounded-full bg-asentio-red/20 border border-asentio-red/40 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-asentio-red/10">
+                <span className="text-asentio-red font-bold text-sm lg:text-base tracking-widest uppercase text-center leading-tight">
+                  Asentio
+                </span>
+              </div>
+            </div>
+
+            {/* Corner cards */}
+            <div className="absolute top-[6%] left-[6%] w-[34%] max-w-xs">
+              <div className="bg-background/10 backdrop-blur-sm rounded-xl p-5 lg:p-6 border border-background/20">
+                <Glasses className="w-6 h-6 text-asentio-red mb-3" />
+                <h3 className="text-primary-foreground font-semibold mb-1">{CONVERGENCE[0].title}</h3>
+                <p className="text-primary-foreground/75 text-sm leading-relaxed">{CONVERGENCE[0].body}</p>
+              </div>
+            </div>
+            <div className="absolute top-[6%] right-[6%] w-[34%] max-w-xs text-right">
+              <div className="bg-background/10 backdrop-blur-sm rounded-xl p-5 lg:p-6 border border-background/20 inline-block text-left">
+                <Brain className="w-6 h-6 text-asentio-red mb-3" />
+                <h3 className="text-primary-foreground font-semibold mb-1">{CONVERGENCE[1].title}</h3>
+                <p className="text-primary-foreground/75 text-sm leading-relaxed">{CONVERGENCE[1].body}</p>
+              </div>
+            </div>
+            <div className="absolute bottom-[6%] left-[6%] w-[34%] max-w-xs">
+              <div className="bg-background/10 backdrop-blur-sm rounded-xl p-5 lg:p-6 border border-background/20">
+                <Activity className="w-6 h-6 text-asentio-red mb-3" />
+                <h3 className="text-primary-foreground font-semibold mb-1">{CONVERGENCE[2].title}</h3>
+                <p className="text-primary-foreground/75 text-sm leading-relaxed">{CONVERGENCE[2].body}</p>
+              </div>
+            </div>
+            <div className="absolute bottom-[6%] right-[6%] w-[34%] max-w-xs text-right">
+              <div className="bg-background/10 backdrop-blur-sm rounded-xl p-5 lg:p-6 border border-background/20 inline-block text-left">
+                <Compass className="w-6 h-6 text-asentio-red mb-3" />
+                <h3 className="text-primary-foreground font-semibold mb-1">{CONVERGENCE[3].title}</h3>
+                <p className="text-primary-foreground/75 text-sm leading-relaxed">{CONVERGENCE[3].body}</p>
+              </div>
+            </div>
           </div>
         </div>
       </AnimatedSection>
