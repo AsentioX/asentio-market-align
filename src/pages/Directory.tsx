@@ -58,36 +58,34 @@ const Directory = () => {
     <div className="min-h-screen bg-background">
       <DirectoryHeader />
 
-      <div className="container mx-auto px-4 pt-10">
-        <div className="flex justify-end mb-6">
-          <Link to="/hai-directory/submit">
-            <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
-              <Plus className="w-4 h-4 mr-2" /> Add your company
-            </Button>
-          </Link>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-10 md:py-14">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4 mb-8">
-            <TabsTrigger value="companies" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Companies</span>
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              <span className="hidden sm:inline">Products</span>
-            </TabsTrigger>
-            <TabsTrigger value="agencies" className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4" />
-              <span className="hidden sm:inline">Agencies</span>
-            </TabsTrigger>
-            <TabsTrigger value="use-cases" className="flex items-center gap-2">
-              <Layers className="w-4 h-4" />
-              <span className="hidden sm:inline">Use Cases</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <TabsList className="grid w-full sm:max-w-2xl grid-cols-4">
+              <TabsTrigger value="companies" className="flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Companies</span>
+              </TabsTrigger>
+              <TabsTrigger value="products" className="flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                <span className="hidden sm:inline">Products</span>
+              </TabsTrigger>
+              <TabsTrigger value="agencies" className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4" />
+                <span className="hidden sm:inline">Agencies</span>
+              </TabsTrigger>
+              <TabsTrigger value="use-cases" className="flex items-center gap-2">
+                <Layers className="w-4 h-4" />
+                <span className="hidden sm:inline">Use Cases</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <Link to="/hai-directory/submit">
+              <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
+                <Plus className="w-4 h-4 mr-2" /> Add your company
+              </Button>
+            </Link>
+          </div>
 
           <TabsContent value="companies">
             <CompanyFilterBar filters={companyFilters} onChange={setCompanyFilters} />
