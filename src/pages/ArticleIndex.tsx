@@ -54,21 +54,25 @@ const ArticleIndex = ({ kind }: ArticleIndexProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="relative pt-28 md:pt-36 pb-10 md:pb-14 bg-muted">
-        <TopographicPattern className="opacity-30" />
+      <section
+        className="relative pt-28 md:pt-36 pb-10 md:pb-14 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${insightsHeaderBg.url})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/40" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-3xl">
             <div className="w-12 h-1 bg-asentio-red mb-4" />
             <p className="text-xs uppercase tracking-wide text-asentio-red font-semibold mb-3">
               {copy.eyebrow}
             </p>
-            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">{copy.title}</h1>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{copy.title}</h1>
+            <p className="text-base md:text-lg text-white/80 leading-relaxed">
               {copy.description}
             </p>
           </div>
         </div>
       </section>
+
 
       {/* Article list */}
       <section className="container mx-auto px-4 md:px-6 py-12 md:py-16">
