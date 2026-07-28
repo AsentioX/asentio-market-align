@@ -445,6 +445,7 @@ const WorldTimeMarquee = () => {
         </div>
       </div>
     </div>
+    </div>
   );
 };
 
