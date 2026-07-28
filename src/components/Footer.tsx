@@ -54,8 +54,7 @@ const Footer = () => {
             <h4 className="text-sm font-semibold uppercase tracking-wide mb-4">Intelligence</h4>
             <ul className="space-y-2">
               <li><Link to="/insights" onClick={handleNavClick} className={linkClass}>Insights</Link></li>
-              <li><Link to="/research" onClick={handleNavClick} className={linkClass}>Research</Link></li>
-              <li><Link to="/research#market-map" onClick={handleNavClick} className={linkClass}>Market map</Link></li>
+              <li><Link to="/#market-map" onClick={handleNavClick} className={linkClass}>Market map</Link></li>
               <li><Link to="/insights" onClick={handleNavClick} className={linkClass}>Newsletter archive</Link></li>
             </ul>
           </div>

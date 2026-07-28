@@ -22,7 +22,6 @@ import DirectoryCategory from "./pages/DirectoryCategory";
 import DirectorySubmit from "./pages/DirectorySubmit";
 import ArticleIndex from "./pages/ArticleIndex";
 import ArticleDetail from "./pages/ArticleDetail";
-import Research from "./pages/Research";
 import WorkWithUs from "./pages/WorkWithUs";
 import JonLi from "./pages/JonLi";
 import AdminLogin from "./pages/AdminLogin";
@@ -171,8 +170,6 @@ const AppContent = () => {
           <Route path="/about/jon-li" element={<JonLi />} />
           <Route path="/insights" element={<ArticleIndex kind="insight" />} />
           <Route path="/insights/:slug" element={<ArticleDetail kind="insight" />} />
-          <Route path="/research" element={<Research />} />
-          <Route path="/research/:slug" element={<ArticleDetail kind="research" />} />
           <Route path="/work-with-us" element={<WorkWithUs />} />
           <Route path="/work-with-us/:slug" element={<WorkWithUs />} />
           <Route path="/services" element={<Services />} />
