@@ -145,8 +145,9 @@ const DirectoryHeader = () => {
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
             <span>Mapping the </span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">
-              {"Human-AI\u00a0Interface"}
+              Human-AI
             </span>
+            <span className="text-white">&nbsp;Interface</span>
           </h1>
           
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
