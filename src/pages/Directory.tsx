@@ -8,7 +8,6 @@ import CompanyGrid from '@/components/directory/CompanyGrid';
 import CompanyFilterBar from '@/components/directory/CompanyFilterBar';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
-import DirectoryCategoryTiles from '@/components/home/DirectoryCategoryTiles';
 import { Button } from '@/components/ui/button';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
