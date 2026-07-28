@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useSeo } from '@/hooks/useSeo';
+import workWithUsHeaderBg from '@/assets/work-with-us-header-bg.png.asset.json';
 import TopographicPattern from '@/components/TopographicPattern';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Compass, Mic, FlaskConical, Handshake, CheckCircle2 } from 'lucide-react';
 import { trackPageView } from '@/lib/analytics';
+
 
 interface Engagement {
   slug: string;
