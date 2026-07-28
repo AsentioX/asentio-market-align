@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useArticles } from '@/hooks/useAsentioContent';
 import { useSeo } from '@/hooks/useSeo';
-import TopographicPattern from '@/components/TopographicPattern';
+import insightsHeaderBg from '@/assets/insights-header-bg.png.asset.json';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { trackPageView } from '@/lib/analytics';
+
 
 interface ArticleIndexProps {
   kind: 'insight' | 'research';
