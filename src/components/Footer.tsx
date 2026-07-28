@@ -20,8 +20,7 @@ const Footer = () => {
               className="h-8 mb-4"
             />
             <p className="text-gray-300 text-sm leading-relaxed mb-4">
-              Asentio tracks and advises the companies building the human interface to AI —
-              XR, wearables, sensing and the intelligence behind them.
+              Asentio explores the Human-AI Interface and what it means for people, products, businesses, and markets.
             </p>
             <p className="text-gray-400 text-xs">© {currentYear} Asentio. All rights reserved.</p>
           </div>
