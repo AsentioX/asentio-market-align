@@ -294,9 +294,9 @@ const WorldTimeMarquee = () => {
     const weather = weatherData[city.name];
     
     return (
-      <span 
-        key={`${keyPrefix}-${city.name}`} 
-        className={`relative inline-flex flex-col items-center px-6 py-2 pt-4 cursor-pointer transition-all bg-black ${isLocked ? 'opacity-40' : 'hover:opacity-80'}`}
+      <span
+        key={`${keyPrefix}-${city.name}`}
+        className={`relative inline-flex flex-col items-center px-6 py-2 pt-4 cursor-pointer transition-all bg-[#0A2342] ${isLocked ? 'opacity-40' : 'hover:opacity-80'}`}
         onClick={() => toggleCityLock(city.name)}
       >
         {/* Color gradient bar at top */}
