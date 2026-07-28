@@ -130,18 +130,20 @@ const WorkWithUs = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="relative pt-28 md:pt-36 pb-10 md:pb-14 bg-muted">
-        <TopographicPattern className="opacity-30" />
+      <section
+        className="relative pt-28 md:pt-36 pb-10 md:pb-14 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${workWithUsHeaderBg.url})` }}
+      >
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-3xl">
             <div className="w-12 h-1 bg-asentio-red mb-4" />
             <p className="text-xs uppercase tracking-wide text-asentio-red font-semibold mb-3">
               {engagement ? engagement.label : 'Work With Us'}
             </p>
-            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
               {engagement ? engagement.headline : 'Strategy for companies building the interface to AI'}
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            <p className="text-base md:text-lg text-white/80 leading-relaxed">
               {engagement
                 ? engagement.intro
                 : 'Asentio works with a small number of device makers, AI companies, suppliers and investors each year — combining live market intelligence with hands-on product and go-to-market strategy.'}
@@ -149,6 +151,7 @@ const WorkWithUs = () => {
           </div>
         </div>
       </section>
+
 
       {engagement ? (
         /* -------- Single engagement -------- */
