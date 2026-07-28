@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 import chesterImg from "@/assets/chester.png";
 import jonImg from "@/assets/jon.png";
 import linkedinLogo from "@/assets/linkedin-logo.png";
+import { ProfileDialog } from "@/components/profile/ProfileDialog";
 import { initSession, trackPageView, trackTimeOnPage } from "@/lib/analytics";
 
 const About = () => {
@@ -105,12 +106,12 @@ const About = () => {
                   <p className="text-muted-foreground leading-relaxed">
                     {t('about.team.jon')}
                   </p>
-                  <Link to="/about/jon-li" className="mt-6">
+                  <ProfileDialog profile="jon" className="mt-6">
                     <Button variant="outline" className="border-2">
                       Jon's Profile
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
-                  </Link>
+                  </ProfileDialog>
                 </div>
               </div>
               
@@ -136,12 +137,12 @@ const About = () => {
                   <p className="text-muted-foreground leading-relaxed">
                     {t('about.team.chester')}
                   </p>
-                  <Link to="/about/chester-mui" className="mt-6">
+                  <ProfileDialog profile="chester" className="mt-6">
                     <Button variant="outline" className="border-2">
                       Chester's Profile
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
-                  </Link>
+                  </ProfileDialog>
                 </div>
               </div>
             </div>
