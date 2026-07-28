@@ -121,11 +121,11 @@ const ArticleIndex = ({ kind }: ArticleIndexProps) => {
 
       {/* Newsletter */}
       <section className="bg-muted py-12 md:py-16 relative">
-        <TopographicPattern className="opacity-20" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <NewsletterSignup source={kind} />
         </div>
       </section>
+
     </div>
   );
 };
