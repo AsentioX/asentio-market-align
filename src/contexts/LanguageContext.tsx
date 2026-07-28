@@ -51,18 +51,18 @@ const translations = {
     'cta.contact': 'Contact Us',
     
     // About page
-    'about.banner.text': 'We help global brands achieve product-market fit in the United States through strategic guidance and cross-cultural expertise.',
+    'about.banner.text': 'Understanding Humans. Shaping the Future of AI.',
     'about.who.title': 'Who We Are',
-    'about.who.p1': 'Asentio is a cross-border strategic consultancy that helps international technology companies succeed in the U.S. market.',
-    'about.who.p2': 'Founded by professionals with deep experience in both global and American markets, we specialize in translating global innovation into local success.',
-    'about.who.p3': 'Our team blends technical expertise with cultural and market insight to ensure your product resonates with U.S. consumer and customers - without losing the essence of your brand.',
-    'about.who.p4': 'We also work with U.S. companies looking to collaborate with or source from China, bridging strategic and cultural gaps to create lasting partnerships.',
+    'about.who.p1': 'Asentio is a strategic intelligence and advisory firm focused on the Human-AI Interface, the rapidly evolving ways people interact, collaborate, and live with artificial intelligence.',
+    'about.who.p2': 'We believe the next wave of AI innovation will be defined not only by increasingly powerful models, but by how AI enters the human experience. From agents and intelligent software to wearables, robotics, and spatial computing, new interfaces are changing how we access information, make decisions, communicate, work, and experience the world.',
+    'about.who.p3': 'Our approach is fundamentally human-centered. We study how people interact with emerging technologies, what they will actually adopt, how behaviors will change, and how those changes will create and disrupt markets.',
+    'about.who.p4': 'Through the HAI Directory, insights, executive briefings, speaking, executive immersions, and strategic advisory, Asentio helps executives and investors understand what is emerging, why it matters, and what it could mean for their businesses and investments.',
     'about.team.title': 'Team',
     'about.team.chester': '20+ years experience in strategy and finance, bringing brands and products into new markets, building large teams and scaling businesses.',
     'about.team.jon': '20+ years in consumer electronics, mobile devices, and electric vehicles across China, the US and the EU. Product management + UI/UX expert.',
-    'about.cta.title': 'Ready to bridge the gap?',
-    'about.cta.desc': 'Let\'s discuss how our expertise can help your brand succeed in the U.S. market.',
-    'about.cta.button': 'Get in Touch',
+    'about.cta.title': 'What Does Human + AI Mean for your Business?',
+    'about.cta.desc': 'As AI changes how people work, interact, and make decisions, new opportunities and disruptions are emerging. Let’s explore what they mean for your business.',
+    'about.cta.button': 'Start a Conversation',
     
     // Services page
     'services.hero.title': 'Our',
