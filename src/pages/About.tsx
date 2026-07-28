@@ -24,13 +24,14 @@ const About = () => {
     <div className="overflow-x-hidden">
       {/* Golden Gate Bridge Banner */}
       <div className="w-full relative">
-        <div className="w-full h-[20vh] md:h-[28vh] overflow-hidden">
-          <img 
-            alt="Golden Gate Bridge in San Francisco" 
-            className="w-full h-full object-cover" 
-            src="/lovable-uploads/c5820e67-b1e2-42b5-9be4-c56123dc7c00.png" 
+        <div className="w-full h-[20vh] md:h-[28vh] overflow-hidden relative">
+          <img
+            alt="Golden Gate Bridge in San Francisco"
+            className="w-full h-full object-cover"
+            src="/lovable-uploads/c5820e67-b1e2-42b5-9be4-c56123dc7c00.png"
           />
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-b from-asentio-blue/80 via-asentio-blue/60 to-asentio-blue/80 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
             <div className="text-center px-4">
               <p className="text-base md:text-xl text-white max-w-3xl mx-auto">
                 {t('about.banner.text')}
