@@ -381,7 +381,6 @@ const WorldTimeMarquee = () => {
   return (
     <div className="relative bg-black pt-[80px] md:pt-[120px]">
       <div className="relative">
-        {/* Settings toggles */}
         <div className="absolute top-0 md:-top-8 right-4 z-10 flex items-center gap-2">
           {/* Time format toggle */}
           <button
