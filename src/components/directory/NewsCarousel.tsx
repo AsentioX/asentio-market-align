@@ -86,7 +86,7 @@ const NewsCarousel = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Newspaper className="w-5 h-5 text-asentio-red" />
-            <h2 className="text-lg font-semibold text-foreground">Latest XR News</h2>
+            <h2 className="text-lg font-semibold text-foreground">Latest HAI News</h2>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => scroll('left')}>
