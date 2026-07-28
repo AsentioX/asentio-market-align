@@ -24,6 +24,7 @@ import ArticleIndex from "./pages/ArticleIndex";
 import ArticleDetail from "./pages/ArticleDetail";
 import WorkWithUs from "./pages/WorkWithUs";
 import JonLi from "./pages/JonLi";
+import ChesterMui from "./pages/ChesterMui";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProductForm from "./pages/ProductForm";
@@ -168,6 +169,7 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/about/jon-li" element={<JonLi />} />
+          <Route path="/about/chester-mui" element={<ChesterMui />} />
           <Route path="/insights" element={<ArticleIndex kind="insight" />} />
           <Route path="/insights/:slug" element={<ArticleDetail kind="insight" />} />
           <Route path="/work-with-us" element={<WorkWithUs />} />
