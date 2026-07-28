@@ -131,6 +131,13 @@ const isBeaverBoatHost = () => {
   return h === 'beaverboatclub.org' || h === 'www.beaverboatclub.org';
 };
 
+/** Preserve old /xr-directory links by redirecting to the new /hai-directory paths. */
+const OldDirectoryRedirect = () => {
+  const location = useLocation();
+  const newPath = location.pathname.replace(/^\/xr-directory/, '/hai-directory') + location.search + location.hash;
+  return <Navigate to={newPath} replace />;
+};
+
 const AppContent = () => {
   const location = useLocation();
   const beaverHost = isBeaverBoatHost();
