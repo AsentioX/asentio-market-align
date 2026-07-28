@@ -59,23 +59,14 @@ const Directory = () => {
     <div className="min-h-screen bg-background">
       <DirectoryHeader />
 
-      {/* Category tiles — the primary way in */}
       <div className="container mx-auto px-4 pt-10">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
-          <div>
-            <div className="w-12 h-1 bg-asentio-red mb-3" />
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">Browse by layer of the stack</h2>
-            <p className="text-muted-foreground mt-1">
-              Six layers between a person and an AI system.
-            </p>
-          </div>
+        <div className="flex justify-end mb-6">
           <Link to="/hai-directory/submit">
             <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
               <Plus className="w-4 h-4 mr-2" /> Add your company
             </Button>
           </Link>
         </div>
-        <DirectoryCategoryTiles />
       </div>
 
       <div className="container mx-auto px-4 py-10 md:py-14">
