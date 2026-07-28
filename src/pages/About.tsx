@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
@@ -8,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import chesterImg from "@/assets/chester.png";
 import jonImg from "@/assets/jon.png";
 import linkedinLogo from "@/assets/linkedin-logo.png";
+import { ProfileDialog } from "@/components/profile/ProfileDialog";
 import { initSession, trackPageView, trackTimeOnPage } from "@/lib/analytics";
 
 const About = () => {
