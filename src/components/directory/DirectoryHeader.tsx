@@ -143,9 +143,9 @@ const DirectoryHeader = () => {
         <div className="max-w-4xl mx-auto text-center">
           
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Mapping the{' '}
+            <span>Mapping the </span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">
-              Human-AI&nbsp;Interface
+              {"Human-AI\u00a0Interface"}
             </span>
           </h1>
           
