@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { PerkPathAuthProvider } from "@/hooks/usePerkPathAuth";
@@ -131,6 +131,13 @@ const isBeaverBoatHost = () => {
   return h === 'beaverboatclub.org' || h === 'www.beaverboatclub.org';
 };
 
+/** Preserve old /xr-directory links by redirecting to the new /hai-directory paths. */
+const OldDirectoryRedirect = () => {
+  const location = useLocation();
+  const newPath = location.pathname.replace(/^\/xr-directory/, '/hai-directory') + location.search + location.hash;
+  return <Navigate to={newPath} replace />;
+};
+
 const AppContent = () => {
   const location = useLocation();
   const beaverHost = isBeaverBoatHost();
@@ -172,13 +179,17 @@ const AppContent = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
-          <Route path="/xr-directory" element={<Directory />} />
-          <Route path="/xr-directory/submit" element={<DirectorySubmit />} />
-          <Route path="/xr-directory/category/:groupSlug" element={<DirectoryCategory />} />
-          <Route path="/xr-directory/company/:companyName" element={<CompanyDetail />} />
-          <Route path="/xr-directory/agencies/:slug" element={<AgencyDetail />} />
-          <Route path="/xr-directory/use-cases/:slug" element={<UseCaseDetail />} />
-          <Route path="/xr-directory/:slug" element={<ProductDetail />} />
+
+          {/* Legacy XR Directory redirects (preserve external links & SEO) */}
+          <Route path="/xr-directory/*" element={<OldDirectoryRedirect />} />
+
+          <Route path="/hai-directory" element={<Directory />} />
+          <Route path="/hai-directory/submit" element={<DirectorySubmit />} />
+          <Route path="/hai-directory/category/:groupSlug" element={<DirectoryCategory />} />
+          <Route path="/hai-directory/company/:companyName" element={<CompanyDetail />} />
+          <Route path="/hai-directory/agencies/:slug" element={<AgencyDetail />} />
+          <Route path="/hai-directory/use-cases/:slug" element={<UseCaseDetail />} />
+          <Route path="/hai-directory/:slug" element={<ProductDetail />} />
           <Route path="/labs" element={<Labs />} />
           <Route path="/labs/wo-buddy" element={<WOBuddyLayout />} />
           <Route path="/labs/wo-buddy/admin" element={<WOBuddyAdminDashboard />} />

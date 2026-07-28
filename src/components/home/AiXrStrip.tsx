@@ -24,7 +24,7 @@ const AiXrStrip = () => {
           </p>
         </div>
         <Link
-          to="/xr-directory"
+          to="/hai-directory"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-asentio-blue hover:text-asentio-red transition-colors whitespace-nowrap"
         >
           Open the directory <ArrowRight className="w-4 h-4" />
@@ -35,7 +35,7 @@ const AiXrStrip = () => {
         {AI_XR_FILTERS.map((chip) => (
           <Link
             key={chip}
-            to={`/xr-directory?ai=${encodeURIComponent(chip)}`}
+            to={`/hai-directory?ai=${encodeURIComponent(chip)}`}
             className="px-3.5 py-1.5 rounded-full text-sm border border-border bg-background text-muted-foreground hover:border-asentio-red/50 hover:text-asentio-red transition-colors"
           >
             {chip}

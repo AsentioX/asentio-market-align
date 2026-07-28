@@ -10,7 +10,7 @@ interface UseCaseCardProps {
 
 const UseCaseCard = ({ useCase }: UseCaseCardProps) => {
   return (
-    <Link to={`/xr-directory/use-cases/${useCase.slug}`} className="block">
+    <Link to={`/hai-directory/use-cases/${useCase.slug}`} className="block">
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border ${
       useCase.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
@@ -89,7 +89,7 @@ const UseCaseCard = ({ useCase }: UseCaseCardProps) => {
           <div className="flex items-center gap-2 pt-3 border-t border-border">
             <Building2 className="w-4 h-4 text-muted-foreground" />
             <Link 
-              to={`/xr-directory/agencies/${useCase.agency.slug}`}
+              to={`/hai-directory/agencies/${useCase.agency.slug}`}
               className="text-sm font-medium text-asentio-blue hover:underline"
             >
               {useCase.agency.name}

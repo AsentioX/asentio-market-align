@@ -148,11 +148,11 @@ const AdminDashboard = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-2">
+            <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Directory
             </Link>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">XR Directory Admin</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">HAI Directory Admin</h1>
             <p className="text-muted-foreground">Manage products, agencies, companies, and use cases</p>
           </div>
           

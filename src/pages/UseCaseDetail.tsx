@@ -29,7 +29,7 @@ const UseCaseDetail = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Use case not found</h1>
-        <Link to="/xr-directory?tab=use-cases">
+        <Link to="/hai-directory?tab=use-cases">
           <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" /> Back to Directory</Button>
         </Link>
       </div>
@@ -39,7 +39,7 @@ const UseCaseDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 pt-24">
-        <Link to="/xr-directory?tab=use-cases" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
+        <Link to="/hai-directory?tab=use-cases" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Use Cases
         </Link>
 
@@ -103,7 +103,7 @@ const UseCaseDetail = () => {
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-lg font-semibold mb-4">Agency</h2>
-                  <Link to={`/xr-directory/agencies/${useCase.agency.slug}`} className="flex items-center gap-3 hover:bg-muted p-3 rounded-lg transition-colors">
+                  <Link to={`/hai-directory/agencies/${useCase.agency.slug}`} className="flex items-center gap-3 hover:bg-muted p-3 rounded-lg transition-colors">
                     <Building2 className="w-8 h-8 text-muted-foreground" />
                     <div>
                       <p className="font-medium text-primary">{useCase.agency.name}</p>

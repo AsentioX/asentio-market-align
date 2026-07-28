@@ -208,7 +208,7 @@ const ProductDetail = () => {
   // SEO meta tags + directory tracking
   useEffect(() => {
     if (product) {
-      document.title = `${product.name} - XR Directory | Asentio`;
+      document.title = `${product.name} - HAI Directory | Asentio`;
       
       let metaDesc = document.querySelector('meta[name="description"]');
       if (!metaDesc) {
@@ -247,7 +247,7 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Product not found</h1>
-        <Link to="/xr-directory">
+        <Link to="/hai-directory">
           <Button>
             <ArrowLeft className="mr-2 w-4 h-4" />
             Back to Directory
@@ -266,7 +266,7 @@ const ProductDetail = () => {
 
         <div className="container mx-auto px-4 py-8">
           {/* Back Button */}
-          <Link to="/xr-directory" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
+          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to Directory
           </Link>

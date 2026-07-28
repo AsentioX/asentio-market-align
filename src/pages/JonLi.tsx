@@ -115,7 +115,7 @@ const JonLi = () => {
             <p className="text-muted-foreground leading-relaxed">
               Through Asentio he advises device makers, AI companies, component suppliers and
               investors navigating the shift to wearable, ambient computing. That work is grounded in
-              the Asentio XR Directory — a continuously maintained map of the companies building
+              the Asentio HAI Directory — a continuously maintained map of the companies building
               devices, components, artificial intelligence, platforms, applications and the ecosystem
               around them.
             </p>

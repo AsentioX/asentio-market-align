@@ -41,7 +41,7 @@ const Index = () => {
   useSeo({
     title: "Asentio: Interfacing Humans and AI",
     description:
-      "Asentio tracks and advises the companies bridging the human to AI. Explore the XR Directory of devices, components, AI, platforms, applications and ecosystem.",
+      "Asentio tracks and advises the companies bridging the human to AI. Explore the HAI Directory of devices, components, AI, platforms, applications and ecosystem.",
     canonicalPath: "/",
   });
 
@@ -88,18 +88,18 @@ const Index = () => {
               intelligence.
             </p>
             <p className="text-base md:text-lg text-muted-foreground/90 max-w-2xl mb-8">
-              Start with the XR Directory: devices, components, artificial intelligence, platforms, applications and the
+              Start with the HAI Directory: devices, components, artificial intelligence, platforms, applications and the
               ecosystem around them.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-              <Link to="/xr-directory" onClick={() => trackCTAClick("Explore the XR Directory", true)}>
+              <Link to="/hai-directory" onClick={() => trackCTAClick("Explore the HAI Directory", true)}>
                 <Button
                   size="lg"
                   className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 px-8 py-6 text-base font-medium shadow-lg shadow-asentio-blue/20"
                 >
                   <Search className="w-4 h-4 mr-2" />
-                  Explore the XR Directory
+                  Explore the HAI Directory
                 </Button>
               </Link>
               <Link to="/work-with-us">

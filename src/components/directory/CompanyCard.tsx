@@ -36,7 +36,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <Link
-                to={`/xr-directory/company/${encodeURIComponent(company.slug || company.name)}`}
+                to={`/hai-directory/company/${encodeURIComponent(company.slug || company.name)}`}
                 className="font-semibold text-foreground group-hover:text-asentio-red transition-colors truncate"
               >
                 {company.name}
@@ -109,7 +109,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
           </div>
           <div className="flex items-center gap-3">
             <Link
-              to={`/xr-directory/company/${encodeURIComponent(company.slug || company.name)}`}
+              to={`/hai-directory/company/${encodeURIComponent(company.slug || company.name)}`}
               className="text-asentio-blue hover:underline font-medium"
             >
               Profile

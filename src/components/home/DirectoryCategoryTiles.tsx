@@ -19,7 +19,7 @@ const DirectoryCategoryTiles = () => {
         return (
           <Link
             key={group.slug}
-            to={`/xr-directory/category/${group.slug}`}
+            to={`/hai-directory/category/${group.slug}`}
             className="group relative bg-card border border-border rounded-xl p-6 hover:border-asentio-red/40 hover:shadow-xl transition-all duration-300 overflow-hidden"
           >
             <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red transition-all duration-300 group-hover:h-full" />

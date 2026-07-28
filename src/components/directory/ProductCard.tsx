@@ -33,7 +33,7 @@ const getStatusBadgeColor = (status: string) => {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   return (
-    <Link to={`/xr-directory/${product.slug}`} className="block">
+    <Link to={`/hai-directory/${product.slug}`} className="block">
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border flex flex-col ${
       product.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>

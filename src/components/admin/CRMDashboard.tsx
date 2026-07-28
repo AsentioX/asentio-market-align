@@ -29,7 +29,7 @@ import {
 const SOURCE_LABELS: Record<string, string> = {
   contact_form: 'Contact Form',
   manual: 'Manual',
-  directory_cta: 'XR Directory',
+  directory_cta: 'HAI Directory',
 };
 
 function stageInfo(stage: CRMStage) {

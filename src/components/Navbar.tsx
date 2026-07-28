@@ -12,7 +12,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "XR Directory", to: "/xr-directory", match: (p) => p.startsWith("/xr-directory") },
+  { label: "HAI Directory", to: "/hai-directory", match: (p) => p.startsWith("/hai-directory") },
   { label: "Insights", to: "/insights", match: (p) => p.startsWith("/insights") },
   { label: "Research", to: "/research", match: (p) => p.startsWith("/research") },
   { label: "About", to: "/about", match: (p) => p.startsWith("/about") },
@@ -58,7 +58,7 @@ const Navbar = () => {
         <nav className="hidden lg:flex items-center space-x-7">
           {NAV_ITEMS.map((item) => {
             const active = item.match(location.pathname);
-            const isDirectory = item.to === "/xr-directory";
+            const isDirectory = item.to === "/hai-directory";
 
             return (
               <div
@@ -83,7 +83,7 @@ const Navbar = () => {
                       {TAXONOMY.map((group) => (
                         <Link
                           key={group.slug}
-                          to={`/xr-directory/category/${group.slug}`}
+                          to={`/hai-directory/category/${group.slug}`}
                           className="block px-4 py-2 hover:bg-muted transition-colors"
                         >
                           <span className="block text-sm font-medium text-gray-800">{group.label}</span>
@@ -92,7 +92,7 @@ const Navbar = () => {
                       ))}
                       <div className="border-t border-border mt-2 pt-2">
                         <Link
-                          to="/xr-directory/submit"
+                          to="/hai-directory/submit"
                           className="block px-4 py-2 text-sm font-medium text-asentio-red hover:bg-muted transition-colors"
                         >
                           Add Your Company
@@ -144,7 +144,7 @@ const Navbar = () => {
             {TAXONOMY.map((group) => (
               <Link
                 key={group.slug}
-                to={`/xr-directory/category/${group.slug}`}
+                to={`/hai-directory/category/${group.slug}`}
                 className="text-gray-600 text-sm hover:text-asentio-blue transition-colors py-1.5 px-6"
               >
                 {group.label}
@@ -152,7 +152,7 @@ const Navbar = () => {
             ))}
 
             <Link
-              to="/xr-directory/submit"
+              to="/hai-directory/submit"
               className="text-asentio-red font-medium py-2 px-4"
             >
               Add Your Company

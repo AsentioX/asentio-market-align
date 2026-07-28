@@ -10,7 +10,7 @@ interface AgencyCardProps {
 
 const AgencyCard = ({ agency }: AgencyCardProps) => {
   return (
-    <Link to={`/xr-directory/agencies/${agency.slug}`} className="block">
+    <Link to={`/hai-directory/agencies/${agency.slug}`} className="block">
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border ${
       agency.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>

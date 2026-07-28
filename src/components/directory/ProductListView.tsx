@@ -36,7 +36,7 @@ const ProductListView = ({ products }: ProductListViewProps) => {
       {products.map((product) => (
         <Link
           key={product.id}
-          to={`/xr-directory/${product.slug}`}
+          to={`/hai-directory/${product.slug}`}
           className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-2 md:gap-4 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors items-center"
         >
           {/* Product info */}
