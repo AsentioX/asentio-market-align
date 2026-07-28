@@ -150,7 +150,7 @@ const DirectoryHeader = () => {
           </h1>
           
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Discover the companies, technologies, and products shaping how people interact with AI, from agents and wearables to robotics, spatial computing, and emerging interfaces.
+            Discover the companies and products shaping how people interact with AI, from agents and wearables to robotics, spatial computing, and emerging interfaces.
           </p>
           
         </div>
