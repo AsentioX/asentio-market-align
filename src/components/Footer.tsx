@@ -15,9 +15,9 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
             <img
-              src="/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png"
+              src={whiteLogo.url}
               alt="Asentio"
-              className="h-8 mb-4 brightness-0 invert"
+              className="h-8 mb-4"
             />
             <p className="text-gray-300 text-sm leading-relaxed mb-4">
               Asentio tracks and advises the companies building the human interface to AI —
