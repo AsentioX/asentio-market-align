@@ -143,15 +143,14 @@ const DirectoryHeader = () => {
         <div className="max-w-4xl mx-auto text-center">
           
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Global{' '}
+            Mapping the{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">
-              XR & AI
-            </span>{' '}
-            Smartglasses
+              Human-AI&nbsp;Interface
+            </span>
           </h1>
           
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            This directory tracks the leading-edge of XR and AI-powered experiences, the agencies creating these experiences, and XR enabled use cases.
+            Discover the companies, technologies, and products shaping how people interact with AI, from agents and wearables to robotics, spatial computing, and emerging interfaces.
           </p>
           
         </div>
