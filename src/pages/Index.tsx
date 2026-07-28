@@ -39,7 +39,7 @@ const Index = () => {
   const { data: companies } = useXRCompanies();
 
   useSeo({
-    title: "Asentio — Interfacing Humans and AI",
+    title: "Asentio: Interfacing Humans and AI",
     description:
       "Asentio tracks and advises the companies bridging the human to AI. Explore the XR Directory of devices, components, AI, platforms, applications and ecosystem.",
     canonicalPath: "/",
@@ -80,7 +80,7 @@ const Index = () => {
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight text-foreground mb-6">
-              The Human Interface to AI
+              The Human AI Interface
             </h1>
 
             <p className="text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mb-4">
@@ -166,7 +166,7 @@ const Index = () => {
         </div>
       </AnimatedSection>
 
-      {/* ---------------- The Human Interface Briefing ---------------- */}
+      {/* ---------------- The Human AI Interface Briefing ---------------- */}
       <AnimatedSection className="py-12 md:py-20 bg-asentio-blue relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-asentio-red/10 rounded-full blur-3xl" />
