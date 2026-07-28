@@ -167,6 +167,9 @@ const Index = () => {
         </div>
       </AnimatedSection>
 
+      {/* ---------------- Latest HAI News ---------------- */}
+      <NewsCarousel />
+
       {/* ---------------- The Human AI Interface Briefing ---------------- */}
       <AnimatedSection className="py-12 md:py-20 bg-asentio-blue relative overflow-hidden">
         <TopographicPattern variant="dark" className="opacity-100" />
