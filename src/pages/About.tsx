@@ -135,6 +135,12 @@ const About = () => {
                   <p className="text-muted-foreground leading-relaxed">
                     {t('about.team.chester')}
                   </p>
+                  <Link to="/about/chester-mui" className="mt-6">
+                    <Button variant="outline" className="border-2">
+                      Chester's Profile
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
