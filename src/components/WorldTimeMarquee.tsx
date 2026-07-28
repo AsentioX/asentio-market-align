@@ -379,13 +379,13 @@ const WorldTimeMarquee = () => {
     .filter((c): c is CityTime => c !== undefined);
 
   return (
-    <div className="relative bg-black pt-[80px] md:pt-[120px]">
+    <div className="relative bg-black">
       <div className="relative">
-        <div className="absolute top-0 md:-top-8 right-4 z-10 flex items-center gap-2">
+        <div className="absolute top-1/2 -translate-y-1/2 right-0 z-10 flex flex-col items-center gap-1">
           {/* Time format toggle */}
           <button
             onClick={() => setTimeFormat(f => f === '12H' ? '24H' : '12H')}
-            className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-l-md bg-black/80 backdrop-blur-sm border border-r-0 border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
           >
             <span className={timeFormat === '12H' ? 'text-white' : 'text-white/50'}>12H</span>
             <span className="text-white/30">/</span>
@@ -395,7 +395,7 @@ const WorldTimeMarquee = () => {
           {/* Temperature unit toggle */}
           <button
             onClick={() => setUnit(u => u === 'C' ? 'F' : 'C')}
-            className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-l-md bg-black/80 backdrop-blur-sm border border-r-0 border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
           >
             <span className={unit === 'C' ? 'text-white' : 'text-white/50'}>°C</span>
             <span className="text-white/30">/</span>
@@ -403,7 +403,7 @@ const WorldTimeMarquee = () => {
           </button>
         </div>
         
-        <div className="flex relative overflow-hidden mt-8 md:mt-0">
+        <div className="flex relative overflow-hidden">
         {/* Wave dot texture background */}
         <div 
           className="absolute inset-0 opacity-60 pointer-events-none z-0"
