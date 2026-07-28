@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSeo } from '@/hooks/useSeo';
 import TopographicPattern from '@/components/TopographicPattern';
-import MarketMap from '@/components/home/MarketMap';
 import LatestInsights from '@/components/home/LatestInsights';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { Button } from '@/components/ui/button';

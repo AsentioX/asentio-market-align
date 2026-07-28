@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
 import LatestInsights from "@/components/home/LatestInsights";
+import MarketMap from "@/components/home/MarketMap";
 import NewsCarousel from "@/components/directory/NewsCarousel";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import ARBackground from "@/components/ARBackground";
