@@ -172,6 +172,10 @@ const AppContent = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
+
+          {/* Legacy XR Directory redirects (preserve external links & SEO) */}
+          <Route path="/xr-directory/*" element={<OldDirectoryRedirect />} />
+
           <Route path="/hai-directory" element={<Directory />} />
           <Route path="/hai-directory/submit" element={<DirectorySubmit />} />
           <Route path="/hai-directory/category/:groupSlug" element={<DirectoryCategory />} />
