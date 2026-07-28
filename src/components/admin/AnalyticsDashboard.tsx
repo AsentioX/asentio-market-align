@@ -204,7 +204,7 @@ export default function AnalyticsDashboard() {
   const tabData = Object.entries(tabViewMap).map(([name, value]) => ({ name, value }));
 
   const directorySessions = sessions.filter((s) =>
-    events.some((e) => e.session_id === s.id && (e.event_type === 'directory_view' || e.event_type === 'directory_tab_view' || e.page_path.startsWith('/xr-directory')))
+    events.some((e) => e.session_id === s.id && (e.event_type === 'directory_view' || e.event_type === 'directory_tab_view' || e.page_path.startsWith('/hai-directory')))
   );
   const directoryConversions = directorySessions.filter((s) => s.converted).length;
   const avgItemsPerSession = directorySessions.length
@@ -269,7 +269,7 @@ export default function AnalyticsDashboard() {
       <Tabs defaultValue="conversion">
         <TabsList className="mb-4">
           <TabsTrigger value="conversion">Conversion</TabsTrigger>
-          <TabsTrigger value="directory">XR Directory</TabsTrigger>
+          <TabsTrigger value="directory">HAI Directory</TabsTrigger>
           <TabsTrigger value="news">News Feed</TabsTrigger>
         </TabsList>
 
@@ -733,7 +733,7 @@ export default function AnalyticsDashboard() {
                   if (directorySessions.length === 0) {
                     insights.push('No directory visitors yet — share individual product pages on LinkedIn or in newsletters to start generating data.');
                   } else {
-                    insights.push(`${dirPct}% of all sessions engaged with the XR Directory — ${dirPct > 30 ? 'strong indicator the directory is driving traffic.' : 'consider promoting specific product pages to increase this.'}`);
+                    insights.push(`${dirPct}% of all sessions engaged with the HAI Directory — ${dirPct > 30 ? 'strong indicator the directory is driving traffic.' : 'consider promoting specific product pages to increase this.'}`);
                     if (directoryConversions > 0) insights.push(`${directoryConversions} visitor${directoryConversions > 1 ? 's' : ''} converted after browsing the directory — the directory is contributing to hire-intent signals.`);
                     else insights.push('No directory visitors have converted yet — add a "Get expert advice on this product" CTA to product detail pages.');
                     if (topProducts.length > 0) insights.push(`"${topProducts[0].name}" is the most-viewed product — use it as a case study anchor or reference it in outreach.`);
@@ -761,7 +761,7 @@ export default function AnalyticsDashboard() {
           const totalNewsClicks = newsClickEvents.length;
           const newsConversions = newsSessions.filter((s) => s.converted).length;
           const directoryNewsSessionsCount = newsSessions.filter((s) =>
-            events.some((e) => e.session_id === s.id && e.page_path?.startsWith('/xr-directory'))
+            events.some((e) => e.session_id === s.id && e.page_path?.startsWith('/hai-directory'))
           ).length;
 
           const articleMap: Record<string, { title: string; source: string; clicks: number; sessions: Set<string> }> = {};
@@ -918,7 +918,7 @@ export default function AnalyticsDashboard() {
                     {(() => {
                       const insights: string[] = [];
                       if (totalNewsClicks === 0) {
-                        insights.push('No news clicks yet — tracking fires automatically when visitors click articles in the carousel on the XR Directory page.');
+                        insights.push('No news clicks yet — tracking fires automatically when visitors click articles in the carousel on the HAI Directory page.');
                       } else {
                         const ctr = newsSessions.length ? Math.round((totalNewsClicks / newsSessions.length) * 10) / 10 : 0;
                         insights.push(`Readers click an average of ${ctr} article${ctr !== 1 ? 's' : ''} per session — ${ctr >= 2 ? 'strong engagement, the content is relevant.' : 'consider refreshing feed sources to improve click-through.'}`);

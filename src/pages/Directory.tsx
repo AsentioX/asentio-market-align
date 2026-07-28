@@ -42,18 +42,18 @@ const Directory = () => {
   const { data: useCases, isLoading: useCasesLoading } = useXRUseCases(useCaseFilters);
 
   useSeo({
-    title: 'XR Directory — Companies Building the Human Interface to AI | Asentio',
+    title: 'HAI Directory — Companies Building the Human Interface to AI | Asentio',
     description:
-      'Browse the Asentio XR Directory: devices, components, artificial intelligence, platforms, applications and ecosystem companies building the human interface to AI.',
-    canonicalPath: '/xr-directory',
+      'Browse the Asentio HAI Directory: devices, components, artificial intelligence, platforms, applications and ecosystem companies building the human interface to AI.',
+    canonicalPath: '/hai-directory',
   });
 
   useEffect(() => {
-    trackPageView('/xr-directory');
+    trackPageView('/hai-directory');
   }, []);
 
   useEffect(() => {
-    trackEvent('directory_tab_view', { tab: activeTab }, '/xr-directory');
+    trackEvent('directory_tab_view', { tab: activeTab }, '/hai-directory');
   }, [activeTab]);
 
   return (
@@ -71,7 +71,7 @@ const Directory = () => {
               Six layers between a person and an AI system.
             </p>
           </div>
-          <Link to="/xr-directory/submit">
+          <Link to="/hai-directory/submit">
             <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
               <Plus className="w-4 h-4 mr-2" /> Add your company
             </Button>

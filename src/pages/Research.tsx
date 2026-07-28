@@ -13,7 +13,7 @@ const METHODS = [
   {
     icon: Database,
     title: 'Directory-driven',
-    body: 'Every conclusion starts from the tracked company set — categories, capabilities, interfaces and funding, kept current in the XR Directory.',
+    body: 'Every conclusion starts from the tracked company set — categories, capabilities, interfaces and funding, kept current in the HAI Directory.',
   },
   {
     icon: Map,
@@ -52,7 +52,7 @@ const Research = () => {
               Market intelligence for the interface era
             </h1>
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Asentio research is built on the same dataset that powers the XR Directory — structured,
+              Asentio research is built on the same dataset that powers the HAI Directory — structured,
               current and organized around where value moves as AI becomes wearable.
             </p>
           </div>
@@ -108,7 +108,7 @@ const Research = () => {
                   Commission research <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
-              <Link to="/xr-directory">
+              <Link to="/hai-directory">
                 <Button variant="outline" className="px-6 py-5 border-2">Browse the directory</Button>
               </Link>
             </div>

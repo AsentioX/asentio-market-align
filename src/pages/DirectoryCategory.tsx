@@ -24,23 +24,23 @@ const DirectoryCategory = () => {
 
   const seo = group
     ? categorySeo(group.label)
-    : { title: 'XR Directory | Asentio', description: undefined };
+    : { title: 'HAI Directory | Asentio', description: undefined };
 
   useSeo({
     title: seo.title,
-    description: group ? `${group.blurb} Browse ${group.label.toLowerCase()} companies in the Asentio XR Directory.` : seo.description,
-    canonicalPath: group ? `/xr-directory/category/${group.slug}` : '/xr-directory',
+    description: group ? `${group.blurb} Browse ${group.label.toLowerCase()} companies in the Asentio HAI Directory.` : seo.description,
+    canonicalPath: group ? `/hai-directory/category/${group.slug}` : '/hai-directory',
   });
 
   useEffect(() => {
     window.scrollTo(0, 0);
     if (group) {
-      trackPageView(`/xr-directory/category/${group.slug}`);
-      trackEvent('directory_category_view', { category: group.label }, `/xr-directory/category/${group.slug}`);
+      trackPageView(`/hai-directory/category/${group.slug}`);
+      trackEvent('directory_category_view', { category: group.label }, `/hai-directory/category/${group.slug}`);
     }
   }, [group]);
 
-  if (groupSlug && !group) return <Navigate to="/xr-directory" replace />;
+  if (groupSlug && !group) return <Navigate to="/hai-directory" replace />;
   if (!group) return null;
 
   return (
@@ -49,8 +49,8 @@ const DirectoryCategory = () => {
       <section className="relative pt-28 md:pt-36 pb-8 md:pb-10 bg-muted">
         <TopographicPattern className="opacity-30" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-5">
-            <ArrowLeft className="w-4 h-4" /> All of the XR Directory
+          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-5">
+            <ArrowLeft className="w-4 h-4" /> All of the HAI Directory
           </Link>
 
           <div className="w-12 h-1 bg-asentio-red mb-4" />
@@ -98,7 +98,7 @@ const DirectoryCategory = () => {
             {TAXONOMY.filter((g) => g.slug !== group.slug).map((g) => (
               <Link
                 key={g.slug}
-                to={`/xr-directory/category/${g.slug}`}
+                to={`/hai-directory/category/${g.slug}`}
                 className="px-4 py-2 rounded-full text-sm bg-background border border-border hover:border-asentio-red/50 hover:text-asentio-red transition-colors"
               >
                 {g.label}

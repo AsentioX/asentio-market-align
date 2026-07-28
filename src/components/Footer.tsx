@@ -27,22 +27,22 @@ const Footer = () => {
 
           {/* Directory */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wide mb-4">XR Directory</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wide mb-4">HAI Directory</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/xr-directory" onClick={handleNavClick} className={linkClass}>
+                <Link to="/hai-directory" onClick={handleNavClick} className={linkClass}>
                   Browse all companies
                 </Link>
               </li>
               {TAXONOMY.map((group) => (
                 <li key={group.slug}>
-                  <Link to={`/xr-directory/category/${group.slug}`} onClick={handleNavClick} className={linkClass}>
+                  <Link to={`/hai-directory/category/${group.slug}`} onClick={handleNavClick} className={linkClass}>
                     {group.label}
                   </Link>
                 </li>
               ))}
               <li>
-                <Link to="/xr-directory/submit" onClick={handleNavClick} className="text-asentio-red hover:text-white transition-colors text-sm font-medium">
+                <Link to="/hai-directory/submit" onClick={handleNavClick} className="text-asentio-red hover:text-white transition-colors text-sm font-medium">
                   Add your company
                 </Link>
               </li>

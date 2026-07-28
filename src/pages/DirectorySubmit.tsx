@@ -52,15 +52,15 @@ const DirectorySubmit = () => {
   const existingId = searchParams.get('claim') || undefined;
 
   useSeo({
-    title: 'Add Your Company to the XR Directory | Asentio',
+    title: 'Add Your Company to the HAI Directory | Asentio',
     description:
-      'Submit your XR, AI, wearables or component company to the Asentio XR Directory, or claim an existing profile to keep it accurate.',
-    canonicalPath: '/xr-directory/submit',
+      'Submit your XR, AI, wearables or component company to the Asentio HAI Directory, or claim an existing profile to keep it accurate.',
+    canonicalPath: '/hai-directory/submit',
   });
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    trackPageView('/xr-directory/submit');
+    trackPageView('/hai-directory/submit');
   }, []);
 
   useEffect(() => {
@@ -118,9 +118,9 @@ const DirectorySubmit = () => {
             Thanks — Asentio reviews every submission by hand. If we need anything else we'll email you
             at {form.submitter_email}.
           </p>
-          <Link to="/xr-directory">
+          <Link to="/hai-directory">
             <Button className="bg-asentio-blue hover:bg-asentio-blue/90 px-6 py-5">
-              Back to the XR Directory
+              Back to the HAI Directory
             </Button>
           </Link>
         </div>
@@ -133,15 +133,15 @@ const DirectorySubmit = () => {
       <section className="relative pt-28 md:pt-36 pb-8 bg-muted">
         <TopographicPattern className="opacity-30" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-5">
-            <ArrowLeft className="w-4 h-4" /> XR Directory
+          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-5">
+            <ArrowLeft className="w-4 h-4" /> HAI Directory
           </Link>
           <div className="w-12 h-1 bg-asentio-red mb-4" />
           <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">
             {mode === 'claim_profile' ? 'Claim this profile' : 'Add your company'}
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed mb-6">
-            The Asentio XR Directory is curated. Tell us what you build and where you sit in the stack —
+            The Asentio HAI Directory is curated. Tell us what you build and where you sit in the stack —
             we review every submission before publishing.
           </p>
 

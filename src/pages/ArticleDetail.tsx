@@ -130,13 +130,13 @@ const ArticleDetail = ({ kind }: ArticleDetailProps) => {
             {(article.related_directory_categories || []).length > 0 && (
               <div className="mt-12 pt-8 border-t border-border">
                 <h2 className="text-sm uppercase tracking-wide text-muted-foreground mb-3">
-                  Explore in the XR Directory
+                  Explore in the HAI Directory
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {article.related_directory_categories.map((cat) => (
                     <Link
                       key={cat}
-                      to={`/xr-directory?category=${encodeURIComponent(cat)}`}
+                      to={`/hai-directory?category=${encodeURIComponent(cat)}`}
                       className="px-3 py-1.5 rounded-full text-sm border border-border hover:border-asentio-red/50 hover:text-asentio-red transition-colors"
                       data-slug={slugifyCategory(cat)}
                     >
@@ -177,9 +177,9 @@ const ArticleDetail = ({ kind }: ArticleDetailProps) => {
           )}
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link to="/xr-directory">
+            <Link to="/hai-directory">
               <Button className="bg-asentio-blue hover:bg-asentio-blue/90 px-6 py-5">
-                Explore the XR Directory <ArrowRight className="w-4 h-4 ml-2" />
+                Explore the HAI Directory <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
             <Link to="/work-with-us">

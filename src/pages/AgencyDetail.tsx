@@ -29,7 +29,7 @@ const AgencyDetail = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Agency not found</h1>
-        <Link to="/xr-directory?tab=agencies">
+        <Link to="/hai-directory?tab=agencies">
           <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" /> Back to Directory</Button>
         </Link>
       </div>
@@ -39,7 +39,7 @@ const AgencyDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 pt-24">
-        <Link to="/xr-directory?tab=agencies" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
+        <Link to="/hai-directory?tab=agencies" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Agencies
         </Link>
 

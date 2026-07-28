@@ -30,7 +30,7 @@ const MarketMap = () => {
               {row.items.map((item) => (
                 <Link
                   key={item}
-                  to={`/xr-directory?category=${encodeURIComponent(item)}`}
+                  to={`/hai-directory?category=${encodeURIComponent(item)}`}
                   className="px-3 py-1 rounded-full text-sm border border-border bg-background text-muted-foreground hover:border-asentio-red/50 hover:text-asentio-red transition-colors"
                 >
                   {item}

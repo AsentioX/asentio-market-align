@@ -172,13 +172,13 @@ const AppContent = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
-          <Route path="/xr-directory" element={<Directory />} />
-          <Route path="/xr-directory/submit" element={<DirectorySubmit />} />
-          <Route path="/xr-directory/category/:groupSlug" element={<DirectoryCategory />} />
-          <Route path="/xr-directory/company/:companyName" element={<CompanyDetail />} />
-          <Route path="/xr-directory/agencies/:slug" element={<AgencyDetail />} />
-          <Route path="/xr-directory/use-cases/:slug" element={<UseCaseDetail />} />
-          <Route path="/xr-directory/:slug" element={<ProductDetail />} />
+          <Route path="/hai-directory" element={<Directory />} />
+          <Route path="/hai-directory/submit" element={<DirectorySubmit />} />
+          <Route path="/hai-directory/category/:groupSlug" element={<DirectoryCategory />} />
+          <Route path="/hai-directory/company/:companyName" element={<CompanyDetail />} />
+          <Route path="/hai-directory/agencies/:slug" element={<AgencyDetail />} />
+          <Route path="/hai-directory/use-cases/:slug" element={<UseCaseDetail />} />
+          <Route path="/hai-directory/:slug" element={<ProductDetail />} />
           <Route path="/labs" element={<Labs />} />
           <Route path="/labs/wo-buddy" element={<WOBuddyLayout />} />
           <Route path="/labs/wo-buddy/admin" element={<WOBuddyAdminDashboard />} />

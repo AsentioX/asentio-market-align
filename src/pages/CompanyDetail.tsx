@@ -64,18 +64,18 @@ const CompanyDetail = () => {
   }, [allProducts, displayName, company]);
 
   useSeo({
-    title: `${displayName} — Company Profile | Asentio XR Directory`,
+    title: `${displayName} — Company Profile | Asentio HAI Directory`,
     description:
       company?.description ||
-      `${displayName} in the Asentio XR Directory: products, technology, AI capabilities and market focus.`,
-    canonicalPath: `/xr-directory/company/${encodeURIComponent(company?.slug || key)}`,
+      `${displayName} in the Asentio HAI Directory: products, technology, AI capabilities and market focus.`,
+    canonicalPath: `/hai-directory/company/${encodeURIComponent(company?.slug || key)}`,
     ogImage: company?.logo_url || undefined,
   });
 
   useEffect(() => {
     window.scrollTo(0, 0);
     if (!displayName) return;
-    trackPageView(`/xr-directory/company/${key}`);
+    trackPageView(`/hai-directory/company/${key}`);
     trackEvent('directory_view', {
       item_type: 'company',
       name: displayName,
@@ -95,13 +95,13 @@ const CompanyDetail = () => {
     return (
       <div className="min-h-screen pt-32">
         <div className="container mx-auto px-4">
-          <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
             <ArrowLeft className="w-4 h-4" /> Back to Directory
           </Link>
           <h1 className="text-2xl font-bold text-foreground mb-2">Company not found</h1>
           <p className="text-muted-foreground">
             We don't have a profile for “{key}” yet.{' '}
-            <Link to="/xr-directory/submit" className="text-asentio-blue hover:underline">
+            <Link to="/hai-directory/submit" className="text-asentio-blue hover:underline">
               Add it to the directory.
             </Link>
           </p>
@@ -119,7 +119,7 @@ const CompanyDetail = () => {
       <section className="relative pt-28 md:pt-36 pb-8 md:pb-12 bg-muted">
         <TopographicPattern className="opacity-30" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
             <ArrowLeft className="w-4 h-4" /> Back to Directory
           </Link>
 
@@ -182,7 +182,7 @@ const CompanyDetail = () => {
                   </a>
                 )}
                 <Link
-                  to={`/xr-directory/submit?claim=${encodeURIComponent(company?.id || key)}&company=${encodeURIComponent(displayName)}`}
+                  to={`/hai-directory/submit?claim=${encodeURIComponent(company?.id || key)}&company=${encodeURIComponent(displayName)}`}
                 >
                   <Button variant="outline" className="border-2">
                     <ShieldCheck className="w-4 h-4 mr-2" /> Claim this profile
@@ -295,7 +295,7 @@ const TimelineItem = ({ product }: { product: XRProduct }) => {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <Link
-                  to={`/xr-directory/${product.slug}`}
+                  to={`/hai-directory/${product.slug}`}
                   className="font-semibold text-foreground hover:text-asentio-red transition-colors"
                 >
                   {product.name}

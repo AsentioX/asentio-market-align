@@ -136,7 +136,7 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-muted/50 px-4 pt-20">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <Link to="/xr-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 justify-center">
+          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 justify-center">
             <ArrowLeft className="w-4 h-4" />
             Back to Directory
           </Link>

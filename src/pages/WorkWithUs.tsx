@@ -34,7 +34,7 @@ export const ENGAGEMENTS: Engagement[] = [
     includes: [
       'Positioning and narrative development',
       'Product and roadmap pressure-testing',
-      'Competitive and adjacency mapping from the XR Directory',
+      'Competitive and adjacency mapping from the HAI Directory',
       'Recurring working sessions with the leadership team',
     ],
     outcome: 'A defensible position in a category that is still being defined.',

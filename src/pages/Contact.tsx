@@ -111,7 +111,7 @@ const Contact = () => {
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-5xl mx-auto">
-            {/* Context banner when coming from XR directory */}
+            {/* Context banner when coming from HAI directory */}
             {productRef && (
               <div className="mb-8 flex items-center gap-3 bg-asentio-blue/10 border border-asentio-blue/20 rounded-lg px-4 py-3">
                 <span className="text-sm text-asentio-blue font-medium">

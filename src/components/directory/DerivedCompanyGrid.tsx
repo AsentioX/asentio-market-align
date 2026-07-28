@@ -71,7 +71,7 @@ const DerivedCompanyGrid = ({ products, isLoading, kind = 'manufacturer', emptyM
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {companies.map((company) => (
-        <Link key={company.name} to={`/xr-directory/company/${encodeURIComponent(company.name)}`}>
+        <Link key={company.name} to={`/hai-directory/company/${encodeURIComponent(company.name)}`}>
           <Card className="group hover:shadow-lg transition-all duration-300 border border-border/50 hover:border-asentio-blue/30 h-full">
             <CardContent className="p-5">
               <div className="flex items-start gap-3 mb-3">

@@ -1,4 +1,4 @@
-// Asentio XR Directory taxonomy — the shared vocabulary for the
+// Asentio HAI Directory taxonomy — the shared vocabulary for the
 // "Human Interface to AI" ecosystem. Used by filters, category pages,
 // company cards, the market map and the admin forms.
 
@@ -192,6 +192,6 @@ export const groupFromSlug = (slug: string): TaxonomyGroup | undefined =>
 
 /** SEO copy for a directory category page. */
 export const categorySeo = (category: string) => ({
-  title: `${category} Companies — XR Directory | Asentio`,
+  title: `${category} Companies — HAI Directory | Asentio`,
   description: `Discover the ${category.toLowerCase()} companies building the human interface to AI. Products, technology, AI capabilities and market focus, tracked by Asentio.`,
 });

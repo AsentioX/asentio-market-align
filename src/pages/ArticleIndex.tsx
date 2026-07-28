@@ -27,7 +27,7 @@ const COPY = {
     eyebrow: 'Research',
     title: 'Research and market intelligence',
     description:
-      'Structured research drawn from the XR Directory — category maps, landscape scans and thesis work on where the interface is heading.',
+      'Structured research drawn from the HAI Directory — category maps, landscape scans and thesis work on where the interface is heading.',
     seoTitle: 'Research — XR & AI Market Intelligence | Asentio',
     seoDescription:
       'Asentio Research: market maps, landscape scans and structured intelligence on the XR, AI and wearables ecosystem.',
