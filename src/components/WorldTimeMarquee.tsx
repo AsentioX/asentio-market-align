@@ -246,9 +246,9 @@ const WorldTimeMarquee = () => {
     const weather = weatherData[city.name];
     
     return (
-      <span 
-        key={`locked-${city.name}`} 
-        className="inline-flex flex-col items-center px-6 py-2 cursor-pointer hover:opacity-80 transition-opacity relative bg-black"
+      <span
+        key={`locked-${city.name}`}
+        className="inline-flex flex-col items-center px-6 py-2 cursor-pointer hover:opacity-80 transition-opacity relative bg-[#0A2342]"
         onClick={() => toggleCityLock(city.name)}
       >
         {/* Lock indicator */}
