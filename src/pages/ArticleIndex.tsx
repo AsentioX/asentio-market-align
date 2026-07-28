@@ -15,9 +15,9 @@ interface ArticleIndexProps {
 const COPY = {
   insight: {
     eyebrow: 'Insights',
-    title: 'Insights on the human interface to AI',
+    title: 'Exploring the Human + AI Future',
     description:
-      'Editorial analysis on XR, AI, wearables and the market strategy required to make new categories real.',
+      'Perspectives on how AI is changing the way we interact, work, and live, and what these shifts mean for products, businesses, and markets.',
     seoTitle: 'Insights — XR, AI & Wearables Analysis | Asentio',
     seoDescription:
       'Asentio Insights: editorial analysis on AI glasses, wearables, multimodal AI, human-centered design and go-to-market strategy for the interface era.',
