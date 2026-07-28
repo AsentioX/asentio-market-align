@@ -247,22 +247,7 @@ const WorkWithUs = () => {
           <section className="bg-asentio-blue py-12 md:py-16 relative overflow-hidden">
             <TopographicPattern variant="dark" className="opacity-100" />
             <div className="container mx-auto px-4 md:px-6 relative z-10">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-                <div>
-                  <div className="w-12 h-1 bg-asentio-red mb-4" />
-                  <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-4">
-                    Led by Jon Li
-                  </h2>
-                  <p className="text-primary-foreground/80 leading-relaxed mb-6">
-                    Asentio's work is led personally by Jon Li — operator, advisor and speaker on XR,
-                    AI and the future of the human interface.
-                  </p>
-                  <Link to="/about/jon-li">
-                    <Button className="bg-background text-asentio-blue hover:bg-background/90 px-6 py-5">
-                      Jon's profile <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                </div>
+              <div className="max-w-2xl mx-auto">
                 <div className="bg-background/10 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-background/20">
                   <NewsletterSignup source="work-with-us" variant="dark" />
                 </div>
