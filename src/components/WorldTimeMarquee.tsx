@@ -379,13 +379,13 @@ const WorldTimeMarquee = () => {
     .filter((c): c is CityTime => c !== undefined);
 
   return (
-    <div className="relative bg-black pt-[72px] md:pt-[88px]">
+    <div className="relative bg-[#0A2342] pt-[72px] md:pt-[88px]">
       <div className="relative">
         <div className="absolute top-1/2 -translate-y-1/2 right-0 z-10 flex flex-col items-center gap-1">
           {/* Time format toggle */}
           <button
             onClick={() => setTimeFormat(f => f === '12H' ? '24H' : '12H')}
-            className="flex items-center gap-1 px-2 py-1 rounded-l-md bg-black/80 backdrop-blur-sm border border-r-0 border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-l-md bg-[#0A2342]/80 backdrop-blur-sm border border-r-0 border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-[#0A2342] transition-colors"
           >
             <span className={timeFormat === '12H' ? 'text-white' : 'text-white/50'}>12H</span>
             <span className="text-white/30">/</span>
@@ -395,7 +395,7 @@ const WorldTimeMarquee = () => {
           {/* Temperature unit toggle */}
           <button
             onClick={() => setUnit(u => u === 'C' ? 'F' : 'C')}
-            className="flex items-center gap-1 px-2 py-1 rounded-l-md bg-black/80 backdrop-blur-sm border border-r-0 border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-l-md bg-[#0A2342]/80 backdrop-blur-sm border border-r-0 border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-[#0A2342] transition-colors"
           >
             <span className={unit === 'C' ? 'text-white' : 'text-white/50'}>°C</span>
             <span className="text-white/30">/</span>
@@ -417,15 +417,15 @@ const WorldTimeMarquee = () => {
         
         {/* Locked cities on the left */}
         {lockedCityObjects.length > 0 && (
-          <div className="flex-shrink-0 flex border-r border-border/30 bg-black relative z-0">
+          <div className="flex-shrink-0 flex border-r border-border/30 bg-[#0A2342] relative z-0">
             {lockedCityObjects.map(city => generateLockedCityItem(city))}
           </div>
         )}
         
         {/* Scrolling marquee */}
-        <div 
+        <div
           ref={containerRef}
-          className="flex-1 overflow-x-auto bg-black border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide relative z-0"
+          className="flex-1 overflow-x-auto bg-[#0A2342] border-y border-border/20 cursor-grab active:cursor-grabbing scrollbar-hide relative z-0"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
