@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import DirectoryHeader from '@/components/directory/DirectoryHeader';
-import NewsCarousel from '@/components/directory/NewsCarousel';
 import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
 import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryViewToggle';
@@ -59,7 +58,6 @@ const Directory = () => {
   return (
     <div className="min-h-screen bg-background">
       <DirectoryHeader />
-      <NewsCarousel />
 
       {/* Category tiles — the primary way in */}
       <div className="container mx-auto px-4 pt-10">

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
 import LatestInsights from "@/components/home/LatestInsights";
+import NewsCarousel from "@/components/directory/NewsCarousel";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import ARBackground from "@/components/ARBackground";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
@@ -165,6 +166,9 @@ const Index = () => {
           <LatestInsights limit={3} />
         </div>
       </AnimatedSection>
+
+      {/* ---------------- Latest HAI News ---------------- */}
+      <NewsCarousel />
 
       {/* ---------------- The Human AI Interface Briefing ---------------- */}
       <AnimatedSection className="py-12 md:py-20 bg-asentio-blue relative overflow-hidden">
