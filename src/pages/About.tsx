@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TopographicPattern from "@/components/TopographicPattern";
