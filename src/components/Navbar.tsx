@@ -48,7 +48,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img
-            src="/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png"
+            src={isScrolled ? "/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" : whiteLogo.url}
             alt="Asentio — the human interface to AI"
             className="h-8"
           />
