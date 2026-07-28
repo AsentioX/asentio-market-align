@@ -379,31 +379,31 @@ const WorldTimeMarquee = () => {
     .filter((c): c is CityTime => c !== undefined);
 
   return (
-    <div className="relative mt-[80px] md:mt-[120px] bg-black">
-      {/* Settings toggles */}
-      <div className="absolute -top-8 right-4 z-10 flex items-center gap-2">
-        {/* Time format toggle */}
-        <button
-          onClick={() => setTimeFormat(f => f === '12H' ? '24H' : '12H')}
-          className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
-        >
-          <span className={timeFormat === '12H' ? 'text-white' : 'text-white/50'}>12H</span>
-          <span className="text-white/30">/</span>
-          <span className={timeFormat === '24H' ? 'text-white' : 'text-white/50'}>24H</span>
-        </button>
+    <div className="relative bg-black pt-[80px] md:pt-[120px]">
+      <div className="relative">
+        <div className="absolute top-0 md:-top-8 right-4 z-10 flex items-center gap-2">
+          {/* Time format toggle */}
+          <button
+            onClick={() => setTimeFormat(f => f === '12H' ? '24H' : '12H')}
+            className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
+          >
+            <span className={timeFormat === '12H' ? 'text-white' : 'text-white/50'}>12H</span>
+            <span className="text-white/30">/</span>
+            <span className={timeFormat === '24H' ? 'text-white' : 'text-white/50'}>24H</span>
+          </button>
+          
+          {/* Temperature unit toggle */}
+          <button
+            onClick={() => setUnit(u => u === 'C' ? 'F' : 'C')}
+            className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
+          >
+            <span className={unit === 'C' ? 'text-white' : 'text-white/50'}>°C</span>
+            <span className="text-white/30">/</span>
+            <span className={unit === 'F' ? 'text-white' : 'text-white/50'}>°F</span>
+          </button>
+        </div>
         
-        {/* Temperature unit toggle */}
-        <button
-          onClick={() => setUnit(u => u === 'C' ? 'F' : 'C')}
-          className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 text-xs font-medium text-white/70 hover:text-white hover:bg-black transition-colors"
-        >
-          <span className={unit === 'C' ? 'text-white' : 'text-white/50'}>°C</span>
-          <span className="text-white/30">/</span>
-          <span className={unit === 'F' ? 'text-white' : 'text-white/50'}>°F</span>
-        </button>
-      </div>
-      
-      <div className="flex relative overflow-hidden">
+        <div className="flex relative overflow-hidden mt-8 md:mt-0">
         {/* Wave dot texture background */}
         <div 
           className="absolute inset-0 opacity-60 pointer-events-none z-0"
@@ -444,6 +444,7 @@ const WorldTimeMarquee = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
