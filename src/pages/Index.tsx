@@ -198,7 +198,7 @@ const Index = () => {
                   Asentio Briefing
                 </p>
                 <p className="text-primary-foreground/40 text-sm mt-1">
-                  The intersection of XR, AI, wearables and strategy.
+                  At the intersection of Humans and AI
                 </p>
               </div>
             </div>
