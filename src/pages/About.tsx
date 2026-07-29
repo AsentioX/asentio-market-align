@@ -47,12 +47,12 @@ const About = () => {
         <TopographicPattern className="opacity-30" />
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="w-12 h-1 bg-asentio-red mb-4 md:mb-6" />
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 text-foreground">
               {t('about.who.title')}
             </h2>
-            <div className="space-y-4 md:space-y-6">
+            <div className="space-y-4 md:space-y-6 max-w-4xl">
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
                 {t('about.who.p1')}
               </p>
@@ -154,8 +154,8 @@ const About = () => {
       <AnimatedSection className="py-24 bg-gradient-to-b from-background to-muted relative">
         <TopographicPattern className="opacity-20" />
         
-        <div className="container mx-auto relative z-10">
-          <div className="max-w-3xl mx-auto text-left">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="max-w-6xl mx-auto text-left">
             <div className="w-12 h-1 bg-asentio-red mb-6" />
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-foreground">
               {t('about.cta.title')}
