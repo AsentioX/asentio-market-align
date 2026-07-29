@@ -77,7 +77,7 @@ const Index = () => {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full mb-6">
               <span className="w-2 h-2 bg-asentio-red rounded-full animate-pulse" />
               <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase">
-                XR · AI · Wearables · Strategy
+                AI · WEARABLES · STRATEGY
               </span>
             </div>
 
