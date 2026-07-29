@@ -25,41 +25,27 @@ export const ENGAGEMENTS: Engagement[] = [
     slug: 'advisory',
     icon: Compass,
     label: 'Strategic Advisory',
-    headline: 'Positioning and product strategy for the interface era',
+    headline: 'Positioning, product strategy and US market entry for the interface era',
     intro:
-      'Ongoing advisory for device makers, AI companies and component suppliers deciding what to build, who it is for, and how to say it in a category that does not exist yet.',
+      'Ongoing advisory for device makers, AI companies and component suppliers deciding what to build, who it is for, and how to land it in the US — from proposition and pricing through channel, partnerships and launch.',
     bestFor: [
       'Hardware teams entering AI glasses or wearables',
       'AI companies looking for a physical interface',
       'Component suppliers moving up the value chain',
+      'Asian and European hardware makers targeting US consumers',
+      'Teams preparing a first US launch or retail partnership',
     ],
     includes: [
       'Positioning and narrative development',
       'Product and roadmap pressure-testing',
       'Competitive and adjacency mapping from the HAI Directory',
-      'Recurring working sessions with the leadership team',
-    ],
-    outcome: 'A defensible position in a category that is still being defined.',
-  },
-  {
-    slug: 'market-entry',
-    icon: Handshake,
-    label: 'US Market Entry',
-    headline: 'Bringing global hardware and AI companies into the US',
-    intro:
-      'Asentio helps international device, component and AI companies land in the US market — from proposition and pricing through channel, partnerships and launch.',
-    bestFor: [
-      'Asian and European hardware makers targeting US consumers',
-      'Companies with a strong product and no US narrative',
-      'Teams preparing a first US launch or retail partnership',
-    ],
-    includes: [
       'US market and buyer analysis',
       'Proposition and pricing localization',
       'Channel, retail and ecosystem partner strategy',
       'Launch planning and introductions',
+      'Recurring working sessions with the leadership team',
     ],
-    outcome: 'A concrete US entry plan with the relationships to execute it.',
+    outcome: 'A defensible position and a concrete US entry plan with the relationships to execute it.',
   },
   {
     slug: 'research',
