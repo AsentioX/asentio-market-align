@@ -95,7 +95,7 @@ const WorkWithUs = () => {
 
   const title = engagement
     ? `${engagement.label} | Work With Asentio`
-    : 'Work With Us — Advisory, Market Entry, Research & Speaking | Asentio';
+    : 'Work With Us — Strategic Advisory, Research & Speaking | Asentio';
   const description = engagement
     ? engagement.intro
     : 'Asentio partners with device makers, AI companies, component suppliers and investors on strategy, US market entry, commissioned research and speaking.';
