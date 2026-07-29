@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://asentio.com/</loc><priority>1.0</priority></url>
+  <url><loc>https://asentio.com/hai-directory</loc><priority>0.9</priority></url>
+  <url><loc>https://asentio.com/hai-directory/submit</loc><priority>0.5</priority></url>
+  <url><loc>https://asentio.com/insights</loc><priority>0.8</priority></url>
+  <url><loc>https://asentio.com/work-with-us</loc><priority>0.8</priority></url>
+  <url><loc>https://asentio.com/services</loc><priority>0.7</priority></url>
+  <url><loc>https://asentio.com/about</loc><priority>0.7</priority></url>
+  <url><loc>https://asentio.com/about/jon-li</loc><priority>0.6</priority></url>
+  <url><loc>https://asentio.com/about/chester-mui</loc><priority>0.6</priority></url>
+  <url><loc>https://asentio.com/contact</loc><priority>0.6</priority></url>
+</urlset>
