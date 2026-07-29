@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useSeo } from '@/hooks/useSeo';
 import workWithUsHeaderBg from '@/assets/work-with-us-header-bg.png.asset.json';
+import methodologyDiagram from '@/assets/methodology-human-ai.png.asset.json';
 import TopographicPattern from '@/components/TopographicPattern';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { Button } from '@/components/ui/button';
@@ -229,6 +230,27 @@ const WorkWithUs = () => {
               ))}
             </div>
           </section>
+
+          {/* Methodology */}
+          <section className="bg-muted/40 py-12 md:py-16">
+            <div className="container mx-auto px-4 md:px-6">
+              <div className="max-w-3xl mb-8">
+                <div className="w-12 h-1 bg-asentio-red mb-4" />
+                <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-3">Our methodology</h2>
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+                  Every engagement starts with human insight and only then brings technology back in — so the
+                  strategy is grounded in real needs, not in what the technology happens to allow.
+                </p>
+              </div>
+              <img
+                src={methodologyDiagram.url}
+                alt="Asentio methodology: human, behavior, need, opportunity, technology, strategy"
+                loading="lazy"
+                className="w-full rounded-2xl border border-border shadow-lg"
+              />
+            </div>
+          </section>
+
 
           <section className="bg-asentio-blue py-12 md:py-16 relative overflow-hidden">
             <TopographicPattern variant="dark" className="opacity-100" />
