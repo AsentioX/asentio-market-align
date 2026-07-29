@@ -171,7 +171,7 @@ const Index = () => {
       <AnimatedSection className="py-12 md:py-20 bg-background relative">
         <TopographicPattern className="opacity-20" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <LatestInsights limit={3} />
+          <LatestInsights limit={3} subheading="Analysis on the convergence of wearables" />
         </div>
       </AnimatedSection>
 
