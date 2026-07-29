@@ -11,9 +11,18 @@ import linkedinLogo from "@/assets/linkedin-logo.png";
 import aboutHeaderBg from "@/assets/about-header-bg.png.asset.json";
 import { ProfileDialog } from "@/components/profile/ProfileDialog";
 import { initSession, trackPageView, trackTimeOnPage } from "@/lib/analytics";
+import { useSeo } from "@/hooks/useSeo";
 
 const About = () => {
   const { t } = useLanguage();
+
+  useSeo({
+    title: "About Asentio — Advisors on the Human Interface to AI",
+    description:
+      "Asentio is a small advisory team mapping XR, smart glasses, wearables and applied AI, and helping device makers and investors act on it.",
+    canonicalPath: "/about",
+  });
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
