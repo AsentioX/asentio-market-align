@@ -13,7 +13,7 @@ const MarketMap = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">The Human Interface Stack</h2>
         <p className="text-muted-foreground max-w-2xl leading-relaxed">
           Every layer between a person and a model is being rebuilt at once. Asentio maps the
-          companies working on each one — and where the leverage sits.
+          companies working on each one and where the leverage sits.
         </p>
       </div>
 
