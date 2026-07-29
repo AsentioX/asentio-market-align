@@ -1,0 +1,6 @@
+UPDATE asentio_articles SET hero_image_url = '/__l5e/assets-v1/d6f06f7b-e2ef-4627-849c-bc501643c717/ai-glasses-wont-replace-your-smartphone-first.jpg' WHERE slug = 'ai-glasses-wont-replace-your-smartphone-first';
+UPDATE asentio_articles SET hero_image_url = '/__l5e/assets-v1/a26c7d2c-36b6-4836-adc6-689f96ef12df/ai-needs-a-new-keyboard-and-mouse.jpg' WHERE slug = 'ai-needs-a-new-keyboard-and-mouse';
+UPDATE asentio_articles SET hero_image_url = '/__l5e/assets-v1/5b89b3f1-852c-4594-91c8-83dffca90cd7/from-pda-to-smartphone.jpg' WHERE slug = 'from-pda-to-smartphone';
+UPDATE asentio_articles SET hero_image_url = '/__l5e/assets-v1/37d8be4a-b5ff-45c8-8972-721a638680cd/the-most-important-smart-glasses-spec-isnt-fov.jpg' WHERE slug = 'the-most-important-smart-glasses-spec-isnt-fov';
+UPDATE asentio_articles SET hero_image_url = '/__l5e/assets-v1/0db50761-11cd-4ce8-82df-ee72f93e66e8/what-happens-when-everyone-has-an-ai-that-can-see.jpg' WHERE slug = 'what-happens-when-everyone-has-an-ai-that-can-see';
+UPDATE asentio_articles SET hero_image_url = '/__l5e/assets-v1/73430c9f-a848-4108-bd74-1f4aa05aadfd/why-the-interface-to-ai-will-be-wearable.jpg' WHERE slug = 'why-the-interface-to-ai-will-be-wearable';
