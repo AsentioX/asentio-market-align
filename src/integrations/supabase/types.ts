@@ -5668,6 +5668,7 @@ export type Database = {
         Returns: boolean
       }
       scrm_is_member: { Args: { _user_id: string }; Returns: boolean }
+      scrm_no_roles_exist: { Args: never; Returns: boolean }
       wobuddy_user_owns_day: { Args: { _day_id: string }; Returns: boolean }
       wobuddy_user_owns_goal: { Args: { _goal_id: string }; Returns: boolean }
       wobuddy_user_owns_plan: { Args: { _plan_id: string }; Returns: boolean }
