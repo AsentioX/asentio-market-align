@@ -86,7 +86,7 @@ const Index = () => {
             </h1>
 
             <p className="text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mb-4">
-              AI needs a body in the world. Glasses, wearables and sensing are becoming how people actually reach
+              AI needs a body in the world. Glasses, rings, watches and other wearables are becoming how people actually reach
               intelligence.
             </p>
             <p className="text-base md:text-lg text-muted-foreground/90 max-w-2xl mb-8">
