@@ -14,7 +14,7 @@ const LatestInsights = ({
   limit = 3,
   kind = 'insight',
   heading = 'Latest Insights',
-  subheading = 'Analysis on the convergence of XR, AI, wearables and market strategy.',
+  subheading = 'Analysis on the convergence of AI in every day use.',
 }: LatestInsightsProps) => {
   const { data: articles, isLoading } = useArticles(kind, limit);
 
