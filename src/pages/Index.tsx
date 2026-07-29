@@ -160,12 +160,6 @@ const Index = () => {
         </div>
       </AnimatedSection>
 
-      {/* ---------------- The Human Interface Stack ---------------- */}
-      <AnimatedSection id="market-map" className="py-12 md:py-20 bg-muted relative">
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <MarketMap />
-        </div>
-      </AnimatedSection>
 
       {/* ---------------- Latest insights ---------------- */}
       <AnimatedSection className="py-12 md:py-20 bg-background relative">
