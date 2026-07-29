@@ -129,6 +129,7 @@ const ArticleIndex = ({ kind }: ArticleIndexProps) => {
                 <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-asentio-blue group-hover:text-asentio-red transition-colors">
                   Read <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
+                </div>
               </Link>
             ))}
           </div>
