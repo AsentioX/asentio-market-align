@@ -146,7 +146,7 @@ const WorkWithUs = () => {
             <p className="text-base md:text-lg text-white/80 leading-relaxed">
               {engagement
                 ? engagement.intro
-                : 'Asentio works with a small number of device makers, AI companies, suppliers and investors each year — combining live market intelligence with hands-on product and go-to-market strategy.'}
+                : 'Asentio works with device makers, AI companies, suppliers and investors by combining live market intelligence with hands-on product and go-to-market strategy.'}
             </p>
           </div>
         </div>
