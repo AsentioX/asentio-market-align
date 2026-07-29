@@ -88,10 +88,26 @@ const ArticleIndex = ({ kind }: ArticleIndexProps) => {
               <Link
                 key={article.id}
                 to={`${copy.path}/${article.slug}`}
-                className="group relative bg-card border border-border rounded-xl p-6 hover:border-asentio-red/40 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
+                className="group relative bg-card border border-border rounded-xl hover:border-asentio-red/40 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
               >
-                <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red transition-all duration-300 group-hover:h-full" />
+                <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red transition-all duration-300 group-hover:h-full z-10" />
 
+                <div className="aspect-[16/9] w-full overflow-hidden bg-asentio-blue/10">
+                  {article.hero_image_url ? (
+                    <img
+                      src={article.hero_image_url}
+                      alt={article.title}
+                      loading="lazy"
+                      width={1024}
+                      height={576}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-asentio-blue/30 to-asentio-blue/5" />
+                  )}
+                </div>
+
+                <div className="p-6 flex flex-col flex-1">
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {(article.categories || []).slice(0, 2).map((c) => (
                     <Badge key={c} variant="secondary" className="text-xs">{c}</Badge>
