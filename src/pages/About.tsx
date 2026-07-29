@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 import chesterImg from "@/assets/chester.png";
 import jonImg from "@/assets/jon.png";
 import linkedinLogo from "@/assets/linkedin-logo.png";
+import aboutHeaderBg from "@/assets/about-header-bg.png.asset.json";
 import { ProfileDialog } from "@/components/profile/ProfileDialog";
 import { initSession, trackPageView, trackTimeOnPage } from "@/lib/analytics";
 
@@ -27,12 +28,11 @@ const About = () => {
       <div className="w-full relative">
         <div className="w-full h-[20vh] md:h-[28vh] overflow-hidden relative">
           <img
-            alt="Golden Gate Bridge in San Francisco"
+            alt="Golden Gate Bridge at dusk in San Francisco"
             className="w-full h-full object-cover"
-            src="/lovable-uploads/c5820e67-b1e2-42b5-9be4-c56123dc7c00.png"
+            src={aboutHeaderBg.url}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-asentio-blue/80 via-asentio-blue/60 to-asentio-blue/80 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
             <div className="text-center px-4 max-w-4xl mx-auto">
               <p className="text-2xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight tracking-tight drop-shadow-lg">
                 {t('about.banner.text')}
