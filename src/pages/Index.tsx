@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
 import LatestInsights from "@/components/home/LatestInsights";
-import MarketMap from "@/components/home/MarketMap";
+
 import NewsCarousel from "@/components/directory/NewsCarousel";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import ARBackground from "@/components/ARBackground";
@@ -160,12 +160,6 @@ const Index = () => {
         </div>
       </AnimatedSection>
 
-      {/* ---------------- The Human Interface Stack ---------------- */}
-      <AnimatedSection id="market-map" className="py-12 md:py-20 bg-muted relative">
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <MarketMap />
-        </div>
-      </AnimatedSection>
 
       {/* ---------------- Latest insights ---------------- */}
       <AnimatedSection className="py-12 md:py-20 bg-background relative">
