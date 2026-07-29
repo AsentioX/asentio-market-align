@@ -10,12 +10,21 @@ import TopographicPattern from "@/components/TopographicPattern";
 import { Mail, Globe, MessageSquare, Target, Users, Zap } from "lucide-react";
 import { initSession, trackPageView, trackFormSubmit, trackEmailClick } from "@/lib/analytics";
 import { supabase } from "@/integrations/supabase/client";
+import { useSeo } from "@/hooks/useSeo";
 
 const Contact = () => {
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const productRef = searchParams.get('product');
   const refSlug = searchParams.get('ref');
+
+  useSeo({
+    title: "Contact Asentio — Talk to Our Human-AI Interface Advisors",
+    description:
+      "Get in touch with Asentio about XR, smart glasses, wearables and applied AI strategy, HAI Directory listings, or advisory engagements.",
+    canonicalPath: "/contact",
+  });
+
 
   const [formData, setFormData] = useState({
     name: "",
