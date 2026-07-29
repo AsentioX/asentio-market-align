@@ -52,7 +52,7 @@ const About = () => {
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 text-foreground">
               {t('about.who.title')}
             </h2>
-            <div className="space-y-4 md:space-y-6">
+            <div className="space-y-4 md:space-y-6 max-w-4xl">
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
                 {t('about.who.p1')}
               </p>
