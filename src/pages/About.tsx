@@ -33,8 +33,8 @@ const About = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-asentio-blue/80 via-asentio-blue/60 to-asentio-blue/80 mix-blend-multiply" />
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-            <div className="text-center px-4">
-              <p className="text-base md:text-xl text-white max-w-3xl mx-auto">
+            <div className="text-center px-4 max-w-4xl mx-auto">
+              <p className="text-2xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight tracking-tight drop-shadow-lg">
                 {t('about.banner.text')}
               </p>
             </div>
