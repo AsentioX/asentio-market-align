@@ -10,9 +10,18 @@ import EngagementCard from "@/components/services/EngagementCard";
 import CaseStudyCarousel from "@/components/services/CaseStudyCarousel";
 import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 import { useCaseStudies } from "@/hooks/useCaseStudies";
+import { useSeo } from "@/hooks/useSeo";
 
 const Services = () => {
   const { data: dbCaseStudies } = useCaseStudies(true);
+
+  useSeo({
+    title: "Services — Product & Go-to-Market Strategy | Asentio",
+    description:
+      "Strategic advisory, product and go-to-market services for device makers, AI companies, suppliers and investors in XR, wearables and applied AI.",
+    canonicalPath: "/services",
+  });
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
