@@ -16,6 +16,7 @@ import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import Unsubscribe from "./pages/Unsubscribe";
 import Directory from "./pages/Directory";
+import SolutionExplorer from "./pages/SolutionExplorer";
 import ProductDetail from "./pages/ProductDetail";
 import CompanyDetail from "./pages/CompanyDetail";
 import DirectoryCategory from "./pages/DirectoryCategory";
