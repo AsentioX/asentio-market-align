@@ -10,6 +10,8 @@ export interface XRProduct {
   category: string;
   ai_integration: string;
   price_range: string | null;
+  price_type: string | null;
+  billing_period: string | null;
   shipping_status: string;
   region: string;
   description: string | null;
