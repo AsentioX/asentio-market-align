@@ -11,6 +11,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useXRProduct, useXRProductById, useCreateProduct, useUpdateProduct, CATEGORIES, AI_INTEGRATIONS, SHIPPING_STATUSES } from '@/hooks/useXRProducts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+
+const REGIONS = ['North America', 'South America', 'Europe', 'Middle East', 'Africa', 'Asia', 'S.E. Asia'] as const;
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Loader2, Plus, X, Building2, ExternalLink } from 'lucide-react';
 
