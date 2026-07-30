@@ -5216,6 +5216,7 @@ export type Database = {
       }
       xr_agencies: {
         Row: {
+          cover_url: string | null
           created_at: string
           description: string | null
           editors_note: string | null
@@ -5230,6 +5231,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           editors_note?: string | null
@@ -5244,6 +5246,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           editors_note?: string | null
