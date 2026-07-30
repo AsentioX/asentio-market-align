@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Search, X } from 'lucide-react';
-import { HAI_DIMENSIONS, HAIDimension } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimension, haiValueLabel } from '@/lib/haiFramework';
 import { HAISelections } from '@/hooks/useXRCompanies';
 
 interface HAIFilterPanelProps {
@@ -85,7 +85,9 @@ const FilterGroup = ({
   const [open, setOpen] = useState(selected.length > 0);
   const [term, setTerm] = useState('');
 
-  const values = dimension.values.filter((v) => v.toLowerCase().includes(term.toLowerCase()));
+  const values = dimension.values.filter((v) =>
+    haiValueLabel(dimension.key, v).toLowerCase().includes(term.toLowerCase())
+  );
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -131,8 +133,7 @@ const FilterGroup = ({
                     checked={selected.includes(value)}
                     onCheckedChange={() => onToggle(value)}
                   />
-                  {value}
-                </label>
+                  {haiValueLabel(dimension.key, value)}
               );
             })}
             {values.length === 0 && <p className="text-xs text-muted-foreground">No matches.</p>}
