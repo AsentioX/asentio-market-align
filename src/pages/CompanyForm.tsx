@@ -163,10 +163,7 @@ const CompanyForm = () => {
         hq_location: formData.hq_location || null,
         founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
         company_size: formData.company_size || null,
-        sectors: formData.sectors.length > 0 ? formData.sectors : [],
-        leadership: formData.leadership
-          ? formData.leadership.split(',').map(s => s.trim()).filter(Boolean)
-          : [],
+        asentio_perspective: formData.asentio_perspective || null,
         asentio_perspective: formData.asentio_perspective || null,
         human_activities: dimensions.human_activities,
         human_capabilities: dimensions.human_capabilities,
