@@ -39,10 +39,11 @@ const Directory = () => {
   const [selections, setSelections] = useState<HAISelections>(initialSelections);
   const [logic, setLogic] = useState<'AND' | 'OR'>('AND');
   const [companySearch, setCompanySearch] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
 
   const companyFilters: CompanyFilters = useMemo(
-    () => ({ search: companySearch || undefined, selections, logic }),
-    [companySearch, selections, logic]
+    () => ({ search: companySearch || undefined, selections, logic, categories }),
+    [companySearch, selections, logic, categories]
   );
 
   const [productFilters, setProductFilters] = useState<ProductFilters>({});
@@ -123,10 +124,22 @@ const Directory = () => {
               onSearchChange={setCompanySearch}
               selections={selections}
               onChange={setSelections}
+              categories={categories}
+              onCategoriesChange={setCategories}
             />
 
-            {activeChips.length > 0 && (
+            {activeChips.length > 0 || categories.length > 0 ? (
               <div className="flex flex-wrap items-center gap-1.5 mt-4">
+                {categories.map((value) => (
+                  <Badge
+                    key={`category-${value}`}
+                    variant="secondary"
+                    className="text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => setCategories(categories.filter((v) => v !== value))}
+                  >
+                    {value} <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ))}
                 {activeChips.map(({ key, value }) => (
                   <Badge
                     key={`${key}-${value}`}
@@ -138,7 +151,7 @@ const Directory = () => {
                   </Badge>
                 ))}
               </div>
-            )}
+            ) : null}
 
             <div className="py-6">
               <CompanyGrid companies={companies} isLoading={companiesLoading} />
