@@ -3,6 +3,7 @@
 // through AI — not around a technology category. Everything begins with the human.
 
 export type HAIDimensionKey =
+  | 'hai_category'
   | 'human_activities'
   | 'human_capabilities'
   | 'ai_capabilities'
@@ -10,6 +11,77 @@ export type HAIDimensionKey =
   | 'physical_platforms'
   | 'industry_focus'
   | 'ecosystem_roles';
+
+/** Top-level Category — a rollup of interfaces / platforms / AI capabilities. */
+export interface HAICategory {
+  value: string;
+  label: string;
+  human_interface: string[];
+  physical_platforms: string[];
+  ai_capabilities?: string[];
+}
+
+export const HAI_CATEGORIES: HAICategory[] = [
+  {
+    value: 'AI Intelligence',
+    label: 'AI Intelligence (AI Assistant, Voice AI, Vision AI, Knowledge AI)',
+    human_interface: ['AI Agent', 'Desktop', 'Mobile'],
+    physical_platforms: ['Software'],
+    ai_capabilities: [
+      'AI Agents',
+      'Large Language Models',
+      'Voice AI',
+      'Speech Recognition',
+      'Computer Vision',
+      'Multimodal AI',
+      'Knowledge AI (RAG)',
+      'Translation AI',
+    ],
+  },
+  {
+    value: 'Personal Devices',
+    label: 'Personal Devices (Glasses, Headphones, Watches, Rings, Pendants, Mobile)',
+    human_interface: [
+      'Smart Glasses',
+      'Hearables',
+      'Smart Watch',
+      'Smart Ring',
+      'Mobile',
+      'Spatial Computing',
+    ],
+    physical_platforms: ['Wearable', 'Mobile Device'],
+  },
+  {
+    value: 'Embodied AI',
+    label: 'Embodied AI (Robots, Autonomous Mobility, Drones)',
+    human_interface: ['Robotics', 'Humanoid Robot', 'Industrial Robot', 'Autonomous Vehicle'],
+    physical_platforms: [
+      'Humanoid Robot',
+      'Industrial Robot',
+      'Mobile Robot (AMR)',
+      'Autonomous Vehicle',
+      'Drone',
+    ],
+  },
+  {
+    value: 'Environment',
+    label: 'Environment (Smart Home, Sensors, Displays)',
+    human_interface: ['Smart Home', 'Ambient Computing'],
+    physical_platforms: [
+      'Smart Home Device',
+      'Sensor Platform',
+      'Camera',
+      'Factory Equipment',
+      'Medical Device',
+    ],
+  },
+];
+
+export const HAI_CATEGORY_VALUES = HAI_CATEGORIES.map((c) => c.value);
+
+export const haiCategoryLabel = (value: string) =>
+  HAI_CATEGORIES.find((c) => c.value === value)?.label || value;
+
 
 export interface HAIDimension {
   key: HAIDimensionKey;
