@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useXRCompany, useCreateCompany, useUpdateCompany, COMPANY_SECTORS, COMPANY_SIZES } from '@/hooks/useXRCompanies';
+import { useXRCompany, useCreateCompany, useUpdateCompany, companyValues, COMPANY_SECTORS, COMPANY_SIZES } from '@/hooks/useXRCompanies';
+import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
 import { useXRProducts } from '@/hooks/useXRProducts';
 import { ArrowLeft, Loader2, ExternalLink, MapPin } from 'lucide-react';
 
