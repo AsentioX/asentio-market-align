@@ -215,8 +215,11 @@ export function trackPageView(path?: string) {
   if (count === 2) addIntent(INTENT_SCORES.multi_page);
 
   // Award per-page intent
-  if (p === '/services' || p.startsWith('/services')) addIntent(INTENT_SCORES.visited_services);
-  if (p === '/about')                                  addIntent(INTENT_SCORES.visited_about);
+  if (p.startsWith('/work-with-us'))                   addIntent(INTENT_SCORES.visited_work_with_us);
+  if (p.startsWith('/services'))                       addIntent(INTENT_SCORES.visited_services);
+  if (p.startsWith('/hai-directory'))                  addIntent(INTENT_SCORES.visited_directory);
+  if (p.startsWith('/insights') || p.startsWith('/research')) addIntent(INTENT_SCORES.visited_insights);
+  if (p.startsWith('/about'))                          addIntent(INTENT_SCORES.visited_about);
 
   // Also fire GA4 if present
   if (typeof window.gtag === 'function') {
