@@ -160,3 +160,47 @@ export const SOLUTION_LAYERS: { label: string; description: string; roles: strin
     roles: ['Systems Integrator', 'Consultant', 'Distributor', 'Venture Capital', 'Research'],
   },
 ];
+
+/** Curated top-level product categories shown as the first directory filter. */
+export interface CategoryGroup {
+  label: string;
+  items: string[];
+}
+
+export const CATEGORY_GROUPS: CategoryGroup[] = [
+  { label: 'AI Intelligence', items: ['AI Assistant', 'Voice AI', 'Vision AI', 'Knowledge AI'] },
+  { label: 'Personal Devices', items: ['Glasses', 'Headphones', 'Watches', 'Rings', 'Pendants', 'Mobile'] },
+  { label: 'Embodied AI', items: ['Robots', 'Autonomous Mobility', 'Drones'] },
+  { label: 'Environment', items: ['Smart Home', 'Sensors', 'Displays'] },
+];
+
+export const CATEGORY_LEAVES = CATEGORY_GROUPS.flatMap((g) => g.items);
+
+/**
+ * Maps each curated category leaf to the Human-AI Framework dimension values
+ * a company must hold to be considered part of that category.
+ */
+export const CATEGORY_DIMENSION_MAP: Record<string, Partial<Record<HAIDimensionKey, string[]>>> = {
+  'AI Assistant': { human_interface: ['AI Agent'] },
+  'Voice AI': { ai_capabilities: ['Voice AI', 'Speech Recognition'] },
+  'Vision AI': { ai_capabilities: ['Computer Vision', 'Spatial AI'] },
+  'Knowledge AI': { ai_capabilities: ['Knowledge AI (RAG)'] },
+  Glasses: { human_interface: ['Smart Glasses', 'Spatial Computing'] },
+  Headphones: { human_interface: ['Hearables'] },
+  Watches: { human_interface: ['Smart Watch'] },
+  Rings: { human_interface: ['Smart Ring'] },
+  Pendants: { human_interface: ['Ambient Computing'] },
+  Mobile: { human_interface: ['Mobile'] },
+  Robots: {
+    human_interface: ['Robotics', 'Humanoid Robot', 'Industrial Robot'],
+    physical_platforms: ['Humanoid Robot', 'Industrial Robot', 'Mobile Robot (AMR)'],
+  },
+  'Autonomous Mobility': {
+    human_interface: ['Autonomous Vehicle'],
+    physical_platforms: ['Autonomous Vehicle'],
+  },
+  Drones: { physical_platforms: ['Drone'] },
+  'Smart Home': { human_interface: ['Smart Home'], physical_platforms: ['Smart Home Device'] },
+  Sensors: { physical_platforms: ['Sensor Platform'], ecosystem_roles: ['Sensors'] },
+  Displays: { ecosystem_roles: ['Display Technology'] },
+};
