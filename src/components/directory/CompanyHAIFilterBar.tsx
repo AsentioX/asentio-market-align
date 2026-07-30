@@ -21,8 +21,6 @@ interface CompanyHAIFilterBarProps {
   onSearchChange: (value: string) => void;
   selections: HAISelections;
   onChange: (selections: HAISelections) => void;
-  logic: 'AND' | 'OR';
-  onLogicChange: (logic: 'AND' | 'OR') => void;
 }
 
 const CompanyHAIFilterBar = ({
@@ -30,8 +28,6 @@ const CompanyHAIFilterBar = ({
   onSearchChange,
   selections,
   onChange,
-  logic,
-  onLogicChange,
 }: CompanyHAIFilterBarProps) => {
   const activeCount = Object.values(selections).reduce((sum, v) => sum + (v?.length || 0), 0);
 
