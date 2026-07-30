@@ -554,32 +554,38 @@ const ProductForm = () => {
 
 
               {/* Image URLs */}
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label htmlFor="image_url">Main Image URL (optional)</Label>
-                  <Input
-                    id="image_url"
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-                {[0, 1, 2, 3].map((idx) => (
-                  <div key={idx} className="space-y-2">
-                    <Label>Additional Image {idx + 1}</Label>
+              <div className="space-y-2">
+                <Label>Product Images</Label>
+                <p className="text-sm text-muted-foreground">Main image plus up to 4 additional images.</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  <div className="space-y-1">
+                    <Label htmlFor="image_url" className="text-xs text-muted-foreground">Main</Label>
                     <Input
+                      id="image_url"
                       type="url"
-                      value={formData.additional_images[idx] || ''}
-                      onChange={(e) => {
-                        const updated = [...formData.additional_images];
-                        updated[idx] = e.target.value;
-                        setFormData(prev => ({ ...prev, additional_images: updated }));
-                      }}
-                      placeholder={`https://example.com/image-${idx + 2}.jpg`}
+                      value={formData.image_url}
+                      onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+                      placeholder="https://…"
+                      className="text-xs"
                     />
                   </div>
-                ))}
+                  {[0, 1, 2, 3].map((idx) => (
+                    <div key={idx} className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Image {idx + 2}</Label>
+                      <Input
+                        type="url"
+                        value={formData.additional_images[idx] || ''}
+                        onChange={(e) => {
+                          const updated = [...formData.additional_images];
+                          updated[idx] = e.target.value;
+                          setFormData(prev => ({ ...prev, additional_images: updated }));
+                        }}
+                        placeholder={`https://…`}
+                        className="text-xs"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <Tabs defaultValue="digital" className="w-full">
