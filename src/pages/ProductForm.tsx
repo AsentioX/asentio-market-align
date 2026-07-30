@@ -519,196 +519,208 @@ const ProductForm = () => {
                 ))}
               </div>
 
-              {/* Developer Readiness Scores */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                <div>
-                  <Label className="text-base font-semibold">Developer Readiness Score</Label>
-                  <p className="text-sm text-muted-foreground">Rate each dimension from 1 (lowest) to 5 (highest)</p>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {([
-                    { key: 'open_ecosystem_score', label: 'Open Ecosystem Score' },
-                    { key: 'ai_access_score', label: 'AI Access Score' },
-                    { key: 'spatial_capability_score', label: 'Spatial Capability Score' },
-                    { key: 'monetization_score', label: 'Monetization Score' },
-                    { key: 'platform_viability_score', label: 'Platform Viability Score' },
-                  ] as const).map(({ key, label }) => (
-                    <div key={key} className="space-y-2">
-                      <Label htmlFor={key}>{label} (1–5)</Label>
-                      <Select
-                        value={formData[key]?.toString() || ''}
-                        onValueChange={(value) => setFormData(prev => ({ ...prev, [key]: value ? parseInt(value) : null }))}
-                      >
-                        <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="—" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background border shadow-lg">
-                          <SelectItem value="1">1</SelectItem>
-                          <SelectItem value="2">2</SelectItem>
-                          <SelectItem value="3">3</SelectItem>
-                          <SelectItem value="4">4</SelectItem>
-                          <SelectItem value="5">5</SelectItem>
-                        </SelectContent>
-                      </Select>
+              <Tabs defaultValue="digital" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="digital">Digital / Software</TabsTrigger>
+                  <TabsTrigger value="physical">Physical / Hardware</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="digital" className="space-y-6 mt-4">
+                  {/* Developer Readiness Scores */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <div>
+                      <Label className="text-base font-semibold">Developer Readiness Score</Label>
+                      <p className="text-sm text-muted-foreground">Rate each dimension from 1 (lowest) to 5 (highest)</p>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {([
+                        { key: 'open_ecosystem_score', label: 'Open Ecosystem Score' },
+                        { key: 'ai_access_score', label: 'AI Access Score' },
+                        { key: 'spatial_capability_score', label: 'Spatial Capability Score' },
+                        { key: 'monetization_score', label: 'Monetization Score' },
+                        { key: 'platform_viability_score', label: 'Platform Viability Score' },
+                      ] as const).map(({ key, label }) => (
+                        <div key={key} className="space-y-2">
+                          <Label htmlFor={key}>{label} (1–5)</Label>
+                          <Select
+                            value={formData[key]?.toString() || ''}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, [key]: value ? parseInt(value) : null }))}
+                          >
+                            <SelectTrigger className="bg-background">
+                              <SelectValue placeholder="—" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background border shadow-lg">
+                              <SelectItem value="1">1</SelectItem>
+                              <SelectItem value="2">2</SelectItem>
+                              <SelectItem value="3">3</SelectItem>
+                              <SelectItem value="4">4</SelectItem>
+                              <SelectItem value="5">5</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Developer Resources URL */}
-              <div className="space-y-2">
-                <Label htmlFor="developer_resources_url">Developer Resources URL</Label>
-                <Input
-                  id="developer_resources_url"
-                  type="url"
-                  value={formData.developer_resources_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, developer_resources_url: e.target.value }))}
-                  placeholder="https://developer.example.com"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="developer_resources_url">Developer Resources URL</Label>
+                    <Input
+                      id="developer_resources_url"
+                      type="url"
+                      value={formData.developer_resources_url}
+                      onChange={(e) => setFormData(prev => ({ ...prev, developer_resources_url: e.target.value }))}
+                      placeholder="https://developer.example.com"
+                    />
+                  </div>
 
-              {/* 🧠 Platform & Software */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                <Label className="text-base font-semibold">🧠 Platform & Software</Label>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="operating_system">Operating System</Label>
-                    <Input id="operating_system" value={formData.operating_system} onChange={(e) => setFormData(prev => ({ ...prev, operating_system: e.target.value }))} placeholder="Android XR, custom OS, etc." />
+                  {/* 🧠 Platform & Software */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <Label className="text-base font-semibold">🧠 Platform & Software</Label>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="operating_system">Operating System</Label>
+                        <Input id="operating_system" value={formData.operating_system} onChange={(e) => setFormData(prev => ({ ...prev, operating_system: e.target.value }))} placeholder="Android XR, custom OS, etc." />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="standalone_or_tethered">Standalone or Tethered</Label>
+                        <Input id="standalone_or_tethered" value={formData.standalone_or_tethered} onChange={(e) => setFormData(prev => ({ ...prev, standalone_or_tethered: e.target.value }))} placeholder="Standalone, Tethered, Both" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="sdk_availability">SDK Availability</Label>
+                        <Input id="sdk_availability" value={formData.sdk_availability} onChange={(e) => setFormData(prev => ({ ...prev, sdk_availability: e.target.value }))} placeholder="Unity, Unreal, OpenXR" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="app_store_availability">App Store Availability</Label>
+                        <Input id="app_store_availability" value={formData.app_store_availability} onChange={(e) => setFormData(prev => ({ ...prev, app_store_availability: e.target.value }))} placeholder="Google Play, proprietary, etc." />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="openxr_compatible">OpenXR Compatible</Label>
+                        <Switch id="openxr_compatible" checked={formData.openxr_compatible ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, openxr_compatible: checked }))} />
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="sideloading_allowed">Sideloading Allowed</Label>
+                        <Switch id="sideloading_allowed" checked={formData.sideloading_allowed ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, sideloading_allowed: checked }))} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="standalone_or_tethered">Standalone or Tethered</Label>
-                    <Input id="standalone_or_tethered" value={formData.standalone_or_tethered} onChange={(e) => setFormData(prev => ({ ...prev, standalone_or_tethered: e.target.value }))} placeholder="Standalone, Tethered, Both" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="sdk_availability">SDK Availability</Label>
-                    <Input id="sdk_availability" value={formData.sdk_availability} onChange={(e) => setFormData(prev => ({ ...prev, sdk_availability: e.target.value }))} placeholder="Unity, Unreal, OpenXR" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="app_store_availability">App Store Availability</Label>
-                    <Input id="app_store_availability" value={formData.app_store_availability} onChange={(e) => setFormData(prev => ({ ...prev, app_store_availability: e.target.value }))} placeholder="Google Play, proprietary, etc." />
-                  </div>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="openxr_compatible">OpenXR Compatible</Label>
-                    <Switch id="openxr_compatible" checked={formData.openxr_compatible ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, openxr_compatible: checked }))} />
-                  </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="sideloading_allowed">Sideloading Allowed</Label>
-                    <Switch id="sideloading_allowed" checked={formData.sideloading_allowed ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, sideloading_allowed: checked }))} />
-                  </div>
-                </div>
-              </div>
 
-              {/* 👁 Display & Optics */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                <Label className="text-base font-semibold">👁 Display & Optics</Label>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="optics_type">Optics Type</Label>
-                    <Input id="optics_type" value={formData.optics_type} onChange={(e) => setFormData(prev => ({ ...prev, optics_type: e.target.value }))} placeholder="Waveguide, Birdbath, etc." />
+                  {/* 🤖 AI & Compute */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <Label className="text-base font-semibold">🤖 AI & Compute</Label>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="voice_assistant">Voice Assistant</Label>
+                        <Input id="voice_assistant" value={formData.voice_assistant} onChange={(e) => setFormData(prev => ({ ...prev, voice_assistant: e.target.value }))} placeholder="Gemini, Alexa, etc." />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cloud_dependency">Cloud Dependency</Label>
+                        <Input id="cloud_dependency" value={formData.cloud_dependency} onChange={(e) => setFormData(prev => ({ ...prev, cloud_dependency: e.target.value }))} placeholder="Required, Optional" />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="on_device_ai">On-device AI</Label>
+                        <Switch id="on_device_ai" checked={formData.on_device_ai ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, on_device_ai: checked }))} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="field_of_view">Field of View</Label>
-                    <Input id="field_of_view" value={formData.field_of_view} onChange={(e) => setFormData(prev => ({ ...prev, field_of_view: e.target.value }))} placeholder="50°" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="resolution_per_eye">Resolution per Eye</Label>
-                    <Input id="resolution_per_eye" value={formData.resolution_per_eye} onChange={(e) => setFormData(prev => ({ ...prev, resolution_per_eye: e.target.value }))} placeholder="1920x1080" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="refresh_rate">Refresh Rate</Label>
-                    <Input id="refresh_rate" value={formData.refresh_rate} onChange={(e) => setFormData(prev => ({ ...prev, refresh_rate: e.target.value }))} placeholder="90Hz" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="brightness_nits">Brightness (nits)</Label>
-                    <Input id="brightness_nits" value={formData.brightness_nits} onChange={(e) => setFormData(prev => ({ ...prev, brightness_nits: e.target.value }))} placeholder="2000 nits" />
-                  </div>
-                </div>
-              </div>
+                </TabsContent>
 
-              {/* 📡 Sensors & Tracking */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                <Label className="text-base font-semibold">📡 Sensors & Tracking</Label>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="tracking_type">Tracking Type</Label>
-                    <Input id="tracking_type" value={formData.tracking_type} onChange={(e) => setFormData(prev => ({ ...prev, tracking_type: e.target.value }))} placeholder="6DoF, 3DoF" />
-                  </div>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="slam_support">SLAM Support</Label>
-                    <Switch id="slam_support" checked={formData.slam_support ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, slam_support: checked }))} />
-                  </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="hand_tracking">Hand Tracking</Label>
-                    <Switch id="hand_tracking" checked={formData.hand_tracking ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, hand_tracking: checked }))} />
-                  </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="eye_tracking">Eye Tracking</Label>
-                    <Switch id="eye_tracking" checked={formData.eye_tracking ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, eye_tracking: checked }))} />
-                  </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="camera_access_for_devs">Camera Access for Devs</Label>
-                    <Switch id="camera_access_for_devs" checked={formData.camera_access_for_devs ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, camera_access_for_devs: checked }))} />
-                  </div>
-                </div>
-              </div>
+                <TabsContent value="physical" className="space-y-6 mt-4">
+                  <p className="text-sm text-muted-foreground">Only relevant for physical devices — leave blank for software or services.</p>
 
-              {/* 🤖 AI & Compute */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                <Label className="text-base font-semibold">🤖 AI & Compute</Label>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="soc_processor">SoC / Processor</Label>
-                    <Input id="soc_processor" value={formData.soc_processor} onChange={(e) => setFormData(prev => ({ ...prev, soc_processor: e.target.value }))} placeholder="Snapdragon XR2 Gen 2" />
+                  {/* 👁 Display & Optics */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <Label className="text-base font-semibold">👁 Display & Optics</Label>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="optics_type">Optics Type</Label>
+                        <Input id="optics_type" value={formData.optics_type} onChange={(e) => setFormData(prev => ({ ...prev, optics_type: e.target.value }))} placeholder="Waveguide, Birdbath, etc." />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="field_of_view">Field of View</Label>
+                        <Input id="field_of_view" value={formData.field_of_view} onChange={(e) => setFormData(prev => ({ ...prev, field_of_view: e.target.value }))} placeholder="50°" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="resolution_per_eye">Resolution per Eye</Label>
+                        <Input id="resolution_per_eye" value={formData.resolution_per_eye} onChange={(e) => setFormData(prev => ({ ...prev, resolution_per_eye: e.target.value }))} placeholder="1920x1080" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="refresh_rate">Refresh Rate</Label>
+                        <Input id="refresh_rate" value={formData.refresh_rate} onChange={(e) => setFormData(prev => ({ ...prev, refresh_rate: e.target.value }))} placeholder="90Hz" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="brightness_nits">Brightness (nits)</Label>
+                        <Input id="brightness_nits" value={formData.brightness_nits} onChange={(e) => setFormData(prev => ({ ...prev, brightness_nits: e.target.value }))} placeholder="2000 nits" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="ram">RAM</Label>
-                    <Input id="ram" value={formData.ram} onChange={(e) => setFormData(prev => ({ ...prev, ram: e.target.value }))} placeholder="12GB" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="voice_assistant">Voice Assistant</Label>
-                    <Input id="voice_assistant" value={formData.voice_assistant} onChange={(e) => setFormData(prev => ({ ...prev, voice_assistant: e.target.value }))} placeholder="Gemini, Alexa, etc." />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cloud_dependency">Cloud Dependency</Label>
-                    <Input id="cloud_dependency" value={formData.cloud_dependency} onChange={(e) => setFormData(prev => ({ ...prev, cloud_dependency: e.target.value }))} placeholder="Required, Optional" />
-                  </div>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="on_device_ai">On-device AI</Label>
-                    <Switch id="on_device_ai" checked={formData.on_device_ai ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, on_device_ai: checked }))} />
-                  </div>
-                </div>
-              </div>
 
-              {/* 🔋 Hardware & Connectivity */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                <Label className="text-base font-semibold">🔋 Hardware & Connectivity</Label>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="battery_life">Battery Life</Label>
-                    <Input id="battery_life" value={formData.battery_life} onChange={(e) => setFormData(prev => ({ ...prev, battery_life: e.target.value }))} placeholder="3 hours" />
+                  {/* 📡 Sensors & Tracking */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <Label className="text-base font-semibold">📡 Sensors & Tracking</Label>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="tracking_type">Tracking Type</Label>
+                        <Input id="tracking_type" value={formData.tracking_type} onChange={(e) => setFormData(prev => ({ ...prev, tracking_type: e.target.value }))} placeholder="6DoF, 3DoF" />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="slam_support">SLAM Support</Label>
+                        <Switch id="slam_support" checked={formData.slam_support ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, slam_support: checked }))} />
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="hand_tracking">Hand Tracking</Label>
+                        <Switch id="hand_tracking" checked={formData.hand_tracking ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, hand_tracking: checked }))} />
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="eye_tracking">Eye Tracking</Label>
+                        <Switch id="eye_tracking" checked={formData.eye_tracking ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, eye_tracking: checked }))} />
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="camera_access_for_devs">Camera Access for Devs</Label>
+                        <Switch id="camera_access_for_devs" checked={formData.camera_access_for_devs ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, camera_access_for_devs: checked }))} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="weight">Weight</Label>
-                    <Input id="weight" value={formData.weight} onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))} placeholder="226g" />
+
+                  {/* 🔋 Hardware & Connectivity */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <Label className="text-base font-semibold">🔋 Hardware & Connectivity</Label>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="soc_processor">SoC / Processor</Label>
+                        <Input id="soc_processor" value={formData.soc_processor} onChange={(e) => setFormData(prev => ({ ...prev, soc_processor: e.target.value }))} placeholder="Snapdragon XR2 Gen 2" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="ram">RAM</Label>
+                        <Input id="ram" value={formData.ram} onChange={(e) => setFormData(prev => ({ ...prev, ram: e.target.value }))} placeholder="12GB" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="battery_life">Battery Life</Label>
+                        <Input id="battery_life" value={formData.battery_life} onChange={(e) => setFormData(prev => ({ ...prev, battery_life: e.target.value }))} placeholder="3 hours" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="weight">Weight</Label>
+                        <Input id="weight" value={formData.weight} onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))} placeholder="226g" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="wifi_bluetooth_version">WiFi / Bluetooth</Label>
+                        <Input id="wifi_bluetooth_version" value={formData.wifi_bluetooth_version} onChange={(e) => setFormData(prev => ({ ...prev, wifi_bluetooth_version: e.target.value }))} placeholder="WiFi 6E, BT 5.3" />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <Label htmlFor="cellular_5g">5G / Cellular</Label>
+                        <Switch id="cellular_5g" checked={formData.cellular_5g ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, cellular_5g: checked }))} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="wifi_bluetooth_version">WiFi / Bluetooth</Label>
-                    <Input id="wifi_bluetooth_version" value={formData.wifi_bluetooth_version} onChange={(e) => setFormData(prev => ({ ...prev, wifi_bluetooth_version: e.target.value }))} placeholder="WiFi 6E, BT 5.3" />
-                  </div>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <Label htmlFor="cellular_5g">5G / Cellular</Label>
-                    <Switch id="cellular_5g" checked={formData.cellular_5g ?? false} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, cellular_5g: checked }))} />
-                  </div>
-                </div>
-              </div>
+                </TabsContent>
+              </Tabs>
 
               {/* Submit */}
               <div className="flex gap-4 pt-4">
