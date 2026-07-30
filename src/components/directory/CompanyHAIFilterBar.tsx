@@ -75,7 +75,12 @@ const CompanyHAIFilterBar = ({
                   <ChevronDown className="w-4 h-4 opacity-50 flex-shrink-0" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="start" className="w-64 p-0 bg-background border shadow-lg z-50">
+              <PopoverContent
+                align="start"
+                className={`p-0 bg-background border shadow-lg z-50 ${
+                  key === 'hai_category' ? 'w-[340px]' : 'w-64'
+                }`}
+              >
                 <div className="max-h-64 overflow-y-auto p-2 space-y-1">
                   {dimension.values.map((value) => {
                     const id = `${key}-${value}`;
@@ -83,14 +88,15 @@ const CompanyHAIFilterBar = ({
                       <label
                         key={value}
                         htmlFor={id}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                        className="flex items-start gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
                       >
                         <Checkbox
                           id={id}
+                          className="mt-0.5"
                           checked={selected.includes(value)}
                           onCheckedChange={() => toggle(key, value)}
                         />
-                        {value}
+                        <span>{key === 'hai_category' ? haiCategoryLabel(value) : value}</span>
                       </label>
                     );
                   })}
