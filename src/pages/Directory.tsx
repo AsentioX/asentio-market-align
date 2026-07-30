@@ -5,11 +5,10 @@ import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
 import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryViewToggle';
 import CompanyGrid from '@/components/directory/CompanyGrid';
-import HAIFilterPanel from '@/components/directory/HAIFilterPanel';
+import CompanyHAIFilterBar from '@/components/directory/CompanyHAIFilterBar';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
@@ -20,7 +19,7 @@ import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
 import { useXRUseCases, UseCaseFilters } from '@/hooks/useXRUseCases';
 import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
-import { Building2, Package, Layers, Briefcase, Plus, Search, Compass, X } from 'lucide-react';
+import { Building2, Package, Layers, Briefcase, Plus, Compass, X } from 'lucide-react';
 
 const Directory = () => {
   const [searchParams] = useSearchParams();
