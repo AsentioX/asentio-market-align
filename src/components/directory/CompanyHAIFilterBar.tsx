@@ -111,23 +111,6 @@ const CompanyHAIFilterBar = ({
           );
         })}
 
-        <div className="flex items-center rounded-md border border-input bg-background p-0.5">
-          {(['AND', 'OR'] as const).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => onLogicChange(mode)}
-              className={`rounded-sm px-2.5 py-1 text-xs font-medium transition-colors ${
-                logic === mode
-                  ? 'bg-asentio-red text-white'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Match {mode === 'AND' ? 'all' : 'any'}
-            </button>
-          ))}
-        </div>
-
         {activeCount > 0 && (
           <Button variant="ghost" onClick={() => onChange({})}>
             <X className="w-4 h-4 mr-1" /> Clear ({activeCount})
