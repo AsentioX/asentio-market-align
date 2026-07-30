@@ -69,7 +69,7 @@ const CompanyHAIFilterBar = ({
                   className={`${width} justify-between bg-background font-normal`}
                 >
                   <span className="truncate">
-                    {selected.length > 0 ? `${label} (${selected.length})` : `All ${label}`}
+                    {selected.length > 0 ? `${label} (${selected.length})` : label}
                   </span>
                   <ChevronDown className="w-4 h-4 opacity-50 flex-shrink-0" />
                 </Button>
