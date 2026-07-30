@@ -68,6 +68,62 @@ const CompanyHAIFilterBar = ({
           <span className="hidden sm:inline">Filters:</span>
         </div>
 
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-[150px] justify-between bg-background font-normal"
+            >
+              <span className="truncate">
+                {categories.length > 0 ? `Category (${categories.length})` : 'Category'}
+              </span>
+              <ChevronDown className="w-4 h-4 opacity-50 flex-shrink-0" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-72 p-0 bg-background border shadow-lg z-50">
+            <div className="max-h-80 overflow-y-auto p-2 space-y-3">
+              {CATEGORY_GROUPS.map((group) => (
+                <div key={group.label}>
+                  <p className="px-2 pb-1 text-xs font-semibold text-foreground uppercase tracking-wide">
+                    {group.label}
+                  </p>
+                  <div className="space-y-0.5">
+                    {group.items.map((value) => {
+                      const id = `category-${value}`;
+                      return (
+                        <label
+                          key={value}
+                          htmlFor={id}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                        >
+                          <Checkbox
+                            id={id}
+                            checked={categories.includes(value)}
+                            onCheckedChange={() => toggleCategory(value)}
+                          />
+                          {value}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {categories.length > 0 && (
+              <div className="border-t p-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full h-7 text-xs"
+                  onClick={() => onCategoriesChange([])}
+                >
+                  Clear Category
+                </Button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+
         {BAR_DIMENSIONS.map(({ key, label, width }) => {
           const dimension = HAI_DIMENSIONS.find((d) => d.key === key)!;
           const selected = selections[key] || [];
@@ -122,7 +178,7 @@ const CompanyHAIFilterBar = ({
         })}
 
         {activeCount > 0 && (
-          <Button variant="ghost" onClick={() => onChange({})}>
+          <Button variant="ghost" onClick={() => { onChange({}); onCategoriesChange([]); }}>
             <X className="w-4 h-4 mr-1" /> Clear ({activeCount})
           </Button>
         )}
