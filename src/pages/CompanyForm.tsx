@@ -85,7 +85,6 @@ const CompanyForm = () => {
         founded_year: existingCompany.founded_year?.toString() || '',
         company_size: existingCompany.company_size || '',
         asentio_perspective: existingCompany.asentio_perspective || '',
-        asentio_perspective: existingCompany.asentio_perspective || '',
         launch_date: existingCompany.launch_date || '',
         end_of_life_date: existingCompany.end_of_life_date || '',
         is_editors_pick: existingCompany.is_editors_pick,
