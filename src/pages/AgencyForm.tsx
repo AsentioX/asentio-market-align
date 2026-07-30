@@ -35,6 +35,7 @@ const AgencyForm = () => {
     slug: '',
     website: '',
     logo_url: '',
+    cover_url: '',
     description: '',
     services: [] as string[],
     regions: [] as string[],
