@@ -35,6 +35,7 @@ export const STAGES: { key: CRMStage; label: string; color: string }[] = [
   { key: 'proposal_sent', label: 'Proposal Sent', color: 'bg-orange-500/10 text-orange-700 border-orange-200' },
   { key: 'won',           label: 'Won',           color: 'bg-green-500/10 text-green-700 border-green-200' },
   { key: 'lost',          label: 'Lost',          color: 'bg-red-500/10 text-red-700 border-red-200' },
+  { key: 'ignored',       label: 'Ignore',        color: 'bg-slate-500/10 text-slate-700 border-slate-200' },
 ];
 
 export function useContacts() {
