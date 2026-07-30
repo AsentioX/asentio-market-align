@@ -671,7 +671,7 @@ const ProductForm = () => {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="physical" className="space-y-6 mt-4">
+                <TabsContent value="physical" className="space-y-6 mt-0 rounded-b-lg border border-t-0 border-border bg-accent/30 p-4">
                   <p className="text-sm text-muted-foreground">Only relevant for physical devices — leave blank for software or services.</p>
 
                   {/* 👁 Display & Optics */}
