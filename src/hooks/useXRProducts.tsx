@@ -237,3 +237,11 @@ export const SHIPPING_STATUSES = [
   'Dev Only',
   'Discontinued'
 ] as const;
+
+export const formatPrice = (
+  product: Pick<XRProduct, 'price_range' | 'price_type' | 'billing_period'>
+): string | null => {
+  if (!product.price_range) return null;
+  if (product.price_type !== 'subscription') return product.price_range;
+  return `${product.price_range}/${product.billing_period === 'year' ? 'yr' : 'mo'}`;
+};
