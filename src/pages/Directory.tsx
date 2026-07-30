@@ -151,7 +151,7 @@ const Directory = () => {
                   </Badge>
                 ))}
               </div>
-            )}
+            ) : null}
 
             <div className="py-6">
               <CompanyGrid companies={companies} isLoading={companiesLoading} />
