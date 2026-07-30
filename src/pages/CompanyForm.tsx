@@ -405,24 +405,6 @@ const CompanyForm = () => {
               </div>
 
 
-              {/* Sectors */}
-              <div className="space-y-3">
-                <Label>Sectors</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {COMPANY_SECTORS.map((sector) => (
-                    <div key={sector} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`sector-${sector}`}
-                        checked={formData.sectors.includes(sector)}
-                        onCheckedChange={() => toggleSector(sector)}
-                      />
-                      <Label htmlFor={`sector-${sector}`} className="text-sm font-normal cursor-pointer">
-                        {sector}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
               {/* Submit */}
               <div className="flex gap-4 pt-4">
