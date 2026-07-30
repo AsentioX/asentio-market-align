@@ -464,6 +464,43 @@ const ProductForm = () => {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label>Price Type</Label>
+                  <Select
+                    value={formData.price_type}
+                    onValueChange={(value) => setFormData(prev => ({
+                      ...prev,
+                      price_type: value,
+                      billing_period: value === 'subscription' ? (prev.billing_period || 'month') : '',
+                    }))}
+                  >
+                    <SelectTrigger className="bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-lg">
+                      <SelectItem value="one-time">One-time</SelectItem>
+                      <SelectItem value="subscription">Subscription</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {formData.price_type === 'subscription' && (
+                  <div className="space-y-2">
+                    <Label>Billing Period</Label>
+                    <Select
+                      value={formData.billing_period || 'month'}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, billing_period: value }))}
+                    >
+                      <SelectTrigger className="bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border shadow-lg">
+                        <SelectItem value="month">Per month</SelectItem>
+                        <SelectItem value="year">Per year</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="space-y-2">
                   <Label htmlFor="link">Product Link</Label>
                   <Input
                     id="link"
