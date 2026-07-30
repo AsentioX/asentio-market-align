@@ -130,18 +130,22 @@ export const useDeleteAgency = () => {
   });
 };
 
-export const AGENCY_SERVICES = [
-  'AR Development',
-  'VR Development',
-  'MR Development',
-  'Spatial Computing',
-  '3D Modeling',
-  'Digital Twins',
-  'Training & Simulation',
-  'Marketing & Advertising',
-  'Enterprise Solutions',
-  'Consulting'
-] as const;
+export const AGENCY_SERVICE_GROUPS: { label: string; services: string[] }[] = [
+  {
+    label: 'AI Development',
+    services: ['AI Agents', 'LLM Integration', 'Computer Vision', 'Voice AI', 'Machine Learning', 'Workflow Automation'],
+  },
+  {
+    label: 'Spatial & Immersive',
+    services: ['AR', 'VR', 'Digital Twins', '3D Visualization'],
+  },
+  {
+    label: 'Robotics & Physical AI',
+    services: ['Humanoid Robotics', 'Industrial Automation', 'Autonomous Vehicles', 'Autonomous Mobile Robot', 'Robotics Software'],
+  },
+];
+
+export const AGENCY_SERVICES = AGENCY_SERVICE_GROUPS.flatMap((g) => g.services) as unknown as readonly string[];
 
 export const AGENCY_REGIONS = [
   'North America',

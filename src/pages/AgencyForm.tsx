@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useXRAgency, useCreateAgency, useUpdateAgency, AGENCY_SERVICES, AGENCY_REGIONS } from '@/hooks/useXRAgencies';
+import { useXRAgency, useCreateAgency, useUpdateAgency, AGENCY_SERVICE_GROUPS, AGENCY_REGIONS } from '@/hooks/useXRAgencies';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
 const generateSlug = (name: string) => {
@@ -225,17 +225,24 @@ const AgencyForm = () => {
               {/* Services */}
               <div className="space-y-3">
                 <Label>Services</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {AGENCY_SERVICES.map((service) => (
-                    <div key={service} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`service-${service}`}
-                        checked={formData.services.includes(service)}
-                        onCheckedChange={() => toggleService(service)}
-                      />
-                      <Label htmlFor={`service-${service}`} className="text-sm font-normal cursor-pointer">
-                        {service}
-                      </Label>
+                <div className="space-y-4">
+                  {AGENCY_SERVICE_GROUPS.map((group) => (
+                    <div key={group.label} className="space-y-2">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{group.label}</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {group.services.map((service) => (
+                          <div key={service} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`service-${service}`}
+                              checked={formData.services.includes(service)}
+                              onCheckedChange={() => toggleService(service)}
+                            />
+                            <Label htmlFor={`service-${service}`} className="text-sm font-normal cursor-pointer">
+                              {service}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
