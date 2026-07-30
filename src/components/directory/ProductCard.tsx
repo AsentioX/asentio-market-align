@@ -99,9 +99,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
             </div>
           </div>
           
-          {product.price_range && (
+          {formatPrice(product) && (
             <span className="font-semibold text-sm text-foreground">
-              {product.price_range}
+              {formatPrice(product)}
             </span>
           )}
         </div>
