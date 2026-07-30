@@ -746,6 +746,18 @@ const ProductForm = () => {
                 </TabsContent>
               </Tabs>
 
+              {/* Developer Resources */}
+              <div className="space-y-2">
+                <Label htmlFor="developer_resources_url">Developer Resources URL</Label>
+                <Input
+                  id="developer_resources_url"
+                  type="url"
+                  value={formData.developer_resources_url}
+                  onChange={(e) => setFormData(prev => ({ ...prev, developer_resources_url: e.target.value }))}
+                  placeholder="https://developer.example.com"
+                />
+              </div>
+
               {/* Developer Readiness Scores */}
               <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
                 <div>
