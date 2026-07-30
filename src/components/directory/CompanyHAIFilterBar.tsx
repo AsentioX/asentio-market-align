@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Search, Filter, ChevronDown, X } from 'lucide-react';
-import { HAI_DIMENSIONS, HAIDimensionKey, haiCategoryLabel } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey, haiValueLabel } from '@/lib/haiFramework';
 import { HAISelections } from '@/hooks/useXRCompanies';
 
 /** Dimensions shown in the Companies filter bar, in order. */
