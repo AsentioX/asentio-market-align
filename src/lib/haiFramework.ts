@@ -92,12 +92,39 @@ export interface HAIDimension {
 }
 
 export const HUMAN_ACTIVITIES = [
-  'Inspection', 'Maintenance', 'Repair', 'Assembly', 'Picking', 'Inventory',
-  'Monitoring', 'Decision Support', 'Knowledge Retrieval', 'Training',
-  'Collaboration', 'Communication', 'Navigation', 'Translation',
-  'Customer Service', 'Shopping', 'Healthcare', 'Content Creation',
-  'Safety', 'Security',
+  'Observe',
+  'Operate',
+  'Think',
+  'Collaborate',
+  'Serve',
+  'Create',
+  'Protect',
 ];
+
+/** Display labels for Human Activities values (short value → descriptive label). */
+export const HUMAN_ACTIVITY_LABELS: Record<string, string> = {
+  Observe: 'Observe (Quality Assurance, Diagnostics, Situational Awareness)',
+  Operate: 'Operation (Material Handling, Installation, Manufacturing, Cleaning)',
+  Think: 'Think (Planning, Forecasting, Recommendations, Scheduling)',
+  Collaborate: 'Collaborate (Remote Assistance, Meetings, Coaching)',
+  Serve: 'Serve (Hospitality, Sales, Education)',
+  Create: 'Create (Design, Coding, Video Creation, Image Generation)',
+  Protect: 'Protect (Compliance, Emergency Response, Risk Assessment)',
+};
+
+export const haiActivityLabel = (value: string): string =>
+  HUMAN_ACTIVITY_LABELS[value] || value;
+
+/**
+ * Resolve the display label for any framework dimension value.
+ * Dimensions with rich labels (Category, Human Activities) expand to their
+ * descriptive label; all other dimensions return the value unchanged.
+ */
+export const haiValueLabel = (key: HAIDimensionKey, value: string): string => {
+  if (key === 'hai_category') return haiCategoryLabel(value);
+  if (key === 'human_activities') return haiActivityLabel(value);
+  return value;
+};
 
 export const HUMAN_CAPABILITIES = [
   'Seeing', 'Hearing', 'Speaking', 'Remembering', 'Learning', 'Thinking',
