@@ -105,6 +105,8 @@ const ProductForm = () => {
         category: existingProduct.category,
         ai_integration: existingProduct.ai_integration,
         price_range: existingProduct.price_range || '',
+        price_type: (existingProduct as any).price_type || 'one-time',
+        billing_period: (existingProduct as any).billing_period || '',
         shipping_status: existingProduct.shipping_status,
         region: existingProduct.region,
         description: existingProduct.description || '',
