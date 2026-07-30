@@ -407,18 +407,35 @@ const ProductForm = () => {
               )}
 
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="region">Region *</Label>
-                  <Input
-                    id="region"
-                    value={formData.region}
-                    onChange={(e) => setFormData(prev => ({ ...prev, region: e.target.value }))}
-                    placeholder="Global"
-                    required
-                  />
+              <div className="space-y-2">
+                <Label>Region *</Label>
+                <p className="text-sm text-muted-foreground">Select all regions where this product is available.</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {REGIONS.map((region) => {
+                    const selected = formData.region.split(',').map(r => r.trim()).filter(Boolean);
+                    const checked = selected.includes(region);
+                    return (
+                      <label
+                        key={region}
+                        className="flex items-center gap-2 p-2 border rounded-lg cursor-pointer hover:bg-accent/50"
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(value) => {
+                            const next = value
+                              ? [...selected, region]
+                              : selected.filter(r => r !== region);
+                            const ordered = REGIONS.filter(r => next.includes(r));
+                            setFormData(prev => ({ ...prev, region: ordered.join(', ') }));
+                          }}
+                        />
+                        <span className="text-sm">{region}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
+
 
               {/* Selects */}
               <div className="grid sm:grid-cols-2 gap-4">
