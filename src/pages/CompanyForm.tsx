@@ -328,10 +328,82 @@ const CompanyForm = () => {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe the company and its XR initiatives..."
+                  placeholder="Describe the company and how it augments humans with AI..."
                   rows={3}
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mission">Mission</Label>
+                <Textarea
+                  id="mission"
+                  value={formData.mission}
+                  onChange={(e) => setFormData(prev => ({ ...prev, mission: e.target.value }))}
+                  placeholder="One line on what the company is trying to do for people."
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="leadership">Leadership (comma separated)</Label>
+                <Input
+                  id="leadership"
+                  value={formData.leadership}
+                  onChange={(e) => setFormData(prev => ({ ...prev, leadership: e.target.value }))}
+                  placeholder="Jane Doe, CEO; John Roe, CTO"
+                />
+              </div>
+
+              {/* Human-AI Framework */}
+              <div className="space-y-4 p-4 border rounded-lg">
+                <div>
+                  <Label className="text-base">Human-AI Framework</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Classify how this company augments human capability. Everything begins with the human.
+                  </p>
+                </div>
+
+                {HAI_DIMENSIONS.map((dimension) => (
+                  <div key={dimension.key} className="space-y-2">
+                    <Label className="text-sm">
+                      {dimension.label}{' '}
+                      <span className="font-normal text-muted-foreground">— {dimension.question}</span>
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {dimension.values.map((value) => {
+                        const selected = dimensions[dimension.key].includes(value);
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => toggleDimension(dimension.key, value)}
+                            className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                              selected
+                                ? 'border-asentio-blue bg-asentio-blue text-white'
+                                : 'border-border bg-background text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            {value}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Asentio Perspective */}
+              <div className="space-y-2">
+                <Label htmlFor="asentio_perspective">Asentio Perspective</Label>
+                <Textarea
+                  id="asentio_perspective"
+                  value={formData.asentio_perspective}
+                  onChange={(e) => setFormData(prev => ({ ...prev, asentio_perspective: e.target.value }))}
+                  placeholder="Proprietary Asentio commentary on this company's position and leverage."
+                  rows={4}
+                />
+              </div>
+
 
               {/* Sectors */}
               <div className="space-y-3">
