@@ -96,7 +96,7 @@ const CompanyHAIFilterBar = ({
                           checked={selected.includes(value)}
                           onCheckedChange={() => toggle(key, value)}
                         />
-                        <span>{key === 'hai_category' ? haiCategoryLabel(value) : value}</span>
+                        <span>{haiValueLabel(key, value)}</span>
                       </label>
                     );
                   })}
