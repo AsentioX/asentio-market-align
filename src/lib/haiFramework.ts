@@ -99,6 +99,8 @@ export const HUMAN_ACTIVITIES = [
   'Serve',
   'Create',
   'Protect',
+  'Learn',
+  'Navigate',
 ];
 
 /** Display labels for Human Activities values (short value → descriptive label). */
@@ -110,6 +112,8 @@ export const HUMAN_ACTIVITY_LABELS: Record<string, string> = {
   Serve: 'Serve (Hospitality, Sales, Education)',
   Create: 'Create (Design, Coding, Video Creation, Image Generation)',
   Protect: 'Protect (Compliance, Emergency Response, Risk Assessment)',
+  Learn: 'Learn (Training, Remote Assist)',
+  Navigate: 'Navigate (Way Finding)',
 };
 
 export const haiActivityLabel = (value: string): string =>
