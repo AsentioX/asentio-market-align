@@ -148,6 +148,23 @@ const ProductForm = () => {
     }
   }, [existingProduct]);
 
+  // Find the matching company record so we can link to its edit page
+  useEffect(() => {
+    const companyName = existingProduct?.company;
+    if (!companyName) { setLinkedCompanyId(null); return; }
+    let active = true;
+    supabase
+      .from('xr_companies')
+      .select('id')
+      .ilike('name', companyName)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (active) setLinkedCompanyId(data?.id ?? null); });
+    return () => { active = false; };
+  }, [existingProduct?.company]);
+
+
+
   // Auto-generate slug from name
   useEffect(() => {
     if (!isEditing && formData.name) {
