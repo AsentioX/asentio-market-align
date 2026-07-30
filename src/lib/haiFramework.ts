@@ -106,7 +106,7 @@ export const HUMAN_ACTIVITIES = [
 /** Display labels for Human Activities values (short value → descriptive label). */
 export const HUMAN_ACTIVITY_LABELS: Record<string, string> = {
   Observe: 'Observe (Quality Assurance, Diagnostics, Situational Awareness)',
-  Operate: 'Operation (Material Handling, Installation, Manufacturing, Cleaning)',
+  Operate: 'Operate (Material Handling, Installation, Manufacturing, Cleaning)',
   Think: 'Think (Planning, Forecasting, Recommendations, Scheduling)',
   Collaborate: 'Collaborate (Remote Assistance, Meetings, Coaching)',
   Serve: 'Serve (Hospitality, Sales, Education)',
