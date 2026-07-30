@@ -7,6 +7,7 @@ export interface XRAgency {
   name: string;
   website: string | null;
   logo_url: string | null;
+  cover_url: string | null;
   description: string | null;
   services: string[] | null;
   regions: string[] | null;
