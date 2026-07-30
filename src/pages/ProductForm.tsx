@@ -350,27 +350,56 @@ const ProductForm = () => {
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="company">Company *</Label>
-                  <Input
-                    id="company"
-                    value={formData.company}
-                    onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                    placeholder="XREAL"
-                    required
-                  />
+              {isEditing ? (
+                <div className="space-y-3 p-4 border rounded-lg bg-muted/50">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <Label className="text-base font-semibold flex items-center gap-2">
+                        <Building2 className="w-4 h-4" /> Company
+                      </Label>
+                      <p className="text-sm text-foreground">{formData.company || '—'}</p>
+                      <p className="text-sm text-muted-foreground">{formData.company_hq || 'No HQ on record'}</p>
+                      <p className="text-xs text-muted-foreground">Company details are managed on the company record.</p>
+                    </div>
+                    {linkedCompanyId ? (
+                      <Link to={`/admin/companies/${linkedCompanyId}/edit`}>
+                        <Button type="button" variant="outline" size="sm">
+                          Edit company <ExternalLink className="ml-2 w-3.5 h-3.5" />
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link to="/admin/companies/new">
+                        <Button type="button" variant="outline" size="sm">
+                          Add company <ExternalLink className="ml-2 w-3.5 h-3.5" />
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company_hq">Company HQ</Label>
-                  <Input
-                    id="company_hq"
-                    value={formData.company_hq}
-                    onChange={(e) => setFormData(prev => ({ ...prev, company_hq: e.target.value }))}
-                    placeholder="San Francisco, CA"
-                  />
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Company *</Label>
+                    <Input
+                      id="company"
+                      value={formData.company}
+                      onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                      placeholder="XREAL"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company_hq">Company HQ</Label>
+                    <Input
+                      id="company_hq"
+                      value={formData.company_hq}
+                      onChange={(e) => setFormData(prev => ({ ...prev, company_hq: e.target.value }))}
+                      placeholder="San Francisco, CA"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
+
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
