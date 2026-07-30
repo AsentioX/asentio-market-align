@@ -132,14 +132,6 @@ const CompanyForm = () => {
     );
   }
 
-  const toggleSector = (sector: string) => {
-    setFormData(prev => ({
-      ...prev,
-      sectors: prev.sectors.includes(sector)
-        ? prev.sectors.filter(s => s !== sector)
-        : [...prev.sectors, sector]
-    }));
-  };
 
   const toggleDimension = (key: HAIDimensionKey, value: string) => {
     setDimensions(prev => ({
