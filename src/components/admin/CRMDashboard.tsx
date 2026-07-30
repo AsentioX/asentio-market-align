@@ -393,7 +393,7 @@ export default function CRMDashboard() {
   // KPIs
   const total = contacts.length;
   const won = contacts.filter((c) => c.stage === 'won').length;
-  const open = contacts.filter((c) => !['won', 'lost'].includes(c.stage)).length;
+  const open = contacts.filter((c) => !['won', 'lost', 'ignored'].includes(c.stage)).length;
   const overdue = contacts.filter((c) => c.follow_up_date && new Date(c.follow_up_date) < new Date()).length;
 
   if (isLoading) {
