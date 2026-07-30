@@ -142,6 +142,13 @@ export const ECOSYSTEM_ROLES = [
 
 export const HAI_DIMENSIONS: HAIDimension[] = [
   {
+    key: 'hai_category',
+    label: 'Category',
+    question: 'What kind of Human-AI offering is this?',
+    blurb: 'The top-level shape of the offering.',
+    values: HAI_CATEGORY_VALUES,
+  },
+  {
     key: 'human_activities',
     label: 'Human Activities',
     question: 'What is the human trying to accomplish?',
