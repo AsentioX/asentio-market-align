@@ -597,17 +597,6 @@ const ProductForm = () => {
                 <TabsContent value="digital" className="space-y-6 mt-0 rounded-b-lg border border-t-0 border-border bg-accent/30 p-4">
 
 
-                  <div className="space-y-2">
-                    <Label htmlFor="developer_resources_url">Developer Resources URL</Label>
-                    <Input
-                      id="developer_resources_url"
-                      type="url"
-                      value={formData.developer_resources_url}
-                      onChange={(e) => setFormData(prev => ({ ...prev, developer_resources_url: e.target.value }))}
-                      placeholder="https://developer.example.com"
-                    />
-                  </div>
-
                   {/* 🧠 Platform & Software */}
                   <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
                     <Label className="text-base font-semibold">🧠 Platform & Software</Label>
