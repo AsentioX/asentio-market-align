@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Search, Filter, ChevronDown, X } from 'lucide-react';
-import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey, CATEGORY_GROUPS } from '@/lib/haiFramework';
 import { HAISelections } from '@/hooks/useXRCompanies';
 
 /** Dimensions shown in the Companies filter bar, in order. */
@@ -21,6 +21,8 @@ interface CompanyHAIFilterBarProps {
   onSearchChange: (value: string) => void;
   selections: HAISelections;
   onChange: (selections: HAISelections) => void;
+  categories: string[];
+  onCategoriesChange: (categories: string[]) => void;
 }
 
 const CompanyHAIFilterBar = ({
@@ -28,8 +30,10 @@ const CompanyHAIFilterBar = ({
   onSearchChange,
   selections,
   onChange,
+  categories,
+  onCategoriesChange,
 }: CompanyHAIFilterBarProps) => {
-  const activeCount = Object.values(selections).reduce((sum, v) => sum + (v?.length || 0), 0);
+  const activeCount = Object.values(selections).reduce((sum, v) => sum + (v?.length || 0), 0) + categories.length;
 
   const toggle = (key: HAIDimensionKey, value: string) => {
     const current = selections[key] || [];
@@ -37,6 +41,12 @@ const CompanyHAIFilterBar = ({
       ...selections,
       [key]: current.includes(value) ? current.filter((v) => v !== value) : [...current, value],
     });
+  };
+
+  const toggleCategory = (value: string) => {
+    onCategoriesChange(
+      categories.includes(value) ? categories.filter((v) => v !== value) : [...categories, value]
+    );
   };
 
   return (
