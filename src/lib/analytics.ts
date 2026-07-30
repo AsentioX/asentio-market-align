@@ -23,11 +23,14 @@ export const CONTACT_EMAIL = 'info@asentio.com';
 
 // ── EDIT: intent score values per behavior ────────────────────
 const INTENT_SCORES = {
-  visited_services:    3,
+  visited_work_with_us: 4,  // primary commercial page
+  visited_services:    3,   // legacy /services route
+  visited_directory:   2,   // HAI Directory browsing
+  visited_insights:    2,   // Insights / Research editorial
   visited_about:       1,
   multi_page:          2,   // awarded when 2+ pages visited in session
   long_session:        2,   // awarded at 60s+ on site
-  scroll_deep:         3,   // scroll 75%+ on services/case study page
+  scroll_deep:         3,   // scroll 75%+ on a page
   cta_click:           5,
   email_click:         8,
   form_start:          3,
