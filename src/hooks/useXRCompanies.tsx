@@ -94,6 +94,15 @@ export const matchesSelections = (
   return logic === 'AND' ? results.every(Boolean) : results.some(Boolean);
 };
 
+/** Whether a company belongs to a curated top-level category. */
+export const matchesCategory = (company: XRCompany, category: string): boolean => {
+  const map = CATEGORY_DIMENSION_MAP[category];
+  if (!map) return false;
+  return (Object.entries(map) as [HAIDimensionKey, string[]][]).some(([key, values]) =>
+    values.some((v) => companyValues(company, key).includes(v))
+  );
+};
+
 const searchHaystack = (c: XRCompany) =>
   [
     c.name,
