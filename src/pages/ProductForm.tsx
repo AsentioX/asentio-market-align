@@ -40,6 +40,8 @@ const ProductForm = () => {
     category: 'AR Glasses',
     ai_integration: 'No',
     price_range: '',
+    price_type: 'one-time',
+    billing_period: '',
     shipping_status: 'Available',
     region: '',
     description: '',
