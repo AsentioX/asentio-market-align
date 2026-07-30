@@ -120,13 +120,6 @@ const Directory = () => {
 
           <TabsContent value="companies">
             <div className="flex flex-col lg:flex-row gap-8">
-              <HAIFilterPanel
-                selections={selections}
-                onChange={setSelections}
-                logic={logic}
-                onLogicChange={setLogic}
-              />
-
               <div className="flex-1 min-w-0">
                 <div className="relative mb-4">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -156,6 +149,13 @@ const Directory = () => {
 
                 <CompanyGrid companies={companies} isLoading={companiesLoading} />
               </div>
+
+              <HAIFilterPanel
+                selections={selections}
+                onChange={setSelections}
+                logic={logic}
+                onLogicChange={setLogic}
+              />
             </div>
           </TabsContent>
 
