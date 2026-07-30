@@ -568,42 +568,8 @@ const ProductForm = () => {
                   <TabsTrigger value="physical">Physical / Hardware</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="digital" className="space-y-6 mt-4">
-                  {/* Developer Readiness Scores */}
-                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                    <div>
-                      <Label className="text-base font-semibold">Developer Readiness Score</Label>
-                      <p className="text-sm text-muted-foreground">Rate each dimension from 1 (lowest) to 5 (highest)</p>
-                    </div>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {([
-                        { key: 'open_ecosystem_score', label: 'Open Ecosystem Score' },
-                        { key: 'ai_access_score', label: 'AI Access Score' },
-                        { key: 'spatial_capability_score', label: 'Spatial Capability Score' },
-                        { key: 'monetization_score', label: 'Monetization Score' },
-                        { key: 'platform_viability_score', label: 'Platform Viability Score' },
-                      ] as const).map(({ key, label }) => (
-                        <div key={key} className="space-y-2">
-                          <Label htmlFor={key}>{label} (1–5)</Label>
-                          <Select
-                            value={formData[key]?.toString() || ''}
-                            onValueChange={(value) => setFormData(prev => ({ ...prev, [key]: value ? parseInt(value) : null }))}
-                          >
-                            <SelectTrigger className="bg-background">
-                              <SelectValue placeholder="—" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-background border shadow-lg">
-                              <SelectItem value="1">1</SelectItem>
-                              <SelectItem value="2">2</SelectItem>
-                              <SelectItem value="3">3</SelectItem>
-                              <SelectItem value="4">4</SelectItem>
-                              <SelectItem value="5">5</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <TabsContent value="digital" className="space-y-6 mt-0 rounded-b-lg border border-t-0 border-border bg-accent/30 p-4">
+
 
                   <div className="space-y-2">
                     <Label htmlFor="developer_resources_url">Developer Resources URL</Label>
