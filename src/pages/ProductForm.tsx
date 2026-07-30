@@ -223,6 +223,8 @@ const ProductForm = () => {
       const productData = {
         ...formData,
         price_range: formData.price_range || null,
+        price_type: formData.price_type || 'one-time',
+        billing_period: formData.price_type === 'subscription' ? (formData.billing_period || 'month') : null,
         description: formData.description || null,
         link: formData.link || null,
         image_url: formData.image_url || null,
