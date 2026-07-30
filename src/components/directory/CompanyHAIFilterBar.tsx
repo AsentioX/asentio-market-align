@@ -82,7 +82,11 @@ const CompanyHAIFilterBar = ({
                 }`}
               >
                 <div className="max-h-64 overflow-y-auto p-2 space-y-1">
-                  {dimension.values.map((value) => {
+                  {[...dimension.values]
+                    .sort((a, b) =>
+                      haiValueLabel(key, a).localeCompare(haiValueLabel(key, b)),
+                    )
+                    .map((value) => {
                     const id = `${key}-${value}`;
                     return (
                       <label
