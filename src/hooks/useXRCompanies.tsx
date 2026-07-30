@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TAXONOMY } from '@/lib/xrTaxonomy';
-import { HAIDimensionKey, HAI_DIMENSIONS, CATEGORY_DIMENSION_MAP } from '@/lib/haiFramework';
+import { HAIDimensionKey, HAI_DIMENSIONS } from '@/lib/haiFramework';
 
 export interface XRCompany {
   id: string;
@@ -53,8 +53,6 @@ export interface CompanyFilters {
   selections?: HAISelections;
   /** Whether selections within/across dimensions must all match. */
   logic?: 'AND' | 'OR';
-  /** Curated top-level categories (AI Intelligence, Personal Devices, etc.). */
-  categories?: string[];
   sector?: string;
   /** Top-level taxonomy group slug, e.g. "devices". */
   group?: string;
@@ -94,15 +92,6 @@ export const matchesSelections = (
   return logic === 'AND' ? results.every(Boolean) : results.some(Boolean);
 };
 
-/** Whether a company belongs to a curated top-level category. */
-export const matchesCategory = (company: XRCompany, category: string): boolean => {
-  const map = CATEGORY_DIMENSION_MAP[category];
-  if (!map) return false;
-  return (Object.entries(map) as [HAIDimensionKey, string[]][]).some(([key, values]) =>
-    values.some((v) => companyValues(company, key).includes(v))
-  );
-};
-
 const searchHaystack = (c: XRCompany) =>
   [
     c.name,
@@ -137,9 +126,6 @@ export const useXRCompanies = (filters?: CompanyFilters) => {
       }
       if (filters?.selections) {
         rows = rows.filter((c) => matchesSelections(c, filters.selections, filters.logic || 'AND'));
-      }
-      if (filters?.categories && filters.categories.length > 0) {
-        rows = rows.filter((c) => filters.categories!.some((cat) => matchesCategory(c, cat)));
       }
       if (filters?.sector && filters.sector !== 'all') {
         rows = rows.filter((c) => (c.sectors || []).includes(filters.sector!));

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Search, Filter, ChevronDown, X } from 'lucide-react';
-import { HAI_DIMENSIONS, HAIDimensionKey, CATEGORY_GROUPS } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
 import { HAISelections } from '@/hooks/useXRCompanies';
 
 /** Dimensions shown in the Companies filter bar, in order. */
@@ -21,8 +21,6 @@ interface CompanyHAIFilterBarProps {
   onSearchChange: (value: string) => void;
   selections: HAISelections;
   onChange: (selections: HAISelections) => void;
-  categories: string[];
-  onCategoriesChange: (categories: string[]) => void;
 }
 
 const CompanyHAIFilterBar = ({
@@ -30,10 +28,8 @@ const CompanyHAIFilterBar = ({
   onSearchChange,
   selections,
   onChange,
-  categories,
-  onCategoriesChange,
 }: CompanyHAIFilterBarProps) => {
-  const activeCount = Object.values(selections).reduce((sum, v) => sum + (v?.length || 0), 0) + categories.length;
+  const activeCount = Object.values(selections).reduce((sum, v) => sum + (v?.length || 0), 0);
 
   const toggle = (key: HAIDimensionKey, value: string) => {
     const current = selections[key] || [];
@@ -41,12 +37,6 @@ const CompanyHAIFilterBar = ({
       ...selections,
       [key]: current.includes(value) ? current.filter((v) => v !== value) : [...current, value],
     });
-  };
-
-  const toggleCategory = (value: string) => {
-    onCategoriesChange(
-      categories.includes(value) ? categories.filter((v) => v !== value) : [...categories, value]
-    );
   };
 
   return (
@@ -67,62 +57,6 @@ const CompanyHAIFilterBar = ({
           <Filter className="w-4 h-4" />
           <span className="hidden sm:inline">Filters:</span>
         </div>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-[150px] justify-between bg-background font-normal"
-            >
-              <span className="truncate">
-                {categories.length > 0 ? `Category (${categories.length})` : 'Category'}
-              </span>
-              <ChevronDown className="w-4 h-4 opacity-50 flex-shrink-0" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="w-72 p-0 bg-background border shadow-lg z-50">
-            <div className="max-h-80 overflow-y-auto p-2 space-y-3">
-              {CATEGORY_GROUPS.map((group) => (
-                <div key={group.label}>
-                  <p className="px-2 pb-1 text-xs font-semibold text-foreground uppercase tracking-wide">
-                    {group.label}
-                  </p>
-                  <div className="space-y-0.5">
-                    {group.items.map((value) => {
-                      const id = `category-${value}`;
-                      return (
-                        <label
-                          key={value}
-                          htmlFor={id}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
-                        >
-                          <Checkbox
-                            id={id}
-                            checked={categories.includes(value)}
-                            onCheckedChange={() => toggleCategory(value)}
-                          />
-                          {value}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-            {categories.length > 0 && (
-              <div className="border-t p-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full h-7 text-xs"
-                  onClick={() => onCategoriesChange([])}
-                >
-                  Clear Category
-                </Button>
-              </div>
-            )}
-          </PopoverContent>
-        </Popover>
 
         {BAR_DIMENSIONS.map(({ key, label, width }) => {
           const dimension = HAI_DIMENSIONS.find((d) => d.key === key)!;
@@ -178,7 +112,7 @@ const CompanyHAIFilterBar = ({
         })}
 
         {activeCount > 0 && (
-          <Button variant="ghost" onClick={() => { onChange({}); onCategoriesChange([]); }}>
+          <Button variant="ghost" onClick={() => onChange({})}>
             <X className="w-4 h-4 mr-1" /> Clear ({activeCount})
           </Button>
         )}
