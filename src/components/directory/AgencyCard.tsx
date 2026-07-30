@@ -14,49 +14,41 @@ const AgencyCard = ({ agency }: AgencyCardProps) => {
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border ${
       agency.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
-      {/* Cover / Logo Header */}
-      <div className="relative aspect-[16/10] bg-muted overflow-hidden">
-        {agency.cover_url ? (
-          <>
-            <img
-              src={agency.cover_url}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-            {agency.logo_url ? (
-              <img
-                src={agency.logo_url}
-                alt={agency.name}
-                className="relative z-10 w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-300"
-              />
-            ) : (
-              <div className="relative z-10 w-full h-full flex items-center justify-center">
-                <Building2 className="w-12 h-12 text-white/70" />
-              </div>
-            )}
-          </>
-        ) : agency.logo_url ? (
+      {/* Cover Image */}
+      {agency.cover_url && (
+        <div className="relative aspect-[16/7] bg-muted overflow-hidden">
           <img
-            src={agency.logo_url}
-            alt={agency.name}
-            className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-300"
+            src={agency.cover_url}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-            <Building2 className="w-12 h-12 text-muted-foreground/40" />
-          </div>
-        )}
-        {agency.is_editors_pick && (
-          <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-asentio-blue text-white px-2 py-1 rounded-full">
-            <Sparkles className="w-3 h-3" />
-            <span className="text-xs font-semibold">Editor's Pick</span>
-          </div>
-        )}
-      </div>
-      
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          {agency.is_editors_pick && (
+            <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-asentio-blue text-white px-2 py-1 rounded-full">
+              <Sparkles className="w-3 h-3" />
+              <span className="text-xs font-semibold">Editor's Pick</span>
+            </div>
+          )}
+        </div>
+      )}
+
       <CardContent className="p-5">
+        {/* Logo above name */}
+        <div className="mb-3">
+          {agency.logo_url ? (
+            <img
+              src={agency.logo_url}
+              alt={agency.name}
+              className="h-12 w-auto object-contain"
+            />
+          ) : (
+            <div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-muted-foreground/50" />
+            </div>
+          )}
+        </div>
+
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
@@ -78,6 +70,13 @@ const AgencyCard = ({ agency }: AgencyCardProps) => {
             </span>
           )}
         </div>
+        
+        {!agency.cover_url && agency.is_editors_pick && (
+          <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-asentio-blue text-white px-2 py-1 rounded-full">
+            <Sparkles className="w-3 h-3" />
+            <span className="text-xs font-semibold">Editor's Pick</span>
+          </div>
+        )}
         
         {/* Editor's Note */}
         {agency.editors_note && (
