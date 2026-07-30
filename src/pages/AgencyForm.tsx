@@ -53,6 +53,7 @@ const AgencyForm = () => {
         slug: existingAgency.slug,
         website: existingAgency.website || '',
         logo_url: existingAgency.logo_url || '',
+        cover_url: existingAgency.cover_url || '',
         description: existingAgency.description || '',
         services: existingAgency.services || [],
         regions: existingAgency.regions || [],
