@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TAXONOMY } from '@/lib/xrTaxonomy';
-import { HAIDimensionKey, HAI_DIMENSIONS } from '@/lib/haiFramework';
+import { HAIDimensionKey, HAI_DIMENSIONS, HAI_CATEGORIES } from '@/lib/haiFramework';
 
 export interface XRCompany {
   id: string;
