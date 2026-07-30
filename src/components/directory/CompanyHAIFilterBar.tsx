@@ -4,11 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Search, Filter, ChevronDown, X } from 'lucide-react';
-import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey, haiCategoryLabel } from '@/lib/haiFramework';
 import { HAISelections } from '@/hooks/useXRCompanies';
 
 /** Dimensions shown in the Companies filter bar, in order. */
 const BAR_DIMENSIONS: { key: HAIDimensionKey; label: string; width: string }[] = [
+  { key: 'hai_category', label: 'Category', width: 'w-[150px]' },
   { key: 'human_activities', label: 'Human Activities', width: 'w-[180px]' },
   { key: 'human_capabilities', label: 'Human Capabilities', width: 'w-[190px]' },
   { key: 'ai_capabilities', label: 'AI Capabilities', width: 'w-[170px]' },
