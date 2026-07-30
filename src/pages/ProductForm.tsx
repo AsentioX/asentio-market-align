@@ -90,6 +90,7 @@ const ProductForm = () => {
   
   const [newFeature, setNewFeature] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [linkedCompanyId, setLinkedCompanyId] = useState<string | null>(null);
 
   // Load existing product data
   useEffect(() => {
