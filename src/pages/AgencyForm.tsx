@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useXRAgency, useCreateAgency, useUpdateAgency, AGENCY_SERVICES, AGENCY_REGIONS } from '@/hooks/useXRAgencies';
+import { useXRAgency, useCreateAgency, useUpdateAgency, AGENCY_SERVICE_GROUPS, AGENCY_REGIONS } from '@/hooks/useXRAgencies';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
 const generateSlug = (name: string) => {
