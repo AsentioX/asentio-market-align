@@ -164,7 +164,6 @@ const CompanyForm = () => {
         founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
         company_size: formData.company_size || null,
         asentio_perspective: formData.asentio_perspective || null,
-        asentio_perspective: formData.asentio_perspective || null,
         human_activities: dimensions.human_activities,
         human_capabilities: dimensions.human_capabilities,
         ai_capabilities: dimensions.ai_capabilities,
