@@ -27,16 +27,7 @@ export const HAI_CATEGORIES: HAICategory[] = [
     label: 'AI Intelligence (AI Assistant, Voice AI, Vision AI, Knowledge AI)',
     human_interface: ['AI Agent', 'Desktop', 'Mobile'],
     physical_platforms: ['Software'],
-    ai_capabilities: [
-      'AI Agents',
-      'Large Language Models',
-      'Voice AI',
-      'Speech Recognition',
-      'Computer Vision',
-      'Multimodal AI',
-      'Knowledge AI (RAG)',
-      'Translation AI',
-    ],
+    ai_capabilities: ['Reason', 'Perceive', 'Communicate', 'Plan', 'Automate'],
   },
   {
     value: 'Personal Devices',
@@ -128,6 +119,7 @@ export const haiValueLabel = (key: HAIDimensionKey, value: string): string => {
   if (key === 'hai_category') return haiCategoryLabel(value);
   if (key === 'human_activities') return haiActivityLabel(value);
   if (key === 'human_capabilities') return haiCapabilityLabel(value);
+  if (key === 'ai_capabilities') return haiAICapabilityLabel(value);
   return value;
 };
 
@@ -150,12 +142,23 @@ export const haiCapabilityLabel = (value: string): string =>
   HUMAN_CAPABILITY_LABELS[value] || value;
 
 export const AI_CAPABILITIES = [
-  'AI Agents', 'Large Language Models', 'Computer Vision', 'Voice AI',
-  'Speech Recognition', 'Multimodal AI', 'Spatial AI', 'Robotics AI',
-  'Knowledge AI (RAG)', 'Translation AI', 'Workflow Automation',
-  'Predictive AI', 'Edge AI', 'Digital Twin', 'Reinforcement Learning',
-  'Planning', 'Localization', 'Manipulation',
+  'Reason', 'Perceive', 'Communicate', 'Plan', 'Automate', 'Embody', 'Spatial', 'Deploy',
 ];
+
+/** Display labels for AI Capabilities values. */
+export const AI_CAPABILITY_LABELS: Record<string, string> = {
+  Reason: 'Reason (AI Agents, Knowledge, Reasoning, Decision)',
+  Perceive: 'Perceive (Vision, Audio, Speech, Text, Emotions)',
+  Communicate: 'Communicate (Conversation, Translation, Collaboration)',
+  Plan: 'Plan (Planning, Optimization, Forecasting)',
+  Automate: 'Automate (Workflow, Orchestration, Automation)',
+  Embody: 'Embody (Robotics, Localization, Autonomous Navigation)',
+  Spatial: 'Spatial (Digital Twin, Scene Understanding, SLAM, World Models)',
+  Deploy: 'Deploy (Edge AI, Federated Learning, Distributed AI)',
+};
+
+export const haiAICapabilityLabel = (value: string): string =>
+  AI_CAPABILITY_LABELS[value] || value;
 
 export const HUMAN_INTERFACES = [
   'AI Agent', 'Smart Glasses', 'Hearables', 'Mobile', 'Desktop', 'Smart Watch',
