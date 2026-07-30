@@ -235,15 +235,9 @@ export const AI_INTEGRATIONS = ['Yes', 'No', 'Partial'] as const;
 
 export const SHIPPING_STATUSES = [
   'Available',
-  'Shipping',
-  'Preorder',
-  'Concept',
-  'CES prototype',
-  'CES preview',
-  'CES 2026 launch',
-  'Dev Only',
-  'Dev Only ($99/mo)',
   'Announced',
+  'Preorder',
   'Beta',
+  'Dev Only',
   'Discontinued'
 ] as const;
