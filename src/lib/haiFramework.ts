@@ -141,12 +141,23 @@ export const haiCapabilityLabel = (value: string): string =>
   HUMAN_CAPABILITY_LABELS[value] || value;
 
 export const AI_CAPABILITIES = [
-  'AI Agents', 'Large Language Models', 'Computer Vision', 'Voice AI',
-  'Speech Recognition', 'Multimodal AI', 'Spatial AI', 'Robotics AI',
-  'Knowledge AI (RAG)', 'Translation AI', 'Workflow Automation',
-  'Predictive AI', 'Edge AI', 'Digital Twin', 'Reinforcement Learning',
-  'Planning', 'Localization', 'Manipulation',
+  'Reason', 'Perceive', 'Communicate', 'Plan', 'Automate', 'Embody', 'Spatial', 'Deploy',
 ];
+
+/** Display labels for AI Capabilities values. */
+export const AI_CAPABILITY_LABELS: Record<string, string> = {
+  Reason: 'Reason (AI Agents, Knowledge, Reasoning, Decision)',
+  Perceive: 'Perceive (Vision, Audio, Speech, Text, Emotions)',
+  Communicate: 'Communicate (Conversation, Translation, Collaboration)',
+  Plan: 'Plan (Planning, Optimization, Forecasting)',
+  Automate: 'Automate (Workflow, Orchestration, Automation)',
+  Embody: 'Embody (Robotics, Localization, Autonomous Navigation)',
+  Spatial: 'Spatial (Digital Twin, Scene Understanding, SLAM, World Models)',
+  Deploy: 'Deploy (Edge AI, Federated Learning, Distributed AI)',
+};
+
+export const haiAICapabilityLabel = (value: string): string =>
+  AI_CAPABILITY_LABELS[value] || value;
 
 export const HUMAN_INTERFACES = [
   'AI Agent', 'Smart Glasses', 'Hearables', 'Mobile', 'Desktop', 'Smart Watch',
