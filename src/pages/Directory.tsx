@@ -5,11 +5,10 @@ import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
 import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryViewToggle';
 import CompanyGrid from '@/components/directory/CompanyGrid';
-import HAIFilterPanel from '@/components/directory/HAIFilterPanel';
+import CompanyHAIFilterBar from '@/components/directory/CompanyHAIFilterBar';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
@@ -20,7 +19,7 @@ import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
 import { useXRUseCases, UseCaseFilters } from '@/hooks/useXRUseCases';
 import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
-import { Building2, Package, Layers, Briefcase, Plus, Search, Compass, X } from 'lucide-react';
+import { Building2, Package, Layers, Briefcase, Plus, Compass, X } from 'lucide-react';
 
 const Directory = () => {
   const [searchParams] = useSearchParams();
@@ -119,45 +118,35 @@ const Directory = () => {
           </div>
 
           <TabsContent value="companies">
-            <div className="flex flex-col lg:flex-row gap-8">
-              <div className="flex-1 min-w-0">
-                <div className="relative mb-4">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    value={companySearch}
-                    onChange={(e) => setCompanySearch(e.target.value)}
-                    placeholder="Search companies, activities, AI capabilities…"
-                    className="pl-10"
-                    aria-label="Search companies"
-                  />
-                </div>
+            <CompanyHAIFilterBar
+              search={companySearch}
+              onSearchChange={setCompanySearch}
+              selections={selections}
+              onChange={setSelections}
+              logic={logic}
+              onLogicChange={setLogic}
+            />
 
-                {activeChips.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-1.5 mb-4">
-                    {activeChips.map(({ key, value }) => (
-                      <Badge
-                        key={`${key}-${value}`}
-                        variant="secondary"
-                        className="text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                        onClick={() => removeChip(key, value)}
-                      >
-                        {value} <X className="w-3 h-3 ml-1" />
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                <CompanyGrid companies={companies} isLoading={companiesLoading} />
+            {activeChips.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 mt-4">
+                {activeChips.map(({ key, value }) => (
+                  <Badge
+                    key={`${key}-${value}`}
+                    variant="secondary"
+                    className="text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => removeChip(key, value)}
+                  >
+                    {value} <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ))}
               </div>
+            )}
 
-              <HAIFilterPanel
-                selections={selections}
-                onChange={setSelections}
-                logic={logic}
-                onLogicChange={setLogic}
-              />
+            <div className="py-6">
+              <CompanyGrid companies={companies} isLoading={companiesLoading} />
             </div>
           </TabsContent>
+
 
           <TabsContent value="products">
             <div className="flex items-center justify-between gap-4 mb-4">
