@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Search, Filter, ChevronDown, X } from 'lucide-react';
-import { HAI_DIMENSIONS, HAIDimensionKey, haiCategoryLabel } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey, haiValueLabel } from '@/lib/haiFramework';
 import { HAISelections } from '@/hooks/useXRCompanies';
 
 /** Dimensions shown in the Companies filter bar, in order. */
@@ -96,7 +96,7 @@ const CompanyHAIFilterBar = ({
                           checked={selected.includes(value)}
                           onCheckedChange={() => toggle(key, value)}
                         />
-                        <span>{key === 'hai_category' ? haiCategoryLabel(value) : value}</span>
+                        <span>{haiValueLabel(key, value)}</span>
                       </label>
                     );
                   })}
