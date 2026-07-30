@@ -4,11 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Search, Filter, ChevronDown, X } from 'lucide-react';
-import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey, haiCategoryLabel } from '@/lib/haiFramework';
 import { HAISelections } from '@/hooks/useXRCompanies';
 
 /** Dimensions shown in the Companies filter bar, in order. */
 const BAR_DIMENSIONS: { key: HAIDimensionKey; label: string; width: string }[] = [
+  { key: 'hai_category', label: 'Category', width: 'w-[150px]' },
   { key: 'human_activities', label: 'Human Activities', width: 'w-[180px]' },
   { key: 'human_capabilities', label: 'Human Capabilities', width: 'w-[190px]' },
   { key: 'ai_capabilities', label: 'AI Capabilities', width: 'w-[170px]' },
@@ -74,7 +75,12 @@ const CompanyHAIFilterBar = ({
                   <ChevronDown className="w-4 h-4 opacity-50 flex-shrink-0" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="start" className="w-64 p-0 bg-background border shadow-lg z-50">
+              <PopoverContent
+                align="start"
+                className={`p-0 bg-background border shadow-lg z-50 ${
+                  key === 'hai_category' ? 'w-[340px]' : 'w-64'
+                }`}
+              >
                 <div className="max-h-64 overflow-y-auto p-2 space-y-1">
                   {dimension.values.map((value) => {
                     const id = `${key}-${value}`;
@@ -82,14 +88,15 @@ const CompanyHAIFilterBar = ({
                       <label
                         key={value}
                         htmlFor={id}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                        className="flex items-start gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
                       >
                         <Checkbox
                           id={id}
+                          className="mt-0.5"
                           checked={selected.includes(value)}
                           onCheckedChange={() => toggle(key, value)}
                         />
-                        {value}
+                        <span>{key === 'hai_category' ? haiCategoryLabel(value) : value}</span>
                       </label>
                     );
                   })}

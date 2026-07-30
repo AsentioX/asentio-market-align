@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TAXONOMY } from '@/lib/xrTaxonomy';
-import { HAIDimensionKey, HAI_DIMENSIONS } from '@/lib/haiFramework';
+import { HAIDimensionKey, HAI_DIMENSIONS, HAI_CATEGORIES } from '@/lib/haiFramework';
 
 export interface XRCompany {
   id: string;
@@ -70,6 +70,20 @@ export interface CompanyFilters {
 export const companyValues = (company: XRCompany, key: HAIDimensionKey): string[] =>
   ((company as unknown as Record<string, string[] | null>)[key] || []) as string[];
 
+/** A company matches a Category when it touches any of the category's interfaces, platforms or AI capabilities. */
+const matchesCategory = (company: XRCompany, categoryValue: string): boolean => {
+  const category = HAI_CATEGORIES.find((c) => c.value === categoryValue);
+  if (!category) return false;
+  const interfaces = company.human_interface || [];
+  const platforms = company.physical_platforms || [];
+  const aiCaps = company.ai_capabilities || [];
+  return (
+    category.human_interface.some((v) => interfaces.includes(v)) ||
+    category.physical_platforms.some((v) => platforms.includes(v)) ||
+    (category.ai_capabilities || []).some((v) => aiCaps.includes(v))
+  );
+};
+
 /** Client-side matcher for the Human-AI Framework selections. */
 export const matchesSelections = (
   company: XRCompany,
@@ -83,6 +97,9 @@ export const matchesSelections = (
   if (active.length === 0) return true;
 
   const results = active.map(([key, values]) => {
+    if (key === 'hai_category') {
+      return values.some((v) => matchesCategory(company, v));
+    }
     const owned = companyValues(company, key);
     return logic === 'AND'
       ? values.every((v) => owned.includes(v))
