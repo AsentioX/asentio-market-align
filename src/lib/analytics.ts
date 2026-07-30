@@ -23,11 +23,14 @@ export const CONTACT_EMAIL = 'info@asentio.com';
 
 // ── EDIT: intent score values per behavior ────────────────────
 const INTENT_SCORES = {
-  visited_services:    3,
+  visited_work_with_us: 4,  // primary commercial page
+  visited_services:    3,   // legacy /services route
+  visited_directory:   2,   // HAI Directory browsing
+  visited_insights:    2,   // Insights / Research editorial
   visited_about:       1,
   multi_page:          2,   // awarded when 2+ pages visited in session
   long_session:        2,   // awarded at 60s+ on site
-  scroll_deep:         3,   // scroll 75%+ on services/case study page
+  scroll_deep:         3,   // scroll 75%+ on a page
   cta_click:           5,
   email_click:         8,
   form_start:          3,
@@ -212,8 +215,11 @@ export function trackPageView(path?: string) {
   if (count === 2) addIntent(INTENT_SCORES.multi_page);
 
   // Award per-page intent
-  if (p === '/services' || p.startsWith('/services')) addIntent(INTENT_SCORES.visited_services);
-  if (p === '/about')                                  addIntent(INTENT_SCORES.visited_about);
+  if (p.startsWith('/work-with-us'))                   addIntent(INTENT_SCORES.visited_work_with_us);
+  if (p.startsWith('/services'))                       addIntent(INTENT_SCORES.visited_services);
+  if (p.startsWith('/hai-directory'))                  addIntent(INTENT_SCORES.visited_directory);
+  if (p.startsWith('/insights') || p.startsWith('/research')) addIntent(INTENT_SCORES.visited_insights);
+  if (p.startsWith('/about'))                          addIntent(INTENT_SCORES.visited_about);
 
   // Also fire GA4 if present
   if (typeof window.gtag === 'function') {

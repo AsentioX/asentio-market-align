@@ -57,13 +57,16 @@ function generateRecommendations(sessions: Session[], events: AnalyticsEvent[]):
   if (!total) return ['No data yet — recommendations will appear once visitors start arriving.'];
   const conversions = sessions.filter((s) => s.converted).length;
   const convRate = conversions / total;
-  const serviceViews = events.filter((e) => e.event_type === 'page_view' && e.page_path.startsWith('/services')).length;
+  const isCommercialPath = (p: string) => p.startsWith('/work-with-us') || p.startsWith('/services');
+  const serviceViews = events.filter((e) => e.event_type === 'page_view' && isCommercialPath(e.page_path)).length;
   const ctaClicks = events.filter((e) => e.event_type === 'cta_click').length;
   const emailClicks = events.filter((e) => e.event_type === 'email_click').length;
-  if (serviceViews > 5 && ctaClicks / serviceViews < 0.05) recs.push('Services page gets traffic but low CTA clicks — consider a stronger, more visible CTA above the fold.');
-  const aboutViews = events.filter((e) => e.event_type === 'page_view' && e.page_path === '/about').length;
+  if (serviceViews > 5 && ctaClicks / serviceViews < 0.05) recs.push('Work With Us gets traffic but low CTA clicks — consider a stronger, more visible CTA above the fold.');
+  const insightViews = events.filter((e) => e.event_type === 'page_view' && (e.page_path.startsWith('/insights') || e.page_path.startsWith('/research'))).length;
+  if (insightViews > 5 && serviceViews / insightViews < 0.2) recs.push('Insights and Research draw readers but few continue to Work With Us — add an engagement CTA at the end of each article.');
+  const aboutViews = events.filter((e) => e.event_type === 'page_view' && e.page_path.startsWith('/about')).length;
   if (aboutViews > 0) {
-    const aboutAssist = sessions.filter((s) => events.filter((e) => e.session_id === s.id).some((e) => e.page_path === '/about') && s.converted).length;
+    const aboutAssist = sessions.filter((s) => events.filter((e) => e.session_id === s.id).some((e) => e.page_path.startsWith('/about')) && s.converted).length;
     if (aboutAssist / aboutViews > 0.1) recs.push('About page frequently assists conversions — add a contact CTA block earlier on the page.');
   }
   const mobile = sessions.filter((s) => s.device_type === 'mobile');
@@ -145,7 +148,8 @@ export default function AnalyticsDashboard() {
   const funnelSteps = [
     { name: 'All Visitors', value: totalSessions },
     { name: 'Engaged (2+ pages)', value: engagedSessions },
-    { name: 'Services Page', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && e.page_path.startsWith('/services'))).length },
+    { name: 'HAI Directory', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && e.page_path.startsWith('/hai-directory'))).length },
+    { name: 'Work With Us', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && (e.page_path.startsWith('/work-with-us') || e.page_path.startsWith('/services')))).length },
     { name: 'CTA Click', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && e.event_type === 'cta_click')).length },
     { name: 'Converted', value: conversions },
   ];
