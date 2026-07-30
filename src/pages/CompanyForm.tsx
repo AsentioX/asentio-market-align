@@ -6,12 +6,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useXRCompany, useCreateCompany, useUpdateCompany, companyValues, COMPANY_SECTORS, COMPANY_SIZES } from '@/hooks/useXRCompanies';
+import { useXRCompany, useCreateCompany, useUpdateCompany, companyValues, COMPANY_SIZES } from '@/hooks/useXRCompanies';
 import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
 import { useXRProducts } from '@/hooks/useXRProducts';
 import { ArrowLeft, Loader2, ExternalLink, MapPin } from 'lucide-react';
@@ -59,8 +59,6 @@ const CompanyForm = () => {
     hq_location: '',
     founded_year: '',
     company_size: '',
-    sectors: [] as string[],
-    leadership: '',
     asentio_perspective: '',
     launch_date: '',
     end_of_life_date: '',
@@ -84,8 +82,6 @@ const CompanyForm = () => {
         hq_location: existingCompany.hq_location || '',
         founded_year: existingCompany.founded_year?.toString() || '',
         company_size: existingCompany.company_size || '',
-        sectors: existingCompany.sectors || [],
-        leadership: (existingCompany.leadership || []).join(', '),
         asentio_perspective: existingCompany.asentio_perspective || '',
         launch_date: existingCompany.launch_date || '',
         end_of_life_date: existingCompany.end_of_life_date || '',
@@ -132,14 +128,6 @@ const CompanyForm = () => {
     );
   }
 
-  const toggleSector = (sector: string) => {
-    setFormData(prev => ({
-      ...prev,
-      sectors: prev.sectors.includes(sector)
-        ? prev.sectors.filter(s => s !== sector)
-        : [...prev.sectors, sector]
-    }));
-  };
 
   const toggleDimension = (key: HAIDimensionKey, value: string) => {
     setDimensions(prev => ({
@@ -163,10 +151,6 @@ const CompanyForm = () => {
         hq_location: formData.hq_location || null,
         founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
         company_size: formData.company_size || null,
-        sectors: formData.sectors.length > 0 ? formData.sectors : [],
-        leadership: formData.leadership
-          ? formData.leadership.split(',').map(s => s.trim()).filter(Boolean)
-          : [],
         asentio_perspective: formData.asentio_perspective || null,
         human_activities: dimensions.human_activities,
         human_capabilities: dimensions.human_capabilities,
@@ -344,15 +328,6 @@ const CompanyForm = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="leadership">Leadership (comma separated)</Label>
-                <Input
-                  id="leadership"
-                  value={formData.leadership}
-                  onChange={(e) => setFormData(prev => ({ ...prev, leadership: e.target.value }))}
-                  placeholder="Jane Doe, CEO; John Roe, CTO"
-                />
-              </div>
 
               {/* Human-AI Framework */}
               <div className="space-y-4 p-4 border rounded-lg">
@@ -405,24 +380,6 @@ const CompanyForm = () => {
               </div>
 
 
-              {/* Sectors */}
-              <div className="space-y-3">
-                <Label>Sectors</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {COMPANY_SECTORS.map((sector) => (
-                    <div key={sector} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`sector-${sector}`}
-                        checked={formData.sectors.includes(sector)}
-                        onCheckedChange={() => toggleSector(sector)}
-                      />
-                      <Label htmlFor={`sector-${sector}`} className="text-sm font-normal cursor-pointer">
-                        {sector}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
               {/* Submit */}
               <div className="flex gap-4 pt-4">
