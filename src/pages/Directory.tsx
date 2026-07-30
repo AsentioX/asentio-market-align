@@ -123,8 +123,6 @@ const Directory = () => {
               onSearchChange={setCompanySearch}
               selections={selections}
               onChange={setSelections}
-              logic={logic}
-              onLogicChange={setLogic}
             />
 
             {activeChips.length > 0 && (
