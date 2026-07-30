@@ -30,7 +30,7 @@ const CompanyHAIFilterBar = ({
   onSearchChange,
   selections,
   onChange,
-  categories,
+  categories = [],
   onCategoriesChange,
 }: CompanyHAIFilterBarProps) => {
   const activeCount = Object.values(selections).reduce((sum, v) => sum + (v?.length || 0), 0) + categories.length;
