@@ -141,6 +141,13 @@ const CompanyForm = () => {
     }));
   };
 
+  const toggleDimension = (key: HAIDimensionKey, value: string) => {
+    setDimensions(prev => ({
+      ...prev,
+      [key]: prev[key].includes(value) ? prev[key].filter(v => v !== value) : [...prev[key], value],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -152,15 +159,28 @@ const CompanyForm = () => {
         website: formData.website || null,
         logo_url: formData.logo_url || null,
         description: formData.description || null,
+        mission: formData.mission || null,
         hq_location: formData.hq_location || null,
         founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
         company_size: formData.company_size || null,
         sectors: formData.sectors.length > 0 ? formData.sectors : [],
+        leadership: formData.leadership
+          ? formData.leadership.split(',').map(s => s.trim()).filter(Boolean)
+          : [],
+        asentio_perspective: formData.asentio_perspective || null,
+        human_activities: dimensions.human_activities,
+        human_capabilities: dimensions.human_capabilities,
+        ai_capabilities: dimensions.ai_capabilities,
+        human_interface: dimensions.human_interface,
+        physical_platforms: dimensions.physical_platforms,
+        industry_focus: dimensions.industry_focus,
+        ecosystem_roles: dimensions.ecosystem_roles,
         launch_date: formData.launch_date || null,
         end_of_life_date: formData.end_of_life_date || null,
         is_editors_pick: formData.is_editors_pick,
         editors_note: formData.editors_note || null,
       };
+
 
       if (existingCompany) {
         await updateCompany.mutateAsync({ id: existingCompany.id, ...companyData });
