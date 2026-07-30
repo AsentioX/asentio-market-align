@@ -344,15 +344,6 @@ const CompanyForm = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="leadership">Leadership (comma separated)</Label>
-                <Input
-                  id="leadership"
-                  value={formData.leadership}
-                  onChange={(e) => setFormData(prev => ({ ...prev, leadership: e.target.value }))}
-                  placeholder="Jane Doe, CEO; John Roe, CTO"
-                />
-              </div>
 
               {/* Human-AI Framework */}
               <div className="space-y-4 p-4 border rounded-lg">
