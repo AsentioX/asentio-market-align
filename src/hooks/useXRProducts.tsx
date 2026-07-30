@@ -215,20 +215,14 @@ export const useDeleteProduct = () => {
 };
 
 export const CATEGORIES = [
-  'AR Glasses',
-  'VR Headsets', 
-  'AI Glasses',
-  'Smart Glasses',
-  'Spatial Apps',
-  'AR Entertainment Glasses',
-  'Services',
-  'AI Smartglasses',
-  'AR Smartglasses',
-  'AI/AR Hybrid',
-  'Full AR',
-  'Mixed Reality',
-  'Enterprise AR',
-  'Standalone AR'
+  'Glasses',
+  'Watch / Bracelet',
+  'Ring',
+  'Pendant',
+  'Headphone',
+  'Other Wearable',
+  'Robot',
+  'Service'
 ] as const;
 
 export const AI_INTEGRATIONS = ['Yes', 'No', 'Partial'] as const;
