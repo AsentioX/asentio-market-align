@@ -42,22 +42,33 @@ const CompanyForm = () => {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [allProducts, id]);
 
+  const emptyDimensions = useMemo(
+    () =>
+      HAI_DIMENSIONS.reduce((acc, d) => ({ ...acc, [d.key]: [] as string[] }), {} as Record<HAIDimensionKey, string[]>),
+    []
+  );
+
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     website: '',
     logo_url: '',
     description: '',
+    mission: '',
     hq_location: '',
     founded_year: '',
     company_size: '',
     sectors: [] as string[],
+    leadership: '',
+    asentio_perspective: '',
     launch_date: '',
     end_of_life_date: '',
     is_editors_pick: false,
     editors_note: ''
   });
-  
+
+  const [dimensions, setDimensions] = useState<Record<HAIDimensionKey, string[]>>(emptyDimensions);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -68,20 +79,30 @@ const CompanyForm = () => {
         website: existingCompany.website || '',
         logo_url: existingCompany.logo_url || '',
         description: existingCompany.description || '',
+        mission: existingCompany.mission || '',
         hq_location: existingCompany.hq_location || '',
         founded_year: existingCompany.founded_year?.toString() || '',
         company_size: existingCompany.company_size || '',
         sectors: existingCompany.sectors || [],
+        leadership: (existingCompany.leadership || []).join(', '),
+        asentio_perspective: existingCompany.asentio_perspective || '',
         launch_date: existingCompany.launch_date || '',
         end_of_life_date: existingCompany.end_of_life_date || '',
         is_editors_pick: existingCompany.is_editors_pick,
         editors_note: existingCompany.editors_note || ''
       });
+      setDimensions(
+        HAI_DIMENSIONS.reduce(
+          (acc, d) => ({ ...acc, [d.key]: companyValues(existingCompany, d.key) }),
+          {} as Record<HAIDimensionKey, string[]>
+        )
+      );
     } else if (isEditing && !companyLoading) {
       // Company name from URL but no xr_companies record yet — pre-fill name
       setFormData(prev => ({ ...prev, name: id, slug: generateSlug(id) }));
     }
   }, [existingCompany, isEditing, companyLoading, id]);
+
 
   useEffect(() => {
     if (!isEditing && formData.name) {
