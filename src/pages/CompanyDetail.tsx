@@ -3,12 +3,14 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useXRProducts, XRProduct } from '@/hooks/useXRProducts';
-import { XRCompany } from '@/hooks/useXRCompanies';
+import { XRCompany, useXRCompanies, companyValues } from '@/hooks/useXRCompanies';
+import RelatedCompanies from '@/components/directory/RelatedCompanies';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import TopographicPattern from '@/components/TopographicPattern';
 import { useSeo } from '@/hooks/useSeo';
+import { HAI_DIMENSIONS } from '@/lib/haiFramework';
 import {
   ArrowLeft,
   ExternalLink,
@@ -16,8 +18,6 @@ import {
   Package,
   Loader2,
   Sparkles,
-  Cpu,
-  Hand,
   Users,
   Calendar,
   Landmark,
@@ -29,6 +29,7 @@ const CompanyDetail = () => {
   const { companyName } = useParams<{ companyName: string }>();
   const key = decodeURIComponent(companyName || '');
   const { data: allProducts, isLoading: productsLoading } = useXRProducts({});
+  const { data: allCompanies } = useXRCompanies({});
 
   const { data: company, isLoading: companyLoading } = useQuery({
     queryKey: ['xr-company-profile', key],
@@ -39,14 +40,14 @@ const CompanyDetail = () => {
         .select('*')
         .eq('slug', key)
         .maybeSingle();
-      if (bySlug) return bySlug as XRCompany;
+      if (bySlug) return bySlug as unknown as XRCompany;
 
       const { data: byName } = await supabase
         .from('xr_companies')
         .select('*')
         .eq('name', key)
         .maybeSingle();
-      return (byName as XRCompany) || null;
+      return (byName as unknown as XRCompany) || null;
     },
   });
 
@@ -67,7 +68,7 @@ const CompanyDetail = () => {
     title: `${displayName} — Company Profile | Asentio HAI Directory`,
     description:
       company?.description ||
-      `${displayName} in the Asentio HAI Directory: products, technology, AI capabilities and market focus.`,
+      `${displayName} in the Asentio HAI Directory: the human activities, capabilities, AI and interfaces it augments.`,
     canonicalPath: `/hai-directory/company/${encodeURIComponent(company?.slug || key)}`,
     ogImage: company?.logo_url || undefined,
   });
@@ -110,12 +111,11 @@ const CompanyDetail = () => {
     );
   }
 
-  const categories = [company?.primary_category, ...(company?.subcategories || [])].filter(Boolean) as string[];
-  const productCategories = [...new Set(companyProducts.map((p) => p.category))];
+  const perspective = company?.asentio_perspective || company?.asentio_take;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Overview */}
       <section className="relative pt-28 md:pt-36 pb-8 md:pb-12 bg-muted">
         <TopographicPattern className="opacity-30" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -140,10 +140,19 @@ const CompanyDetail = () => {
               <div className="w-12 h-1 bg-asentio-red mb-4" />
               <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">{displayName}</h1>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                {company?.company_type && (
-                  <span className="font-medium text-asentio-blue">{company.company_type}</span>
-                )}
+              {company?.mission && (
+                <p className="text-lg md:text-xl text-foreground/90 max-w-3xl leading-relaxed mb-3 italic">
+                  {company.mission}
+                </p>
+              )}
+
+              {company?.description && (
+                <p className="text-base text-muted-foreground max-w-3xl leading-relaxed mb-4">
+                  {company.description}
+                </p>
+              )}
+
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-5">
                 {company?.hq_location && (
                   <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {company.hq_location}</span>
                 )}
@@ -153,24 +162,20 @@ const CompanyDetail = () => {
                 {company?.company_size && (
                   <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {company.company_size}</span>
                 )}
+                {company?.funding_stage && (
+                  <span className="flex items-center gap-1"><Landmark className="w-4 h-4" /> {company.funding_stage}</span>
+                )}
+                {(company?.leadership || []).length > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Users className="w-4 h-4" /> {(company?.leadership || []).join(', ')}
+                  </span>
+                )}
                 {companyProducts.length > 0 && (
                   <span className="flex items-center gap-1">
                     <Package className="w-4 h-4" /> {companyProducts.length} product
                     {companyProducts.length !== 1 ? 's' : ''}
                   </span>
                 )}
-              </div>
-
-              {company?.description && (
-                <p className="text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed mb-4">
-                  {company.description}
-                </p>
-              )}
-
-              <div className="flex flex-wrap gap-2 mb-5">
-                {(categories.length ? categories : productCategories).map((cat) => (
-                  <Badge key={cat} variant="secondary">{cat}</Badge>
-                ))}
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -194,49 +199,66 @@ const CompanyDetail = () => {
         </div>
       </section>
 
-      {/* Asentio Take */}
-      {company?.asentio_take && (
-        <section className="container mx-auto px-4 md:px-6 py-8">
-          <div className="rounded-xl border-l-4 border-asentio-red bg-card border border-border p-6 md:p-8 max-w-4xl">
-            <p className="text-xs uppercase tracking-wide text-asentio-red font-semibold mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> The Asentio Take
+      {/* Human-AI Framework */}
+      <section className="container mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div className="w-12 h-1 bg-asentio-red mb-4" />
+        <h2 className="text-xl font-semibold text-foreground mb-1">Human-AI profile</h2>
+        <p className="text-sm text-muted-foreground mb-6">How {displayName} augments human capability through AI.</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {HAI_DIMENSIONS.map((dimension) => {
+            const values = company ? companyValues(company, dimension.key) : [];
+            if (values.length === 0) return null;
+            return (
+              <div key={dimension.key} className="bg-card border border-border rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-foreground">{dimension.label}</h3>
+                <p className="text-[11px] text-muted-foreground mb-3">{dimension.question}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {values.map((v) => (
+                    <Link
+                      key={v}
+                      to={`/hai-directory?${dimension.key}=${encodeURIComponent(v)}`}
+                      className="inline-flex"
+                    >
+                      <Badge variant="secondary" className="text-xs hover:bg-asentio-red hover:text-primary-foreground transition-colors">
+                        {v}
+                      </Badge>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Products / Technologies / Partnerships */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+          {company?.products_summary && (
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Products</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{company.products_summary}</p>
+            </div>
+          )}
+          <ChipPanel title="Technologies" items={company?.technologies} />
+          <ChipPanel title="Partnerships" items={company?.key_partnerships} />
+        </div>
+      </section>
+
+      {/* Asentio Perspective — proprietary commentary */}
+      {perspective && (
+        <section className="container mx-auto px-4 md:px-6 pb-10">
+          <div className="rounded-2xl bg-asentio-blue/5 border border-asentio-red/30 border-l-4 border-l-asentio-red p-6 md:p-8">
+            <p className="text-xs uppercase tracking-[0.2em] text-asentio-red font-semibold mb-3 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" /> Asentio Perspective
             </p>
-            <p className="text-foreground leading-relaxed">{company.asentio_take}</p>
+            <p className="text-foreground text-lg leading-relaxed whitespace-pre-line font-light">{perspective}</p>
+            <p className="text-xs text-muted-foreground mt-4">Proprietary analysis by Asentio.</p>
           </div>
         </section>
       )}
 
-      {/* Intelligence panels */}
-      <section className="container mx-auto px-4 md:px-6 py-6 md:py-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          <Panel icon={Cpu} title="AI capabilities" items={company?.ai_capabilities} />
-          <Panel icon={Hand} title="Human interface" items={company?.human_interface} />
-          <Panel icon={Package} title="Technologies" items={company?.technologies} />
-          <Panel icon={Landmark} title="Target markets" items={company?.target_markets} />
-        </div>
-
-        {(company?.funding_stage ||
-          (company?.key_investors || []).length > 0 ||
-          (company?.key_partnerships || []).length > 0) && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-            {company?.funding_stage && (
-              <div className="bg-card border border-border rounded-xl p-5">
-                <h2 className="text-sm font-semibold text-foreground mb-2">Funding stage</h2>
-                <p className="text-muted-foreground text-sm">{company.funding_stage}</p>
-              </div>
-            )}
-            <Panel title="Key investors" items={company?.key_investors} />
-            <Panel title="Partnerships" items={company?.key_partnerships} />
-          </div>
-        )}
-
-        {company?.products_summary && (
-          <div className="bg-card border border-border rounded-xl p-6 mt-5">
-            <h2 className="text-sm font-semibold text-foreground mb-2">Products</h2>
-            <p className="text-muted-foreground text-sm leading-relaxed">{company.products_summary}</p>
-          </div>
-        )}
-      </section>
+      {/* Related companies */}
+      {company && <RelatedCompanies company={company} all={allCompanies} />}
 
       {/* Product timeline */}
       {companyProducts.length > 0 && (
@@ -256,22 +278,11 @@ const CompanyDetail = () => {
   );
 };
 
-const Panel = ({
-  icon: Icon,
-  title,
-  items,
-}: {
-  icon?: React.ComponentType<{ className?: string }>;
-  title: string;
-  items?: string[] | null;
-}) => {
+const ChipPanel = ({ title, items }: { title: string; items?: string[] | null }) => {
   if (!items || items.length === 0) return null;
   return (
     <div className="bg-card border border-border rounded-xl p-5">
-      <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-        {Icon && <Icon className="w-4 h-4 text-asentio-red" />}
-        {title}
-      </h2>
+      <h3 className="text-sm font-semibold text-foreground mb-3">{title}</h3>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (
           <Badge key={item} variant="secondary" className="text-xs">{item}</Badge>

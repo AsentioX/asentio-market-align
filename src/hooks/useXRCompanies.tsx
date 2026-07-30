@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TAXONOMY } from '@/lib/xrTaxonomy';
+import { HAIDimensionKey, HAI_DIMENSIONS } from '@/lib/haiFramework';
 
 export interface XRCompany {
   id: string;
@@ -9,6 +10,7 @@ export interface XRCompany {
   website: string | null;
   logo_url: string | null;
   description: string | null;
+  mission: string | null;
   hq_location: string | null;
   founded_year: number | null;
   company_size: string | null;
@@ -17,26 +19,40 @@ export interface XRCompany {
   end_of_life_date: string | null;
   is_editors_pick: boolean;
   editors_note: string | null;
-  // Asentio "Human Interface to AI" metadata
+  // Legacy XR metadata (kept for existing pages)
   company_type: string | null;
   primary_category: string | null;
   subcategories: string[] | null;
-  ai_capabilities: string[] | null;
-  human_interface: string[] | null;
   technologies: string[] | null;
   target_markets: string[] | null;
   products_summary: string | null;
+  // Human-AI Framework
+  human_activities: string[] | null;
+  human_capabilities: string[] | null;
+  ai_capabilities: string[] | null;
+  human_interface: string[] | null;
+  physical_platforms: string[] | null;
+  industry_focus: string[] | null;
+  ecosystem_roles: string[] | null;
+  leadership: string[] | null;
   funding_stage: string | null;
   key_investors: string[] | null;
   key_partnerships: string[] | null;
   asentio_take: string | null;
+  asentio_perspective: string | null;
   status: string;
   created_at: string;
   updated_at: string;
 }
 
+export type HAISelections = Partial<Record<HAIDimensionKey, string[]>>;
+
 export interface CompanyFilters {
   search?: string;
+  /** Human-AI Framework multi-select selections. */
+  selections?: HAISelections;
+  /** Whether selections within/across dimensions must all match. */
+  logic?: 'AND' | 'OR';
   sector?: string;
   /** Top-level taxonomy group slug, e.g. "devices". */
   group?: string;
@@ -51,51 +67,96 @@ export interface CompanyFilters {
   editorsPickOnly?: boolean;
 }
 
+export const companyValues = (company: XRCompany, key: HAIDimensionKey): string[] =>
+  ((company as unknown as Record<string, string[] | null>)[key] || []) as string[];
+
+/** Client-side matcher for the Human-AI Framework selections. */
+export const matchesSelections = (
+  company: XRCompany,
+  selections?: HAISelections,
+  logic: 'AND' | 'OR' = 'AND'
+): boolean => {
+  const active = Object.entries(selections || {}).filter(([, v]) => v && v.length > 0) as [
+    HAIDimensionKey,
+    string[]
+  ][];
+  if (active.length === 0) return true;
+
+  const results = active.map(([key, values]) => {
+    const owned = companyValues(company, key);
+    return logic === 'AND'
+      ? values.every((v) => owned.includes(v))
+      : values.some((v) => owned.includes(v));
+  });
+
+  return logic === 'AND' ? results.every(Boolean) : results.some(Boolean);
+};
+
+const searchHaystack = (c: XRCompany) =>
+  [
+    c.name,
+    c.description,
+    c.mission,
+    c.products_summary,
+    ...HAI_DIMENSIONS.flatMap((d) => companyValues(c, d.key)),
+    ...(c.technologies || []),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
 export const useXRCompanies = (filters?: CompanyFilters) => {
   return useQuery({
     queryKey: ['xr-companies', filters],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from('xr_companies')
         .select('*')
         .order('is_editors_pick', { ascending: false })
         .order('name', { ascending: true });
 
-      if (filters?.search) {
-        query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
-      }
-      if (filters?.sector && filters.sector !== 'all') {
-        query = query.contains('sectors', [filters.sector]);
-      }
-      if (filters?.companyType && filters.companyType !== 'all') {
-        query = query.eq('company_type', filters.companyType);
-      }
-      if (filters?.fundingStage && filters.fundingStage !== 'all') {
-        query = query.eq('funding_stage', filters.fundingStage);
-      }
-      if (filters?.aiCapability && filters.aiCapability !== 'all') {
-        query = query.contains('ai_capabilities', [filters.aiCapability]);
-      }
-      if (filters?.humanInterface && filters.humanInterface !== 'all') {
-        query = query.contains('human_interface', [filters.humanInterface]);
-      }
-      if (filters?.targetMarket && filters.targetMarket !== 'all') {
-        query = query.contains('target_markets', [filters.targetMarket]);
-      }
-      if (filters?.region && filters.region !== 'all') {
-        query = query.ilike('hq_location', `%${filters.region}%`);
-      }
-      if (filters?.editorsPickOnly) {
-        query = query.eq('is_editors_pick', true);
-      }
-
       const { data, error } = await query;
       if (error) throw error;
 
-      let rows = (data || []) as XRCompany[];
+      let rows = (data || []) as unknown as XRCompany[];
 
-      // Category / group filtering happens client-side so a company can match
-      // on either its primary category or any of its subcategories.
+      if (filters?.search) {
+        const term = filters.search.toLowerCase().trim();
+        rows = rows.filter((c) => searchHaystack(c).includes(term));
+      }
+      if (filters?.selections) {
+        rows = rows.filter((c) => matchesSelections(c, filters.selections, filters.logic || 'AND'));
+      }
+      if (filters?.sector && filters.sector !== 'all') {
+        rows = rows.filter((c) => (c.sectors || []).includes(filters.sector!));
+      }
+      if (filters?.companyType && filters.companyType !== 'all') {
+        rows = rows.filter((c) => c.company_type === filters.companyType);
+      }
+      if (filters?.fundingStage && filters.fundingStage !== 'all') {
+        rows = rows.filter((c) => c.funding_stage === filters.fundingStage);
+      }
+      if (filters?.aiCapability && filters.aiCapability !== 'all') {
+        rows = rows.filter((c) => (c.ai_capabilities || []).includes(filters.aiCapability!));
+      }
+      if (filters?.humanInterface && filters.humanInterface !== 'all') {
+        rows = rows.filter((c) => (c.human_interface || []).includes(filters.humanInterface!));
+      }
+      if (filters?.targetMarket && filters.targetMarket !== 'all') {
+        rows = rows.filter(
+          (c) =>
+            (c.target_markets || []).includes(filters.targetMarket!) ||
+            (c.industry_focus || []).includes(filters.targetMarket!)
+        );
+      }
+      if (filters?.region && filters.region !== 'all') {
+        rows = rows.filter((c) =>
+          (c.hq_location || '').toLowerCase().includes(filters.region!.toLowerCase())
+        );
+      }
+      if (filters?.editorsPickOnly) {
+        rows = rows.filter((c) => c.is_editors_pick);
+      }
       if (filters?.category && filters.category !== 'all') {
         const target = filters.category;
         rows = rows.filter(
@@ -141,10 +202,10 @@ export const useXRCompany = (idOrSlug: string) => {
           .eq('name', idOrSlug)
           .maybeSingle();
         if (nameError) throw nameError;
-        return byName as XRCompany | null;
+        return (byName as unknown as XRCompany) || null;
       }
       
-      return data as XRCompany;
+      return data as unknown as XRCompany;
     },
     enabled: !!idOrSlug
   });
