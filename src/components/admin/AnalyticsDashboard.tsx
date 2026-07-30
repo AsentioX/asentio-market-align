@@ -148,7 +148,8 @@ export default function AnalyticsDashboard() {
   const funnelSteps = [
     { name: 'All Visitors', value: totalSessions },
     { name: 'Engaged (2+ pages)', value: engagedSessions },
-    { name: 'Services Page', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && e.page_path.startsWith('/services'))).length },
+    { name: 'HAI Directory', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && e.page_path.startsWith('/hai-directory'))).length },
+    { name: 'Work With Us', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && (e.page_path.startsWith('/work-with-us') || e.page_path.startsWith('/services')))).length },
     { name: 'CTA Click', value: sessions.filter((s) => events.some((e) => e.session_id === s.id && e.event_type === 'cta_click')).length },
     { name: 'Converted', value: conversions },
   ];
