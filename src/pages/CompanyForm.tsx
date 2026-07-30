@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useXRCompany, useCreateCompany, useUpdateCompany, COMPANY_SECTORS, COMPANY_SIZES } from '@/hooks/useXRCompanies';
+import { useXRCompany, useCreateCompany, useUpdateCompany, companyValues, COMPANY_SECTORS, COMPANY_SIZES } from '@/hooks/useXRCompanies';
+import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
 import { useXRProducts } from '@/hooks/useXRProducts';
 import { ArrowLeft, Loader2, ExternalLink, MapPin } from 'lucide-react';
 
@@ -42,22 +43,33 @@ const CompanyForm = () => {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [allProducts, id]);
 
+  const emptyDimensions = useMemo(
+    () =>
+      HAI_DIMENSIONS.reduce((acc, d) => ({ ...acc, [d.key]: [] as string[] }), {} as Record<HAIDimensionKey, string[]>),
+    []
+  );
+
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     website: '',
     logo_url: '',
     description: '',
+    mission: '',
     hq_location: '',
     founded_year: '',
     company_size: '',
     sectors: [] as string[],
+    leadership: '',
+    asentio_perspective: '',
     launch_date: '',
     end_of_life_date: '',
     is_editors_pick: false,
     editors_note: ''
   });
-  
+
+  const [dimensions, setDimensions] = useState<Record<HAIDimensionKey, string[]>>(emptyDimensions);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -68,20 +80,30 @@ const CompanyForm = () => {
         website: existingCompany.website || '',
         logo_url: existingCompany.logo_url || '',
         description: existingCompany.description || '',
+        mission: existingCompany.mission || '',
         hq_location: existingCompany.hq_location || '',
         founded_year: existingCompany.founded_year?.toString() || '',
         company_size: existingCompany.company_size || '',
         sectors: existingCompany.sectors || [],
+        leadership: (existingCompany.leadership || []).join(', '),
+        asentio_perspective: existingCompany.asentio_perspective || '',
         launch_date: existingCompany.launch_date || '',
         end_of_life_date: existingCompany.end_of_life_date || '',
         is_editors_pick: existingCompany.is_editors_pick,
         editors_note: existingCompany.editors_note || ''
       });
+      setDimensions(
+        HAI_DIMENSIONS.reduce(
+          (acc, d) => ({ ...acc, [d.key]: companyValues(existingCompany, d.key) }),
+          {} as Record<HAIDimensionKey, string[]>
+        )
+      );
     } else if (isEditing && !companyLoading) {
       // Company name from URL but no xr_companies record yet — pre-fill name
       setFormData(prev => ({ ...prev, name: id, slug: generateSlug(id) }));
     }
   }, [existingCompany, isEditing, companyLoading, id]);
+
 
   useEffect(() => {
     if (!isEditing && formData.name) {
@@ -119,6 +141,13 @@ const CompanyForm = () => {
     }));
   };
 
+  const toggleDimension = (key: HAIDimensionKey, value: string) => {
+    setDimensions(prev => ({
+      ...prev,
+      [key]: prev[key].includes(value) ? prev[key].filter(v => v !== value) : [...prev[key], value],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -130,15 +159,28 @@ const CompanyForm = () => {
         website: formData.website || null,
         logo_url: formData.logo_url || null,
         description: formData.description || null,
+        mission: formData.mission || null,
         hq_location: formData.hq_location || null,
         founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
         company_size: formData.company_size || null,
         sectors: formData.sectors.length > 0 ? formData.sectors : [],
+        leadership: formData.leadership
+          ? formData.leadership.split(',').map(s => s.trim()).filter(Boolean)
+          : [],
+        asentio_perspective: formData.asentio_perspective || null,
+        human_activities: dimensions.human_activities,
+        human_capabilities: dimensions.human_capabilities,
+        ai_capabilities: dimensions.ai_capabilities,
+        human_interface: dimensions.human_interface,
+        physical_platforms: dimensions.physical_platforms,
+        industry_focus: dimensions.industry_focus,
+        ecosystem_roles: dimensions.ecosystem_roles,
         launch_date: formData.launch_date || null,
         end_of_life_date: formData.end_of_life_date || null,
         is_editors_pick: formData.is_editors_pick,
         editors_note: formData.editors_note || null,
       };
+
 
       if (existingCompany) {
         await updateCompany.mutateAsync({ id: existingCompany.id, ...companyData });
@@ -286,10 +328,82 @@ const CompanyForm = () => {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe the company and its XR initiatives..."
+                  placeholder="Describe the company and how it augments humans with AI..."
                   rows={3}
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mission">Mission</Label>
+                <Textarea
+                  id="mission"
+                  value={formData.mission}
+                  onChange={(e) => setFormData(prev => ({ ...prev, mission: e.target.value }))}
+                  placeholder="One line on what the company is trying to do for people."
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="leadership">Leadership (comma separated)</Label>
+                <Input
+                  id="leadership"
+                  value={formData.leadership}
+                  onChange={(e) => setFormData(prev => ({ ...prev, leadership: e.target.value }))}
+                  placeholder="Jane Doe, CEO; John Roe, CTO"
+                />
+              </div>
+
+              {/* Human-AI Framework */}
+              <div className="space-y-4 p-4 border rounded-lg">
+                <div>
+                  <Label className="text-base">Human-AI Framework</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Classify how this company augments human capability. Everything begins with the human.
+                  </p>
+                </div>
+
+                {HAI_DIMENSIONS.map((dimension) => (
+                  <div key={dimension.key} className="space-y-2">
+                    <Label className="text-sm">
+                      {dimension.label}{' '}
+                      <span className="font-normal text-muted-foreground">— {dimension.question}</span>
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {dimension.values.map((value) => {
+                        const selected = dimensions[dimension.key].includes(value);
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => toggleDimension(dimension.key, value)}
+                            className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                              selected
+                                ? 'border-asentio-blue bg-asentio-blue text-white'
+                                : 'border-border bg-background text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            {value}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Asentio Perspective */}
+              <div className="space-y-2">
+                <Label htmlFor="asentio_perspective">Asentio Perspective</Label>
+                <Textarea
+                  id="asentio_perspective"
+                  value={formData.asentio_perspective}
+                  onChange={(e) => setFormData(prev => ({ ...prev, asentio_perspective: e.target.value }))}
+                  placeholder="Proprietary Asentio commentary on this company's position and leverage."
+                  rows={4}
+                />
+              </div>
+
 
               {/* Sectors */}
               <div className="space-y-3">

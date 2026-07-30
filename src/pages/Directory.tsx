@@ -1,48 +1,72 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import DirectoryHeader from '@/components/directory/DirectoryHeader';
 import DirectoryFilters from '@/components/directory/DirectoryFilters';
 import DirectoryGrid from '@/components/directory/DirectoryGrid';
 import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryViewToggle';
 import CompanyGrid from '@/components/directory/CompanyGrid';
-import CompanyFilterBar from '@/components/directory/CompanyFilterBar';
+import HAIFilterPanel from '@/components/directory/HAIFilterPanel';
 import AgencyGrid from '@/components/directory/AgencyGrid';
 import UseCaseGrid from '@/components/directory/UseCaseGrid';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useXRCompanies, CompanyFilters } from '@/hooks/useXRCompanies';
+import { useXRCompanies, CompanyFilters, HAISelections } from '@/hooks/useXRCompanies';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
 import { useXRUseCases, UseCaseFilters } from '@/hooks/useXRUseCases';
-import { Building2, Package, Layers, Briefcase, Plus } from 'lucide-react';
+import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
+import { Building2, Package, Layers, Briefcase, Plus, Search, Compass, X } from 'lucide-react';
 
 const Directory = () => {
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'companies';
   const [activeTab, setActiveTab] = useState(initialTab);
 
-  const [companyFilters, setCompanyFilters] = useState<CompanyFilters>({
-    category: searchParams.get('category') || undefined,
-    aiCapability: searchParams.get('ai') || undefined,
-    group: searchParams.get('group') || undefined,
-  });
+  const initialSelections = useMemo(() => {
+    const next: HAISelections = {};
+    HAI_DIMENSIONS.forEach((d) => {
+      const values = searchParams.getAll(d.key);
+      if (values.length > 0) next[d.key] = values;
+    });
+    return next;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [selections, setSelections] = useState<HAISelections>(initialSelections);
+  const [logic, setLogic] = useState<'AND' | 'OR'>('AND');
+  const [companySearch, setCompanySearch] = useState('');
+
+  const companyFilters: CompanyFilters = useMemo(
+    () => ({ search: companySearch || undefined, selections, logic }),
+    [companySearch, selections, logic]
+  );
+
   const [productFilters, setProductFilters] = useState<ProductFilters>({});
   const [viewMode, setViewMode] = useState<ViewMode>('card');
-  const [agencyFilters, setAgencyFilters] = useState<AgencyFilters>({});
-  const [useCaseFilters, setUseCaseFilters] = useState<UseCaseFilters>({});
+  const [agencyFilters] = useState<AgencyFilters>({});
+  const [useCaseFilters] = useState<UseCaseFilters>({});
 
   const { data: companies, isLoading: companiesLoading } = useXRCompanies(companyFilters);
   const { data: products, isLoading: productsLoading } = useXRProducts(productFilters);
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies(agencyFilters);
   const { data: useCases, isLoading: useCasesLoading } = useXRUseCases(useCaseFilters);
 
+  const activeChips = Object.entries(selections).flatMap(([key, values]) =>
+    (values || []).map((value) => ({ key: key as HAIDimensionKey, value }))
+  );
+
+  const removeChip = (key: HAIDimensionKey, value: string) =>
+    setSelections({ ...selections, [key]: (selections[key] || []).filter((v) => v !== value) });
+
   useSeo({
-    title: 'HAI Directory — Companies Building the Human Interface to AI | Asentio',
+    title: 'HAI Directory — How Companies Augment Humans with AI | Asentio',
     description:
-      'Browse the Asentio HAI Directory: devices, components, artificial intelligence, platforms, applications and ecosystem companies building the human interface to AI.',
+      'Browse the Asentio HAI Directory by human activity, human capability, AI capability, interface, platform, industry and ecosystem role — everything begins with the human.',
     canonicalPath: '/hai-directory',
   });
 
@@ -80,17 +104,58 @@ const Directory = () => {
               </TabsTrigger>
             </TabsList>
 
-            <Link to="/hai-directory/submit">
-              <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
-                <Plus className="w-4 h-4 mr-2" /> Add your company
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/hai-directory/solution-explorer">
+                <Button variant="outline" className="whitespace-nowrap border-2">
+                  <Compass className="w-4 h-4 mr-2" /> Solution Explorer
+                </Button>
+              </Link>
+              <Link to="/hai-directory/submit">
+                <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
+                  <Plus className="w-4 h-4 mr-2" /> Add your company
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <TabsContent value="companies">
-            <CompanyFilterBar filters={companyFilters} onChange={setCompanyFilters} />
-            <div className="py-8">
-              <CompanyGrid companies={companies} isLoading={companiesLoading} />
+            <div className="flex flex-col lg:flex-row gap-8">
+              <HAIFilterPanel
+                selections={selections}
+                onChange={setSelections}
+                logic={logic}
+                onLogicChange={setLogic}
+              />
+
+              <div className="flex-1 min-w-0">
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    value={companySearch}
+                    onChange={(e) => setCompanySearch(e.target.value)}
+                    placeholder="Search companies, activities, AI capabilities…"
+                    className="pl-10"
+                    aria-label="Search companies"
+                  />
+                </div>
+
+                {activeChips.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                    {activeChips.map(({ key, value }) => (
+                      <Badge
+                        key={`${key}-${value}`}
+                        variant="secondary"
+                        className="text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                        onClick={() => removeChip(key, value)}
+                      >
+                        {value} <X className="w-3 h-3 ml-1" />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                <CompanyGrid companies={companies} isLoading={companiesLoading} />
+              </div>
             </div>
           </TabsContent>
 
@@ -122,3 +187,4 @@ const Directory = () => {
 };
 
 export default Directory;
+

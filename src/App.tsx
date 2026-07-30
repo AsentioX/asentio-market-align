@@ -16,6 +16,7 @@ import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import Unsubscribe from "./pages/Unsubscribe";
 import Directory from "./pages/Directory";
+import SolutionExplorer from "./pages/SolutionExplorer";
 import ProductDetail from "./pages/ProductDetail";
 import CompanyDetail from "./pages/CompanyDetail";
 import DirectoryCategory from "./pages/DirectoryCategory";
@@ -184,6 +185,7 @@ const AppContent = () => {
 
           <Route path="/hai-directory" element={<Directory />} />
           <Route path="/hai-directory/submit" element={<DirectorySubmit />} />
+          <Route path="/hai-directory/solution-explorer" element={<SolutionExplorer />} />
           <Route path="/hai-directory/category/:groupSlug" element={<DirectoryCategory />} />
           <Route path="/hai-directory/company/:companyName" element={<CompanyDetail />} />
           <Route path="/hai-directory/agencies/:slug" element={<AgencyDetail />} />
