@@ -10,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useXRProduct, useXRProductById, useCreateProduct, useUpdateProduct, CATEGORIES, AI_INTEGRATIONS, SHIPPING_STATUSES } from '@/hooks/useXRProducts';
-import { ArrowLeft, Loader2, Plus, X } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft, Loader2, Plus, X, Building2, ExternalLink } from 'lucide-react';
 
 const generateSlug = (name: string) => {
   return name
