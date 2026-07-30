@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Brain, Sparkles, Package, MapPin } from 'lucide-react';
-import { XRProduct } from '@/hooks/useXRProducts';
+import { XRProduct, formatPrice } from '@/hooks/useXRProducts';
 
 interface ProductCardProps {
   product: XRProduct;
@@ -99,9 +99,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
             </div>
           </div>
           
-          {product.price_range && (
+          {formatPrice(product) && (
             <span className="font-semibold text-sm text-foreground">
-              {product.price_range}
+              {formatPrice(product)}
             </span>
           )}
         </div>

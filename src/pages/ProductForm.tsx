@@ -40,6 +40,8 @@ const ProductForm = () => {
     category: 'AR Glasses',
     ai_integration: 'No',
     price_range: '',
+    price_type: 'one-time',
+    billing_period: '',
     shipping_status: 'Available',
     region: '',
     description: '',
@@ -103,6 +105,8 @@ const ProductForm = () => {
         category: existingProduct.category,
         ai_integration: existingProduct.ai_integration,
         price_range: existingProduct.price_range || '',
+        price_type: (existingProduct as any).price_type || 'one-time',
+        billing_period: (existingProduct as any).billing_period || '',
         shipping_status: existingProduct.shipping_status,
         region: existingProduct.region,
         description: existingProduct.description || '',
@@ -219,6 +223,8 @@ const ProductForm = () => {
       const productData = {
         ...formData,
         price_range: formData.price_range || null,
+        price_type: formData.price_type || 'one-time',
+        billing_period: formData.price_type === 'subscription' ? (formData.billing_period || 'month') : null,
         description: formData.description || null,
         link: formData.link || null,
         image_url: formData.image_url || null,
@@ -463,6 +469,43 @@ const ProductForm = () => {
                     placeholder="$299–$399"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Price Type</Label>
+                  <Select
+                    value={formData.price_type}
+                    onValueChange={(value) => setFormData(prev => ({
+                      ...prev,
+                      price_type: value,
+                      billing_period: value === 'subscription' ? (prev.billing_period || 'month') : '',
+                    }))}
+                  >
+                    <SelectTrigger className="bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-lg">
+                      <SelectItem value="one-time">One-time</SelectItem>
+                      <SelectItem value="subscription">Subscription</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {formData.price_type === 'subscription' && (
+                  <div className="space-y-2">
+                    <Label>Billing Period</Label>
+                    <Select
+                      value={formData.billing_period || 'month'}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, billing_period: value }))}
+                    >
+                      <SelectTrigger className="bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border shadow-lg">
+                        <SelectItem value="month">Per month</SelectItem>
+                        <SelectItem value="year">Per year</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="link">Product Link</Label>
                   <Input

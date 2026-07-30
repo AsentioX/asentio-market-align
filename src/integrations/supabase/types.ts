@@ -5389,6 +5389,7 @@ export type Database = {
           ai_integration: string
           app_store_availability: string | null
           battery_life: string | null
+          billing_period: string | null
           brightness_nits: string | null
           camera_access_for_devs: boolean | null
           category: string
@@ -5419,6 +5420,7 @@ export type Database = {
           optics_type: string | null
           platform_viability_score: number | null
           price_range: string | null
+          price_type: string
           ram: string | null
           refresh_rate: string | null
           region: string
@@ -5443,6 +5445,7 @@ export type Database = {
           ai_integration: string
           app_store_availability?: string | null
           battery_life?: string | null
+          billing_period?: string | null
           brightness_nits?: string | null
           camera_access_for_devs?: boolean | null
           category: string
@@ -5473,6 +5476,7 @@ export type Database = {
           optics_type?: string | null
           platform_viability_score?: number | null
           price_range?: string | null
+          price_type?: string
           ram?: string | null
           refresh_rate?: string | null
           region: string
@@ -5497,6 +5501,7 @@ export type Database = {
           ai_integration?: string
           app_store_availability?: string | null
           battery_life?: string | null
+          billing_period?: string | null
           brightness_nits?: string | null
           camera_access_for_devs?: boolean | null
           category?: string
@@ -5527,6 +5532,7 @@ export type Database = {
           optics_type?: string | null
           platform_viability_score?: number | null
           price_range?: string | null
+          price_type?: string
           ram?: string | null
           refresh_rate?: string | null
           region?: string

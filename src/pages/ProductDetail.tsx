@@ -307,8 +307,19 @@ const ProductDetail = () => {
                   <div className="border-t border-border pt-6 space-y-4">
                     {product.price_range && (
                       <div>
-                        <p className="text-sm text-muted-foreground mb-1">Price Range</p>
-                        <p className="text-2xl font-bold text-foreground">{product.price_range}</p>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          {product.price_type === 'subscription'
+                            ? `Subscription (${product.billing_period === 'year' ? 'per year' : 'per month'})`
+                            : 'Price (one-time)'}
+                        </p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {product.price_range}
+                          {product.price_type === 'subscription' && (
+                            <span className="text-base font-medium text-muted-foreground">
+                              /{product.billing_period === 'year' ? 'yr' : 'mo'}
+                            </span>
+                          )}
+                        </p>
                       </div>
                     )}
                     

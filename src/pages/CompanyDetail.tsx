@@ -322,7 +322,7 @@ const TimelineItem = ({ product }: { product: XRProduct }) => {
               <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                 <Badge variant="outline">{product.category}</Badge>
                 <Badge variant="outline">{product.shipping_status}</Badge>
-                {product.price_range && <span className="font-medium text-foreground">{product.price_range}</span>}
+                {product.price_range && <span className="font-medium text-foreground">{product.price_range}{product.price_type === 'subscription' ? `/${product.billing_period === 'year' ? 'yr' : 'mo'}` : ''}</span>}
                 {product.region && (
                   <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{product.region}</span>
                 )}

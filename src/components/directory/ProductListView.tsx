@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Package, MapPin, Sparkles } from 'lucide-react';
-import { XRProduct } from '@/hooks/useXRProducts';
+import { XRProduct, formatPrice } from '@/hooks/useXRProducts';
 
 interface ProductListViewProps {
   products: XRProduct[];
@@ -77,7 +77,7 @@ const ProductListView = ({ products }: ProductListViewProps) => {
 
           {/* Price */}
           <span className="text-sm font-semibold text-foreground hidden md:block">
-            {product.price_range || '—'}
+            {formatPrice(product) || '—'}
           </span>
 
           {/* Link */}
@@ -102,7 +102,7 @@ const ProductListView = ({ products }: ProductListViewProps) => {
             <Badge className={`text-xs ${getStatusBadgeColor(product.shipping_status)}`}>
               {product.shipping_status}
             </Badge>
-            {product.price_range && <span className="font-semibold text-foreground">{product.price_range}</span>}
+            {formatPrice(product) && <span className="font-semibold text-foreground">{formatPrice(product)}</span>}
           </div>
         </Link>
       ))}
