@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export type CRMStage = 'new' | 'reached_out' | 'call_booked' | 'proposal_sent' | 'won' | 'lost';
+export type CRMStage = 'new' | 'reached_out' | 'call_booked' | 'proposal_sent' | 'won' | 'lost' | 'ignored';
 export type NoteType = 'note' | 'email' | 'call' | 'meeting';
 
 export interface CRMContact {
