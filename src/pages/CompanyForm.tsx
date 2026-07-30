@@ -60,7 +60,6 @@ const CompanyForm = () => {
     founded_year: '',
     company_size: '',
     asentio_perspective: '',
-    asentio_perspective: '',
     launch_date: '',
     end_of_life_date: '',
     is_editors_pick: false,
