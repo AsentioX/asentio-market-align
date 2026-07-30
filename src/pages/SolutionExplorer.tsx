@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import TopographicPattern from '@/components/TopographicPattern';
 import { useSeo } from '@/hooks/useSeo';
 import { useXRCompanies, companyValues, HAISelections, XRCompany } from '@/hooks/useXRCompanies';
-import { SOLUTION_STEPS, SOLUTION_LAYERS, dimensionByKey, HAIDimensionKey } from '@/lib/haiFramework';
+import { SOLUTION_STEPS, SOLUTION_LAYERS, dimensionByKey, HAIDimensionKey, haiValueLabel } from '@/lib/haiFramework';
 import { ArrowLeft, ArrowRight, Check, Loader2, RotateCcw, Building2 } from 'lucide-react';
 
 const SolutionExplorer = () => {
