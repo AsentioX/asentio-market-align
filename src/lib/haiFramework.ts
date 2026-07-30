@@ -27,16 +27,7 @@ export const HAI_CATEGORIES: HAICategory[] = [
     label: 'AI Intelligence (AI Assistant, Voice AI, Vision AI, Knowledge AI)',
     human_interface: ['AI Agent', 'Desktop', 'Mobile'],
     physical_platforms: ['Software'],
-    ai_capabilities: [
-      'AI Agents',
-      'Large Language Models',
-      'Voice AI',
-      'Speech Recognition',
-      'Computer Vision',
-      'Multimodal AI',
-      'Knowledge AI (RAG)',
-      'Translation AI',
-    ],
+    ai_capabilities: ['Reason', 'Perceive', 'Communicate', 'Plan', 'Automate'],
   },
   {
     value: 'Personal Devices',
