@@ -119,6 +119,7 @@ const AgencyForm = () => {
         ...formData,
         website: formData.website || null,
         logo_url: formData.logo_url || null,
+        cover_url: formData.cover_url || null,
         description: formData.description || null,
         editors_note: formData.editors_note || null,
         services: formData.services.length > 0 ? formData.services : [],
