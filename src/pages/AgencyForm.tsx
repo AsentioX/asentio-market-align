@@ -213,6 +213,18 @@ const AgencyForm = () => {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="cover_url">Cover Image URL</Label>
+                <Input
+                  id="cover_url"
+                  type="url"
+                  value={formData.cover_url}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cover_url: e.target.value }))}
+                  placeholder="https://example.com/cover.jpg"
+                />
+                <p className="text-xs text-muted-foreground">Banner image shown at the top of the agency card and detail page.</p>
+              </div>
+
               {/* Description */}
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
