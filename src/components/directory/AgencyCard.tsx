@@ -14,9 +14,30 @@ const AgencyCard = ({ agency }: AgencyCardProps) => {
     <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 border ${
       agency.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
-      {/* Logo/Header */}
+      {/* Cover / Logo Header */}
       <div className="relative aspect-[16/10] bg-muted overflow-hidden">
-        {agency.logo_url ? (
+        {agency.cover_url ? (
+          <>
+            <img
+              src={agency.cover_url}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+            {agency.logo_url ? (
+              <img
+                src={agency.logo_url}
+                alt={agency.name}
+                className="relative z-10 w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div className="relative z-10 w-full h-full flex items-center justify-center">
+                <Building2 className="w-12 h-12 text-white/70" />
+              </div>
+            )}
+          </>
+        ) : agency.logo_url ? (
           <img
             src={agency.logo_url}
             alt={agency.name}
@@ -28,7 +49,7 @@ const AgencyCard = ({ agency }: AgencyCardProps) => {
           </div>
         )}
         {agency.is_editors_pick && (
-          <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-asentio-blue text-white px-2 py-1 rounded-full">
+          <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-asentio-blue text-white px-2 py-1 rounded-full">
             <Sparkles className="w-3 h-3" />
             <span className="text-xs font-semibold">Editor's Pick</span>
           </div>

@@ -38,7 +38,14 @@ const AgencyDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 pt-24">
+      {/* Cover banner */}
+      {agency.cover_url && (
+        <div className="relative h-48 sm:h-64 lg:h-80 w-full overflow-hidden">
+          <img src={agency.cover_url} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
+        </div>
+      )}
+      <div className="container mx-auto px-4 py-8 pt-24 -mt-16 relative z-10">
         <Link to="/hai-directory?tab=agencies" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Agencies
         </Link>

@@ -35,6 +35,7 @@ const AgencyForm = () => {
     slug: '',
     website: '',
     logo_url: '',
+    cover_url: '',
     description: '',
     services: [] as string[],
     regions: [] as string[],
@@ -52,6 +53,7 @@ const AgencyForm = () => {
         slug: existingAgency.slug,
         website: existingAgency.website || '',
         logo_url: existingAgency.logo_url || '',
+        cover_url: existingAgency.cover_url || '',
         description: existingAgency.description || '',
         services: existingAgency.services || [],
         regions: existingAgency.regions || [],
@@ -117,6 +119,7 @@ const AgencyForm = () => {
         ...formData,
         website: formData.website || null,
         logo_url: formData.logo_url || null,
+        cover_url: formData.cover_url || null,
         description: formData.description || null,
         editors_note: formData.editors_note || null,
         services: formData.services.length > 0 ? formData.services : [],
@@ -208,6 +211,18 @@ const AgencyForm = () => {
                     placeholder="https://example.com/logo.png"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cover_url">Cover Image URL</Label>
+                <Input
+                  id="cover_url"
+                  type="url"
+                  value={formData.cover_url}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cover_url: e.target.value }))}
+                  placeholder="https://example.com/cover.jpg"
+                />
+                <p className="text-xs text-muted-foreground">Banner image shown at the top of the agency card and detail page.</p>
               </div>
 
               {/* Description */}
