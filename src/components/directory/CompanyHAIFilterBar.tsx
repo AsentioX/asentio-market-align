@@ -21,7 +21,7 @@ interface CompanyHAIFilterBarProps {
   onSearchChange: (value: string) => void;
   selections: HAISelections;
   onChange: (selections: HAISelections) => void;
-  categories: string[];
+  categories?: string[];
   onCategoriesChange: (categories: string[]) => void;
 }
 
@@ -33,7 +33,7 @@ const CompanyHAIFilterBar = ({
   categories = [],
   onCategoriesChange,
 }: CompanyHAIFilterBarProps) => {
-  const activeCount = Object.values(selections).reduce((sum, v) => sum + (v?.length || 0), 0) + categories.length;
+  const activeCount = Object.values(selections || {}).reduce((sum, v) => sum + (v?.length || 0), 0) + categories.length;
 
   const toggle = (key: HAIDimensionKey, value: string) => {
     const current = selections[key] || [];
