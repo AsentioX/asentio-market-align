@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Package, MapPin, Sparkles } from 'lucide-react';
-import { XRProduct } from '@/hooks/useXRProducts';
+import { XRProduct, formatPrice } from '@/hooks/useXRProducts';
 
 interface ProductListViewProps {
   products: XRProduct[];
