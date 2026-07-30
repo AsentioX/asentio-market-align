@@ -127,14 +127,27 @@ export const haiActivityLabel = (value: string): string =>
 export const haiValueLabel = (key: HAIDimensionKey, value: string): string => {
   if (key === 'hai_category') return haiCategoryLabel(value);
   if (key === 'human_activities') return haiActivityLabel(value);
+  if (key === 'human_capabilities') return haiCapabilityLabel(value);
   return value;
 };
 
 export const HUMAN_CAPABILITIES = [
-  'Seeing', 'Hearing', 'Speaking', 'Remembering', 'Learning', 'Thinking',
-  'Deciding', 'Navigating', 'Moving', 'Manipulating', 'Collaborating',
-  'Monitoring', 'Creating',
+  'Perceive', 'Think', 'Communicate', 'Act', 'Navigate', 'Supervise', 'Create',
 ];
+
+/** Display labels for Human Capabilities values. */
+export const HUMAN_CAPABILITY_LABELS: Record<string, string> = {
+  Perceive: 'Perceive (Seeing, Hearing, Reading, Recognizing)',
+  Think: 'Think (Remembering, Learning, Planning, Deciding, Problem Solving)',
+  Communicate: 'Communicate (Speaking, Translating, Negotiating, Teaching, Presenting)',
+  Act: 'Act (Assembling, Repairing, Controlling, Operating)',
+  Navigate: 'Navigate (Localizing, Wayfinding, Path Planning)',
+  Supervise: 'Supervise (Inspecting, Auditing, Quality Assurance, Compliance)',
+  Create: 'Create (Writing, Designing, Coding, Generating Images / Video)',
+};
+
+export const haiCapabilityLabel = (value: string): string =>
+  HUMAN_CAPABILITY_LABELS[value] || value;
 
 export const AI_CAPABILITIES = [
   'AI Agents', 'Large Language Models', 'Computer Vision', 'Voice AI',
