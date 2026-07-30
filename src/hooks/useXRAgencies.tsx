@@ -131,16 +131,24 @@ export const useDeleteAgency = () => {
 };
 
 export const AGENCY_SERVICES = [
-  'AR Development',
-  'VR Development',
-  'MR Development',
-  'Spatial Computing',
-  '3D Modeling',
+  // AI Development
+  'AI Agents',
+  'LLM Integration',
+  'Computer Vision',
+  'Voice AI',
+  'Machine Learning',
+  'Workflow Automation',
+  // Spatial & Immersive
+  'AR',
+  'VR',
   'Digital Twins',
-  'Training & Simulation',
-  'Marketing & Advertising',
-  'Enterprise Solutions',
-  'Consulting'
+  '3D Visualization',
+  // Robotics & Physical AI
+  'Humanoid Robotics',
+  'Industrial Automation',
+  'Autonomous Vehicles',
+  'Autonomous Mobile Robot',
+  'Robotics Software',
 ] as const;
 
 export const AGENCY_REGIONS = [
