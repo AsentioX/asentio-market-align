@@ -134,6 +134,7 @@ const FilterGroup = ({
                     onCheckedChange={() => onToggle(value)}
                   />
                   {haiValueLabel(dimension.key, value)}
+                </label>
               );
             })}
             {values.length === 0 && <p className="text-xs text-muted-foreground">No matches.</p>}
