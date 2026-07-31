@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useXRCompany, useCreateCompany, useUpdateCompany, companyValues, COMPANY_SIZES } from '@/hooks/useXRCompanies';
-import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey, haiValueLabel } from '@/lib/haiFramework';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useXRProducts } from '@/hooks/useXRProducts';
 import { ArrowLeft, Loader2, ExternalLink, MapPin } from 'lucide-react';
 
