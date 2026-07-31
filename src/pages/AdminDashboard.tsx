@@ -143,8 +143,10 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/50 pt-20">
-      <div className="container mx-auto px-4 py-8">
+    <div className="relative min-h-screen bg-muted/50 pt-20">
+      {/* Dark blue band behind the transparent navbar so it reads clearly at the top */}
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-asentio-blue via-asentio-blue/90 to-transparent pointer-events-none -z-0" />
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
