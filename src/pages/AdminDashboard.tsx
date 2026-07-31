@@ -15,6 +15,8 @@ import {
   Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2, Briefcase
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
+import CsvCompanyUpload from '@/components/admin/CsvCompanyUpload';
+import CsvAgencyUpload from '@/components/admin/CsvAgencyUpload';
 import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import CRMDashboard from '@/components/admin/CRMDashboard';
@@ -344,6 +346,13 @@ const AdminDashboard = () => {
                         className="pl-10"
                       />
                     </div>
+                    <Link to="/admin/companies/new">
+                      <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add
+                      </Button>
+                    </Link>
+                    <CsvCompanyUpload />
                   </div>
                 </div>
               </CardHeader>
@@ -418,6 +427,7 @@ const AdminDashboard = () => {
                         Add
                       </Button>
                     </Link>
+                    <CsvAgencyUpload />
                   </div>
                 </div>
               </CardHeader>
