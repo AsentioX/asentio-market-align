@@ -346,7 +346,8 @@ const CompanyForm = () => {
                     <div className="flex flex-wrap gap-2">
                       {dimension.values.map((value) => {
                         const selected = dimensions[dimension.key].includes(value);
-                        return (
+                        const fullLabel = haiValueLabel(dimension.key, value);
+                        const button = (
                           <button
                             key={value}
                             type="button"
@@ -360,8 +361,18 @@ const CompanyForm = () => {
                             {value}
                           </button>
                         );
+                        if (!fullLabel || fullLabel === value) return button;
+                        return (
+                          <Tooltip key={value}>
+                            <TooltipTrigger asChild>{button}</TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs">
+                              {fullLabel}
+                            </TooltipContent>
+                          </Tooltip>
+                        );
                       })}
                     </div>
+
                   </div>
                 ))}
               </div>
