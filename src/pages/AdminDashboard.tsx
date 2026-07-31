@@ -355,6 +355,7 @@ const AdminDashboard = () => {
                     <CsvCompanyUpload />
                   </div>
                 </div>
+              </CardHeader>
               <CardContent>
                 {productsLoading ? (
                   <div className="flex items-center justify-center py-12">
