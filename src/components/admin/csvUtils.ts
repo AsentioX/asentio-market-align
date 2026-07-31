@@ -68,3 +68,23 @@ export const downloadCsv = (filename: string, headers: string[], rows: string[][
   a.click();
   URL.revokeObjectURL(url);
 };
+
+export const csvValue = (val: unknown): string => {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+  if (Array.isArray(val)) return val.join(';');
+  return String(val);
+};
+
+export const exportRowsCsv = (
+  filename: string,
+  headers: string[],
+  columns: string[],
+  rows: Record<string, unknown>[]
+) => {
+  downloadCsv(
+    filename,
+    headers,
+    rows.map((r) => columns.map((c) => csvValue(r[c])))
+  );
+};

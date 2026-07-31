@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, Loader2, Download, AlertCircle } from 'lucide-react';
+import { Upload, Loader2, Download, AlertCircle, FileDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { parseCSV, parseBool, parseArray, slugify, downloadCsv } from './csvUtils';
+import { parseCSV, parseBool, parseArray, slugify, downloadCsv, exportRowsCsv } from './csvUtils';
 
 const HEADERS = [
   'Name', 'Slug', 'Website', 'Logo URL', 'Cover URL', 'Description',
@@ -19,7 +19,10 @@ const SAMPLE = [
   'Strong track record with location-based experiences', 'Yes',
 ];
 
+const COLUMNS = ["name", "slug", "website", "logo_url", "cover_url", "description", "services", "regions", "editors_note", "is_editors_pick"];
+
 const CsvAgencyUpload = () => {
+  const [isExporting, setIsExporting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -27,6 +30,20 @@ const CsvAgencyUpload = () => {
   const queryClient = useQueryClient();
 
   const downloadTemplate = () => downloadCsv('agencies_template.csv', HEADERS, [SAMPLE]);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const { data, error } = await supabase.from('xr_agencies').select('*').order('name');
+      if (error) throw error;
+      exportRowsCsv('agencies_export.csv', HEADERS, COLUMNS, (data || []) as Record<string, unknown>[]);
+      toast({ title: 'Export complete', description: `${data?.length ?? 0} agencies exported.` });
+    } catch (err: any) {
+      toast({ title: 'Export failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,6 +117,10 @@ const CsvAgencyUpload = () => {
         <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
           {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
           {isUploading ? 'Importing...' : 'Import CSV'}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExport} disabled={isExporting}>
+          {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileDown className="w-4 h-4 mr-2" />}
+          Export
         </Button>
         <Button variant="ghost" size="sm" onClick={downloadTemplate}>
           <Download className="w-4 h-4 mr-2" />
