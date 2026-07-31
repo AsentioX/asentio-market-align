@@ -9,25 +9,20 @@ import { parseCSV, parseBool, parseArray, slugify, downloadCsv, exportRowsCsv } 
 
 const HEADERS = [
   'Name', 'Slug', 'Website', 'Logo URL', 'Description', 'Mission', 'HQ Location',
-  'Founded Year', 'Company Size', 'Company Type', 'Status', 'Funding Stage',
-  'Primary Category', 'Subcategories', 'Human Activities', 'Human Capabilities',
+  'Founded Year', 'Company Size', 'Human Activities', 'Human Capabilities',
   'AI Capabilities', 'Human Interface', 'Industry Focus', 'Ecosystem Roles',
-  'Technologies', 'Target Markets', 'Products Summary', 'Key Investors',
-  'Key Partnerships', 'Leadership', 'Asentio Perspective', 'Editors Note',
-  'Editors Pick', 'Launch Date', 'End Of Life Date',
+  'Asentio Perspective', 'Editors Note', 'Editors Pick', 'Launch Date', 'End Of Life Date',
 ];
 
 const SAMPLE = [
   'Figure AI', 'figure-ai', 'https://figure.ai', '', 'Humanoid robotics company building general-purpose robots.',
-  'Expand human capability through autonomous robots.', 'Sunnyvale, CA', '2022', '101-500', 'Startup', 'Active', 'Series C',
-  'Embodied AI', 'Humanoid Robots;Industrial Automation', 'Operate;Observe', 'Act;Perceive',
-  'Embody;Spatial;Perceive', 'Embodied', 'Manufacturing;Logistics', 'Experience',
-  'Vision-language-action models', 'Enterprise;Manufacturing', 'Figure 02 humanoid robot.',
-  'OpenAI;Microsoft', 'BMW;UPS', 'Brett Adcock - CEO',
+  'Expand human capability through autonomous robots.', 'Sunnyvale, CA', '2022', '101-500',
+  'Operate;Observe', 'Act;Perceive', 'Embody;Spatial;Perceive', 'Embodied',
+  'Manufacturing;Logistics', 'Experience',
   'Furthest along on real-world humanoid deployment.', 'One to watch', 'Yes', '2022-01-01', '',
 ];
 
-const COLUMNS = ["name", "slug", "website", "logo_url", "description", "mission", "hq_location", "founded_year", "company_size", "company_type", "status", "funding_stage", "primary_category", "subcategories", "human_activities", "human_capabilities", "ai_capabilities", "human_interface", "industry_focus", "ecosystem_roles", "technologies", "target_markets", "products_summary", "key_investors", "key_partnerships", "leadership", "asentio_perspective", "editors_note", "is_editors_pick", "launch_date", "end_of_life_date"];
+const COLUMNS = ['name', 'slug', 'website', 'logo_url', 'description', 'mission', 'hq_location', 'founded_year', 'company_size', 'human_activities', 'human_capabilities', 'ai_capabilities', 'human_interface', 'industry_focus', 'ecosystem_roles', 'asentio_perspective', 'editors_note', 'is_editors_pick', 'launch_date', 'end_of_life_date'];
 
 const CsvCompanyUpload = () => {
   const [isExporting, setIsExporting] = useState(false);
@@ -95,23 +90,12 @@ const CsvCompanyUpload = () => {
           hq_location: row['hq location'] || null,
           founded_year: row['founded year'] ? parseInt(row['founded year'], 10) || null : null,
           company_size: row['company size'] || null,
-          company_type: row['company type'] || null,
-          status: row['status'] || null,
-          funding_stage: row['funding stage'] || null,
-          primary_category: row['primary category'] || null,
-          subcategories: parseArray(row['subcategories']),
           human_activities: parseArray(row['human activities']),
           human_capabilities: parseArray(row['human capabilities']),
           ai_capabilities: parseArray(row['ai capabilities']),
           human_interface: parseArray(row['human interface']),
           industry_focus: parseArray(row['industry focus']),
           ecosystem_roles: parseArray(row['ecosystem roles']),
-          technologies: parseArray(row['technologies']),
-          target_markets: parseArray(row['target markets']),
-          products_summary: row['products summary'] || null,
-          key_investors: parseArray(row['key investors']),
-          key_partnerships: parseArray(row['key partnerships']),
-          leadership: parseArray(row['leadership']),
           asentio_perspective: row['asentio perspective'] || null,
           editors_note: row['editors note'] || null,
           is_editors_pick: parseBool(row['editors pick']) ?? false,

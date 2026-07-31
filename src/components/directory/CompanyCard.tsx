@@ -11,7 +11,7 @@ interface CompanyCardProps {
 const CompanyCard = ({ company }: CompanyCardProps) => {
   const interfaces = (company.human_interface || []).slice(0, 2);
   const aiCaps = (company.ai_capabilities || []).slice(0, 2);
-  const industries = (company.industry_focus || company.target_markets || []).slice(0, 2);
+  const industries = (company.industry_focus || []).slice(0, 2);
 
   return (
     <Card className="group relative h-full hover:shadow-lg transition-all duration-300 border border-border/60 hover:border-asentio-red/40 overflow-hidden">
@@ -78,7 +78,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         <div className="mt-auto pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-3 flex-wrap">
             {(company.ecosystem_roles || [])[0] && <span>{(company.ecosystem_roles || [])[0]}</span>}
-            {company.funding_stage && <span>{company.funding_stage}</span>}
+            
           </div>
           <div className="flex items-center gap-3">
             <Link

@@ -1,0 +1,15 @@
+ALTER TABLE public.xr_companies
+  DROP COLUMN IF EXISTS primary_category,
+  DROP COLUMN IF EXISTS subcategories,
+  DROP COLUMN IF EXISTS technologies,
+  DROP COLUMN IF EXISTS target_markets,
+  DROP COLUMN IF EXISTS products_summary,
+  DROP COLUMN IF EXISTS sectors,
+  DROP COLUMN IF EXISTS company_type,
+  DROP COLUMN IF EXISTS funding_stage,
+  DROP COLUMN IF EXISTS key_investors,
+  DROP COLUMN IF EXISTS key_partnerships,
+  DROP COLUMN IF EXISTS leadership,
+  DROP COLUMN IF EXISTS physical_platforms,
+  DROP COLUMN IF EXISTS status,
+  DROP COLUMN IF EXISTS asentio_take;

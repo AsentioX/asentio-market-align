@@ -5266,16 +5266,13 @@ export type Database = {
         Row: {
           ai_capabilities: string[] | null
           asentio_perspective: string | null
-          asentio_take: string | null
           company_size: string | null
-          company_type: string | null
           created_at: string
           description: string | null
           ecosystem_roles: string[]
           editors_note: string | null
           end_of_life_date: string | null
           founded_year: number | null
-          funding_stage: string | null
           hq_location: string | null
           human_activities: string[]
           human_capabilities: string[]
@@ -5283,38 +5280,24 @@ export type Database = {
           id: string
           industry_focus: string[]
           is_editors_pick: boolean | null
-          key_investors: string[] | null
-          key_partnerships: string[] | null
           launch_date: string | null
-          leadership: string[]
           logo_url: string | null
           mission: string | null
           name: string
-          physical_platforms: string[]
-          primary_category: string | null
-          products_summary: string | null
-          sectors: string[] | null
           slug: string
-          status: string
-          subcategories: string[] | null
-          target_markets: string[] | null
-          technologies: string[] | null
           updated_at: string
           website: string | null
         }
         Insert: {
           ai_capabilities?: string[] | null
           asentio_perspective?: string | null
-          asentio_take?: string | null
           company_size?: string | null
-          company_type?: string | null
           created_at?: string
           description?: string | null
           ecosystem_roles?: string[]
           editors_note?: string | null
           end_of_life_date?: string | null
           founded_year?: number | null
-          funding_stage?: string | null
           hq_location?: string | null
           human_activities?: string[]
           human_capabilities?: string[]
@@ -5322,38 +5305,24 @@ export type Database = {
           id?: string
           industry_focus?: string[]
           is_editors_pick?: boolean | null
-          key_investors?: string[] | null
-          key_partnerships?: string[] | null
           launch_date?: string | null
-          leadership?: string[]
           logo_url?: string | null
           mission?: string | null
           name: string
-          physical_platforms?: string[]
-          primary_category?: string | null
-          products_summary?: string | null
-          sectors?: string[] | null
           slug: string
-          status?: string
-          subcategories?: string[] | null
-          target_markets?: string[] | null
-          technologies?: string[] | null
           updated_at?: string
           website?: string | null
         }
         Update: {
           ai_capabilities?: string[] | null
           asentio_perspective?: string | null
-          asentio_take?: string | null
           company_size?: string | null
-          company_type?: string | null
           created_at?: string
           description?: string | null
           ecosystem_roles?: string[]
           editors_note?: string | null
           end_of_life_date?: string | null
           founded_year?: number | null
-          funding_stage?: string | null
           hq_location?: string | null
           human_activities?: string[]
           human_capabilities?: string[]
@@ -5361,22 +5330,11 @@ export type Database = {
           id?: string
           industry_focus?: string[]
           is_editors_pick?: boolean | null
-          key_investors?: string[] | null
-          key_partnerships?: string[] | null
           launch_date?: string | null
-          leadership?: string[]
           logo_url?: string | null
           mission?: string | null
           name?: string
-          physical_platforms?: string[]
-          primary_category?: string | null
-          products_summary?: string | null
-          sectors?: string[] | null
           slug?: string
-          status?: string
-          subcategories?: string[] | null
-          target_markets?: string[] | null
-          technologies?: string[] | null
           updated_at?: string
           website?: string | null
         }
