@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, Loader2, Download, AlertCircle } from 'lucide-react';
+import { Upload, Loader2, Download, AlertCircle, FileDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { parseCSV, parseBool, parseArray, slugify, downloadCsv } from './csvUtils';
+import { parseCSV, parseBool, parseArray, slugify, downloadCsv, exportRowsCsv } from './csvUtils';
 
 const HEADERS = [
   'Name', 'Slug', 'Website', 'Logo URL', 'Description', 'Mission', 'HQ Location',
@@ -27,7 +27,10 @@ const SAMPLE = [
   'Furthest along on real-world humanoid deployment.', 'One to watch', 'Yes', '2022-01-01', '',
 ];
 
+const COLUMNS = ["name", "slug", "website", "logo_url", "description", "mission", "hq_location", "founded_year", "company_size", "company_type", "status", "funding_stage", "primary_category", "subcategories", "human_activities", "human_capabilities", "ai_capabilities", "human_interface", "industry_focus", "ecosystem_roles", "technologies", "target_markets", "products_summary", "key_investors", "key_partnerships", "leadership", "asentio_perspective", "editors_note", "is_editors_pick", "launch_date", "end_of_life_date"];
+
 const CsvCompanyUpload = () => {
+  const [isExporting, setIsExporting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +38,20 @@ const CsvCompanyUpload = () => {
   const queryClient = useQueryClient();
 
   const downloadTemplate = () => downloadCsv('companies_template.csv', HEADERS, [SAMPLE]);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const { data, error } = await supabase.from('xr_companies').select('*').order('name');
+      if (error) throw error;
+      exportRowsCsv('companies_export.csv', HEADERS, COLUMNS, (data || []) as Record<string, unknown>[]);
+      toast({ title: 'Export complete', description: `${data?.length ?? 0} companies exported.` });
+    } catch (err: any) {
+      toast({ title: 'Export failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -129,6 +146,10 @@ const CsvCompanyUpload = () => {
         <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
           {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
           {isUploading ? 'Importing...' : 'Import CSV'}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExport} disabled={isExporting}>
+          {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileDown className="w-4 h-4 mr-2" />}
+          Export
         </Button>
         <Button variant="ghost" size="sm" onClick={downloadTemplate}>
           <Download className="w-4 h-4 mr-2" />
