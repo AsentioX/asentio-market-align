@@ -58,52 +58,20 @@ const Navbar = () => {
         <nav className="hidden lg:flex items-center space-x-7">
           {NAV_ITEMS.map((item) => {
             const active = item.match(location.pathname);
-            const isDirectory = item.to === "/hai-directory";
 
             return (
-              <div
+              <Link
                 key={item.to}
-                className="relative"
-                onMouseEnter={() => isDirectory && setDirectoryOpen(true)}
-                onMouseLeave={() => isDirectory && setDirectoryOpen(false)}
+                to={item.to}
+                className={`${linkTone} hover:text-asentio-blue transition-colors font-medium pb-1 inline-flex items-center gap-1 ${
+                  active ? "border-b-2 border-asentio-red" : ""
+                }`}
               >
-                <Link
-                  to={item.to}
-                  className={`${linkTone} hover:text-asentio-blue transition-colors font-medium pb-1 inline-flex items-center gap-1 ${
-                    active ? "border-b-2 border-asentio-red" : ""
-                  }`}
-                >
-                  {item.label}
-                  {isDirectory && <ChevronDown className="w-3.5 h-3.5" />}
-                </Link>
-
-                {isDirectory && directoryOpen && (
-                  <div className="absolute left-0 top-full pt-4">
-                    <div className="w-64 bg-white rounded-lg shadow-xl border border-border py-2 animate-fade-in">
-                      {TAXONOMY.map((group) => (
-                        <Link
-                          key={group.slug}
-                          to={`/hai-directory/category/${group.slug}`}
-                          className="block px-4 py-2 hover:bg-muted transition-colors"
-                        >
-                          <span className="block text-sm font-medium text-gray-800">{group.label}</span>
-                          <span className="block text-xs text-muted-foreground">{group.blurb}</span>
-                        </Link>
-                      ))}
-                      <div className="border-t border-border mt-2 pt-2">
-                        <Link
-                          to="/hai-directory/submit"
-                          className="block px-4 py-2 text-sm font-medium text-asentio-red hover:bg-muted transition-colors"
-                        >
-                          Add Your Company
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+                {item.label}
+              </Link>
             );
           })}
+
 
           <LanguageToggle />
 
