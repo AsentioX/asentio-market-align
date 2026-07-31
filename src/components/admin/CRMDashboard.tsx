@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -378,6 +378,14 @@ export default function CRMDashboard() {
   const [selectedContact, setSelectedContact] = useState<CRMContact | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'pipeline' | 'list'>('pipeline');
+
+  // Keep the open contact sheet in sync with the latest fetched data so
+  // edits (stage, follow-up, notes) are reflected immediately.
+  useEffect(() => {
+    if (!selectedContact) return;
+    const fresh = contacts.find((c) => c.id === selectedContact.id);
+    if (fresh && fresh !== selectedContact) setSelectedContact(fresh);
+  }, [contacts, selectedContact]);
 
   const filtered = useMemo(() => {
     if (!search) return contacts;
