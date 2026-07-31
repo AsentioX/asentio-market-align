@@ -330,6 +330,7 @@ const CompanyForm = () => {
 
 
               {/* Human-AI Framework */}
+              <TooltipProvider delayDuration={150}>
               <div className="space-y-4 p-4 border rounded-lg">
                 <div>
                   <Label className="text-base">Human-AI Framework</Label>
