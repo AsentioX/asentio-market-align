@@ -22,6 +22,8 @@ import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import CRMDashboard from '@/components/admin/CRMDashboard';
 import CaseStudiesAdmin from '@/components/admin/CaseStudiesAdmin';
 import ContentAdmin from '@/components/admin/ContentAdmin';
+import HAIFrameworkReference from '@/components/admin/HAIFrameworkReference';
+
 import {
   AlertDialog,
   AlertDialogAction,
