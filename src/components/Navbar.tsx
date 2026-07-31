@@ -32,7 +32,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setMobileMenuOpen(false);
-    setDirectoryOpen(false);
+    
   }, [location.pathname]);
 
   const linkTone = isScrolled ? "text-gray-700" : "text-gray-300";
