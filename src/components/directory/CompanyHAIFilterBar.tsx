@@ -13,7 +13,6 @@ const BAR_DIMENSIONS: { key: HAIDimensionKey; label: string; width: string }[] =
   { key: 'human_activities', label: 'Human Activities', width: 'w-[180px]' },
   { key: 'human_capabilities', label: 'Human Capabilities', width: 'w-[190px]' },
   { key: 'ai_capabilities', label: 'AI Capabilities', width: 'w-[170px]' },
-  { key: 'physical_platforms', label: 'AI Platforms', width: 'w-[160px]' },
   { key: 'industry_focus', label: 'Industry', width: 'w-[140px]' },
 ];
 
