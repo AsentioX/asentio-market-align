@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import LanguageToggle from "./LanguageToggle";
-import { TAXONOMY } from "@/lib/xrTaxonomy";
 import whiteLogo from "@/assets/logo-asentio-white.png.asset.json";
 
 interface NavItem {
@@ -22,7 +21,6 @@ const NAV_ITEMS: NavItem[] = [
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [directoryOpen, setDirectoryOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
