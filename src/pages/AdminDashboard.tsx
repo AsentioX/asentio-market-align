@@ -15,6 +15,8 @@ import {
   Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2, Briefcase
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
+import CsvCompanyUpload from '@/components/admin/CsvCompanyUpload';
+import CsvAgencyUpload from '@/components/admin/CsvAgencyUpload';
 import RssFeedAdmin from '@/components/admin/RssFeedAdmin';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import CRMDashboard from '@/components/admin/CRMDashboard';
