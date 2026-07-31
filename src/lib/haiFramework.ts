@@ -8,16 +8,14 @@ export type HAIDimensionKey =
   | 'human_capabilities'
   | 'ai_capabilities'
   | 'human_interface'
-  | 'physical_platforms'
   | 'industry_focus'
   | 'ecosystem_roles';
 
-/** Top-level Category — a rollup of interfaces / platforms / AI capabilities. */
+/** Top-level Category — a rollup of interfaces / AI capabilities. */
 export interface HAICategory {
   value: string;
   label: string;
   human_interface: string[];
-  physical_platforms: string[];
   ai_capabilities?: string[];
 }
 
@@ -26,38 +24,22 @@ export const HAI_CATEGORIES: HAICategory[] = [
     value: 'AI Intelligence',
     label: 'AI Intelligence (AI Assistant, Voice AI, Vision AI, Knowledge AI)',
     human_interface: ['Conversational'],
-    physical_platforms: ['Software'],
     ai_capabilities: ['Reason', 'Perceive', 'Communicate', 'Plan', 'Automate'],
   },
   {
     value: 'Personal Devices',
     label: 'Personal Devices (Glasses, Headphones, Watches, Rings, Pendants, Mobile)',
     human_interface: ['Personal Devices'],
-    physical_platforms: ['Wearable', 'Mobile Device'],
   },
   {
     value: 'Embodied AI',
     label: 'Embodied AI (Robots, Autonomous Mobility, Drones)',
     human_interface: ['Embodied'],
-    physical_platforms: [
-      'Humanoid Robot',
-      'Industrial Robot',
-      'Mobile Robot (AMR)',
-      'Autonomous Vehicle',
-      'Drone',
-    ],
   },
   {
     value: 'Environment',
     label: 'Environment (Smart Home, Sensors, Displays)',
     human_interface: ['Environment'],
-    physical_platforms: [
-      'Smart Home Device',
-      'Sensor Platform',
-      'Camera',
-      'Factory Equipment',
-      'Medical Device',
-    ],
   },
 ];
 
@@ -169,11 +151,6 @@ export const HUMAN_INTERFACE_LABELS: Record<string, string> = {
 export const haiInterfaceLabel = (value: string): string =>
   HUMAN_INTERFACE_LABELS[value] || value;
 
-export const PHYSICAL_PLATFORMS = [
-  'Software', 'Wearable', 'Mobile Device', 'Camera', 'Drone', 'Humanoid Robot',
-  'Industrial Robot', 'Mobile Robot (AMR)', 'Autonomous Vehicle',
-  'Medical Device', 'Smart Home Device', 'Factory Equipment', 'Sensor Platform',
-];
 
 export const INDUSTRY_FOCUS = [
   'Enterprise', 'Consumer', 'Healthcare', 'Manufacturing', 'Construction',
@@ -224,13 +201,6 @@ export const HAI_DIMENSIONS: HAIDimension[] = [
     question: 'How do humans interact with the AI?',
     blurb: 'The surface where people meet intelligence.',
     values: HUMAN_INTERFACES,
-  },
-  {
-    key: 'physical_platforms',
-    label: 'Physical Platform',
-    question: 'Where does the AI physically exist?',
-    blurb: 'The body the intelligence lives in.',
-    values: PHYSICAL_PLATFORMS,
   },
   {
     key: 'industry_focus',

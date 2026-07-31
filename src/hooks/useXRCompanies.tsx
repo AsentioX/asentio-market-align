@@ -70,16 +70,14 @@ export interface CompanyFilters {
 export const companyValues = (company: XRCompany, key: HAIDimensionKey): string[] =>
   ((company as unknown as Record<string, string[] | null>)[key] || []) as string[];
 
-/** A company matches a Category when it touches any of the category's interfaces, platforms or AI capabilities. */
+/** A company matches a Category when it touches any of the category's interfaces or AI capabilities. */
 const matchesCategory = (company: XRCompany, categoryValue: string): boolean => {
   const category = HAI_CATEGORIES.find((c) => c.value === categoryValue);
   if (!category) return false;
   const interfaces = company.human_interface || [];
-  const platforms = company.physical_platforms || [];
   const aiCaps = company.ai_capabilities || [];
   return (
     category.human_interface.some((v) => interfaces.includes(v)) ||
-    category.physical_platforms.some((v) => platforms.includes(v)) ||
     (category.ai_capabilities || []).some((v) => aiCaps.includes(v))
   );
 };

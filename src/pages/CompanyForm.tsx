@@ -156,7 +156,6 @@ const CompanyForm = () => {
         human_capabilities: dimensions.human_capabilities,
         ai_capabilities: dimensions.ai_capabilities,
         human_interface: dimensions.human_interface,
-        physical_platforms: dimensions.physical_platforms,
         industry_focus: dimensions.industry_focus,
         ecosystem_roles: dimensions.ecosystem_roles,
         launch_date: formData.launch_date || null,

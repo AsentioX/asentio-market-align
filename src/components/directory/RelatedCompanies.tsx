@@ -17,7 +17,6 @@ const WEIGHTS: { key: HAIDimensionKey; weight: number; reason: string }[] = [
   { key: 'human_interface', weight: 3, reason: 'Similar interface' },
   { key: 'industry_focus', weight: 2, reason: 'Same industry' },
   { key: 'human_capabilities', weight: 2, reason: 'Augments the same human capability' },
-  { key: 'physical_platforms', weight: 1, reason: 'Similar platform' },
 ];
 
 const RelatedCompanies = ({ company, all }: RelatedCompaniesProps) => {
