@@ -38,16 +38,9 @@ export interface CompanyFilters {
   selections?: HAISelections;
   /** Whether selections within/across dimensions must all match. */
   logic?: 'AND' | 'OR';
-  sector?: string;
-  /** Top-level taxonomy group slug, e.g. "devices". */
-  group?: string;
-  /** Leaf category, e.g. "AI Glasses". */
-  category?: string;
-  companyType?: string;
   aiCapability?: string;
   humanInterface?: string;
   targetMarket?: string;
-  fundingStage?: string;
   region?: string;
   editorsPickOnly?: boolean;
 }
@@ -97,9 +90,7 @@ const searchHaystack = (c: XRCompany) =>
     c.name,
     c.description,
     c.mission,
-    c.products_summary,
     ...HAI_DIMENSIONS.flatMap((d) => companyValues(c, d.key)),
-    ...(c.technologies || []),
   ]
     .filter(Boolean)
     .join(' ')
@@ -127,15 +118,6 @@ export const useXRCompanies = (filters?: CompanyFilters) => {
       if (filters?.selections) {
         rows = rows.filter((c) => matchesSelections(c, filters.selections, filters.logic || 'AND'));
       }
-      if (filters?.sector && filters.sector !== 'all') {
-        rows = rows.filter((c) => (c.sectors || []).includes(filters.sector!));
-      }
-      if (filters?.companyType && filters.companyType !== 'all') {
-        rows = rows.filter((c) => c.company_type === filters.companyType);
-      }
-      if (filters?.fundingStage && filters.fundingStage !== 'all') {
-        rows = rows.filter((c) => c.funding_stage === filters.fundingStage);
-      }
       if (filters?.aiCapability && filters.aiCapability !== 'all') {
         rows = rows.filter((c) => (c.ai_capabilities || []).includes(filters.aiCapability!));
       }
@@ -143,11 +125,7 @@ export const useXRCompanies = (filters?: CompanyFilters) => {
         rows = rows.filter((c) => (c.human_interface || []).includes(filters.humanInterface!));
       }
       if (filters?.targetMarket && filters.targetMarket !== 'all') {
-        rows = rows.filter(
-          (c) =>
-            (c.target_markets || []).includes(filters.targetMarket!) ||
-            (c.industry_focus || []).includes(filters.targetMarket!)
-        );
+        rows = rows.filter((c) => (c.industry_focus || []).includes(filters.targetMarket!));
       }
       if (filters?.region && filters.region !== 'all') {
         rows = rows.filter((c) =>
@@ -156,22 +134,6 @@ export const useXRCompanies = (filters?: CompanyFilters) => {
       }
       if (filters?.editorsPickOnly) {
         rows = rows.filter((c) => c.is_editors_pick);
-      }
-      if (filters?.category && filters.category !== 'all') {
-        const target = filters.category;
-        rows = rows.filter(
-          (c) => c.primary_category === target || (c.subcategories || []).includes(target)
-        );
-      }
-      if (filters?.group && filters.group !== 'all') {
-        const group = TAXONOMY.find((g) => g.slug === filters.group);
-        if (group) {
-          rows = rows.filter(
-            (c) =>
-              (c.primary_category && group.children.includes(c.primary_category)) ||
-              (c.subcategories || []).some((s) => group.children.includes(s))
-          );
-        }
       }
 
       return rows;
