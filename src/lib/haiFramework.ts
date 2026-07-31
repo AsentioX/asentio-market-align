@@ -208,13 +208,6 @@ export const HAI_DIMENSIONS: HAIDimension[] = [
     values: HUMAN_INTERFACES,
   },
   {
-    key: 'physical_platforms',
-    label: 'Physical Platform',
-    question: 'Where does the AI physically exist?',
-    blurb: 'The body the intelligence lives in.',
-    values: PHYSICAL_PLATFORMS,
-  },
-  {
     key: 'industry_focus',
     label: 'Industry Focus',
     question: 'Which industries benefit?',
