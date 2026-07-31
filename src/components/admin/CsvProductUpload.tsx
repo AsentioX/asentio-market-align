@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, Loader2, Download, AlertCircle, Undo2 } from 'lucide-react';
+import { Upload, Loader2, Download, AlertCircle, Undo2, FileDown } from 'lucide-react';
+import { exportRowsCsv } from './csvUtils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EXPECTED_HEADERS = [
@@ -30,6 +31,22 @@ const EXPECTED_HEADERS = [
   // Other
   'developer resources url', 'key features', 'additional images',
 ];
+
+
+const EXPORT_COLUMNS = EXPECTED_HEADERS.map((h) => {
+  const overrides: Record<string, string> = {
+    'company name': 'company',
+    'product name': 'name',
+    price: 'price_range',
+    'product url': 'link',
+    'editors pick': 'is_editors_pick',
+  };
+  return overrides[h] ?? h.replace(/ /g, '_');
+});
+
+const EXPORT_HEADERS = EXPECTED_HEADERS.map((h) =>
+  h.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+);
 
 const parseCSV = (text: string): Record<string, string>[] => {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
@@ -95,6 +112,22 @@ const CsvProductUpload = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const { data, error } = await supabase.from('xr_products').select('*').order('name');
+      if (error) throw error;
+      exportRowsCsv('products_export.csv', EXPORT_HEADERS, EXPORT_COLUMNS, (data || []) as Record<string, unknown>[]);
+      toast({ title: 'Export complete', description: `${data?.length ?? 0} products exported.` });
+    } catch (err: any) {
+      toast({ title: 'Export failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const downloadTemplate = () => {
     const csv = EXPECTED_HEADERS.map(h =>
@@ -324,6 +357,10 @@ const CsvProductUpload = () => {
             <Upload className="w-4 h-4 mr-2" />
           )}
           {isUploading ? 'Importing...' : 'Import CSV'}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExport} disabled={isExporting}>
+          {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileDown className="w-4 h-4 mr-2" />}
+          Export
         </Button>
         <Button variant="ghost" size="sm" onClick={downloadTemplate}>
           <Download className="w-4 h-4 mr-2" />
