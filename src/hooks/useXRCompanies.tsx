@@ -14,33 +14,18 @@ export interface XRCompany {
   hq_location: string | null;
   founded_year: number | null;
   company_size: string | null;
-  sectors: string[] | null;
   launch_date: string | null;
   end_of_life_date: string | null;
   is_editors_pick: boolean;
   editors_note: string | null;
-  // Legacy XR metadata (kept for existing pages)
-  company_type: string | null;
-  primary_category: string | null;
-  subcategories: string[] | null;
-  technologies: string[] | null;
-  target_markets: string[] | null;
-  products_summary: string | null;
   // Human-AI Framework
   human_activities: string[] | null;
   human_capabilities: string[] | null;
   ai_capabilities: string[] | null;
   human_interface: string[] | null;
-  physical_platforms: string[] | null;
   industry_focus: string[] | null;
   ecosystem_roles: string[] | null;
-  leadership: string[] | null;
-  funding_stage: string | null;
-  key_investors: string[] | null;
-  key_partnerships: string[] | null;
-  asentio_take: string | null;
   asentio_perspective: string | null;
-  status: string;
   created_at: string;
   updated_at: string;
 }
