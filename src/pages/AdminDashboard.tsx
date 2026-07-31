@@ -12,7 +12,7 @@ import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies'
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink,
-  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2, Briefcase
+  Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2, Briefcase, BookOpen
 } from 'lucide-react';
 import CsvProductUpload from '@/components/admin/CsvProductUpload';
 import CsvCompanyUpload from '@/components/admin/CsvCompanyUpload';
@@ -22,6 +22,8 @@ import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import CRMDashboard from '@/components/admin/CRMDashboard';
 import CaseStudiesAdmin from '@/components/admin/CaseStudiesAdmin';
 import ContentAdmin from '@/components/admin/ContentAdmin';
+import HAIFrameworkReference from '@/components/admin/HAIFrameworkReference';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -206,11 +208,20 @@ const AdminDashboard = () => {
               <Briefcase className="w-4 h-4" />
               Case Studies
             </TabsTrigger>
+            <TabsTrigger value="framework" className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              Framework
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="framework">
+            <HAIFrameworkReference />
+          </TabsContent>
 
           <TabsContent value="content">
             <ContentAdmin />
           </TabsContent>
+
 
           {/* CRM Tab */}
           <TabsContent value="crm">
