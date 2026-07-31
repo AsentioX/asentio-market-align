@@ -25,27 +25,20 @@ export const HAI_CATEGORIES: HAICategory[] = [
   {
     value: 'AI Intelligence',
     label: 'AI Intelligence (AI Assistant, Voice AI, Vision AI, Knowledge AI)',
-    human_interface: ['AI Agent', 'Desktop', 'Mobile'],
+    human_interface: ['Conversational'],
     physical_platforms: ['Software'],
     ai_capabilities: ['Reason', 'Perceive', 'Communicate', 'Plan', 'Automate'],
   },
   {
     value: 'Personal Devices',
     label: 'Personal Devices (Glasses, Headphones, Watches, Rings, Pendants, Mobile)',
-    human_interface: [
-      'Smart Glasses',
-      'Hearables',
-      'Smart Watch',
-      'Smart Ring',
-      'Mobile',
-      'Spatial Computing',
-    ],
+    human_interface: ['Personal Devices'],
     physical_platforms: ['Wearable', 'Mobile Device'],
   },
   {
     value: 'Embodied AI',
     label: 'Embodied AI (Robots, Autonomous Mobility, Drones)',
-    human_interface: ['Robotics', 'Humanoid Robot', 'Industrial Robot', 'Autonomous Vehicle'],
+    human_interface: ['Embodied'],
     physical_platforms: [
       'Humanoid Robot',
       'Industrial Robot',
@@ -57,7 +50,7 @@ export const HAI_CATEGORIES: HAICategory[] = [
   {
     value: 'Environment',
     label: 'Environment (Smart Home, Sensors, Displays)',
-    human_interface: ['Smart Home', 'Ambient Computing'],
+    human_interface: ['Environment'],
     physical_platforms: [
       'Smart Home Device',
       'Sensor Platform',
