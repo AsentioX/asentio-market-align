@@ -106,19 +106,6 @@ const Navbar = () => {
               </Link>
             ))}
 
-            <div className="px-4 pt-2 pb-1 text-xs uppercase tracking-wide text-muted-foreground">
-              Directory categories
-            </div>
-            {TAXONOMY.map((group) => (
-              <Link
-                key={group.slug}
-                to={`/hai-directory/category/${group.slug}`}
-                className="text-gray-600 text-sm hover:text-asentio-blue transition-colors py-1.5 px-6"
-              >
-                {group.label}
-              </Link>
-            ))}
-
             <Link
               to="/hai-directory/submit"
               className="text-asentio-red font-medium py-2 px-4"
