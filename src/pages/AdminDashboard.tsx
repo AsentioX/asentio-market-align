@@ -206,11 +206,20 @@ const AdminDashboard = () => {
               <Briefcase className="w-4 h-4" />
               Case Studies
             </TabsTrigger>
+            <TabsTrigger value="framework" className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              Framework
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="framework">
+            <HAIFrameworkReference />
+          </TabsContent>
 
           <TabsContent value="content">
             <ContentAdmin />
           </TabsContent>
+
 
           {/* CRM Tab */}
           <TabsContent value="crm">
