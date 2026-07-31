@@ -378,6 +378,7 @@ const CompanyForm = () => {
                   </div>
                 ))}
               </div>
+              </TooltipProvider>
 
               {/* Asentio Perspective */}
               <div className="space-y-2">
