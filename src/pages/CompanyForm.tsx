@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useXRCompany, useCreateCompany, useUpdateCompany, companyValues, COMPANY_SIZES } from '@/hooks/useXRCompanies';
-import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
+import { HAI_DIMENSIONS, HAIDimensionKey, haiValueLabel } from '@/lib/haiFramework';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useXRProducts } from '@/hooks/useXRProducts';
 import { ArrowLeft, Loader2, ExternalLink, MapPin } from 'lucide-react';
 
@@ -329,6 +330,7 @@ const CompanyForm = () => {
 
 
               {/* Human-AI Framework */}
+              <TooltipProvider delayDuration={150}>
               <div className="space-y-4 p-4 border rounded-lg">
                 <div>
                   <Label className="text-base">Human-AI Framework</Label>
@@ -346,7 +348,8 @@ const CompanyForm = () => {
                     <div className="flex flex-wrap gap-2">
                       {dimension.values.map((value) => {
                         const selected = dimensions[dimension.key].includes(value);
-                        return (
+                        const fullLabel = haiValueLabel(dimension.key, value);
+                        const button = (
                           <button
                             key={value}
                             type="button"
@@ -360,11 +363,22 @@ const CompanyForm = () => {
                             {value}
                           </button>
                         );
+                        if (!fullLabel || fullLabel === value) return button;
+                        return (
+                          <Tooltip key={value}>
+                            <TooltipTrigger asChild>{button}</TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs">
+                              {fullLabel}
+                            </TooltipContent>
+                          </Tooltip>
+                        );
                       })}
                     </div>
+
                   </div>
                 ))}
               </div>
+              </TooltipProvider>
 
               {/* Asentio Perspective */}
               <div className="space-y-2">
