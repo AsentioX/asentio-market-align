@@ -113,6 +113,7 @@ export const haiValueLabel = (key: HAIDimensionKey, value: string): string => {
   if (key === 'human_activities') return haiActivityLabel(value);
   if (key === 'human_capabilities') return haiCapabilityLabel(value);
   if (key === 'ai_capabilities') return haiAICapabilityLabel(value);
+  if (key === 'human_interface') return haiInterfaceLabel(value);
   return value;
 };
 
