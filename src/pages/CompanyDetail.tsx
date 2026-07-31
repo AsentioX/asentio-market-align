@@ -111,7 +111,7 @@ const CompanyDetail = () => {
     );
   }
 
-  const perspective = company?.asentio_perspective || company?.asentio_take;
+  const perspective = company?.asentio_perspective;
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,14 +161,6 @@ const CompanyDetail = () => {
                 )}
                 {company?.company_size && (
                   <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {company.company_size}</span>
-                )}
-                {company?.funding_stage && (
-                  <span className="flex items-center gap-1"><Landmark className="w-4 h-4" /> {company.funding_stage}</span>
-                )}
-                {(company?.leadership || []).length > 0 && (
-                  <span className="flex items-center gap-1">
-                    <Users className="w-4 h-4" /> {(company?.leadership || []).join(', ')}
-                  </span>
                 )}
                 {companyProducts.length > 0 && (
                   <span className="flex items-center gap-1">
@@ -231,17 +223,6 @@ const CompanyDetail = () => {
           })}
         </div>
 
-        {/* Products / Technologies / Partnerships */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-          {company?.products_summary && (
-            <div className="bg-card border border-border rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-foreground mb-2">Products</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{company.products_summary}</p>
-            </div>
-          )}
-          <ChipPanel title="Technologies" items={company?.technologies} />
-          <ChipPanel title="Partnerships" items={company?.key_partnerships} />
-        </div>
       </section>
 
       {/* Asentio Perspective — proprietary commentary */}
