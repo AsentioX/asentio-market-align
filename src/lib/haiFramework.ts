@@ -240,28 +240,23 @@ export const SOLUTION_STEPS: HAIDimensionKey[] = [
 /** Ecosystem roles grouped into the layers of a deliverable solution stack. */
 export const SOLUTION_LAYERS: { label: string; description: string; roles: string[] }[] = [
   {
-    label: 'Interface & Devices',
-    description: 'What the human wears, holds or works alongside.',
-    roles: ['Device Manufacturer', 'Robot Manufacturer'],
-  },
-  {
     label: 'Intelligence',
-    description: 'The models and perception that make it work.',
-    roles: ['AI Platform', 'AI Service'],
+    description: 'The models, platforms and perception that make it work.',
+    roles: ['Intelligence'],
   },
   {
-    label: 'Silicon & Sensing',
-    description: 'Compute, optics and sensors underneath.',
-    roles: ['Semiconductor', 'Components', 'Sensors', 'Display Technology'],
+    label: 'Experience',
+    description: 'The devices, software and integration the human meets.',
+    roles: ['Experience'],
   },
   {
-    label: 'Software & Workflow',
-    description: 'Where the output becomes an operational process.',
-    roles: ['Enterprise Software', 'Cloud Platform', 'Developer Platform'],
+    label: 'Distribution',
+    description: 'How the solution reaches the market.',
+    roles: ['Distribution'],
   },
   {
-    label: 'Delivery & Capital',
-    description: 'Who integrates, distributes and funds it.',
-    roles: ['Systems Integrator', 'Consultant', 'Distributor', 'Venture Capital', 'Research'],
+    label: 'Services',
+    description: 'Who advises, deploys and supports it.',
+    roles: ['Services'],
   },
 ];
