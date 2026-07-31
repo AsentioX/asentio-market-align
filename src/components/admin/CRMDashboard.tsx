@@ -467,7 +467,7 @@ export default function CRMDashboard() {
 
       {/* Pipeline view */}
       {viewMode === 'pipeline' && (
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4">
           {STAGES.map((stage) => {
             const stageContacts = filtered.filter((c) => c.stage === stage.key);
             return (
