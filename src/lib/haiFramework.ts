@@ -159,12 +159,19 @@ export const INDUSTRY_FOCUS = [
 ];
 
 export const ECOSYSTEM_ROLES = [
-  'AI Platform', 'AI Service', 'Device Manufacturer', 'Robot Manufacturer',
-  'Enterprise Software', 'Semiconductor', 'Components', 'Sensors',
-  'Display Technology', 'Systems Integrator', 'Cloud Platform',
-  'Developer Platform', 'Research', 'Venture Capital', 'Distributor',
-  'Consultant',
+  'Intelligence', 'Experience', 'Distribution', 'Services',
 ];
+
+/** Display labels for Ecosystem Role values. */
+export const ECOSYSTEM_ROLE_LABELS: Record<string, string> = {
+  Intelligence: 'Intelligence (AI Platform, AI Service, Cloud Platform, Developer Platform)',
+  Experience: 'Experience (Device Manufacturer, Robot Manufacturer, Software, Systems Integrator)',
+  Distribution: 'Distribution (Distributor, Value-Added Reseller, Marketplace)',
+  Services: 'Services (Consulting, Agency, Managed Services, Training Provider)',
+};
+
+export const haiEcosystemRoleLabel = (value: string): string =>
+  ECOSYSTEM_ROLE_LABELS[value] || value;
 
 export const HAI_DIMENSIONS: HAIDimension[] = [
   {
