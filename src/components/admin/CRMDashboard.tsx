@@ -379,6 +379,14 @@ export default function CRMDashboard() {
   const [addOpen, setAddOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'pipeline' | 'list'>('pipeline');
 
+  // Keep the open contact sheet in sync with the latest fetched data so
+  // edits (stage, follow-up, notes) are reflected immediately.
+  useEffect(() => {
+    if (!selectedContact) return;
+    const fresh = contacts.find((c) => c.id === selectedContact.id);
+    if (fresh && fresh !== selectedContact) setSelectedContact(fresh);
+  }, [contacts, selectedContact]);
+
   const filtered = useMemo(() => {
     if (!search) return contacts;
     const q = search.toLowerCase();
