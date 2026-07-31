@@ -151,11 +151,6 @@ export const HUMAN_INTERFACE_LABELS: Record<string, string> = {
 export const haiInterfaceLabel = (value: string): string =>
   HUMAN_INTERFACE_LABELS[value] || value;
 
-export const PHYSICAL_PLATFORMS = [
-  'Software', 'Wearable', 'Mobile Device', 'Camera', 'Drone', 'Humanoid Robot',
-  'Industrial Robot', 'Mobile Robot (AMR)', 'Autonomous Vehicle',
-  'Medical Device', 'Smart Home Device', 'Factory Equipment', 'Sensor Platform',
-];
 
 export const INDUSTRY_FOCUS = [
   'Enterprise', 'Consumer', 'Healthcare', 'Manufacturing', 'Construction',
