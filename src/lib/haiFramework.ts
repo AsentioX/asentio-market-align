@@ -161,11 +161,19 @@ export const haiAICapabilityLabel = (value: string): string =>
   AI_CAPABILITY_LABELS[value] || value;
 
 export const HUMAN_INTERFACES = [
-  'AI Agent', 'Smart Glasses', 'Hearables', 'Mobile', 'Desktop', 'Smart Watch',
-  'Smart Ring', 'Spatial Computing', 'Robotics', 'Humanoid Robot',
-  'Industrial Robot', 'Autonomous Vehicle', 'Smart Home', 'Ambient Computing',
-  'Brain Computer Interface',
+  'Conversational', 'Personal Devices', 'Embodied', 'Environment',
 ];
+
+/** Display labels for Human Interface values. */
+export const HUMAN_INTERFACE_LABELS: Record<string, string> = {
+  Conversational: 'Conversational (AI Agent, Voice Assistant, Avatar)',
+  'Personal Devices': 'Personal Devices (Mobile, Glasses, Hearables, Watch, Ring, Pendant)',
+  Embodied: 'Embodied (Humanoid Robot, Industrial Robot, Autonomous Mobile Robot)',
+  Environment: 'Environment (Smart Devices, Smart Lights, IoT)',
+};
+
+export const haiInterfaceLabel = (value: string): string =>
+  HUMAN_INTERFACE_LABELS[value] || value;
 
 export const PHYSICAL_PLATFORMS = [
   'Software', 'Wearable', 'Mobile Device', 'Camera', 'Drone', 'Humanoid Robot',
