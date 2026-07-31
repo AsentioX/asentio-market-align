@@ -183,7 +183,8 @@ const CompanyForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/50 pt-20">
+    <div className="relative min-h-screen bg-muted/50 pt-20">
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-asentio-blue via-asentio-blue/90 to-transparent pointer-events-none -z-0" />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Link to="/admin/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" />
