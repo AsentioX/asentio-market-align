@@ -345,6 +345,7 @@ const AdminDashboard = () => {
                         onChange={(e) => setCompanySearch(e.target.value)}
                         className="pl-10"
                       />
+                    </div>
                     <Link to="/admin/companies/new">
                       <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
                         <Plus className="w-4 h-4 mr-2" />
@@ -354,8 +355,6 @@ const AdminDashboard = () => {
                     <CsvCompanyUpload />
                   </div>
                 </div>
-                </div>
-              </CardHeader>
               <CardContent>
                 {productsLoading ? (
                   <div className="flex items-center justify-center py-12">
