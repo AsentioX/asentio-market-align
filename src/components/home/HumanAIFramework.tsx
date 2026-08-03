@@ -37,10 +37,7 @@ const HumanAIFramework = () => {
   return (
     <section className="relative overflow-hidden" style={{ backgroundColor: '#FAFAF8' }}>
       {/* Subtle ecosystem-map pattern, low opacity */}
-      <TopographicPattern
-        variant="light"
-        className="opacity-100 [&_path]:!stroke-slate-500/25 [&_ellipse]:!stroke-slate-500/25"
-      />
+      <TopographicPattern variant="light" className="opacity-[0.07]" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 py-16 md:py-24">
         {/* Intro: two columns */}
