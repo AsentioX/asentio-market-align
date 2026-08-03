@@ -25,7 +25,7 @@ import { trackPageView } from '@/lib/analytics';
 const DirectorySubmit = () => {
   const [searchParams] = useSearchParams();
   const submit = useSubmitCompany();
-  const { data: companies } = useXRCompanies();
+  
 
   const [done, setDone] = useState(false);
 
