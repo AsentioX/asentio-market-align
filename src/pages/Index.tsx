@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
 import LatestInsights from "@/components/home/LatestInsights";
+import HumanAIFramework from "@/components/home/HumanAIFramework";
+
 
 import NewsCarousel from "@/components/directory/NewsCarousel";
 import NewsletterSignup from "@/components/NewsletterSignup";
@@ -11,31 +13,10 @@ import ARBackground from "@/components/ARBackground";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
-import { ArrowRight, Glasses, Brain, Activity, Compass, Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { initSession, trackPageView, trackCTAClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
-const CONVERGENCE = [
-  {
-    icon: Glasses,
-    title: "XR & Wearables",
-    body: "Glasses, headsets, hearables and rings — the hardware that puts computing on the body.",
-  },
-  {
-    icon: Brain,
-    title: "Artificial Intelligence",
-    body: "Multimodal, contextual and on-device models that turn raw sensing into understanding.",
-  },
-  {
-    icon: Activity,
-    title: "Human-Centered Design",
-    body: "The behavior, ergonomics and trust work that decides whether any of it gets worn twice.",
-  },
-  {
-    icon: Compass,
-    title: "Market Strategy",
-    body: "Positioning, channel and go-to-market for categories that don't exist yet.",
-  },
-];
+
 
 const Index = () => {
   const { data: companies } = useXRCompanies();
@@ -129,36 +110,9 @@ const Index = () => {
       </section>
 
       {/* ---------------- Convergence thesis ---------------- */}
-      <AnimatedSection className="py-12 md:py-20 bg-asentio-blue relative overflow-hidden">
-        <TopographicPattern variant="dark" className="opacity-100" />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-asentio-red/10 rounded-full blur-3xl" />
+      {/* ---------------- Human + AI Framework ---------------- */}
+      <HumanAIFramework />
 
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-3xl mb-10">
-            <div className="w-12 h-1 bg-asentio-red mb-4" />
-            <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-3">
-              Four forces, one convergence
-            </h2>
-            <p className="text-primary-foreground/80 text-base md:text-lg leading-relaxed">
-              Asentio works at the point where hardware, intelligence, human behavior and market strategy stop being
-              separate problems.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {CONVERGENCE.map((item) => (
-              <div
-                key={item.title}
-                className="bg-background/10 backdrop-blur-sm rounded-xl p-6 border border-background/20"
-              >
-                <item.icon className="w-6 h-6 text-asentio-red mb-4" />
-                <h3 className="text-primary-foreground font-semibold mb-2">{item.title}</h3>
-                <p className="text-primary-foreground/75 text-sm leading-relaxed">{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </AnimatedSection>
 
 
       {/* ---------------- Latest insights ---------------- */}
