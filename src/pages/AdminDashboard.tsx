@@ -375,11 +375,11 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                {productsLoading ? (
+                {companiesLoading ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-asentio-blue" />
                   </div>
-                ) : filteredDerivedCompanies.length > 0 ? (
+                ) : companyRows.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
