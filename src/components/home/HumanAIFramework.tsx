@@ -66,21 +66,23 @@ const HumanAIFramework = () => {
   const shown = (step: number) => revealed >= step;
 
   return (
-    <section className="py-14 md:py-24 bg-background border-y border-border">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="py-14 md:py-24 bg-asentio-blue relative overflow-hidden">
+      <TopographicPattern variant="dark" className="opacity-100" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-asentio-red/10 rounded-full blur-3xl" />
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Intro: two columns */}
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-10 lg:gap-14 items-start">
           <div>
             <div className="w-12 h-1 bg-asentio-red mb-4" />
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground mb-3">
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-primary-foreground/60 mb-3">
               The Human + AI Framework
             </p>
-            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-5 leading-tight">
+            <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-5 leading-tight">
               Everything Begins with the Human
             </h2>
-            <div className="space-y-4 text-muted-foreground leading-relaxed">
+            <div className="space-y-4 text-primary-foreground/70 leading-relaxed">
               <p>Most technology directories organize companies by products or technologies.</p>
-              <p className="text-foreground font-medium">The HAI Directory starts with people.</p>
+              <p className="text-primary-foreground font-medium">The HAI Directory starts with people.</p>
               <p>
                 We believe successful AI begins by understanding what people are trying to accomplish,
                 which human capabilities need to be augmented, the intelligence required to help them,
@@ -97,14 +99,14 @@ const HumanAIFramework = () => {
                 to="/hai-directory"
                 onClick={() => trackCTAClick('Explore the HAI Directory — Framework', true)}
               >
-                <Button size="lg" className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90">
+                <Button size="lg" className="w-full sm:w-auto bg-asentio-red hover:bg-asentio-red/90">
                   <Search className="w-4 h-4 mr-2" />
                   Explore the HAI Directory
                 </Button>
               </Link>
               <Link
                 to="/work-with-us"
-                className="text-sm font-medium text-foreground hover:text-asentio-red transition-colors inline-flex items-center"
+                className="text-sm font-medium text-primary-foreground hover:text-asentio-red transition-colors inline-flex items-center"
               >
                 Learn about our methodology
                 <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -115,13 +117,13 @@ const HumanAIFramework = () => {
           <button
             type="button"
             onClick={() => setLightbox(true)}
-            className="group block w-full rounded-2xl overflow-hidden border border-border shadow-lg shadow-foreground/5 hover:shadow-xl transition-shadow"
+            className="group block w-full flex items-center justify-center rounded-2xl overflow-hidden border border-white/10 bg-card/95 shadow-lg shadow-black/20 hover:shadow-xl transition-shadow p-3 md:p-4"
             aria-label="Enlarge the Human + AI Collaboration Loop diagram"
           >
             <img
               src={frameworkImage.url}
               alt="The Human + AI Collaboration Loop: human activities, human capabilities, AI capabilities and human interface"
-              className="w-full h-auto"
+              className="w-auto max-h-[300px] md:max-h-[380px] object-contain"
               loading="lazy"
             />
           </button>
