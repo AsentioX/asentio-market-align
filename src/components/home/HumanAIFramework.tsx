@@ -179,7 +179,41 @@ const HumanAIFramework = () => {
               </div>
             ))}
           </div>
+
+          {/* Example use case */}
+          <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 md:p-5">
+            <div className="flex flex-col lg:flex-row lg:items-stretch gap-3 lg:gap-0">
+              <div className="lg:w-44 shrink-0 lg:pr-5">
+                <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-asentio-red">
+                  Example use case
+                </p>
+                <p className="mt-1 text-sm font-semibold text-primary-foreground leading-snug">
+                  Remote Equipment Maintenance
+                </p>
+              </div>
+              {USE_CASE.map((block, i) => (
+                <div key={block.title} className="contents lg:flex lg:items-stretch lg:flex-1 lg:min-w-0">
+                  <div className="flex-1 min-w-0 rounded-lg border border-white/10 bg-white/5 p-3">
+                    <p className="text-xs font-semibold text-primary-foreground">{block.title}</p>
+                    <ul className="mt-1.5 space-y-0.5">
+                      {block.items.map((it) => (
+                        <li key={it} className="text-[11px] text-primary-foreground/60 leading-snug">
+                          {it}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {i < USE_CASE.length - 1 && (
+                    <div className="hidden lg:flex items-center justify-center shrink-0 px-2">
+                      <ArrowRight className="w-3.5 h-3.5 text-primary-foreground/30" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
 
         {/* Why this matters */}
         <div className="mt-10 md:mt-12 pt-8 border-t border-white/10">
