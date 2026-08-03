@@ -14,8 +14,8 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: "HAI Directory", to: "/hai-directory", match: (p) => p.startsWith("/hai-directory") },
   { label: "Insights", to: "/insights", match: (p) => p.startsWith("/insights") },
-  { label: "About", to: "/about", match: (p) => p.startsWith("/about") },
   { label: "Work With Us", to: "/work-with-us", match: (p) => p.startsWith("/work-with-us") },
+  { label: "About", to: "/about", match: (p) => p.startsWith("/about") },
 ];
 
 const Navbar = () => {
