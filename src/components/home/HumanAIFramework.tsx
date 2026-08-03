@@ -181,8 +181,8 @@ const HumanAIFramework = () => {
         </div>
 
         {/* Why this matters */}
-        <div className="mt-14 md:mt-20 pt-10 md:pt-14 border-t border-border">
-          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-8">Why this framework matters</h3>
+        <div className="mt-14 md:mt-20 pt-10 md:pt-14 border-t border-white/10">
+          <h3 className="text-xl md:text-2xl font-bold text-primary-foreground mb-8">Why this framework matters</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {WHY.map((item) => (
               <div key={item.title} className="rounded-2xl border border-border bg-card p-6">
