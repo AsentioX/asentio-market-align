@@ -66,49 +66,51 @@ const HumanAIFramework = () => {
   const shown = (step: number) => revealed >= step;
 
   return (
-    <section className="py-14 md:py-24 bg-asentio-blue relative overflow-hidden">
+    <section className="py-12 md:py-16 bg-asentio-blue relative overflow-hidden">
       <TopographicPattern variant="dark" className="opacity-100" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-asentio-red/10 rounded-full blur-3xl" />
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Intro: two columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-10 lg:gap-14 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-8 lg:gap-12 items-center">
           <div>
-            <div className="w-12 h-1 bg-asentio-red mb-4" />
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-primary-foreground/60 mb-3">
-              The Human + AI Framework
-            </p>
-            <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-5 leading-tight">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-0.5 bg-asentio-red" />
+              <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-primary-foreground/60">
+                The Human + AI Framework
+              </p>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-4 leading-tight">
               Everything Begins with the Human
             </h2>
-            <div className="space-y-4 text-primary-foreground/70 leading-relaxed">
-              <p>Most technology directories organize companies by products or technologies.</p>
-              <p className="text-primary-foreground font-medium">The HAI Directory starts with people.</p>
+            <div className="space-y-3 text-sm md:text-base text-primary-foreground/70 leading-relaxed">
+              <p>
+                Most technology directories organize companies by products or technologies.{' '}
+                <span className="text-primary-foreground font-medium">
+                  The HAI Directory starts with people.
+                </span>
+              </p>
               <p>
                 We believe successful AI begins by understanding what people are trying to accomplish,
                 which human capabilities need to be augmented, the intelligence required to help them,
-                and finally the interface through which people experience AI.
-              </p>
-              <p>
-                This human-centered framework helps executives, investors, product teams, and
-                researchers better understand how the Human + AI ecosystem fits together.
+                and the interface through which people experience AI.
               </p>
             </div>
 
-            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="mt-6 flex flex-wrap items-center gap-4">
               <Link
                 to="/hai-directory"
                 onClick={() => trackCTAClick('Explore the HAI Directory — Framework', true)}
               >
-                <Button size="lg" className="w-full sm:w-auto bg-asentio-red hover:bg-asentio-red/90">
+                <Button className="bg-asentio-red hover:bg-asentio-red/90">
                   <Search className="w-4 h-4 mr-2" />
                   Explore the HAI Directory
                 </Button>
               </Link>
               <Link
                 to="/work-with-us"
-                className="text-sm font-medium text-primary-foreground hover:text-asentio-red transition-colors inline-flex items-center"
+                className="text-sm font-medium text-primary-foreground/80 hover:text-asentio-red transition-colors inline-flex items-center"
               >
-                Learn about our methodology
+                Our methodology
                 <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
             </div>
@@ -117,63 +119,62 @@ const HumanAIFramework = () => {
           <button
             type="button"
             onClick={() => setLightbox(true)}
-            className="group block w-full flex items-center justify-center rounded-2xl overflow-hidden bg-transparent transition-shadow"
+            className="group block w-full flex items-center justify-center bg-transparent"
             aria-label="Enlarge the Human + AI Collaboration Loop diagram"
           >
             <img
               src={frameworkImage.url}
               alt="The Human + AI Collaboration Loop: human activities, human capabilities, AI capabilities and human interface"
-              className="w-auto max-h-[300px] md:max-h-[380px] object-contain"
+              className="w-auto max-h-[260px] md:max-h-[340px] object-contain transition-transform duration-500 group-hover:scale-[1.02]"
               loading="lazy"
             />
           </button>
         </div>
 
         {/* Interactive companion */}
-        <div ref={flowRef} className="mt-14 md:mt-20 pt-10 md:pt-14 border-t border-white/10">
-          <div className="flex flex-col md:flex-row md:items-stretch gap-3 md:gap-0">
+        <div ref={flowRef} className="mt-10 md:mt-12 pt-8 border-t border-white/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {STEPS.map((step, i) => (
-              <div key={step.title} className="contents md:flex md:items-stretch md:flex-1 md:min-w-0">
-                <div
-                  onMouseEnter={() => setActive(i)}
-                  onMouseLeave={() => setActive(null)}
-                  onClick={() => setActive((prev) => (prev === i ? null : i))}
-                  className={`flex-1 min-w-0 rounded-2xl border border-border bg-card p-5 md:p-6 cursor-default transition-all duration-500 hover:border-asentio-red/40 hover:shadow-md ${
-                    shown(i * 2 + 1) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
-                  }`}
-                >
-                  <span className="text-xs font-mono text-muted-foreground">
+              <div
+                key={step.title}
+                onMouseEnter={() => setActive(i)}
+                onMouseLeave={() => setActive(null)}
+                onClick={() => setActive((prev) => (prev === i ? null : i))}
+                className={`relative rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 cursor-default transition-all duration-500 hover:border-asentio-red/50 hover:bg-white/10 ${
+                  shown(i * 2 + 1) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+                }`}
+              >
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[11px] font-mono text-asentio-red">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="mt-2 font-semibold text-foreground">{step.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{step.question}</p>
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      active === i ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0'
-                    }`}
-                  >
-                    <div className="flex flex-wrap gap-1.5">
-                      {step.examples.map((ex) => (
-                        <span
-                          key={ex}
-                          className="px-2.5 py-1 rounded-full text-xs border border-border bg-background text-muted-foreground"
-                        >
-                          {ex}
-                        </span>
-                      ))}
-                    </div>
+                  <h3 className="font-semibold text-sm text-primary-foreground">{step.title}</h3>
+                </div>
+                <p className="mt-1.5 text-xs text-primary-foreground/60 leading-relaxed">
+                  {step.question}
+                </p>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${
+                    active === i ? 'max-h-40 opacity-100 mt-2.5' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <div className="flex flex-wrap gap-1.5">
+                    {step.examples.map((ex) => (
+                      <span
+                        key={ex}
+                        className="px-2 py-0.5 rounded-full text-[11px] border border-white/15 bg-white/5 text-primary-foreground/70"
+                      >
+                        {ex}
+                      </span>
+                    ))}
                   </div>
                 </div>
-
                 {i < STEPS.length - 1 && (
-                  <div
-                    className={`flex items-center justify-center shrink-0 py-1 md:py-0 md:px-3 transition-all duration-500 ${
+                  <ArrowRight
+                    className={`hidden lg:block absolute top-1/2 -right-[18px] -translate-y-1/2 w-4 h-4 text-primary-foreground/30 transition-opacity duration-500 ${
                       shown(i * 2 + 2) ? 'opacity-100' : 'opacity-0'
                     }`}
-                  >
-                    <ArrowDown className="w-5 h-5 text-primary-foreground/40 md:hidden" />
-                    <ArrowRight className="w-5 h-5 text-primary-foreground/40 hidden md:block" />
-                  </div>
+                  />
                 )}
               </div>
             ))}
@@ -181,18 +182,23 @@ const HumanAIFramework = () => {
         </div>
 
         {/* Why this matters */}
-        <div className="mt-14 md:mt-20 pt-10 md:pt-14 border-t border-white/10">
-          <h3 className="text-xl md:text-2xl font-bold text-primary-foreground mb-8">Why this framework matters</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {WHY.map((item) => (
-              <div key={item.title} className="rounded-2xl border border-border bg-card p-6">
-                <h4 className="font-semibold text-foreground mb-2">{item.title}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
-              </div>
-            ))}
+        <div className="mt-10 md:mt-12 pt-8 border-t border-white/10">
+          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 lg:gap-10 items-start">
+            <h3 className="text-lg font-bold text-primary-foreground lg:max-w-[160px] leading-snug">
+              Why this framework matters
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-5">
+              {WHY.map((item) => (
+                <div key={item.title} className="border-l-2 border-asentio-red/60 pl-3">
+                  <h4 className="font-semibold text-sm text-primary-foreground mb-1">{item.title}</h4>
+                  <p className="text-xs text-primary-foreground/60 leading-relaxed">{item.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
 
       <Dialog open={lightbox} onOpenChange={setLightbox}>
         <DialogContent className="max-w-[95vw] md:max-w-6xl p-2 md:p-4">
