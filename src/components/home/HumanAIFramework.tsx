@@ -133,11 +133,6 @@ const HumanAIFramework = () => {
                       ))}
                     </ul>
                   </div>
-                  {i < USE_CASE.length - 1 && (
-                    <div className="hidden lg:flex items-center justify-center shrink-0 px-2">
-                      <ArrowRight className="w-3.5 h-3.5 text-primary-foreground/30" />
-                    </div>
-                  )}
                 </div>
                 );
               })}
