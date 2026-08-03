@@ -116,8 +116,9 @@ const HumanAIFramework = () => {
                 </p>
               </div>
               {USE_CASE.map((block, i) => {
-                const num = block.title.split(' ')[0];
-                const rest = block.title.slice(num.length + 1);
+                const m = block.title.match(/^(\d+)([\s\u00a0]*)([\s\S]*)$/);
+                const num = m ? m[1] : '';
+                const rest = m ? m[3] : block.title;
                 return (
                 <div key={block.title} className="contents lg:flex lg:items-stretch lg:flex-1 lg:min-w-0">
                   <div className="flex-1 min-w-0 rounded-lg border border-white/10 bg-white/5 p-3">
