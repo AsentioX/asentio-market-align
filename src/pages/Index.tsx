@@ -13,31 +13,10 @@ import ARBackground from "@/components/ARBackground";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
-import { ArrowRight, Glasses, Brain, Activity, Compass, Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { initSession, trackPageView, trackCTAClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
-const CONVERGENCE = [
-  {
-    icon: Glasses,
-    title: "XR & Wearables",
-    body: "Glasses, headsets, hearables and rings — the hardware that puts computing on the body.",
-  },
-  {
-    icon: Brain,
-    title: "Artificial Intelligence",
-    body: "Multimodal, contextual and on-device models that turn raw sensing into understanding.",
-  },
-  {
-    icon: Activity,
-    title: "Human-Centered Design",
-    body: "The behavior, ergonomics and trust work that decides whether any of it gets worn twice.",
-  },
-  {
-    icon: Compass,
-    title: "Market Strategy",
-    body: "Positioning, channel and go-to-market for categories that don't exist yet.",
-  },
-];
+
 
 const Index = () => {
   const { data: companies } = useXRCompanies();
