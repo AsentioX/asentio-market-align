@@ -142,7 +142,7 @@ const HumanAIFramework = () => {
             <img
               src={frameworkImage.url}
               alt="The Human + AI Collaboration Loop: human activities, human capabilities, AI capabilities and human interface"
-              className="w-auto max-h-[260px] md:max-h-[340px] object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+              className="w-auto max-h-[260px] md:max-h-[340px] object-contain rounded-2xl transition-transform duration-500 group-hover:scale-[1.02]"
               loading="lazy"
             />
           </button>
