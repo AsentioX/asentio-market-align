@@ -26,9 +26,9 @@ export const ENGAGEMENTS: Engagement[] = [
     slug: 'advisory',
     icon: Compass,
     label: 'Strategic Advisory',
-    headline: 'Positioning, product strategy and US market entry for the interface era',
+    headline: 'Positioning, product strategy and US market fit',
     intro:
-      'Ongoing advisory for device makers, AI companies and component suppliers deciding what to build, who it is for, and how to land it in the US — from proposition and pricing through channel, partnerships and launch.',
+      'Ongoing advisory for device makers, AI companies and component suppliers deciding what to build, who it is for, and how it fits the US market from proposition and pricing through channel, partnerships and launch.',
     bestFor: [
       'Hardware teams entering AI glasses or wearables',
       'AI companies looking for a physical interface',
