@@ -21,7 +21,6 @@ import {
   Users,
   Calendar,
   Landmark,
-  ShieldCheck,
 } from 'lucide-react';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 
