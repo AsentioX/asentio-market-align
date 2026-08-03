@@ -115,10 +115,15 @@ const HumanAIFramework = () => {
                   Remote Equipment Maintenance
                 </p>
               </div>
-              {USE_CASE.map((block, i) => (
+              {USE_CASE.map((block, i) => {
+                const num = block.title.split(' ')[0];
+                const rest = block.title.slice(num.length + 1);
+                return (
                 <div key={block.title} className="contents lg:flex lg:items-stretch lg:flex-1 lg:min-w-0">
                   <div className="flex-1 min-w-0 rounded-lg border border-white/10 bg-white/5 p-3">
-                    <p className="text-xs font-semibold text-primary-foreground">{block.title}</p>
+                    <p className="text-xs font-semibold text-primary-foreground">
+                      <span className="text-asentio-red">{num}</span>{rest && <> {rest}</>}
+                    </p>
                     <ul className="mt-1.5 space-y-0.5">
                       {block.items.map((it) => (
                         <li key={it} className="text-[11px] text-primary-foreground/60 leading-snug">
@@ -133,7 +138,8 @@ const HumanAIFramework = () => {
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
