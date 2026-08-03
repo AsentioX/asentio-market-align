@@ -193,7 +193,7 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="companies" className="flex items-center gap-2">
               <Building className="w-4 h-4" />
-              Companies ({derivedCompanies.length})
+              Companies ({companyRows.length})
             </TabsTrigger>
             <TabsTrigger value="agencies" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
