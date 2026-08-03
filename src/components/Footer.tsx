@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { TAXONOMY } from "@/lib/xrTaxonomy";
-const whiteLogo = { url: "/logo-asentio-white.png" };
+
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -15,7 +15,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
             <img
-              src={whiteLogo.url}
+              src={"/logo-asentio-white.png"}
               alt="Asentio"
               className="h-8 mb-4"
             />
