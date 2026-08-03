@@ -142,7 +142,7 @@ const HumanAIFramework = () => {
 
 
         {/* Why this matters */}
-        <div className="mt-10 md:mt-12 pt-8 border-t border-white/10">
+        <div className="mt-10 md:mt-12">
           <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 lg:gap-10 items-start">
             <h3 className="text-lg font-bold text-primary-foreground lg:max-w-[160px] leading-snug">
               Why this framework matters
