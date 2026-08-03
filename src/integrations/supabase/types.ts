@@ -5267,6 +5267,7 @@ export type Database = {
           ai_capabilities: string[] | null
           asentio_perspective: string | null
           company_size: string | null
+          cover_image_url: string | null
           created_at: string
           description: string | null
           ecosystem_roles: string[]
@@ -5292,6 +5293,7 @@ export type Database = {
           ai_capabilities?: string[] | null
           asentio_perspective?: string | null
           company_size?: string | null
+          cover_image_url?: string | null
           created_at?: string
           description?: string | null
           ecosystem_roles?: string[]
@@ -5317,6 +5319,7 @@ export type Database = {
           ai_capabilities?: string[] | null
           asentio_perspective?: string | null
           company_size?: string | null
+          cover_image_url?: string | null
           created_at?: string
           description?: string | null
           ecosystem_roles?: string[]

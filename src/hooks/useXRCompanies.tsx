@@ -9,6 +9,7 @@ export interface XRCompany {
   name: string;
   website: string | null;
   logo_url: string | null;
+  cover_image_url: string | null;
   description: string | null;
   mission: string | null;
   hq_location: string | null;

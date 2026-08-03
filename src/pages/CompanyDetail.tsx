@@ -116,7 +116,18 @@ const CompanyDetail = () => {
     <div className="min-h-screen bg-background">
       {/* Overview */}
       <section className="relative pt-28 md:pt-36 pb-8 md:pb-12 bg-muted">
-        <TopographicPattern className="opacity-30" />
+        {company?.cover_image_url ? (
+          <div className="absolute inset-0">
+            <img
+              src={company.cover_image_url}
+              alt={`${displayName} cover`}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-muted via-muted/90 to-muted/60" />
+          </div>
+        ) : (
+          <TopographicPattern className="opacity-30" />
+        )}
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
             <ArrowLeft className="w-4 h-4" /> Back to Directory
