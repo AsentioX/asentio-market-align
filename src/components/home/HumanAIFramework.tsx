@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowDown, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import TopographicPattern from '@/components/TopographicPattern';
 import frameworkImage from '@/assets/hai-framework-loop-v2.png.asset.json';
 import { trackCTAClick } from '@/lib/analytics';
 
