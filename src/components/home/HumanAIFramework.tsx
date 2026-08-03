@@ -32,31 +32,8 @@ const WHY = [
 
 const HumanAIFramework = () => {
   const [lightbox, setLightbox] = useState(false);
-  const [revealed, setRevealed] = useState(0);
-  const [active, setActive] = useState<number | null>(null);
-  const flowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const node = flowRef.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          observer.disconnect();
-          // 4 cards + 3 arrows = 7 sequenced steps
-          for (let i = 1; i <= 7; i++) {
-            setTimeout(() => setRevealed(i), i * 250);
-          }
-        }
-      },
-      { threshold: 0.2 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
 
-  // Step index in the reveal sequence: card i -> i*2 + 1, arrow after card i -> i*2 + 2
-  const shown = (step: number) => revealed >= step;
 
   return (
     <section className="py-12 md:py-16 bg-asentio-blue relative overflow-hidden">
