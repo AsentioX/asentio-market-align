@@ -12,6 +12,7 @@ import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
 import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import asentioMark from "@/assets/asentio-a-mark.png.asset.json";
 
 
 
@@ -115,9 +116,13 @@ const Index = () => {
             </div>
             <div className="hidden md:flex items-center justify-center">
               <div className="text-center text-primary-foreground/80">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-asentio-red/20 flex items-center justify-center">
-                  <span className="text-3xl font-bold text-asentio-red">A</span>
+                <div
+                  className="w-20 h-20 mx-auto mb-4 bg-card border border-border flex items-center justify-center shadow-lg"
+                  style={{ clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%)" }}
+                >
+                  <img src={asentioMark.url} alt="Asentio mark" className="w-10 h-10 object-contain" />
                 </div>
+
                 <p className="text-sm font-medium tracking-wider uppercase text-primary-foreground/60">
                   Asentio Briefing
                 </p>
