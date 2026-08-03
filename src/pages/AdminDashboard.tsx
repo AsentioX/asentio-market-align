@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useXRProducts, useDeleteProduct, XRProduct } from '@/hooks/useXRProducts';
 import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies';
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
+import { useXRCompanies } from '@/hooks/useXRCompanies';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink,
   Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2, Briefcase, BookOpen
@@ -52,28 +53,34 @@ const AdminDashboard = () => {
   const deleteAgency = useDeleteAgency();
   const deleteUseCase = useDeleteUseCase();
 
-  // Derive companies from products
-  const derivedCompanies = useMemo(() => {
-    if (!products) return [];
-    const companyMap = new Map<string, { name: string; hq: string | null; productCount: number; categories: string[] }>();
-    products.forEach((p) => {
-      const existing = companyMap.get(p.company);
-      if (existing) {
-        existing.productCount++;
-        if (p.category && !existing.categories.includes(p.category)) existing.categories.push(p.category);
-        if (!existing.hq && p.company_hq) existing.hq = p.company_hq;
-      } else {
-        companyMap.set(p.company, { name: p.company, hq: p.company_hq, productCount: 1, categories: p.category ? [p.category] : [] });
-      }
+  const { data: companies, isLoading: companiesLoading } = useXRCompanies({ search: companySearch });
+
+  // Product counts per company name (for display only)
+  const productCounts = useMemo(() => {
+    const map = new Map<string, { count: number; categories: string[] }>();
+    (products || []).forEach((p) => {
+      const key = (p.company || '').toLowerCase();
+      const entry = map.get(key) || { count: 0, categories: [] };
+      entry.count++;
+      if (p.category && !entry.categories.includes(p.category)) entry.categories.push(p.category);
+      map.set(key, entry);
     });
-    return Array.from(companyMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return map;
   }, [products]);
 
-  const filteredDerivedCompanies = useMemo(() => {
-    if (!companySearch) return derivedCompanies;
-    const q = companySearch.toLowerCase();
-    return derivedCompanies.filter(c => c.name.toLowerCase().includes(q) || (c.hq && c.hq.toLowerCase().includes(q)));
-  }, [derivedCompanies, companySearch]);
+  const companyRows = useMemo(() => {
+    return (companies || []).map((c) => {
+      const stats = productCounts.get((c.name || '').toLowerCase());
+      return {
+        id: c.id,
+        name: c.name,
+        hq: c.hq_location || null,
+        productCount: stats?.count || 0,
+        categories: stats?.categories || [],
+      };
+    });
+  }, [companies, productCounts]);
+
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -186,7 +193,7 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="companies" className="flex items-center gap-2">
               <Building className="w-4 h-4" />
-              Companies ({derivedCompanies.length})
+              Companies ({companyRows.length})
             </TabsTrigger>
             <TabsTrigger value="agencies" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
@@ -368,11 +375,11 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                {productsLoading ? (
+                {companiesLoading ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-asentio-blue" />
                   </div>
-                ) : filteredDerivedCompanies.length > 0 ? (
+                ) : companyRows.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
@@ -384,8 +391,8 @@ const AdminDashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredDerivedCompanies.map((company) => (
-                          <tr key={company.name} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/companies/${encodeURIComponent(company.name)}/edit`)}>
+                        {companyRows.map((company) => (
+                          <tr key={company.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/companies/${encodeURIComponent(company.name)}/edit`)}>
                             <td className="py-3 px-4">
                               <p className="font-medium text-foreground">{company.name}</p>
                             </td>
