@@ -46,7 +46,7 @@ export const ENGAGEMENTS: Engagement[] = [
       'Launch planning and introductions',
       'Recurring working sessions with the leadership team',
     ],
-    outcome: 'A defensible position and a concrete US entry plan with the relationships to execute it.',
+    outcome: 'A concrete US market product and distribution plan with the relationships to execute it.',
   },
   {
     slug: 'research',
