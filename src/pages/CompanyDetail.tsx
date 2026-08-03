@@ -178,13 +178,6 @@ const CompanyDetail = () => {
                     </Button>
                   </a>
                 )}
-                <Link
-                  to={`/hai-directory/submit?claim=${encodeURIComponent(company?.id || key)}&company=${encodeURIComponent(displayName)}`}
-                >
-                  <Button variant="outline" className="border-2">
-                    <ShieldCheck className="w-4 h-4 mr-2" /> Claim this profile
-                  </Button>
-                </Link>
               </div>
             </div>
           </div>
