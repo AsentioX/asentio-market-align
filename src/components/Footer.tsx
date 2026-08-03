@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { TAXONOMY } from "@/lib/xrTaxonomy";
-import whiteLogo from "@/assets/logo-asentio-white.png.asset.json";
+const whiteLogo = { url: "/logo-asentio-white.png" };
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

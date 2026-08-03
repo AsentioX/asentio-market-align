@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import LanguageToggle from "./LanguageToggle";
-import whiteLogo from "@/assets/logo-asentio-white.png.asset.json";
+const whiteLogo = { url: "/logo-asentio-white.png" };
 
 interface NavItem {
   label: string;
