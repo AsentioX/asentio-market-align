@@ -171,8 +171,8 @@ const HumanAIFramework = () => {
                       shown(i * 2 + 2) ? 'opacity-100' : 'opacity-0'
                     }`}
                   >
-                    <ArrowDown className="w-5 h-5 text-muted-foreground md:hidden" />
-                    <ArrowRight className="w-5 h-5 text-muted-foreground hidden md:block" />
+                    <ArrowDown className="w-5 h-5 text-primary-foreground/40 md:hidden" />
+                    <ArrowRight className="w-5 h-5 text-primary-foreground/40 hidden md:block" />
                   </div>
                 )}
               </div>
