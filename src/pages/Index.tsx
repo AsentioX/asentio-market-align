@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
 import LatestInsights from "@/components/home/LatestInsights";
+import HumanAIFramework from "@/components/home/HumanAIFramework";
+
 
 import NewsCarousel from "@/components/directory/NewsCarousel";
 import NewsletterSignup from "@/components/NewsletterSignup";
