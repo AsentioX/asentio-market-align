@@ -30,6 +30,23 @@ const STEPS = [
   },
 ];
 
+const USE_CASE = [
+  { title: 'Human Activity', items: ['Operate', 'Maintain equipment remotely'] },
+  {
+    title: 'Human Capabilities',
+    items: ['Perceive (see what\u2019s wrong)', 'Act (guide the repair)', 'Supervise (ensure quality)'],
+  },
+  {
+    title: 'AI Capabilities',
+    items: ['Perceive (vision)', 'Reason (diagnose issue)', 'Communicate (voice guidance)'],
+  },
+  {
+    title: 'Human Interface',
+    items: ['Smart Glasses', 'Hands-free AR guidance & real-time info'],
+  },
+  { title: 'Outcome', items: ['Faster repair, fewer errors, lower downtime'] },
+];
+
 const WHY = [
   { title: 'Better Products', body: 'Design around people instead of technology.' },
   { title: 'Better Investments', body: 'Understand which companies enable complete Human + AI experiences.' },
