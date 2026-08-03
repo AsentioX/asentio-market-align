@@ -8,20 +8,20 @@ import frameworkImage from '@/assets/hai-framework-loop-v2.png.asset.json';
 import { trackCTAClick } from '@/lib/analytics';
 
 const USE_CASE = [
-  { title: 'Human Activity', items: ['Operate', 'Maintain equipment remotely'] },
+  { title: '01 Human Activity', items: ['Operate', 'Maintain equipment remotely'] },
   {
-    title: 'Human Capabilities',
+    title: '02 Human Capabilities',
     items: ['Perceive (see what\u2019s wrong)', 'Act (guide the repair)', 'Supervise (ensure quality)'],
   },
   {
-    title: 'AI Capabilities',
+    title: '03 AI Capabilities',
     items: ['Perceive (vision)', 'Reason (diagnose issue)', 'Communicate (voice guidance)'],
   },
   {
-    title: 'Human Interface',
+    title: '04\u00a0Human Interface',
     items: ['Smart Glasses', 'Hands-free AR guidance & real-time info'],
   },
-  { title: 'Outcome', items: ['Faster repair, fewer errors, lower downtime'] },
+  { title: '05 Outcome', items: ['Faster repair, fewer errors, lower downtime'] },
 ];
 
 const WHY = [
