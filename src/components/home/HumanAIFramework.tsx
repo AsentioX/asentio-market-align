@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,29 +6,6 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import TopographicPattern from '@/components/TopographicPattern';
 import frameworkImage from '@/assets/hai-framework-loop-v2.png.asset.json';
 import { trackCTAClick } from '@/lib/analytics';
-
-const STEPS = [
-  {
-    title: 'Human Activities',
-    question: 'What is the human trying to accomplish?',
-    examples: ['Observe', 'Operate', 'Think', 'Collaborate', 'Learn'],
-  },
-  {
-    title: 'Human Capabilities',
-    question: 'Which human abilities are being augmented?',
-    examples: ['Perceive', 'Think', 'Communicate', 'Act', 'Create'],
-  },
-  {
-    title: 'AI Capabilities',
-    question: 'What intelligence enables those capabilities?',
-    examples: ['Reason', 'Perceive', 'Plan', 'Automate', 'Embody'],
-  },
-  {
-    title: 'Human Interface',
-    question: 'How do people experience the AI?',
-    examples: ['AI Agent', 'Smart Glasses', 'Robots', 'Personal Devices', 'Smart Environments'],
-  },
-];
 
 const USE_CASE = [
   { title: 'Human Activity', items: ['Operate', 'Maintain equipment remotely'] },
@@ -56,31 +33,8 @@ const WHY = [
 
 const HumanAIFramework = () => {
   const [lightbox, setLightbox] = useState(false);
-  const [revealed, setRevealed] = useState(0);
-  const [active, setActive] = useState<number | null>(null);
-  const flowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const node = flowRef.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          observer.disconnect();
-          // 4 cards + 3 arrows = 7 sequenced steps
-          for (let i = 1; i <= 7; i++) {
-            setTimeout(() => setRevealed(i), i * 250);
-          }
-        }
-      },
-      { threshold: 0.2 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
 
-  // Step index in the reveal sequence: card i -> i*2 + 1, arrow after card i -> i*2 + 2
-  const shown = (step: number) => revealed >= step;
 
   return (
     <section className="py-12 md:py-16 bg-asentio-blue relative overflow-hidden">
@@ -149,54 +103,7 @@ const HumanAIFramework = () => {
         </div>
 
         {/* Interactive companion */}
-        <div ref={flowRef} className="mt-10 md:mt-12 pt-8 border-t border-white/10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {STEPS.map((step, i) => (
-              <div
-                key={step.title}
-                onMouseEnter={() => setActive(i)}
-                onMouseLeave={() => setActive(null)}
-                onClick={() => setActive((prev) => (prev === i ? null : i))}
-                className={`relative rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 cursor-default transition-all duration-500 hover:border-asentio-red/50 hover:bg-white/10 ${
-                  shown(i * 2 + 1) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
-                }`}
-              >
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[11px] font-mono text-asentio-red">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <h3 className="font-semibold text-sm text-primary-foreground">{step.title}</h3>
-                </div>
-                <p className="mt-1.5 text-xs text-primary-foreground/60 leading-relaxed">
-                  {step.question}
-                </p>
-                <div
-                  className={`overflow-hidden transition-all duration-300 ${
-                    active === i ? 'max-h-40 opacity-100 mt-2.5' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <div className="flex flex-wrap gap-1.5">
-                    {step.examples.map((ex) => (
-                      <span
-                        key={ex}
-                        className="px-2 py-0.5 rounded-full text-[11px] border border-white/15 bg-white/5 text-primary-foreground/70"
-                      >
-                        {ex}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {i < STEPS.length - 1 && (
-                  <ArrowRight
-                    className={`hidden lg:block absolute top-1/2 -right-[18px] -translate-y-1/2 w-4 h-4 text-primary-foreground/30 transition-opacity duration-500 ${
-                      shown(i * 2 + 2) ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
+        <div className="mt-10 md:mt-12 pt-8 border-t border-white/10">
           {/* Example use case */}
           <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 md:p-5">
             <div className="flex flex-col lg:flex-row lg:items-stretch gap-3 lg:gap-0">
