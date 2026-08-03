@@ -1,6 +1,4 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
 import LatestInsights from "@/components/home/LatestInsights";
@@ -13,8 +11,7 @@ import ARBackground from "@/components/ARBackground";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
-import { ArrowRight, Search } from "lucide-react";
-import { initSession, trackPageView, trackCTAClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
 
 
