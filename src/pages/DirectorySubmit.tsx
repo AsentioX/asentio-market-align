@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useSubmitCompany, SubmissionInput } from '@/hooks/useAsentioContent';
-import { useXRCompanies } from '@/hooks/useXRCompanies';
+
 import { useSeo } from '@/hooks/useSeo';
 import TopographicPattern from '@/components/TopographicPattern';
 import { Button } from '@/components/ui/button';
