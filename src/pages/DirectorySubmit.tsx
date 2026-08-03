@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useSubmitCompany, SubmissionInput } from '@/hooks/useAsentioContent';
-import { useXRCompanies } from '@/hooks/useXRCompanies';
+
 import { useSeo } from '@/hooks/useSeo';
 import TopographicPattern from '@/components/TopographicPattern';
 import { Button } from '@/components/ui/button';
@@ -22,15 +22,11 @@ import {
 } from '@/lib/xrTaxonomy';
 import { trackPageView } from '@/lib/analytics';
 
-type Mode = 'new_company' | 'claim_profile';
-
 const DirectorySubmit = () => {
   const [searchParams] = useSearchParams();
   const submit = useSubmitCompany();
-  const { data: companies } = useXRCompanies();
+  
 
-  const initialMode: Mode = searchParams.get('claim') ? 'claim_profile' : 'new_company';
-  const [mode, setMode] = useState<Mode>(initialMode);
   const [done, setDone] = useState(false);
 
   const [form, setForm] = useState({
@@ -49,12 +45,10 @@ const DirectorySubmit = () => {
   const [aiCaps, setAiCaps] = useState<string[]>([]);
   const [interfaces, setInterfaces] = useState<string[]>([]);
 
-  const existingId = searchParams.get('claim') || undefined;
-
   useSeo({
     title: 'Add Your Company to the HAI Directory | Asentio',
     description:
-      'Submit your XR, AI, wearables or component company to the Asentio HAI Directory, or claim an existing profile to keep it accurate.',
+      'Submit your XR, AI, wearables or component company to the Asentio HAI Directory.',
     canonicalPath: '/hai-directory/submit',
   });
 
@@ -62,13 +56,6 @@ const DirectorySubmit = () => {
     window.scrollTo(0, 0);
     trackPageView('/hai-directory/submit');
   }, []);
-
-  useEffect(() => {
-    if (existingId && companies) {
-      const match = companies.find((c) => c.id === existingId || c.slug === existingId);
-      if (match) setForm((f) => ({ ...f, company_name: match.name, website: match.website || '' }));
-    }
-  }, [existingId, companies]);
 
   const toggle = (list: string[], setList: (v: string[]) => void, value: string) =>
     setList(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
@@ -81,7 +68,7 @@ const DirectorySubmit = () => {
     }
 
     const payload: SubmissionInput = {
-      submission_type: mode,
+      submission_type: 'new_company',
       company_name: form.company_name.trim(),
       website: form.website || null,
       description: form.description || null,
@@ -95,7 +82,7 @@ const DirectorySubmit = () => {
       submitter_name: form.submitter_name || null,
       submitter_email: form.submitter_email || null,
       submitter_role: form.submitter_role || null,
-      existing_company_id: mode === 'claim_profile' ? existingId || null : null,
+      existing_company_id: null,
       source: 'directory-submit',
     };
 
@@ -138,27 +125,12 @@ const DirectorySubmit = () => {
           </Link>
           <div className="w-12 h-1 bg-asentio-red mb-4" />
           <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">
-            {mode === 'claim_profile' ? 'Claim this profile' : 'Add your company'}
+            Add your company
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed mb-6">
             The Asentio HAI Directory is curated. Tell us what you build and where you sit in the stack —
             we review every submission before publishing.
           </p>
-
-          <div className="inline-flex rounded-lg border border-border bg-background p-1">
-            {(['new_company', 'claim_profile'] as Mode[]).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  mode === m ? 'bg-asentio-blue text-white' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {m === 'new_company' ? 'Add a company' : 'Claim a profile'}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -332,7 +304,7 @@ const DirectorySubmit = () => {
             disabled={submit.isPending}
             className="bg-asentio-blue hover:bg-asentio-blue/90 px-8 py-6 text-base"
           >
-            {submit.isPending ? 'Submitting…' : mode === 'claim_profile' ? 'Submit claim' : 'Submit company'}
+            {submit.isPending ? 'Submitting…' : 'Submit company'}
           </Button>
         </form>
       </section>
