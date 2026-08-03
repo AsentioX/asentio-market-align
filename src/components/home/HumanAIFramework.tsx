@@ -117,7 +117,7 @@ const HumanAIFramework = () => {
           <button
             type="button"
             onClick={() => setLightbox(true)}
-            className="group block w-full flex items-center justify-center rounded-2xl overflow-hidden border border-white/10 bg-card/95 shadow-lg shadow-black/20 hover:shadow-xl transition-shadow p-3 md:p-4"
+            className="group block w-full flex items-center justify-center rounded-2xl overflow-hidden bg-transparent transition-shadow"
             aria-label="Enlarge the Human + AI Collaboration Loop diagram"
           >
             <img
