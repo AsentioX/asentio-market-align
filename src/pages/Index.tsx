@@ -1,6 +1,4 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
 import LatestInsights from "@/components/home/LatestInsights";
@@ -13,8 +11,7 @@ import ARBackground from "@/components/ARBackground";
 import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
-import { ArrowRight, Search } from "lucide-react";
-import { initSession, trackPageView, trackCTAClick, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
+import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
 
 
 
@@ -75,27 +72,6 @@ const Index = () => {
               ecosystem around them.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-              <Link to="/hai-directory" onClick={() => trackCTAClick("Explore the HAI Directory", true)}>
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 px-8 py-6 text-base font-medium shadow-lg shadow-asentio-blue/20"
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  Explore the HAI Directory
-                </Button>
-              </Link>
-              <Link to="/work-with-us">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto px-8 py-6 text-base font-medium border-2"
-                >
-                  Work with Asentio
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
 
             {companyCount > 0 && (
               <p className="mt-6 text-sm text-muted-foreground">
