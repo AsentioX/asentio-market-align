@@ -53,28 +53,34 @@ const AdminDashboard = () => {
   const deleteAgency = useDeleteAgency();
   const deleteUseCase = useDeleteUseCase();
 
-  // Derive companies from products
-  const derivedCompanies = useMemo(() => {
-    if (!products) return [];
-    const companyMap = new Map<string, { name: string; hq: string | null; productCount: number; categories: string[] }>();
-    products.forEach((p) => {
-      const existing = companyMap.get(p.company);
-      if (existing) {
-        existing.productCount++;
-        if (p.category && !existing.categories.includes(p.category)) existing.categories.push(p.category);
-        if (!existing.hq && p.company_hq) existing.hq = p.company_hq;
-      } else {
-        companyMap.set(p.company, { name: p.company, hq: p.company_hq, productCount: 1, categories: p.category ? [p.category] : [] });
-      }
+  const { data: companies, isLoading: companiesLoading } = useXRCompanies({ search: companySearch });
+
+  // Product counts per company name (for display only)
+  const productCounts = useMemo(() => {
+    const map = new Map<string, { count: number; categories: string[] }>();
+    (products || []).forEach((p) => {
+      const key = (p.company || '').toLowerCase();
+      const entry = map.get(key) || { count: 0, categories: [] };
+      entry.count++;
+      if (p.category && !entry.categories.includes(p.category)) entry.categories.push(p.category);
+      map.set(key, entry);
     });
-    return Array.from(companyMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return map;
   }, [products]);
 
-  const filteredDerivedCompanies = useMemo(() => {
-    if (!companySearch) return derivedCompanies;
-    const q = companySearch.toLowerCase();
-    return derivedCompanies.filter(c => c.name.toLowerCase().includes(q) || (c.hq && c.hq.toLowerCase().includes(q)));
-  }, [derivedCompanies, companySearch]);
+  const companyRows = useMemo(() => {
+    return (companies || []).map((c) => {
+      const stats = productCounts.get((c.name || '').toLowerCase());
+      return {
+        id: c.id,
+        name: c.name,
+        hq: c.hq_location || null,
+        productCount: stats?.count || 0,
+        categories: stats?.categories || [],
+      };
+    });
+  }, [companies, productCounts]);
+
   
   const navigate = useNavigate();
   const { toast } = useToast();
