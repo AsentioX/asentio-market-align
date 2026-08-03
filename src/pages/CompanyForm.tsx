@@ -55,6 +55,7 @@ const CompanyForm = () => {
     slug: '',
     website: '',
     logo_url: '',
+    cover_image_url: '',
     description: '',
     mission: '',
     hq_location: '',
@@ -78,6 +79,7 @@ const CompanyForm = () => {
         slug: existingCompany.slug,
         website: existingCompany.website || '',
         logo_url: existingCompany.logo_url || '',
+        cover_image_url: existingCompany.cover_image_url || '',
         description: existingCompany.description || '',
         mission: existingCompany.mission || '',
         hq_location: existingCompany.hq_location || '',
@@ -147,6 +149,7 @@ const CompanyForm = () => {
         slug: formData.slug,
         website: formData.website || null,
         logo_url: formData.logo_url || null,
+        cover_image_url: formData.cover_image_url || null,
         description: formData.description || null,
         mission: formData.mission || null,
         hq_location: formData.hq_location || null,
@@ -268,6 +271,25 @@ const CompanyForm = () => {
                     placeholder="https://example.com/logo.png"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cover_image_url">Cover Image URL</Label>
+                <Input
+                  id="cover_image_url"
+                  type="url"
+                  value={formData.cover_image_url}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cover_image_url: e.target.value }))}
+                  placeholder="https://example.com/cover.jpg"
+                />
+                <p className="text-xs text-muted-foreground">Wide banner image shown at the top of the company profile.</p>
+                {formData.cover_image_url && (
+                  <img
+                    src={formData.cover_image_url}
+                    alt="Cover preview"
+                    className="w-full h-40 object-cover rounded-lg border border-border"
+                  />
+                )}
               </div>
 
               <div className="grid sm:grid-cols-3 gap-4">
