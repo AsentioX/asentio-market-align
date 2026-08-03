@@ -114,7 +114,7 @@ const CompanyDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Overview */}
+      {/* Overview header with cover image */}
       <section className="relative pt-28 md:pt-36 pb-8 md:pb-12 bg-muted">
         {company?.cover_image_url ? (
           <div className="absolute inset-0">
@@ -123,7 +123,7 @@ const CompanyDetail = () => {
               alt={`${displayName} cover`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-muted via-muted/90 to-muted/60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-muted/70 via-muted/20 to-transparent" />
           </div>
         ) : (
           <TopographicPattern className="opacity-30" />
@@ -156,13 +156,7 @@ const CompanyDetail = () => {
                 </p>
               )}
 
-              {company?.description && (
-                <p className="text-base text-muted-foreground max-w-3xl leading-relaxed mb-4">
-                  {company.description}
-                </p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-5">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 {company?.hq_location && (
                   <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {company.hq_location}</span>
                 )}
@@ -179,20 +173,30 @@ const CompanyDetail = () => {
                   </span>
                 )}
               </div>
-
-              <div className="flex flex-wrap gap-3">
-                {company?.website && (
-                  <a href={company.website} target="_blank" rel="noopener noreferrer">
-                    <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
-                      <ExternalLink className="w-4 h-4 mr-2" /> Visit website
-                    </Button>
-                  </a>
-                )}
-              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Description and website link — below the header image */}
+      {(company?.description || company?.website) && (
+        <section className="container mx-auto px-4 md:px-6 pt-6 md:pt-8">
+          <div className="flex flex-col md:flex-row md:items-start gap-6 max-w-5xl">
+            {company?.description && (
+              <p className="text-base text-muted-foreground leading-relaxed flex-1">
+                {company.description}
+              </p>
+            )}
+            {company?.website && (
+              <a href={company.website} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
+                  <ExternalLink className="w-4 h-4 mr-2" /> Visit website
+                </Button>
+              </a>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Human-AI Framework */}
       <section className="container mx-auto px-4 md:px-6 py-8 md:py-12">
