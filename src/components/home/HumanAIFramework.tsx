@@ -130,7 +130,7 @@ const HumanAIFramework = () => {
         </div>
 
         {/* Interactive companion */}
-        <div ref={flowRef} className="mt-14 md:mt-20 pt-10 md:pt-14 border-t border-border">
+        <div ref={flowRef} className="mt-14 md:mt-20 pt-10 md:pt-14 border-t border-white/10">
           <div className="flex flex-col md:flex-row md:items-stretch gap-3 md:gap-0">
             {STEPS.map((step, i) => (
               <div key={step.title} className="contents md:flex md:items-stretch md:flex-1 md:min-w-0">
