@@ -391,8 +391,8 @@ const AdminDashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredDerivedCompanies.map((company) => (
-                          <tr key={company.name} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/companies/${encodeURIComponent(company.name)}/edit`)}>
+                        {companyRows.map((company) => (
+                          <tr key={company.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/companies/${encodeURIComponent(company.name)}/edit`)}>
                             <td className="py-3 px-4">
                               <p className="font-medium text-foreground">{company.name}</p>
                             </td>
