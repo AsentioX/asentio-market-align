@@ -80,14 +80,19 @@ export const ChesterMuiProfile = ({ compact = false }: ChesterMuiProfileProps) =
           <div className="lg:col-span-2 space-y-5 max-w-3xl">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">Background</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Chester has spent his career building and scaling commercial organisations — leading
-              strategy, finance and operations for brands entering new geographies and product
-              categories.
+              Chester has spent his career building and scaling commercial organizations—leading
+              strategy, finance, and operations for brands entering new geographies and product
+              categories. At Asentio, he focuses on the commercial mechanics of market entry:
+              pricing, channel economics, partner structures, and the operating models required to
+              support sustainable growth once a product finds traction.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              At Asentio he focuses on the commercial mechanics behind market entry: pricing,
-              channel economics, partner structures and the operating model required to support
-              growth once a product finds traction.
+              He helps companies achieve scale by combining operational efficiency with external
+              capital and strategic alliances. By streamlining cross-functional workflows and
+              optimizing cost structures, Chester builds lean operating models that protect margins
+              during rapid expansion. Simultaneously, he advises leadership teams on securing
+              growth financing and structuring high-impact partnerships that accelerate market
+              distribution and long-term enterprise value.
             </p>
           </div>
 
