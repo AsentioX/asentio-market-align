@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useXRProducts, useDeleteProduct, XRProduct } from '@/hooks/useXRProducts';
 import { useXRAgencies, useDeleteAgency, XRAgency } from '@/hooks/useXRAgencies';
 import { useXRUseCases, useDeleteUseCase, XRUseCase } from '@/hooks/useXRUseCases';
+import { useXRCompanies } from '@/hooks/useXRCompanies';
 import { 
   Plus, LogOut, Search, Trash2, ExternalLink,
   Sparkles, ArrowLeft, Loader2, LayoutGrid, Building2, Building, Layers, Rss, BarChart2, Users2, Briefcase, BookOpen
