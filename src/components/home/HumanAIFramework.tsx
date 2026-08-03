@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,29 +5,6 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import TopographicPattern from '@/components/TopographicPattern';
 import frameworkImage from '@/assets/hai-framework-loop-v2.png.asset.json';
 import { trackCTAClick } from '@/lib/analytics';
-
-const STEPS = [
-  {
-    title: 'Human Activities',
-    question: 'What is the human trying to accomplish?',
-    examples: ['Observe', 'Operate', 'Think', 'Collaborate', 'Learn'],
-  },
-  {
-    title: 'Human Capabilities',
-    question: 'Which human abilities are being augmented?',
-    examples: ['Perceive', 'Think', 'Communicate', 'Act', 'Create'],
-  },
-  {
-    title: 'AI Capabilities',
-    question: 'What intelligence enables those capabilities?',
-    examples: ['Reason', 'Perceive', 'Plan', 'Automate', 'Embody'],
-  },
-  {
-    title: 'Human Interface',
-    question: 'How do people experience the AI?',
-    examples: ['AI Agent', 'Smart Glasses', 'Robots', 'Personal Devices', 'Smart Environments'],
-  },
-];
 
 const USE_CASE = [
   { title: 'Human Activity', items: ['Operate', 'Maintain equipment remotely'] },
