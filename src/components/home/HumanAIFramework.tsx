@@ -106,7 +106,7 @@ const HumanAIFramework = () => {
         <div className="mt-10 md:mt-12 pt-8 border-t border-white/10">
           {/* Example use case */}
           <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 md:p-5">
-            <div className="flex flex-col lg:flex-row lg:items-stretch gap-3 lg:gap-0">
+            <div className="flex flex-col lg:flex-row lg:items-stretch gap-3">
               <div className="lg:w-44 shrink-0 lg:pr-5">
                 <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-asentio-red">
                   Example use case
