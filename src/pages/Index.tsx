@@ -75,27 +75,6 @@ const Index = () => {
               ecosystem around them.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-              <Link to="/hai-directory" onClick={() => trackCTAClick("Explore the HAI Directory", true)}>
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto bg-asentio-blue hover:bg-asentio-blue/90 px-8 py-6 text-base font-medium shadow-lg shadow-asentio-blue/20"
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  Explore the HAI Directory
-                </Button>
-              </Link>
-              <Link to="/work-with-us">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto px-8 py-6 text-base font-medium border-2"
-                >
-                  Work with Asentio
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
 
             {companyCount > 0 && (
               <p className="mt-6 text-sm text-muted-foreground">
