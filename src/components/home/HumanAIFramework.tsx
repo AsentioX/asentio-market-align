@@ -103,7 +103,7 @@ const HumanAIFramework = () => {
         </div>
 
         {/* Interactive companion */}
-        <div ref={flowRef} className="mt-10 md:mt-12 pt-8 border-t border-white/10">
+        <div className="mt-10 md:mt-12 pt-8 border-t border-white/10">
           {/* Example use case */}
           <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 md:p-5">
             <div className="flex flex-col lg:flex-row lg:items-stretch gap-3 lg:gap-0">
