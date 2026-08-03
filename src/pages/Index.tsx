@@ -12,7 +12,7 @@ import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
 import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
-import asentioMark from "@/assets/a-square-inv.png.asset.json";
+import asentioMark from "@/assets/a-doc-mark.png.asset.json";
 
 
 
