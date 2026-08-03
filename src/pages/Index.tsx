@@ -12,7 +12,7 @@ import WorldTimeMarquee from "@/components/WorldTimeMarquee";
 import { useXRCompanies } from "@/hooks/useXRCompanies";
 import { useSeo } from "@/hooks/useSeo";
 import { initSession, trackPageView, createScrollTracker, trackTimeOnPage } from "@/lib/analytics";
-import asentioMark from "@/assets/a-square-mark.png.asset.json";
+import asentioMark from "@/assets/a-square-inv.png.asset.json";
 
 
 
@@ -119,7 +119,7 @@ const Index = () => {
                 <img
                   src={asentioMark.url}
                   alt="Asentio mark"
-                  className="w-20 h-20 mx-auto mb-4 object-contain bg-card shadow-lg"
+                  className="w-20 h-20 mx-auto mb-4 object-contain"
                 />
 
                 <p className="text-sm font-medium tracking-wider uppercase text-primary-foreground/60">
