@@ -1,50 +1,33 @@
-import { useEffect, useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useXRProducts, XRProduct } from '@/hooks/useXRProducts';
-import { XRCompany, useXRCompanies, companyValues } from '@/hooks/useXRCompanies';
-import RelatedCompanies from '@/components/directory/RelatedCompanies';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import TopographicPattern from '@/components/TopographicPattern';
-import { useSeo } from '@/hooks/useSeo';
-import { HAI_DIMENSIONS } from '@/lib/haiFramework';
-import {
-  ExternalLink,
-  MapPin,
-  Package,
-  Loader2,
-  Sparkles,
-  Users,
-  Calendar,
-  Landmark,
-} from 'lucide-react';
-import { trackPageView, trackEvent } from '@/lib/analytics';
+import { useEffect, useMemo } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useXRProducts, XRProduct } from "@/hooks/useXRProducts";
+import { XRCompany, useXRCompanies, companyValues } from "@/hooks/useXRCompanies";
+import RelatedCompanies from "@/components/directory/RelatedCompanies";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import TopographicPattern from "@/components/TopographicPattern";
+import { useSeo } from "@/hooks/useSeo";
+import { HAI_DIMENSIONS } from "@/lib/haiFramework";
+import { ExternalLink, MapPin, Package, Loader2, Sparkles, Users, Calendar, Landmark } from "lucide-react";
+import { trackPageView, trackEvent } from "@/lib/analytics";
 
 const CompanyDetail = () => {
   const { companyName } = useParams<{ companyName: string }>();
-  const key = decodeURIComponent(companyName || '');
+  const key = decodeURIComponent(companyName || "");
   const { data: allProducts, isLoading: productsLoading } = useXRProducts({});
   const { data: allCompanies } = useXRCompanies({});
 
   const { data: company, isLoading: companyLoading } = useQuery({
-    queryKey: ['xr-company-profile', key],
+    queryKey: ["xr-company-profile", key],
     enabled: !!key,
     queryFn: async () => {
-      const { data: bySlug } = await supabase
-        .from('xr_companies')
-        .select('*')
-        .eq('slug', key)
-        .maybeSingle();
+      const { data: bySlug } = await supabase.from("xr_companies").select("*").eq("slug", key).maybeSingle();
       if (bySlug) return bySlug as unknown as XRCompany;
 
-      const { data: byName } = await supabase
-        .from('xr_companies')
-        .select('*')
-        .eq('name', key)
-        .maybeSingle();
+      const { data: byName } = await supabase.from("xr_companies").select("*").eq("name", key).maybeSingle();
       return (byName as unknown as XRCompany) || null;
     },
   });
@@ -57,7 +40,7 @@ const CompanyDetail = () => {
       .filter(
         (p) =>
           p.company === displayName ||
-          (company && (p as XRProduct & { company_id?: string }).company_id === company.id)
+          (company && (p as XRProduct & { company_id?: string }).company_id === company.id),
       )
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [allProducts, displayName, company]);
@@ -75,8 +58,8 @@ const CompanyDetail = () => {
     window.scrollTo(0, 0);
     if (!displayName) return;
     trackPageView(`/hai-directory/company/${key}`);
-    trackEvent('directory_view', {
-      item_type: 'company',
+    trackEvent("directory_view", {
+      item_type: "company",
       name: displayName,
       product_count: companyProducts.length,
     });
@@ -96,7 +79,7 @@ const CompanyDetail = () => {
         <div className="container mx-auto px-4">
           <h1 className="text-2xl font-bold text-foreground mb-2">Company not found</h1>
           <p className="text-muted-foreground">
-            We don't have a profile for “{key}” yet.{' '}
+            We don't have a profile for “{key}” yet.{" "}
             <Link to="/hai-directory/submit" className="text-asentio-blue hover:underline">
               Add it to the directory.
             </Link>
@@ -111,22 +94,16 @@ const CompanyDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Overview header with cover image */}
-      <section className="relative pt-28 md:pt-36 bg-muted h-[50vh] flex flex-col">
+      <section className="relative pt-28 md:pt-36 bg-muted h-[30vh] flex flex-col">
         {company?.cover_image_url ? (
           <div className="absolute inset-0">
-            <img
-              src={company.cover_image_url}
-              alt={`${displayName} cover`}
-              className="w-full h-full object-cover"
-            />
+            <img src={company.cover_image_url} alt={`${displayName} cover`} className="w-full h-full object-cover" />
             <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background via-background/60 to-transparent" />
           </div>
         ) : (
           <TopographicPattern className="opacity-30" />
         )}
         <div className="container mx-auto px-4 md:px-6 relative z-10 flex-1 flex flex-col">
-
-
           <div className="mt-auto pt-16 pb-6 md:pb-8 flex items-center gap-4 md:gap-6">
             {company?.logo_url ? (
               <img
@@ -156,18 +133,24 @@ const CompanyDetail = () => {
 
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
           {company?.hq_location && (
-            <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {company.hq_location}</span>
+            <span className="flex items-center gap-1">
+              <MapPin className="w-4 h-4" /> {company.hq_location}
+            </span>
           )}
           {company?.founded_year && (
-            <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Founded {company.founded_year}</span>
+            <span className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" /> Founded {company.founded_year}
+            </span>
           )}
           {company?.company_size && (
-            <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {company.company_size}</span>
+            <span className="flex items-center gap-1">
+              <Users className="w-4 h-4" /> {company.company_size}
+            </span>
           )}
           {companyProducts.length > 0 && (
             <span className="flex items-center gap-1">
               <Package className="w-4 h-4" /> {companyProducts.length} product
-              {companyProducts.length !== 1 ? 's' : ''}
+              {companyProducts.length !== 1 ? "s" : ""}
             </span>
           )}
         </div>
@@ -175,9 +158,7 @@ const CompanyDetail = () => {
         {(company?.description || company?.website) && (
           <div className="flex flex-col md:flex-row md:items-start gap-6 max-w-5xl">
             {company?.description && (
-              <p className="text-base text-muted-foreground leading-relaxed flex-1">
-                {company.description}
-              </p>
+              <p className="text-base text-muted-foreground leading-relaxed flex-1">{company.description}</p>
             )}
             {company?.website && (
               <a href={company.website} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
@@ -189,7 +170,6 @@ const CompanyDetail = () => {
           </div>
         )}
       </section>
-
 
       {/* Human-AI Framework */}
       <section className="container mx-auto px-4 md:px-6 py-8 md:py-12">
@@ -212,7 +192,10 @@ const CompanyDetail = () => {
                       to={`/hai-directory?${dimension.key}=${encodeURIComponent(v)}`}
                       className="inline-flex"
                     >
-                      <Badge variant="secondary" className="text-xs hover:bg-asentio-red hover:text-primary-foreground transition-colors">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs hover:bg-asentio-red hover:text-primary-foreground transition-colors"
+                      >
                         {v}
                       </Badge>
                     </Link>
@@ -222,7 +205,6 @@ const CompanyDetail = () => {
             );
           })}
         </div>
-
       </section>
 
       {/* Asentio Perspective — proprietary commentary */}
@@ -266,7 +248,9 @@ const ChipPanel = ({ title, items }: { title: string; items?: string[] | null })
       <h3 className="text-sm font-semibold text-foreground mb-3">{title}</h3>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (
-          <Badge key={item} variant="secondary" className="text-xs">{item}</Badge>
+          <Badge key={item} variant="secondary" className="text-xs">
+            {item}
+          </Badge>
         ))}
       </div>
     </div>
@@ -275,7 +259,7 @@ const ChipPanel = ({ title, items }: { title: string; items?: string[] | null })
 
 const TimelineItem = ({ product }: { product: XRProduct }) => {
   const date = new Date(product.created_at);
-  const dateStr = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  const dateStr = date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 
   return (
     <div className="relative flex gap-4 md:gap-6 pl-2">
@@ -292,9 +276,7 @@ const TimelineItem = ({ product }: { product: XRProduct }) => {
                 >
                   {product.name}
                 </Link>
-                {product.is_editors_pick && (
-                  <Badge className="bg-asentio-blue text-white text-xs">Editor's Pick</Badge>
-                )}
+                {product.is_editors_pick && <Badge className="bg-asentio-blue text-white text-xs">Editor's Pick</Badge>}
               </div>
               <p className="text-xs text-muted-foreground mb-2">{dateStr}</p>
               {product.description && (
@@ -303,9 +285,17 @@ const TimelineItem = ({ product }: { product: XRProduct }) => {
               <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                 <Badge variant="outline">{product.category}</Badge>
                 <Badge variant="outline">{product.shipping_status}</Badge>
-                {product.price_range && <span className="font-medium text-foreground">{product.price_range}{product.price_type === 'subscription' ? `/${product.billing_period === 'year' ? 'yr' : 'mo'}` : ''}</span>}
+                {product.price_range && (
+                  <span className="font-medium text-foreground">
+                    {product.price_range}
+                    {product.price_type === "subscription" ? `/${product.billing_period === "year" ? "yr" : "mo"}` : ""}
+                  </span>
+                )}
                 {product.region && (
-                  <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{product.region}</span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {product.region}
+                  </span>
                 )}
               </div>
             </div>
