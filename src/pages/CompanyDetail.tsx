@@ -12,7 +12,6 @@ import TopographicPattern from '@/components/TopographicPattern';
 import { useSeo } from '@/hooks/useSeo';
 import { HAI_DIMENSIONS } from '@/lib/haiFramework';
 import {
-  ArrowLeft,
   ExternalLink,
   MapPin,
   Package,
