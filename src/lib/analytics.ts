@@ -120,26 +120,29 @@ export async function initSession(): Promise<string> {
   const visitorId = getVisitorId();
   const utms = getUTMParams();
 
-  const { data, error } = await supabase
+  // Generate the id client-side: anonymous visitors are allowed to insert
+  // sessions but cannot read them back, so `.select()` would fail under RLS.
+  const newId = crypto.randomUUID();
+
+  const { error } = await supabase
     .from('analytics_sessions')
     .insert({
+      id:           newId,
       visitor_id:   visitorId,
       landing_page: window.location.pathname,
       referrer:     document.referrer || undefined,
       device_type:  getDeviceType(),
       user_agent:   navigator.userAgent.slice(0, 200),
       ...utms,
-    })
-    .select('id')
-    .single();
+    });
 
-  if (error || !data) {
+  if (error) {
     console.warn('[analytics] session init failed', error);
     return '';
   }
 
-  setSessionId(data.id);
-  return data.id;
+  setSessionId(newId);
+  return newId;
 }
 
 // ─────────────────────────────────────────────────────────────
