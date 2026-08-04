@@ -45,12 +45,35 @@ const Index = () => {
       {/* ---------------- World clock marquee ---------------- */}
       <WorldTimeMarquee />
 
-      {/* ---------------- Hero: the directory front door ---------------- */}
-      <section className="relative bg-background pt-12 md:pt-16 pb-14 md:pb-20 overflow-hidden">
+      {/* ---------------- Hero: logo + company name only ---------------- */}
+      <section className="relative bg-background min-h-[70vh] md:min-h-[88vh] flex items-end overflow-hidden">
         <TopographicPattern className="opacity-60" />
         <ARBackground />
         <div className="absolute top-0 left-0 w-1 h-40 bg-gradient-to-b from-asentio-red to-transparent" />
 
+        <div className="container mx-auto px-4 md:px-6 relative z-10 w-full pb-14 md:pb-20">
+          <div className="flex items-center gap-4">
+            <img
+              src={asentioMark.url}
+              alt="Asentio mark"
+              className="w-14 h-14 md:w-20 md:h-20 object-contain"
+            />
+            <div className="flex flex-col">
+              <span className="text-3xl md:text-5xl font-bold tracking-tight text-foreground leading-none">
+                Asentio
+              </span>
+              <span className="mt-1.5 text-[11px] md:text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground">
+                Interfacing Humans and AI
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
+      </section>
+
+      {/* ---------------- Directory front door intro ---------------- */}
+      <section className="relative bg-background py-14 md:py-20 overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full mb-6">
@@ -73,7 +96,6 @@ const Index = () => {
               ecosystem around them.
             </p>
 
-
             {companyCount > 0 && (
               <p className="mt-6 text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground">{companyCount}</span> companies tracked across six
@@ -82,8 +104,6 @@ const Index = () => {
             )}
           </div>
         </div>
-
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
       </section>
 
       {/* ---------------- Convergence thesis ---------------- */}
