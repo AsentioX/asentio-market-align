@@ -95,9 +95,6 @@ const CompanyDetail = () => {
     return (
       <div className="min-h-screen pt-32">
         <div className="container mx-auto px-4">
-          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
-            <ArrowLeft className="w-4 h-4" /> Back to Directory
-          </Link>
           <h1 className="text-2xl font-bold text-foreground mb-2">Company not found</h1>
           <p className="text-muted-foreground">
             We don't have a profile for “{key}” yet.{' '}
@@ -129,9 +126,7 @@ const CompanyDetail = () => {
           <TopographicPattern className="opacity-30" />
         )}
         <div className="container mx-auto px-4 md:px-6 relative z-10 flex-1 flex flex-col">
-          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground self-start">
-            <ArrowLeft className="w-4 h-4" /> Back to Directory
-          </Link>
+
 
           <div className="mt-auto pt-16 pb-6 md:pb-8 flex items-center gap-4 md:gap-6">
             {company?.logo_url ? (
