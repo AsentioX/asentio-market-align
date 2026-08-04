@@ -125,11 +125,6 @@ import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
-const isBeaverBoatHost = () => {
-  if (typeof window === 'undefined') return false;
-  const h = window.location.hostname;
-  return h === 'beaverboatclub.org' || h === 'www.beaverboatclub.org';
-};
 
 /** Preserve old /xr-directory links by redirecting to the new /hai-directory paths. */
 const OldDirectoryRedirect = () => {
