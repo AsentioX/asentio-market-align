@@ -4,7 +4,7 @@ import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import frameworkImage from '@/assets/hai-framework-loop-v2.png.asset.json';
-import sectionBg from '@/assets/hai-framework-bg-v2.png.asset.json';
+import sectionBg from '@/assets/hai-framework-bg-v3.png.asset.json';
 import { trackCTAClick } from '@/lib/analytics';
 
 const USE_CASE = [
