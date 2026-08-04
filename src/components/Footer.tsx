@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { TAXONOMY } from "@/lib/xrTaxonomy";
+import asentioLogo from "@/assets/logo-asentio-white.png.asset.json";
 
 
 const Footer = () => {
