@@ -123,7 +123,7 @@ const CompanyDetail = () => {
               alt={`${displayName} cover`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background via-background/60 to-transparent" />
           </div>
         ) : (
           <TopographicPattern className="opacity-30" />
