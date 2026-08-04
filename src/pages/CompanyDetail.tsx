@@ -111,7 +111,7 @@ const CompanyDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Overview header with cover image */}
-      <section className="relative pt-28 md:pt-36 bg-muted min-h-[45vh] md:min-h-[60vh] flex flex-col">
+      <section className="relative pt-28 md:pt-36 bg-muted h-[50vh] flex flex-col">
         {company?.cover_image_url ? (
           <div className="absolute inset-0">
             <img
