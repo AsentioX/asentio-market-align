@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/assetUrl";
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopographicPattern from "@/components/TopographicPattern";
@@ -117,7 +118,7 @@ const Index = () => {
             <div className="hidden md:flex items-center justify-center">
               <div className="text-center text-primary-foreground/80">
                 <img
-                  src={asentioMark.url}
+                  src={assetUrl(asentioMark.url)}
                   alt="Asentio mark"
                   className="w-20 h-20 mx-auto mb-4 object-contain"
                 />

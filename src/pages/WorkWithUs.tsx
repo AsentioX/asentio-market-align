@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/assetUrl";
 import { useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useSeo } from '@/hooks/useSeo';
@@ -119,7 +120,7 @@ const WorkWithUs = () => {
       {/* Header */}
       <section
         className="relative pt-28 md:pt-36 pb-10 md:pb-14 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${workWithUsHeaderBg.url})` }}
+        style={{ backgroundImage: `url(${assetUrl(workWithUsHeaderBg.url)})` }}
       >
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-3xl">
@@ -243,7 +244,7 @@ const WorkWithUs = () => {
                 </p>
               </div>
               <img
-                src={methodologyDiagram.url}
+                src={assetUrl(methodologyDiagram.url)}
                 alt="Asentio methodology: human, behavior, need, opportunity, technology, strategy"
                 loading="lazy"
                 className="w-full rounded-2xl border border-border shadow-lg"

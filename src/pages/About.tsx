@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/assetUrl";
 import { useEffect } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
@@ -39,7 +40,7 @@ const About = () => {
           <img
             alt="Golden Gate Bridge at dusk in San Francisco"
             className="w-full h-full object-cover"
-            src={aboutHeaderBg.url}
+            src={assetUrl(aboutHeaderBg.url)}
           />
           <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
             <div className="text-center px-4 max-w-4xl mx-auto">
