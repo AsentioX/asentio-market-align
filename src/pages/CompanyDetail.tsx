@@ -115,7 +115,7 @@ const CompanyDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Overview header with cover image */}
-      <section className="relative pt-28 md:pt-36 pb-8 md:pb-12 bg-muted">
+      <section className="relative pt-28 md:pt-36 bg-muted min-h-[45vh] md:min-h-[60vh] flex flex-col">
         {company?.cover_image_url ? (
           <div className="absolute inset-0">
             <img
@@ -123,64 +123,62 @@ const CompanyDetail = () => {
               alt={`${displayName} cover`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-muted/70 via-muted/20 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/60 to-transparent" />
           </div>
         ) : (
           <TopographicPattern className="opacity-30" />
         )}
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+        <div className="container mx-auto px-4 md:px-6 relative z-10 flex-1 flex flex-col">
+          <Link to="/hai-directory" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground self-start">
             <ArrowLeft className="w-4 h-4" /> Back to Directory
           </Link>
 
-          <div className="flex flex-col md:flex-row md:items-start gap-6">
+          <div className="mt-auto pt-16 pb-6 md:pb-8 flex items-center gap-4 md:gap-6">
             {company?.logo_url ? (
               <img
                 src={company.logo_url}
                 alt={`${displayName} logo`}
-                className="w-20 h-20 object-contain rounded-xl bg-background p-2 border border-border"
+                className="w-16 h-16 md:w-20 md:h-20 object-contain rounded-xl bg-background p-2 border border-border flex-shrink-0"
               />
             ) : (
-              <div className="w-20 h-20 rounded-xl bg-background border border-border flex items-center justify-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-background border border-border flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl font-bold text-muted-foreground">{displayName.charAt(0)}</span>
               </div>
             )}
-
-            <div className="flex-1">
-              <div className="w-12 h-1 bg-asentio-red mb-4" />
-              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">{displayName}</h1>
-
-              {company?.mission && (
-                <p className="text-lg md:text-xl text-foreground/90 max-w-3xl leading-relaxed mb-3 italic">
-                  {company.mission}
-                </p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                {company?.hq_location && (
-                  <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {company.hq_location}</span>
-                )}
-                {company?.founded_year && (
-                  <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Founded {company.founded_year}</span>
-                )}
-                {company?.company_size && (
-                  <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {company.company_size}</span>
-                )}
-                {companyProducts.length > 0 && (
-                  <span className="flex items-center gap-1">
-                    <Package className="w-4 h-4" /> {companyProducts.length} product
-                    {companyProducts.length !== 1 ? 's' : ''}
-                  </span>
-                )}
-              </div>
-            </div>
+            <h1 className="text-3xl md:text-5xl font-bold text-foreground">{displayName}</h1>
           </div>
         </div>
       </section>
 
-      {/* Description and website link — below the header image */}
-      {(company?.description || company?.website) && (
-        <section className="container mx-auto px-4 md:px-6 pt-6 md:pt-8">
+      {/* Mission, meta, description and website link */}
+      <section className="container mx-auto px-4 md:px-6 pt-6 md:pt-8">
+        <div className="w-12 h-1 bg-asentio-red mb-4" />
+
+        {company?.mission && (
+          <p className="text-lg md:text-xl text-foreground/90 max-w-3xl leading-relaxed mb-3 italic">
+            {company.mission}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
+          {company?.hq_location && (
+            <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {company.hq_location}</span>
+          )}
+          {company?.founded_year && (
+            <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Founded {company.founded_year}</span>
+          )}
+          {company?.company_size && (
+            <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {company.company_size}</span>
+          )}
+          {companyProducts.length > 0 && (
+            <span className="flex items-center gap-1">
+              <Package className="w-4 h-4" /> {companyProducts.length} product
+              {companyProducts.length !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
+
+        {(company?.description || company?.website) && (
           <div className="flex flex-col md:flex-row md:items-start gap-6 max-w-5xl">
             {company?.description && (
               <p className="text-base text-muted-foreground leading-relaxed flex-1">
@@ -195,8 +193,9 @@ const CompanyDetail = () => {
               </a>
             )}
           </div>
-        </section>
-      )}
+        )}
+      </section>
+
 
       {/* Human-AI Framework */}
       <section className="container mx-auto px-4 md:px-6 py-8 md:py-12">
