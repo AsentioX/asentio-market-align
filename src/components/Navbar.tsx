@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import LanguageToggle from "./LanguageToggle";
+import asentioLogo from "@/assets/logo-asentio-white.png.asset.json";
 
 
 interface NavItem {
@@ -46,7 +47,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img
-            src={isScrolled ? "/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" : "/logo-asentio-white.png"}
+            src={isScrolled ? "/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" : asentioLogo.url}
             alt="Asentio — the human interface to AI"
             className="h-8"
           />

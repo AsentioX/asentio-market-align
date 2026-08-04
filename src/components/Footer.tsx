@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { TAXONOMY } from "@/lib/xrTaxonomy";
+import asentioLogo from "@/assets/logo-asentio-white.png.asset.json";
 
 
 const Footer = () => {
@@ -15,7 +16,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
             <img
-              src={"/logo-asentio-white.png"}
+              src={asentioLogo.url}
               alt="Asentio"
               className="h-8 mb-4"
             />
