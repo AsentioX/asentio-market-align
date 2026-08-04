@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/assetUrl";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -47,7 +48,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img
-            src={isScrolled ? "/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" : asentioLogo.url}
+            src={isScrolled ? "/lovable-uploads/551d8493-0ba4-4301-99f6-ee9a98e21706.png" : assetUrl(asentioLogo.url)}
             alt="Asentio — the human interface to AI"
             className="h-8"
           />

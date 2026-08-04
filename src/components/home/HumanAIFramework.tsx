@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/assetUrl";
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
@@ -39,7 +40,7 @@ const HumanAIFramework = () => {
       {/* Ecosystem-map background image */}
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: `url(${sectionBg.url})` }}
+        style={{ backgroundImage: `url(${assetUrl(sectionBg.url)})` }}
         aria-hidden="true"
       />
 
@@ -99,7 +100,7 @@ const HumanAIFramework = () => {
             aria-label="Enlarge the Human + AI Collaboration Loop diagram"
           >
             <img
-              src={frameworkImage.url}
+              src={assetUrl(frameworkImage.url)}
               alt="The Human + AI Collaboration Loop: human activities, human capabilities, AI capabilities and human interface"
               className="w-full max-h-[340px] md:max-h-[440px] object-contain transition-transform duration-500 group-hover:scale-[1.02]"
               loading="lazy"
@@ -166,7 +167,7 @@ const HumanAIFramework = () => {
         <DialogContent className="max-w-[95vw] md:max-w-6xl p-4 md:p-6 bg-white">
           <DialogTitle className="sr-only">The Human + AI Collaboration Loop</DialogTitle>
           <img
-            src={frameworkImage.url}
+            src={assetUrl(frameworkImage.url)}
             alt="The Human + AI Collaboration Loop, enlarged"
             className="w-full h-auto rounded-lg"
           />

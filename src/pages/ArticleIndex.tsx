@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/assetUrl";
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useArticles } from '@/hooks/useAsentioContent';
@@ -56,7 +57,7 @@ const ArticleIndex = ({ kind }: ArticleIndexProps) => {
       {/* Header */}
       <section
         className="relative pt-28 md:pt-36 pb-10 md:pb-14 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${insightsHeaderBg.url})` }}
+        style={{ backgroundImage: `url(${assetUrl(insightsHeaderBg.url)})` }}
       >
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-3xl">
