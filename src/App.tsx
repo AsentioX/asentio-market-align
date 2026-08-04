@@ -100,8 +100,6 @@ import ScrmSponsors from "./pages/labs/rhcrm/pages/Sponsors";
 import ScrmSponsorDetail from "./pages/labs/rhcrm/pages/SponsorDetail";
 import ScrmActions from "./pages/labs/rhcrm/pages/Actions";
 import ScrmTeam from "./pages/labs/rhcrm/pages/Team";
-import BeaverBoatLayout from "./pages/labs/beaver-boat/BeaverBoatLayout";
-import BeaverBoatAdmin from "./pages/labs/beaver-boat/BeaverBoatAdmin";
 import AsentioOSLayout from "./pages/labs/asentio-os/AsentioOSLayout";
 import SmartVisionLayout from "./pages/labs/smart-vision/SmartVisionLayout";
 import JustGrapesLayout from "./pages/labs/justgrapes/JustGrapesLayout";
@@ -135,8 +133,7 @@ const OldDirectoryRedirect = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const beaverHost = isBeaverBoatHost();
-  const hideNavFooter = beaverHost || location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/beaver-boat') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics') || location.pathname.startsWith('/labs/smart-vision') || location.pathname.startsWith('/labs/justgrapes') || location.pathname.startsWith('/labs/rhcrm') || location.pathname.startsWith('/labs/race-companion');
+  const hideNavFooter = location.pathname === '/schedule' || location.pathname === '/labs/wo-buddy' || location.pathname === '/labs/wo-buddy/admin' || location.pathname === '/labs/my-dj' || location.pathname.startsWith('/labs/fieldofviews') || location.pathname.startsWith('/labs/perkpath') || location.pathname.startsWith('/labs/cpconnect') || location.pathname.startsWith('/labs/tastudio') || location.pathname.startsWith('/labs/rowwindow') || location.pathname.startsWith('/labs/aotu') || location.pathname.startsWith('/labs/vibin') || location.pathname.startsWith('/labs/contractor-finder') || location.pathname.startsWith('/labs/x1-smart') || location.pathname.startsWith('/labs/verdant') || location.pathname.startsWith('/labs/carekits') || location.pathname.startsWith('/labs/asentio-os') || location.pathname.startsWith('/labs/robotics') || location.pathname.startsWith('/labs/smart-vision') || location.pathname.startsWith('/labs/justgrapes') || location.pathname.startsWith('/labs/rhcrm') || location.pathname.startsWith('/labs/race-companion');
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
@@ -144,17 +141,6 @@ const AppContent = () => {
     }
   }, [location]);
 
-  if (beaverHost) {
-    return (
-      <main>
-        <Routes>
-          <Route path="/admin" element={<BeaverBoatAdmin />} />
-          <Route path="/unsubscribe" element={<Unsubscribe />} />
-          <Route path="*" element={<BeaverBoatLayout />} />
-        </Routes>
-      </main>
-    );
-  }
 
   return (
     <>
@@ -248,8 +234,6 @@ const AppContent = () => {
             <Route path="actions" element={<ScrmActions />} />
             <Route path="team" element={<ScrmTeam />} />
           </Route>
-          <Route path="/labs/beaver-boat" element={<BeaverBoatLayout />} />
-          <Route path="/labs/beaver-boat/admin" element={<BeaverBoatAdmin />} />
           <Route path="/labs/asentio-os" element={<AsentioOSLayout />} />
           <Route path="/labs/smart-vision" element={<SmartVisionLayout />} />
           <Route path="/labs/justgrapes" element={<JustGrapesLayout />} />
