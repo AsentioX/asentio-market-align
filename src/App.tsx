@@ -145,6 +145,7 @@ const AppContent = () => {
 
   return (
     <>
+      <ScrollToTop />
       {!hideNavFooter && <Navbar />}
       <main>
         <Routes>
