@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import TopographicPattern from '@/components/TopographicPattern';
 import frameworkImage from '@/assets/hai-framework-loop-v2.png.asset.json';
+import sectionBg from '@/assets/hai-framework-bg.png.asset.json';
 import { trackCTAClick } from '@/lib/analytics';
 
 const USE_CASE = [
