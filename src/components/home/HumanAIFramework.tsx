@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import TopographicPattern from '@/components/TopographicPattern';
 import frameworkImage from '@/assets/hai-framework-loop-v2.png.asset.json';
+import sectionBg from '@/assets/hai-framework-bg.png.asset.json';
 import { trackCTAClick } from '@/lib/analytics';
 
 const USE_CASE = [
@@ -36,8 +36,12 @@ const HumanAIFramework = () => {
 
   return (
     <section className="relative overflow-hidden" style={{ backgroundColor: '#FAFAF8' }}>
-      {/* Subtle ecosystem-map pattern, low opacity */}
-      <TopographicPattern variant="light" className="opacity-[0.07]" />
+      {/* Ecosystem-map background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center pointer-events-none"
+        style={{ backgroundImage: `url(${sectionBg.url})` }}
+        aria-hidden="true"
+      />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 py-16 md:py-24">
         {/* Intro: two columns */}
