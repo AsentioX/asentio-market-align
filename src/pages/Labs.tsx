@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Anchor, Building2, Bot, Camera, Wine } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Building2, Bot, Camera, Wine } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -117,14 +117,7 @@ const labApps: LabApp[] = [
     link: '/labs/verdant',
   },
   {
-    name: 'Beaver Boat Club',
-    description: 'High-energy site for the MIT Alumni dragonboat team in the Bay Area. Countdown, race calendar, novice signup, and sponsorship.',
-    icon: <Anchor className="w-8 h-8" />,
-    status: 'beta',
-    tags: ['Sports', 'Community', 'MIT'],
-    link: '/labs/beaver-boat',
-  },
-  {
+
     name: 'Care Kits',
     description: 'Personalized safety kits for aging parents living independently. Take a 2-minute quiz, get a tailored plan — privacy-first, no cameras.',
     icon: <ShieldCheck className="w-8 h-8" />,
