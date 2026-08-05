@@ -4159,6 +4159,7 @@ export type Database = {
           email: string | null
           id: string
           is_active: boolean
+          must_change_password: boolean
           name: string | null
           phone: string | null
           photo_url: string | null
@@ -4170,6 +4171,7 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean
+          must_change_password?: boolean
           name?: string | null
           phone?: string | null
           photo_url?: string | null
@@ -4181,6 +4183,7 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean
+          must_change_password?: boolean
           name?: string | null
           phone?: string | null
           photo_url?: string | null
