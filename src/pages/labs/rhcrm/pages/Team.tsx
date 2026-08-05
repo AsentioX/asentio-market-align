@@ -144,13 +144,13 @@ export default function Team() {
                   <td className="px-4 py-2 text-right whitespace-nowrap">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-900" title="Reset to default password">
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-900" title={m.user_id ? 'Reset to default password' : 'Create login with default password'}>
                           <KeyRound className="w-4 h-4" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Reset password to default?</AlertDialogTitle>
+                          <AlertDialogTitle>{m.user_id ? 'Reset password to default?' : 'Create login for this member?'}</AlertDialogTitle>
                           <AlertDialogDescription>
                             {m.name || m.email || 'This member'} will be able to sign in with the default password
                             <span className="font-mono"> {SCRM_DEFAULT_PASSWORD}</span> and must set a new one at next login.
@@ -159,7 +159,7 @@ export default function Team() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction onClick={() => resetPassword(m.id, m.name || m.email || 'Member')}>
-                            Reset password
+                            {m.user_id ? 'Reset password' : 'Create login'}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -196,7 +196,7 @@ export default function Team() {
 
       <p className="mt-4 text-xs text-slate-500">
         Click a photo to upload a new one (JPG or PNG, up to 5MB). You can always update your own photo.
-        {isAdmin && <> Use the key icon to reset a member back to the default password (<span className="font-mono">{SCRM_DEFAULT_PASSWORD}</span>).</>}
+        {isAdmin && <> Use the key icon to create a login for a pending member, or reset one back to the default password (<span className="font-mono">{SCRM_DEFAULT_PASSWORD}</span>).</>}
       </p>
     </div>
   );
