@@ -147,39 +147,6 @@ const CsvProductUpload = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleRollback = async () => {
-    if (!rollback) return;
-    setIsRollingBack(true);
-    try {
-      // Delete newly created products
-      if (rollback.newSlugs.length > 0) {
-        const { error } = await supabase
-          .from('xr_products')
-          .delete()
-          .in('slug', rollback.newSlugs);
-        if (error) throw error;
-      }
-
-      // Restore updated products to their previous state
-      for (const product of rollback.updatedProducts) {
-        const { error } = await supabase
-          .from('xr_products')
-          .update(product)
-          .eq('id', product.id);
-        if (error) throw error;
-      }
-
-      queryClient.invalidateQueries({ queryKey: ['xr-products'] });
-      setRollback(null);
-      setResult(null);
-      toast({ title: 'Rollback complete', description: 'All imported changes have been reverted.' });
-    } catch (err: any) {
-      toast({ title: 'Rollback failed', description: err.message, variant: 'destructive' });
-    } finally {
-      setIsRollingBack(false);
-    }
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -191,7 +158,6 @@ const CsvProductUpload = () => {
 
     setIsUploading(true);
     setResult(null);
-    setRollback(null);
 
     try {
       const text = await file.text();
