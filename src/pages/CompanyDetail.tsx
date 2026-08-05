@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import TopographicPattern from "@/components/TopographicPattern";
+import ARBackground from "@/components/ARBackground";
 import { useSeo } from "@/hooks/useSeo";
 import { HAI_DIMENSIONS } from "@/lib/haiFramework";
 import { ExternalLink, MapPin, Package, Loader2, Sparkles, Users, Calendar, Landmark } from "lucide-react";
@@ -104,6 +105,7 @@ const CompanyDetail = () => {
           <>
             <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f1f] via-[#111a2e] to-[#0a0f1f]" />
             <TopographicPattern variant="darkBg" className="opacity-60" />
+            <ARBackground />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
           </>
         )}
