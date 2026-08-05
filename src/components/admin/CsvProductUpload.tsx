@@ -190,7 +190,10 @@ const CsvProductUpload = () => {
         .select('*')
         .in('slug', incomingSlugs);
 
-      const existingSlugSet = new Set((existingProducts || []).map((p: any) => p.slug));
+      const existingBySlug = new Map<string, Record<string, any>>(
+        (existingProducts || []).map((p: any) => [p.slug, p])
+      );
+      const existingSlugSet = new Set(existingBySlug.keys());
 
       let success = 0;
       const errors: string[] = [];
@@ -260,11 +263,16 @@ const CsvProductUpload = () => {
           };
 
           const isExisting = existingSlugSet.has(slug);
+          let payload: Record<string, any> = product;
           if (mergeMode && isExisting) {
-            // Merge mode: keep the existing ai_integration value untouched
-            delete product.ai_integration;
+            // Merge mode: start from the existing row so NOT NULL columns
+            // (ai_integration, category, region, shipping_status, ...) are never
+            // wiped by an upsert, then layer the non-empty CSV values on top.
+            const existingRow = { ...(existingBySlug.get(slug) || {}) };
+            delete existingRow.created_at;
+            delete existingRow.updated_at;
+            payload = { ...existingRow, ...pruneEmpty(product) };
           }
-          const payload = mergeMode && isExisting ? pruneEmpty(product) : product;
 
           const { error } = await supabase
             .from('xr_products')
