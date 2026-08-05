@@ -7,6 +7,8 @@ import { Upload, Loader2, Download, AlertCircle, FileDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { parseCSV, parseBool, parseArray, slugify, downloadCsv, exportRowsCsv, pruneEmpty } from './csvUtils';
 import MergeModeToggle from './MergeModeToggle';
+import ImportHistory from './ImportHistory';
+import { logImport } from './importLog';
 
 const HEADERS = [
   'Name', 'Slug', 'Website', 'Logo URL', 'Description', 'Mission', 'HQ Location',
