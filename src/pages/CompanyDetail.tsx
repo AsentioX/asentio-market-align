@@ -213,6 +213,11 @@ const CompanyDetail = () => {
         </div>
       </section>
 
+      {/* Human use cases + partner matches, derived from the framework */}
+      {company && <CompanyHAIExtras company={company} allCompanies={allCompanies} />}
+
+
+
       {/* Asentio Perspective — proprietary commentary */}
       {perspective && (
         <section className="container mx-auto px-4 md:px-6 pb-10">
