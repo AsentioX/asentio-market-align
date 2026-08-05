@@ -24,6 +24,7 @@ import CRMDashboard from '@/components/admin/CRMDashboard';
 import CaseStudiesAdmin from '@/components/admin/CaseStudiesAdmin';
 import ContentAdmin from '@/components/admin/ContentAdmin';
 import HAIFrameworkReference from '@/components/admin/HAIFrameworkReference';
+import HAIUseCaseAdmin from '@/components/admin/HAIUseCaseAdmin';
 import { useTableSort, SortableTh } from '@/components/admin/SortableTable';
 
 import {
@@ -225,9 +226,13 @@ const AdminDashboard = () => {
               <Building2 className="w-4 h-4" />
               Agencies ({agencies?.length || 0})
             </TabsTrigger>
+            <TabsTrigger value="solutions" className="flex items-center gap-2">
+              <Layers className="w-4 h-4" />
+              Human Use Cases
+            </TabsTrigger>
             <TabsTrigger value="use-cases" className="flex items-center gap-2">
               <Layers className="w-4 h-4" />
-              Use Cases ({useCases?.length || 0})
+              XR Showcases ({useCases?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2">
               <Rss className="w-4 h-4" />
@@ -247,9 +252,14 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="solutions">
+            <HAIUseCaseAdmin />
+          </TabsContent>
+
           <TabsContent value="framework">
             <HAIFrameworkReference />
           </TabsContent>
+
 
           <TabsContent value="content">
             <ContentAdmin />

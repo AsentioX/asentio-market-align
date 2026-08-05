@@ -143,15 +143,15 @@ const DirectoryHeader = () => {
         <div className="max-w-4xl mx-auto text-center">
           
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            <span>Mapping the </span>
+            <span>Start with the </span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">
-              Human-AI
+              human
             </span>
-            <span className="text-white">&nbsp;Interface</span>
+            <span className="text-white">, not the technology</span>
           </h1>
           
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Discover the companies and products shaping how people interact with AI, from agents and wearables to robotics, spatial computing, and emerging interfaces.
+            Find the solution for what you are trying to accomplish. The Human + AI Framework maps every use case to the interfaces, intelligence, companies and partners that make it real.
           </p>
           
         </div>
