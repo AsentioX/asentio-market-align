@@ -210,7 +210,7 @@ export function useTeam() {
     queryFn: async () => {
       const { data, error } = await supabase.from('scrm_user_roles' as any).select('*').order('created_at');
       if (error) throw error;
-      return data as unknown as { id: string; user_id: string; role: string; email: string | null }[];
+      return data as unknown as { id: string; user_id: string; role: string; email: string | null; name: string | null; phone: string | null; photo_url: string | null; is_active: boolean }[];
     },
   });
 }
