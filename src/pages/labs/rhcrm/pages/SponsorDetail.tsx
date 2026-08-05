@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { ArrowLeft, Plus, Sparkles, Check, Trash2, User, Calendar, Lightbulb, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import PastSponsorships from '../components/PastSponsorships';
 
 export default function SponsorDetail() {
   const { id } = useParams();
@@ -99,18 +100,6 @@ export default function SponsorDetail() {
             <SelectContent>{['Presenting','Platinum','Gold','Silver','Bronze','Community'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
           </Select>
         </MetaField>
-        <MetaField label="Probability">
-          <Input type="number" min={0} max={100} value={sponsor.probability ?? 0}
-            onChange={e => updateField({ probability: Number(e.target.value) })} />
-        </MetaField>
-        <MetaField label="Estimated value ($)">
-          <Input type="number" value={sponsor.estimated_value ?? 0}
-            onChange={e => updateField({ estimated_value: Number(e.target.value) })} />
-        </MetaField>
-        <MetaField label="Relationship strength (0-10)">
-          <Input type="number" min={0} max={10} value={sponsor.relationship_strength ?? 0}
-            onChange={e => updateField({ relationship_strength: Number(e.target.value) })} />
-        </MetaField>
         <MetaField label="Owner">
           <Select value={sponsor.owner_id ?? 'none'} onValueChange={v => updateField({ owner_id: v === 'none' ? null : v })}>
             <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
@@ -131,6 +120,7 @@ export default function SponsorDetail() {
           <TabsTrigger value="meetings">Meetings ({meetings.length})</TabsTrigger>
           <TabsTrigger value="motivations">Motivations</TabsTrigger>
           <TabsTrigger value="delivery">Delivery ({deliverables.length})</TabsTrigger>
+          <TabsTrigger value="past">Past sponsorship</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
         </TabsList>
 
@@ -139,6 +129,7 @@ export default function SponsorDetail() {
         <TabsContent value="meetings" className="mt-4"><MeetingsTab sponsor={sponsor} meetings={meetings} /></TabsContent>
         <TabsContent value="motivations" className="mt-4"><MotivationsTab sponsor={sponsor} onSave={updateField} /></TabsContent>
         <TabsContent value="delivery" className="mt-4"><DeliveryTab sponsorId={sponsor.id} deliverables={deliverables} /></TabsContent>
+        <TabsContent value="past" className="mt-4"><PastSponsorships sponsorId={sponsor.id} /></TabsContent>
         <TabsContent value="notes" className="mt-4">
           <Textarea rows={10} value={sponsor.notes ?? ''} onChange={e => updateField({ notes: e.target.value })} placeholder="Freeform notes..." />
         </TabsContent>
