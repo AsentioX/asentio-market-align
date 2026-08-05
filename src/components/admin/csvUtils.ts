@@ -88,3 +88,25 @@ export const exportRowsCsv = (
     rows.map((r) => columns.map((c) => csvValue(r[c])))
   );
 };
+
+/**
+ * Merge mode helper: drops keys whose incoming CSV value is empty
+ * (null / undefined / '' / empty array) so an update leaves the
+ * existing database value untouched. Keys in `keep` always survive.
+ */
+export const pruneEmpty = (
+  obj: Record<string, unknown>,
+  keep: string[] = ['name', 'slug']
+): Record<string, unknown> => {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (keep.includes(k)) {
+      out[k] = v;
+      continue;
+    }
+    if (v === null || v === undefined || v === '') continue;
+    if (Array.isArray(v) && v.length === 0) continue;
+    out[k] = v;
+  }
+  return out;
+};

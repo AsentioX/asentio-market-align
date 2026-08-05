@@ -5,7 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Upload, Loader2, Download, AlertCircle, FileDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { parseCSV, parseBool, parseArray, slugify, downloadCsv, exportRowsCsv } from './csvUtils';
+import { parseCSV, parseBool, parseArray, slugify, downloadCsv, exportRowsCsv, pruneEmpty } from './csvUtils';
+import MergeModeToggle from './MergeModeToggle';
 
 const HEADERS = [
   'Name', 'Slug', 'Website', 'Logo URL', 'Cover URL', 'Description',
@@ -24,6 +25,7 @@ const COLUMNS = ["name", "slug", "website", "logo_url", "cover_url", "descriptio
 const CsvAgencyUpload = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [mergeMode, setMergeMode] = useState(true);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -67,6 +69,15 @@ const CsvAgencyUpload = () => {
         return;
       }
 
+      const incomingSlugs = rows
+        .map((r) => r['slug'] || slugify(r['name'] || ''))
+        .filter(Boolean);
+      const { data: existing } = await supabase
+        .from('xr_agencies')
+        .select('slug')
+        .in('slug', incomingSlugs);
+      const existingSlugs = new Set((existing || []).map((r: any) => r.slug));
+
       let success = 0;
       const errors: string[] = [];
 
@@ -77,9 +88,10 @@ const CsvAgencyUpload = () => {
           errors.push(`Row ${i + 2}: Missing Name`);
           continue;
         }
+        const slug = row['slug'] || slugify(name);
         const agency: Record<string, any> = {
           name,
-          slug: row['slug'] || slugify(name),
+          slug,
           website: row['website'] || null,
           logo_url: row['logo url'] || null,
           cover_url: row['cover url'] || null,
@@ -87,10 +99,11 @@ const CsvAgencyUpload = () => {
           services: parseArray(row['services']),
           regions: parseArray(row['regions']),
           editors_note: row['editors note'] || null,
-          is_editors_pick: parseBool(row['editors pick']) ?? false,
+          is_editors_pick: parseBool(row['editors pick']) ?? (mergeMode && existingSlugs.has(slug) ? null : false),
         };
 
-        const { error } = await supabase.from('xr_agencies').upsert(agency as any, { onConflict: 'slug' });
+        const payload = mergeMode && existingSlugs.has(slug) ? pruneEmpty(agency) : agency;
+        const { error } = await supabase.from('xr_agencies').upsert(payload as any, { onConflict: 'slug' });
         if (error) errors.push(`Row ${i + 2} (${name}): ${error.message}`);
         else success++;
       }
@@ -126,6 +139,7 @@ const CsvAgencyUpload = () => {
           <Download className="w-4 h-4 mr-2" />
           Template
         </Button>
+        <MergeModeToggle id="merge-agencies" checked={mergeMode} onCheckedChange={setMergeMode} disabled={isUploading} />
       </div>
 
       {result && result.errors.length > 0 && (
