@@ -4,26 +4,26 @@ import { Download, Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { parseCSV, exportRowsCsv } from '@/components/admin/csvUtils';
+import { parseCSV, downloadCsv, csvValue } from '@/components/admin/csvUtils';
 import { useScrmAuth } from '../lib/useScrmAuth';
-import { STAGES } from '../lib/constants';
+import { STAGES, MOTIVATIONS, MOTIVATION_LABEL } from '../lib/constants';
+import { useTeam } from '../lib/api';
 import type { Sponsor } from '../lib/types';
 
-const COLUMNS = [
-  'company_name', 'industry', 'website', 'headquarters', 'stage', 'priority',
-  'tier_target', 'notes',
+// Columns mirror the sponsor detail page: header meta, meta grid, motivations, notes
+const BASE_COLUMNS = [
+  'company_name', 'industry', 'website', 'headquarters',
+  'stage', 'priority', 'tier_target', 'owner',
 ];
 
-const HEADERS = [
-  'Company Name', 'Industry', 'Website', 'Headquarters', 'Stage', 'Priority',
-  'Tier Target', 'Notes',
+const BASE_HEADERS = [
+  'Company Name', 'Industry', 'Website', 'Headquarters',
+  'Stage', 'Priority', 'Tier Target', 'Owner',
 ];
 
-const num = (v: string) => {
-  if (!v) return null;
-  const n = Number(String(v).replace(/[$,%\s,]/g, ''));
-  return Number.isFinite(n) ? n : null;
-};
+const MOTIVATION_HEADERS = MOTIVATIONS.map((k) => `${MOTIVATION_LABEL[k]} (0-10)`);
+
+const HEADERS = [...BASE_HEADERS, ...MOTIVATION_HEADERS, 'Notes'];
 
 const normalizeStage = (v: string) => {
   if (!v) return 'potential_sponsor';
@@ -32,6 +32,13 @@ const normalizeStage = (v: string) => {
   if (byKey) return byKey.key;
   const byLabel = STAGES.find((s) => s.label.toLowerCase() === v.trim().toLowerCase());
   return byLabel ? byLabel.key : 'potential_sponsor';
+};
+
+const clamp10 = (v: string): number | null => {
+  if (!v) return null;
+  const n = Number(String(v).replace(/[^\d.-]/g, ''));
+  if (!Number.isFinite(n)) return null;
+  return Math.max(0, Math.min(10, Math.round(n)));
 };
 
 interface Props {
@@ -43,22 +50,43 @@ const SponsorImportExport = ({ sponsors }: Props) => {
   const [busy, setBusy] = useState(false);
   const qc = useQueryClient();
   const { role } = useScrmAuth();
+  const { data: team = [] } = useTeam();
   const isAdmin = role === 'admin';
+
+  const ownerLabel = (id: string | null) => {
+    const m = team.find((t: any) => t.id === id);
+    return m ? (m.name || m.email || '') : '';
+  };
+
+  const ownerIdFrom = (val: string): string | null | undefined => {
+    if (!val) return undefined;
+    const v = val.trim().toLowerCase();
+    if (v === 'unassigned' || v === 'none') return null;
+    const m = team.find(
+      (t: any) => (t.name ?? '').toLowerCase() === v || (t.email ?? '').toLowerCase() === v
+    );
+    return m ? m.id : undefined;
+  };
+
+  const rowFor = (s: any) => [
+    ...BASE_COLUMNS.map((c) => (c === 'owner' ? ownerLabel(s.owner_id ?? null) : csvValue(s[c]))),
+    ...MOTIVATIONS.map((k) => csvValue(s.motivations?.[k] ?? '')),
+    csvValue(s.notes),
+  ];
 
   const handleExport = () => {
     if (!sponsors.length) return toast.error('No sponsors to export');
-    exportRowsCsv(
+    downloadCsv(
       `sponsors-${new Date().toISOString().slice(0, 10)}.csv`,
       HEADERS,
-      COLUMNS,
-      sponsors as unknown as Record<string, unknown>[]
+      sponsors.map(rowFor)
     );
     toast.success(`Exported ${sponsors.length} sponsors`);
   };
 
   const handleTemplate = () => {
-    exportRowsCsv('sponsors-template.csv', HEADERS, COLUMNS, [
-      {
+    downloadCsv('sponsors-template.csv', HEADERS, [
+      rowFor({
         company_name: 'Acme XR',
         industry: 'Hardware',
         website: 'https://acme.xr',
@@ -66,8 +94,10 @@ const SponsorImportExport = ({ sponsors }: Props) => {
         stage: 'Contacting',
         priority: 'high',
         tier_target: 'Gold',
+        owner_id: null,
+        motivations: { developer_adoption: 8, recruiting: 5 },
         notes: 'Met at CES',
-      },
+      }),
     ]);
   };
 
@@ -79,7 +109,7 @@ const SponsorImportExport = ({ sponsors }: Props) => {
       const rows = parseCSV(await file.text());
       if (!rows.length) throw new Error('No rows found in the CSV');
 
-      const existing = new Map(sponsors.map((s) => [s.company_name.trim().toLowerCase(), s.id]));
+      const existing = new Map(sponsors.map((s) => [s.company_name.trim().toLowerCase(), s]));
       const { data: u } = await supabase.auth.getUser();
       let created = 0;
       let updated = 0;
@@ -88,6 +118,8 @@ const SponsorImportExport = ({ sponsors }: Props) => {
       for (const [i, r] of rows.entries()) {
         const name = (r['company name'] || r['company_name'] || '').trim();
         if (!name) { errors.push(`Row ${i + 2}: missing company name`); continue; }
+
+        const prev = existing.get(name.toLowerCase());
 
         const payload: Record<string, unknown> = {
           company_name: name,
@@ -98,16 +130,30 @@ const SponsorImportExport = ({ sponsors }: Props) => {
           tier_target: r['tier target'] || r['tier_target'] || null,
           notes: r['notes'] || null,
         };
-        const stageRaw = r['stage'] || '';
-        const id = existing.get(name.toLowerCase());
-        if (stageRaw || !id) payload.stage = normalizeStage(stageRaw);
 
-        const res = id
-          ? await supabase.from('scrm_sponsors' as any).update(payload).eq('id', id)
+        const stageRaw = r['stage'] || '';
+        if (stageRaw || !prev) payload.stage = normalizeStage(stageRaw);
+
+        const owner = ownerIdFrom(r['owner'] || '');
+        if (owner !== undefined) payload.owner_id = owner;
+
+        // Motivations: only overwrite keys present in the CSV
+        const motivations: Record<string, number> = { ...((prev?.motivations as any) ?? {}) };
+        let hasMotivation = false;
+        MOTIVATIONS.forEach((k, idx) => {
+          const header = MOTIVATION_HEADERS[idx].toLowerCase();
+          const raw = r[header] ?? r[MOTIVATION_LABEL[k].toLowerCase()] ?? r[k];
+          const val = clamp10(raw ?? '');
+          if (val !== null) { motivations[k] = val; hasMotivation = true; }
+        });
+        if (hasMotivation) payload.motivations = motivations;
+
+        const res = prev
+          ? await supabase.from('scrm_sponsors' as any).update(payload).eq('id', prev.id)
           : await supabase.from('scrm_sponsors' as any).insert({ ...payload, created_by: u.user?.id });
 
         if (res.error) errors.push(`Row ${i + 2} (${name}): ${res.error.message}`);
-        else if (id) updated++;
+        else if (prev) updated++;
         else created++;
       }
 
