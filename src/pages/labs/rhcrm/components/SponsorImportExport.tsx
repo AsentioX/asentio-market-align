@@ -11,12 +11,12 @@ import type { Sponsor } from '../lib/types';
 
 const COLUMNS = [
   'company_name', 'industry', 'website', 'headquarters', 'stage', 'priority',
-  'tier_target', 'relationship_strength', 'probability', 'estimated_value', 'notes',
+  'tier_target', 'notes',
 ];
 
 const HEADERS = [
   'Company Name', 'Industry', 'Website', 'Headquarters', 'Stage', 'Priority',
-  'Tier Target', 'Relationship Strength', 'Probability', 'Estimated Value', 'Notes',
+  'Tier Target', 'Notes',
 ];
 
 const num = (v: string) => {
@@ -66,9 +66,6 @@ const SponsorImportExport = ({ sponsors }: Props) => {
         stage: 'Contacting',
         priority: 'high',
         tier_target: 'Gold',
-        relationship_strength: 3,
-        probability: 40,
-        estimated_value: 25000,
         notes: 'Met at CES',
       },
     ]);
@@ -99,9 +96,6 @@ const SponsorImportExport = ({ sponsors }: Props) => {
           headquarters: r['headquarters'] || null,
           priority: (r['priority'] || 'medium').toLowerCase(),
           tier_target: r['tier target'] || r['tier_target'] || null,
-          relationship_strength: num(r['relationship strength'] || r['relationship_strength']),
-          probability: num(r['probability']),
-          estimated_value: num(r['estimated value'] || r['estimated_value']),
           notes: r['notes'] || null,
         };
         const stageRaw = r['stage'] || '';

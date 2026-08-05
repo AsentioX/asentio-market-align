@@ -45,8 +45,6 @@ export default function Pipeline() {
                       </div>
                       {s.tier_target && <div className="text-[11px] text-slate-500 mt-1">{s.tier_target}</div>}
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-[11px] text-slate-400">{s.probability ?? 0}%</span>
-                        {s.estimated_value ? <span className="text-[11px] font-medium text-emerald-700">${(s.estimated_value/1000).toFixed(0)}k</span> : null}
                       </div>
                     </Link>
                   ))}

@@ -59,15 +59,12 @@ export default function Sponsors() {
                 <div><Label>Industry</Label><Input value={form.industry} onChange={e => setForm({ ...form, industry: e.target.value })} /></div>
                 <div><Label>Website</Label><Input value={form.website} onChange={e => setForm({ ...form, website: e.target.value })} /></div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Tier target</Label>
-                  <Select value={form.tier_target} onValueChange={v => setForm({ ...form, tier_target: v })}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>{['Presenting','Platinum','Gold','Silver','Bronze','Community'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <div><Label>Estimated value ($)</Label><Input type="number" value={form.estimated_value} onChange={e => setForm({ ...form, estimated_value: Number(e.target.value) })} /></div>
+              <div>
+                <Label>Tier target</Label>
+                <Select value={form.tier_target} onValueChange={v => setForm({ ...form, tier_target: v })}>
+                  <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                  <SelectContent>{['Presenting','Platinum','Gold','Silver','Bronze','Community'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                </Select>
               </div>
               <Button className="w-full bg-slate-900 hover:bg-slate-800" onClick={create}>Create</Button>
             </div>
