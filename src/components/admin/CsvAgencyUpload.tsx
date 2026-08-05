@@ -170,6 +170,8 @@ const CsvAgencyUpload = () => {
           </AlertDescription>
         </Alert>
       )}
+
+      <ImportHistory entityType="agencies" />
     </div>
   );
 };
