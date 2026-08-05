@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, Building2 } from 'lucide-react';
+import { Plus, Search, Building2, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react';
 import { healthScore, healthColor } from '../lib/health';
 import { toast } from 'sonner';
 import SponsorImportExport from '../components/SponsorImportExport';
@@ -26,7 +26,32 @@ export default function Sponsors() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ company_name: '', industry: '', website: '', tier_target: '' });
 
-  const filtered = useMemo(() => sponsors.filter(s => s.company_name.toLowerCase().includes(q.toLowerCase())), [sponsors, q]);
+  const [sort, setSort] = useState<{ key: string; dir: 'asc' | 'desc' }>({ key: 'company_name', dir: 'asc' });
+
+  const scoreFor = (s: any) => healthScore(s, [], actions.filter(a => a.sponsor_id === s.id));
+
+  const filtered = useMemo(() => {
+    const rows = sponsors.filter(s => s.company_name.toLowerCase().includes(q.toLowerCase()));
+    const val = (s: any) => {
+      switch (sort.key) {
+        case 'stage': return stageLabel(s.stage) ?? '';
+        case 'tier': return s.tier_target ?? '';
+        case 'owner': return ownerName(s.owner_id);
+        case 'health': return scoreFor(s);
+        default: return s.company_name ?? '';
+      }
+    };
+    return [...rows].sort((a, b) => {
+      const av = val(a), bv = val(b);
+      const cmp = typeof av === 'number' && typeof bv === 'number'
+        ? av - bv
+        : String(av).localeCompare(String(bv), undefined, { sensitivity: 'base' });
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
+  }, [sponsors, q, sort, actions, team]);
+
+  const toggleSort = (key: string) =>
+    setSort(prev => prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' });
 
   const create = async () => {
     if (!form.company_name.trim()) return toast.error('Company name required');
@@ -85,11 +110,11 @@ export default function Sponsors() {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
             <tr>
-              <th className="text-left px-4 py-3">Company</th>
-              <th className="text-left px-4 py-3">Stage</th>
-              <th className="text-left px-4 py-3">Tier</th>
-              <th className="text-left px-4 py-3">Owner</th>
-              <th className="text-center px-4 py-3">Health</th>
+              <SortTh label="Company" k="company_name" sort={sort} onSort={toggleSort} />
+              <SortTh label="Stage" k="stage" sort={sort} onSort={toggleSort} />
+              <SortTh label="Tier" k="tier" sort={sort} onSort={toggleSort} />
+              <SortTh label="Owner" k="owner" sort={sort} onSort={toggleSort} />
+              <SortTh label="Health" k="health" sort={sort} onSort={toggleSort} align="center" />
             </tr>
           </thead>
           <tbody>
@@ -117,5 +142,22 @@ export default function Sponsors() {
         </table>
       </div>
     </div>
+  );
+}
+
+function SortTh({ label, k, sort, onSort, align = 'left' }: { label: string; k: string; sort: { key: string; dir: 'asc' | 'desc' }; onSort: (k: string) => void; align?: 'left' | 'center' }) {
+  const active = sort.key === k;
+  return (
+    <th className={`px-4 py-3 ${align === 'center' ? 'text-center' : 'text-left'}`}>
+      <button
+        onClick={() => onSort(k)}
+        className={`inline-flex items-center gap-1 uppercase tracking-wider hover:text-slate-900 ${active ? 'text-slate-900' : ''}`}
+      >
+        {label}
+        {active
+          ? (sort.dir === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)
+          : <ChevronsUpDown className="w-3 h-3 opacity-40" />}
+      </button>
+    </th>
   );
 }
