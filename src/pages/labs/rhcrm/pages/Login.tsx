@@ -15,7 +15,7 @@ export function Login() {
 
   const google = async () => {
     setBusy(true);
-    const res = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin + '/labs/rhcrm' });
+    const res = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin });
     setBusy(false);
     if (res.error) toast.error(res.error.message);
   };
