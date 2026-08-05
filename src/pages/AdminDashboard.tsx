@@ -303,11 +303,11 @@ const AdminDashboard = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Company</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Product</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Company HQ</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Price</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Category</th>
+                          <SortableTh label="Company" sortKey="company" sort={productSort} />
+                          <SortableTh label="Product" sortKey="name" sort={productSort} />
+                          <SortableTh label="Company HQ" sortKey="company_hq" sort={productSort} className="hidden md:table-cell" />
+                          <SortableTh label="Price" sortKey="price_range" sort={productSort} className="hidden md:table-cell" />
+                          <SortableTh label="Category" sortKey="category" sort={productSort} className="hidden md:table-cell" />
                           <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
