@@ -4081,7 +4081,15 @@ export type Database = {
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "scrm_sponsors_owner_member_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "scrm_user_roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scrm_user_roles: {
         Row: {
