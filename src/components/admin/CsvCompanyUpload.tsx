@@ -7,6 +7,8 @@ import { Upload, Loader2, Download, AlertCircle, FileDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { parseCSV, parseBool, parseArray, slugify, downloadCsv, exportRowsCsv, pruneEmpty } from './csvUtils';
 import MergeModeToggle from './MergeModeToggle';
+import ImportHistory from './ImportHistory';
+import { logImport } from './importLog';
 
 const HEADERS = [
   'Name', 'Slug', 'Website', 'Logo URL', 'Description', 'Mission', 'HQ Location',
@@ -77,12 +79,13 @@ const CsvCompanyUpload = () => {
         .filter(Boolean);
       const { data: existing } = await supabase
         .from('xr_companies')
-        .select('slug')
+        .select('*')
         .in('slug', incomingSlugs);
       const existingSlugs = new Set((existing || []).map((r: any) => r.slug));
 
       let success = 0;
       const errors: string[] = [];
+      const newSlugs: string[] = [];
 
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
@@ -114,14 +117,28 @@ const CsvCompanyUpload = () => {
           end_of_life_date: row['end of life date'] || null,
         };
 
-        const payload = mergeMode && existingSlugs.has(company.slug) ? pruneEmpty(company) : company;
+        const isExisting = existingSlugs.has(company.slug);
+        const payload = mergeMode && isExisting ? pruneEmpty(company) : company;
         const { error } = await supabase.from('xr_companies').upsert(payload as any, { onConflict: 'slug' });
         if (error) errors.push(`Row ${i + 2} (${name}): ${error.message}`);
-        else success++;
+        else {
+          success++;
+          if (!isExisting) newSlugs.push(company.slug);
+        }
       }
 
       setResult({ success, errors });
+      await logImport({
+        entityType: 'companies',
+        fileName: file.name,
+        mergeMode,
+        successCount: success,
+        errors,
+        newSlugs,
+        previousRows: (existing || []) as Record<string, unknown>[],
+      });
       queryClient.invalidateQueries({ queryKey: ['xr-companies'] });
+      queryClient.invalidateQueries({ queryKey: ['import-logs', 'companies'] });
       toast({
         title: 'CSV Import Complete',
         description: `${success} companies imported. ${errors.length} errors.`,
@@ -165,6 +182,8 @@ const CsvCompanyUpload = () => {
           </AlertDescription>
         </Alert>
       )}
+
+      <ImportHistory entityType="companies" />
     </div>
   );
 };

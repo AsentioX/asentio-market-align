@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, Loader2, Download, AlertCircle, Undo2, FileDown } from 'lucide-react';
+import { Upload, Loader2, Download, AlertCircle, FileDown } from 'lucide-react';
 import { exportRowsCsv, pruneEmpty } from './csvUtils';
 import MergeModeToggle from './MergeModeToggle';
+import ImportHistory from './ImportHistory';
+import { logImport } from './importLog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EXPECTED_HEADERS = [
@@ -99,18 +101,10 @@ const parseArray = (val: string): string[] | null => {
   return val.split(';').map(s => s.trim()).filter(Boolean);
 };
 
-interface RollbackData {
-  updatedProducts: Record<string, any>[];
-  newSlugs: string[];
-  timestamp: Date;
-}
-
 const CsvProductUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [mergeMode, setMergeMode] = useState(true);
-  const [isRollingBack, setIsRollingBack] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
-  const [rollback, setRollback] = useState<RollbackData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -153,39 +147,6 @@ const CsvProductUpload = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleRollback = async () => {
-    if (!rollback) return;
-    setIsRollingBack(true);
-    try {
-      // Delete newly created products
-      if (rollback.newSlugs.length > 0) {
-        const { error } = await supabase
-          .from('xr_products')
-          .delete()
-          .in('slug', rollback.newSlugs);
-        if (error) throw error;
-      }
-
-      // Restore updated products to their previous state
-      for (const product of rollback.updatedProducts) {
-        const { error } = await supabase
-          .from('xr_products')
-          .update(product)
-          .eq('id', product.id);
-        if (error) throw error;
-      }
-
-      queryClient.invalidateQueries({ queryKey: ['xr-products'] });
-      setRollback(null);
-      setResult(null);
-      toast({ title: 'Rollback complete', description: 'All imported changes have been reverted.' });
-    } catch (err: any) {
-      toast({ title: 'Rollback failed', description: err.message, variant: 'destructive' });
-    } finally {
-      setIsRollingBack(false);
-    }
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -197,7 +158,6 @@ const CsvProductUpload = () => {
 
     setIsUploading(true);
     setResult(null);
-    setRollback(null);
 
     try {
       const text = await file.text();
@@ -324,12 +284,17 @@ const CsvProductUpload = () => {
       }
 
       setResult({ success, errors });
-      setRollback({
-        updatedProducts: existingProducts || [],
+      await logImport({
+        entityType: 'products',
+        fileName: file.name,
+        mergeMode,
+        successCount: success,
+        errors,
         newSlugs,
-        timestamp: new Date(),
+        previousRows: (existingProducts || []) as Record<string, unknown>[],
       });
       queryClient.invalidateQueries({ queryKey: ['xr-products'] });
+      queryClient.invalidateQueries({ queryKey: ['import-logs', 'products'] });
 
       toast({
         title: 'CSV Import Complete',
@@ -378,28 +343,6 @@ const CsvProductUpload = () => {
         <MergeModeToggle id="merge-products" checked={mergeMode} onCheckedChange={setMergeMode} disabled={isUploading} />
       </div>
 
-      {rollback && (
-        <Alert className="border-amber-500/50 bg-amber-500/10">
-          <Undo2 className="h-4 w-4 text-amber-500" />
-          <AlertDescription className="flex items-center justify-between">
-            <span className="text-sm">
-              Last import: {rollback.newSlugs.length} new, {rollback.updatedProducts.length} updated
-              <span className="text-muted-foreground ml-1">({rollback.timestamp.toLocaleTimeString()})</span>
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRollback}
-              disabled={isRollingBack}
-              className="ml-2 border-amber-500/50 text-amber-600 hover:bg-amber-500/20"
-            >
-              {isRollingBack ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Undo2 className="w-3 h-3 mr-1" />}
-              Rollback
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
-
       {result && result.errors.length > 0 && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -413,6 +356,8 @@ const CsvProductUpload = () => {
           </AlertDescription>
         </Alert>
       )}
+
+      <ImportHistory entityType="products" />
     </div>
   );
 };
