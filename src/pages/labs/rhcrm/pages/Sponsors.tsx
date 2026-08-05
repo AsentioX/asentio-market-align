@@ -16,6 +16,11 @@ import SponsorImportExport from '../components/SponsorImportExport';
 export default function Sponsors() {
   const { data: sponsors = [] } = useSponsors();
   const { data: actions = [] } = useAllActions();
+  const { data: team = [] } = useTeam();
+  const ownerName = (ownerId: string | null) => {
+    const m = team.find(t => t.id === ownerId);
+    return m ? (m.name || m.email || 'Unnamed') : '—';
+  };
   const save = useSaveSponsor();
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
