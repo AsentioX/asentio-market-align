@@ -12,13 +12,15 @@ import type { Sponsor } from '../lib/types';
 
 // Columns mirror the sponsor detail page: header meta, meta grid, tabs, notes
 const BASE_COLUMNS = [
-  'company_name', 'industry', 'website', 'headquarters',
+  'company_name', 'industry', 'sponsor_type', 'website', 'headquarters', 'organization_type',
   'stage', 'priority', 'tier_target', 'owner',
+  'likelihood_2027', 'strategic_fit', 'recommended_activation', 'recommended_next_action',
 ];
 
 const BASE_HEADERS = [
-  'Company Name', 'Industry', 'Website', 'Headquarters',
+  'Company Name', 'Industry', 'Type', 'Website', 'Headquarters', 'Organization Type',
   'Stage', 'Priority', 'Tier Target', 'Owner',
+  '2027 Sponsorship Likelihood', 'Strategic Fit / Focus', 'Recommended Activation', 'Recommended Next Action',
 ];
 
 const MOTIVATION_HEADERS = MOTIVATIONS.map((k) => `${MOTIVATION_LABEL[k]} (0-10)`);
