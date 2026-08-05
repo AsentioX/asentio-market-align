@@ -5343,6 +5343,54 @@ export type Database = {
         }
         Relationships: []
       }
+      xr_import_logs: {
+        Row: {
+          created_at: string
+          entity_type: string
+          error_count: number
+          errors: Json
+          file_name: string | null
+          id: string
+          imported_by: string | null
+          merge_mode: boolean
+          new_slugs: string[]
+          previous_rows: Json
+          rolled_back_at: string | null
+          success_count: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entity_type: string
+          error_count?: number
+          errors?: Json
+          file_name?: string | null
+          id?: string
+          imported_by?: string | null
+          merge_mode?: boolean
+          new_slugs?: string[]
+          previous_rows?: Json
+          rolled_back_at?: string | null
+          success_count?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entity_type?: string
+          error_count?: number
+          errors?: Json
+          file_name?: string | null
+          id?: string
+          imported_by?: string | null
+          merge_mode?: boolean
+          new_slugs?: string[]
+          previous_rows?: Json
+          rolled_back_at?: string | null
+          success_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       xr_products: {
         Row: {
           additional_images: string[] | null
