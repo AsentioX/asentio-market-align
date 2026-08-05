@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Search, Building2 } from 'lucide-react';
 import { healthScore, healthColor } from '../lib/health';
 import { toast } from 'sonner';
+import SponsorImportExport from '../components/SponsorImportExport';
+
 
 export default function Sponsors() {
   const { data: sponsors = [] } = useSponsors();
