@@ -68,7 +68,9 @@ export default function Sponsors() {
             </div>
           </DialogContent>
         </Dialog>
+        <SponsorImportExport sponsors={sponsors} />
         </div>
+
       </div>
 
 
