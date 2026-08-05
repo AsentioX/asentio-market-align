@@ -103,7 +103,7 @@ const CompanyDetail = () => {
         ) : (
           <>
             <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f1f] via-[#111a2e] to-[#0a0f1f]" />
-            <TopographicPattern className="opacity-20" />
+            <TopographicPattern className="opacity-40" />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
           </>
         )}
