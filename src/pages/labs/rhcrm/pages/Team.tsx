@@ -10,8 +10,12 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Users, Shield, Trash2 } from 'lucide-react';
+import { Users, Shield, Trash2, UserPlus } from 'lucide-react';
 
 const ROLES = [
   { value: 'admin', label: 'Admin' },
@@ -40,10 +44,15 @@ export default function Team() {
 
   return (
     <div className="p-8 max-w-6xl">
-      <h1 className="text-2xl font-semibold text-slate-900 flex items-center gap-2"><Users className="w-5 h-5" /> Team</h1>
-      <p className="text-sm text-slate-500 mt-1 mb-6">
-        {team.length} members · {team.filter(m => m.is_active).length} active
-      </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900 flex items-center gap-2"><Users className="w-5 h-5" /> Team</h1>
+          <p className="text-sm text-slate-500 mt-1 mb-6">
+            {team.length} members · {team.filter(m => m.is_active).length} active
+          </p>
+        </div>
+        {isAdmin && <AddMemberDialog onAdded={refetch} />}
+      </div>
 
       <div className="border border-slate-200 rounded-lg bg-white overflow-x-auto">
         <table className="w-full text-sm">
@@ -77,7 +86,10 @@ export default function Team() {
                 </td>
                 <td className="px-4 py-2">
                   {isAdmin ? (
-                    <TextCell value={m.email ?? ''} placeholder="Email" onSave={v => patch(m.id, { email: v || null })} />
+                    <div className="flex items-center gap-2">
+                      <TextCell value={m.email ?? ''} placeholder="Email" onSave={v => patch(m.id, { email: v || null })} />
+                      {!m.user_id && <span className="text-[10px] uppercase tracking-wide text-amber-600 whitespace-nowrap">Pending</span>}
+                    </div>
                   ) : <span className="text-slate-600">{m.email ?? '—'}</span>}
                 </td>
                 <td className="px-4 py-2">
@@ -143,10 +155,10 @@ export default function Team() {
 
       {isAdmin && (
         <div className="mt-6 p-4 border border-slate-200 rounded-lg bg-slate-50">
-          <div className="text-sm font-medium text-slate-900 mb-2">Add a teammate</div>
+          <div className="text-sm font-medium text-slate-900 mb-2">Member photos</div>
           <p className="text-xs text-slate-500">
-            Ask them to sign in at <code>/labs/rhcrm</code> with their email. They'll see "Awaiting access" — refresh this page,
-            then fill in their details and set their role above. Paste an image URL in the photo field to show their picture.
+            Use “Add member” to invite a teammate by email — they get access as soon as they sign in at <code>/labs/rhcrm</code>.
+            Paste an image URL below to show their picture.
           </p>
           <div className="mt-3 space-y-2">
             {team.map(m => (
@@ -159,6 +171,66 @@ export default function Team() {
         </div>
       )}
     </div>
+  );
+}
+
+function AddMemberDialog({ onAdded }: { onAdded: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', phone: '', photo_url: '', role: 'team_rh' });
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const submit = async () => {
+    if (!form.email.trim()) { toast.error('Email is required'); return; }
+    setSaving(true);
+    const { error } = await supabase.from('scrm_user_roles' as any).insert({
+      user_id: null,
+      role: form.role,
+      email: form.email.trim().toLowerCase(),
+      name: form.name.trim() || null,
+      phone: form.phone.trim() || null,
+      photo_url: form.photo_url.trim() || null,
+      is_active: true,
+    });
+    setSaving(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Member added — they get access when they sign in');
+    setForm({ name: '', email: '', phone: '', photo_url: '', role: 'team_rh' });
+    setOpen(false);
+    onAdded();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><UserPlus className="w-4 h-4 mr-2" /> Add member</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add team member</DialogTitle>
+          <DialogDescription>
+            They'll get CRM access with this role the first time they sign in with this email.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div><Label className="text-xs">Name</Label><Input value={form.name} onChange={e => set('name', e.target.value)} placeholder="Jane Doe" /></div>
+          <div><Label className="text-xs">Email *</Label><Input type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="jane@mitrealityhack.com" /></div>
+          <div><Label className="text-xs">Phone</Label><Input value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+1 555 000 1111" /></div>
+          <div><Label className="text-xs">Photo URL</Label><Input value={form.photo_url} onChange={e => set('photo_url', e.target.value)} placeholder="https://…" /></div>
+          <div>
+            <Label className="text-xs">Role</Label>
+            <Select value={form.role} onValueChange={v => set('role', v)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{ROLES.map(r => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={submit} disabled={saving}>{saving ? 'Adding…' : 'Add member'}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
