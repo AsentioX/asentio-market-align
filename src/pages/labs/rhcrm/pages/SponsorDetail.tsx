@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { ArrowLeft, Plus, Sparkles, Check, Trash2, User, Calendar, Lightbulb, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import PastSponsorships from '../components/PastSponsorships';
 
 export default function SponsorDetail() {
   const { id } = useParams();
@@ -128,6 +129,7 @@ export default function SponsorDetail() {
         <TabsContent value="meetings" className="mt-4"><MeetingsTab sponsor={sponsor} meetings={meetings} /></TabsContent>
         <TabsContent value="motivations" className="mt-4"><MotivationsTab sponsor={sponsor} onSave={updateField} /></TabsContent>
         <TabsContent value="delivery" className="mt-4"><DeliveryTab sponsorId={sponsor.id} deliverables={deliverables} /></TabsContent>
+        <TabsContent value="past" className="mt-4"><PastSponsorships sponsorId={sponsor.id} /></TabsContent>
         <TabsContent value="notes" className="mt-4">
           <Textarea rows={10} value={sponsor.notes ?? ''} onChange={e => updateField({ notes: e.target.value })} placeholder="Freeform notes..." />
         </TabsContent>

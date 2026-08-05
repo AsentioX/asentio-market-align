@@ -24,7 +24,7 @@ export default function Sponsors() {
   const save = useSaveSponsor();
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ company_name: '', industry: '', website: '', tier_target: '', estimated_value: 0 });
+  const [form, setForm] = useState({ company_name: '', industry: '', website: '', tier_target: '' });
 
   const filtered = useMemo(() => sponsors.filter(s => s.company_name.toLowerCase().includes(q.toLowerCase())), [sponsors, q]);
 
@@ -33,7 +33,7 @@ export default function Sponsors() {
     try {
       const res = await save.mutateAsync({ ...form } as any);
       toast.success('Sponsor created');
-      setOpen(false); setForm({ company_name: '', industry: '', website: '', tier_target: '', estimated_value: 0 });
+      setOpen(false); setForm({ company_name: '', industry: '', website: '', tier_target: '' });
     } catch (e: any) { toast.error(e.message); }
   };
 
@@ -89,7 +89,6 @@ export default function Sponsors() {
               <th className="text-left px-4 py-3">Stage</th>
               <th className="text-left px-4 py-3">Tier</th>
               <th className="text-left px-4 py-3">Owner</th>
-              <th className="text-right px-4 py-3">Value</th>
               <th className="text-center px-4 py-3">Health</th>
             </tr>
           </thead>
@@ -109,12 +108,11 @@ export default function Sponsors() {
                   <td className="px-4 py-3"><span className={`text-[11px] px-2 py-0.5 rounded ${stageColor(s.stage)}`}>{stageLabel(s.stage)}</span></td>
                   <td className="px-4 py-3 text-slate-600">{s.tier_target ?? '—'}</td>
                   <td className="px-4 py-3 text-slate-600">{ownerName(s.owner_id)}</td>
-                  <td className="px-4 py-3 text-right text-slate-900">{s.estimated_value ? `$${(s.estimated_value/1000).toFixed(0)}k` : '—'}</td>
                   <td className="px-4 py-3 text-center"><span className={`inline-block w-2 h-2 rounded-full ${dot}`} /> <span className="text-xs text-slate-500 ml-1">{score}</span></td>
                 </tr>
               );
             })}
-            {filtered.length === 0 && <tr><td colSpan={6} className="text-center py-10 text-slate-400 text-sm">No sponsors yet. Create your first one.</td></tr>}
+            {filtered.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-slate-400 text-sm">No sponsors yet. Create your first one.</td></tr>}
           </tbody>
         </table>
       </div>
