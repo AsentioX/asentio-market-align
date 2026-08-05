@@ -101,18 +101,10 @@ const parseArray = (val: string): string[] | null => {
   return val.split(';').map(s => s.trim()).filter(Boolean);
 };
 
-interface RollbackData {
-  updatedProducts: Record<string, any>[];
-  newSlugs: string[];
-  timestamp: Date;
-}
-
 const CsvProductUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [mergeMode, setMergeMode] = useState(true);
-  const [isRollingBack, setIsRollingBack] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
-  const [rollback, setRollback] = useState<RollbackData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
