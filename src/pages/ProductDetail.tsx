@@ -268,7 +268,7 @@ const ProductDetail = () => {
   return (
       <div className="min-h-screen bg-background">
         {/* Dark band behind navbar for legibility */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-asentio-navy to-asentio-navy/0 pointer-events-none z-0" />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#0a0f1f] to-[#0a0f1f]/0 pointer-events-none z-0" />
         <div className="relative z-10 pt-24">
         {/* Product Image Carousel */}
         {product.image_url && (
