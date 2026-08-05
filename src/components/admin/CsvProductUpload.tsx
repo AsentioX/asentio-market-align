@@ -284,12 +284,17 @@ const CsvProductUpload = () => {
       }
 
       setResult({ success, errors });
-      setRollback({
-        updatedProducts: existingProducts || [],
+      await logImport({
+        entityType: 'products',
+        fileName: file.name,
+        mergeMode,
+        successCount: success,
+        errors,
         newSlugs,
-        timestamp: new Date(),
+        previousRows: (existingProducts || []) as Record<string, unknown>[],
       });
       queryClient.invalidateQueries({ queryKey: ['xr-products'] });
+      queryClient.invalidateQueries({ queryKey: ['import-logs', 'products'] });
 
       toast({
         title: 'CSV Import Complete',
