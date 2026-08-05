@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { ChangePassword } from './pages/ChangePassword';
 import { LayoutDashboard, KanbanSquare, Building2, CheckSquare, Users, LogOut } from 'lucide-react';
 import rhLogo from '@/assets/mit-reality-hack-logo.png.asset.json';
+import { assetUrl } from '@/lib/assetUrl';
 
 
 function Shell() {
@@ -30,7 +31,7 @@ function Shell() {
     <div className="min-h-screen bg-white text-slate-900 flex">
       <aside className="w-56 border-r border-slate-200 bg-slate-50/50 p-4 flex flex-col gap-1">
         <div className="flex items-center gap-2 mb-6 px-2">
-          <img src={rhLogo.url} alt="MIT Reality Hack logo" className="w-9 h-9 object-contain" />
+          <img src={assetUrl(rhLogo.url)} alt="MIT Reality Hack logo" className="w-9 h-9 object-contain" />
 
           <div>
             <div className="text-sm font-semibold">Sponsor CRM</div>
