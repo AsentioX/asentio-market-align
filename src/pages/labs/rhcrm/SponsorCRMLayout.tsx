@@ -2,7 +2,9 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { ScrmAuthProvider, useScrmAuth } from './lib/useScrmAuth';
 import { Button } from '@/components/ui/button';
 import { Login } from './pages/Login';
-import { LayoutDashboard, KanbanSquare, Building2, CheckSquare, Users, LogOut, Sparkles } from 'lucide-react';
+import { LayoutDashboard, KanbanSquare, Building2, CheckSquare, Users, LogOut } from 'lucide-react';
+import rhLogo from '@/assets/mit-reality-hack-logo.png.asset.json';
+
 
 function Shell() {
   const { user, isMember, loading, role, signOut } = useScrmAuth();
@@ -26,9 +28,8 @@ function Shell() {
     <div className="min-h-screen bg-white text-slate-900 flex">
       <aside className="w-56 border-r border-slate-200 bg-slate-50/50 p-4 flex flex-col gap-1">
         <div className="flex items-center gap-2 mb-6 px-2">
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
+          <img src={rhLogo.url} alt="MIT Reality Hack logo" className="w-9 h-9 object-contain" />
+
           <div>
             <div className="text-sm font-semibold">Sponsor CRM</div>
             <div className="text-[11px] text-slate-500">MIT Reality Hack</div>
