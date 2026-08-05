@@ -1,8 +1,10 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useSponsor, useSaveSponsor, useContacts, useSaveContact, useDeleteContact,
+import { useSponsor, useSaveSponsor, useDeleteSponsor, useContacts, useSaveContact, useDeleteContact,
   useSponsorActions, useSaveAction, useDeleteAction, useMeetings, useSaveMeeting,
   useDeliverables, useSaveDeliverable, analyzeMeeting, useTeam } from '../lib/api';
+import { useScrmAuth } from '../lib/useScrmAuth';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { STAGES, stageColor, stageLabel, MOTIVATIONS, MOTIVATION_LABEL, ACTION_LIBRARY, STAGE_SUGGESTIONS, DELIVERABLE_CATEGORIES } from '../lib/constants';
 import { healthScore, healthColor, daysSince, daysUntil } from '../lib/health';
 import { Button } from '@/components/ui/button';
