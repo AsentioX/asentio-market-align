@@ -24,6 +24,7 @@ import CRMDashboard from '@/components/admin/CRMDashboard';
 import CaseStudiesAdmin from '@/components/admin/CaseStudiesAdmin';
 import ContentAdmin from '@/components/admin/ContentAdmin';
 import HAIFrameworkReference from '@/components/admin/HAIFrameworkReference';
+import { useTableSort, SortableTh } from '@/components/admin/SortableTable';
 
 import {
   AlertDialog,
