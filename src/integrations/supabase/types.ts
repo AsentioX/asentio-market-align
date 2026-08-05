@@ -5842,7 +5842,7 @@ export type Database = {
       pp_pillar: "work" | "home" | "play"
       pp_source_kind: "program_site" | "search_query" | "rss_feed"
       schedule_role: "hacker" | "sponsor" | "press" | "mentor" | "organizer"
-      scrm_role: "chair" | "committee" | "ops" | "leadership"
+      scrm_role: "admin" | "sponsorship" | "finance" | "team_rh"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6033,7 +6033,7 @@ export const Constants = {
       pp_pillar: ["work", "home", "play"],
       pp_source_kind: ["program_site", "search_query", "rss_feed"],
       schedule_role: ["hacker", "sponsor", "press", "mentor", "organizer"],
-      scrm_role: ["chair", "committee", "ops", "leadership"],
+      scrm_role: ["admin", "sponsorship", "finance", "team_rh"],
     },
   },
 } as const
