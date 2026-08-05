@@ -26,11 +26,11 @@ export function ScrmAuthProvider({ children }: { children: ReactNode }) {
       const { data } = await supabase.from('scrm_user_roles' as any).select('role').eq('user_id', u.id).limit(1);
       const r = (data as any)?.[0]?.role ?? null;
       if (!r) {
-        // bootstrap: if no roles exist at all, self-assign chair
+        // bootstrap: if no roles exist at all, self-assign admin
         const { count } = await supabase.from('scrm_user_roles' as any).select('id', { count: 'exact', head: true });
         if ((count ?? 0) === 0) {
-          await supabase.from('scrm_user_roles' as any).insert({ user_id: u.id, role: 'chair', email: u.email });
-          setRole('chair'); setIsMember(true);
+          await supabase.from('scrm_user_roles' as any).insert({ user_id: u.id, role: 'admin', email: u.email });
+          setRole('admin'); setIsMember(true);
         } else {
           setRole(null); setIsMember(false);
         }

@@ -73,7 +73,7 @@ export function Login() {
           </button>
         </div>
         <p className="text-[11px] text-slate-400 text-center mt-4">
-          The first person to sign in becomes the sponsorship chair.
+          The first person to sign in becomes the admin.
         </p>
       </div>
     </div>

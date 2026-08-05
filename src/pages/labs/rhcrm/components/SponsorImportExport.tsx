@@ -43,7 +43,7 @@ const SponsorImportExport = ({ sponsors }: Props) => {
   const [busy, setBusy] = useState(false);
   const qc = useQueryClient();
   const { role } = useScrmAuth();
-  const isAdmin = role === 'chair';
+  const isAdmin = role === 'admin';
 
   const handleExport = () => {
     if (!sponsors.length) return toast.error('No sponsors to export');
