@@ -60,6 +60,38 @@ export default function SponsorDetail() {
             <span className={`w-2 h-2 rounded-full ${dot}`} /> Health {score}
           </div>
           {lastContactDays !== null && <div className="text-xs text-slate-500 mt-2">Last contact {lastContactDays}d ago</div>}
+          {isAdmin && (
+            <div className="mt-3">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700">
+                    <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Delete sponsor
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete {sponsor.company_name}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This permanently removes the sponsor and all related contacts, actions, meetings, deliverables and past sponsorships. This cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-rose-600 hover:bg-rose-700"
+                      onClick={async () => {
+                        try {
+                          await delSponsor.mutateAsync(sponsor.id);
+                          toast.success('Sponsor deleted');
+                          navigate('/labs/rhcrm/sponsors');
+                        } catch (e: any) { toast.error(e.message); }
+                      }}
+                    >Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
         </div>
       </div>
 
