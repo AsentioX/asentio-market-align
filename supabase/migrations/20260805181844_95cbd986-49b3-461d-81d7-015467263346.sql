@@ -1,0 +1,17 @@
+UPDATE public.scrm_sponsors SET stage = CASE stage
+  WHEN 'target_identified' THEN 'potential_sponsor'
+  WHEN 'researching' THEN 'potential_sponsor'
+  WHEN 'initial_contact' THEN 'contacting'
+  WHEN 'prospectus_sent' THEN 'contacting'
+  WHEN 'meeting_scheduled' THEN 'discussing'
+  WHEN 'presentation_delivered' THEN 'discussing'
+  WHEN 'proposal_sent' THEN 'discussing'
+  WHEN 'negotiation' THEN 'discussing'
+  WHEN 'verbal_commitment' THEN 'discussing'
+  WHEN 'contract_signed' THEN 'contract_signed'
+  WHEN 'activation_planning' THEN 'rh_planning'
+  WHEN 'delivery' THEN 'rh_planning'
+  WHEN 'post_event' THEN 'rh_post_event_interview'
+  WHEN 'renewal' THEN 'rh_post_event_interview'
+  WHEN 'closed_lost' THEN 'no_this_year'
+  ELSE stage END;
