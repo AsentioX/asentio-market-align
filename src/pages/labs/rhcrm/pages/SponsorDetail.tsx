@@ -156,6 +156,13 @@ export default function SponsorDetail() {
   );
 }
 
+function EditableText({ value, onSave, placeholder, multiline }: { value: string | null; onSave: (v: string | null) => void; placeholder?: string; multiline?: boolean }) {
+  const [val, setVal] = useState(value ?? '');
+  const commit = () => { const next = val.trim(); if (next !== (value ?? '')) onSave(next || null); };
+  const props = { value: val, placeholder: placeholder ?? '—', onChange: (e: any) => setVal(e.target.value), onBlur: commit };
+  return multiline ? <Textarea rows={3} {...props} /> : <Input {...props} />;
+}
+
 function MetaField({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><Label className="text-xs text-slate-500 uppercase tracking-wider">{label}</Label><div className="mt-1">{children}</div></div>;
 }
