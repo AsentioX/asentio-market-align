@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useXRProducts, XRProduct } from "@/hooks/useXRProducts";
 import { XRCompany, useXRCompanies, companyValues } from "@/hooks/useXRCompanies";
 import RelatedCompanies from "@/components/directory/RelatedCompanies";
+import CompanyHAIExtras from "@/components/directory/CompanyHAIExtras";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
