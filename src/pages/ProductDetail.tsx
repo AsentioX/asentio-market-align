@@ -19,9 +19,16 @@ const ProductImageCarousel = ({ imageUrl, additionalImages, name }: { imageUrl: 
         <div className="relative w-full aspect-[21/9] max-h-[520px] overflow-hidden">
           <img
             src={images[current]}
-            alt={`${name} - image ${current + 1}`}
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover object-center scale-110 blur-2xl brightness-50"
           />
+          <img
+            src={images[current]}
+            alt={`${name} - image ${current + 1}`}
+            className="absolute inset-0 w-full h-full object-contain object-center"
+          />
+
 
           {images.length > 1 && (
             <>
