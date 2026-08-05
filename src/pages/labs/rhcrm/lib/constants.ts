@@ -1,19 +1,12 @@
 export const STAGES = [
-  { key: 'target_identified', label: 'Target Identified', color: 'bg-slate-100 text-slate-700' },
-  { key: 'researching', label: 'Researching', color: 'bg-slate-100 text-slate-700' },
-  { key: 'initial_contact', label: 'Initial Contact', color: 'bg-blue-50 text-blue-700' },
-  { key: 'prospectus_sent', label: 'Prospectus Sent', color: 'bg-blue-50 text-blue-700' },
-  { key: 'meeting_scheduled', label: 'Meeting Scheduled', color: 'bg-indigo-50 text-indigo-700' },
-  { key: 'presentation_delivered', label: 'Presentation Delivered', color: 'bg-indigo-50 text-indigo-700' },
-  { key: 'proposal_sent', label: 'Proposal Sent', color: 'bg-violet-50 text-violet-700' },
-  { key: 'negotiation', label: 'Negotiation', color: 'bg-amber-50 text-amber-700' },
-  { key: 'verbal_commitment', label: 'Verbal Commitment', color: 'bg-amber-50 text-amber-800' },
+  { key: 'potential_sponsor', label: 'Potential Sponsor', color: 'bg-slate-100 text-slate-700' },
+  { key: 'contacting', label: 'Contacting', color: 'bg-blue-50 text-blue-700' },
+  { key: 'discussing', label: 'Discussing', color: 'bg-indigo-50 text-indigo-700' },
   { key: 'contract_signed', label: 'Contract Signed', color: 'bg-emerald-50 text-emerald-700' },
-  { key: 'activation_planning', label: 'Activation Planning', color: 'bg-emerald-50 text-emerald-700' },
-  { key: 'delivery', label: 'Reality Hack Delivery', color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'post_event', label: 'Post Event Reporting', color: 'bg-teal-50 text-teal-700' },
-  { key: 'renewal', label: 'Renewal Discussion', color: 'bg-teal-50 text-teal-700' },
-  { key: 'closed_lost', label: 'Closed Lost', color: 'bg-rose-50 text-rose-700' },
+  { key: 'rh_planning', label: 'RH Planning', color: 'bg-emerald-50 text-emerald-800' },
+  { key: 'rh_post_event_interview', label: 'RH Post Event Interview', color: 'bg-teal-50 text-teal-700' },
+  { key: 'no_this_year', label: 'Sponsor - No for this year', color: 'bg-amber-50 text-amber-800' },
+  { key: 'removed', label: 'Sponsor - REMOVE', color: 'bg-rose-50 text-rose-700' },
 ] as const;
 
 export type StageKey = typeof STAGES[number]['key'];
