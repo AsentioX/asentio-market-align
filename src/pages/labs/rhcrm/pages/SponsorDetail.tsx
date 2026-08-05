@@ -1,8 +1,10 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useSponsor, useSaveSponsor, useContacts, useSaveContact, useDeleteContact,
+import { useSponsor, useSaveSponsor, useDeleteSponsor, useContacts, useSaveContact, useDeleteContact,
   useSponsorActions, useSaveAction, useDeleteAction, useMeetings, useSaveMeeting,
   useDeliverables, useSaveDeliverable, analyzeMeeting, useTeam } from '../lib/api';
+import { useScrmAuth } from '../lib/useScrmAuth';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { STAGES, stageColor, stageLabel, MOTIVATIONS, MOTIVATION_LABEL, ACTION_LIBRARY, STAGE_SUGGESTIONS, DELIVERABLE_CATEGORIES } from '../lib/constants';
 import { healthScore, healthColor, daysSince, daysUntil } from '../lib/health';
 import { Button } from '@/components/ui/button';
@@ -27,6 +29,10 @@ export default function SponsorDetail() {
   const { data: deliverables = [] } = useDeliverables(id);
   const { data: team = [] } = useTeam();
   const save = useSaveSponsor();
+  const delSponsor = useDeleteSponsor();
+  const navigate = useNavigate();
+  const { role } = useScrmAuth();
+  const isAdmin = role === 'admin';
 
   if (!sponsor) return <div className="p-8 text-slate-500">Loading…</div>;
 
@@ -60,6 +66,38 @@ export default function SponsorDetail() {
             <span className={`w-2 h-2 rounded-full ${dot}`} /> Health {score}
           </div>
           {lastContactDays !== null && <div className="text-xs text-slate-500 mt-2">Last contact {lastContactDays}d ago</div>}
+          {isAdmin && (
+            <div className="mt-3">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700">
+                    <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Delete sponsor
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete {sponsor.company_name}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This permanently removes the sponsor and all related contacts, actions, meetings, deliverables and past sponsorships. This cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-rose-600 hover:bg-rose-700"
+                      onClick={async () => {
+                        try {
+                          await delSponsor.mutateAsync(sponsor.id);
+                          toast.success('Sponsor deleted');
+                          navigate('/labs/rhcrm/sponsors');
+                        } catch (e: any) { toast.error(e.message); }
+                      }}
+                    >Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
         </div>
       </div>
 
