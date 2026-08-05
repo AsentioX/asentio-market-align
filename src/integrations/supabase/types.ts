@@ -4017,6 +4017,50 @@ export type Database = {
           },
         ]
       }
+      scrm_past_sponsorships: {
+        Row: {
+          amount: number | null
+          created_at: string
+          created_by: string | null
+          feedback: string | null
+          id: string
+          sponsor_id: string
+          tier: string | null
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          created_by?: string | null
+          feedback?: string | null
+          id?: string
+          sponsor_id: string
+          tier?: string | null
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          created_by?: string | null
+          feedback?: string | null
+          id?: string
+          sponsor_id?: string
+          tier?: string | null
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrm_past_sponsorships_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "scrm_sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scrm_sponsors: {
         Row: {
           company_name: string
