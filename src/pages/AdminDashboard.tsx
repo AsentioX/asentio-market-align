@@ -82,6 +82,31 @@ const AdminDashboard = () => {
     });
   }, [companies, productCounts]);
 
+  const productSort = useTableSort(products, {
+    company: (p) => p.company,
+    name: (p) => p.name,
+    company_hq: (p) => p.company_hq,
+    price_range: (p) => p.price_range,
+    category: (p) => p.category,
+  });
+  const companySort = useTableSort(companyRows, {
+    name: (c) => c.name,
+    hq: (c) => c.hq,
+    productCount: (c) => c.productCount,
+  });
+  const agencySort = useTableSort(agencies, {
+    name: (a) => a.name,
+    services: (a) => a.services?.[0],
+    regions: (a) => a.regions?.[0],
+  });
+  const useCaseSort = useTableSort(useCases, {
+    title: (u) => u.title,
+    device: (u) => u.device,
+    agency: (u) => u.agency?.name,
+  });
+
+
+
   
   const navigate = useNavigate();
   const { toast } = useToast();
