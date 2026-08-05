@@ -16,6 +16,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Users, Shield, Trash2, UserPlus } from 'lucide-react';
+import { PhotoUpload } from '../components/PhotoUpload';
 
 const ROLES = [
   { value: 'admin', label: 'Admin' },
@@ -29,7 +30,7 @@ const initials = (m: { name?: string | null; email?: string | null }) =>
   (m.name || m.email || '?').slice(0, 2).toUpperCase();
 
 export default function Team() {
-  const { role } = useScrmAuth();
+  const { role, user } = useScrmAuth();
   const { data: team = [], refetch } = useTeam();
   const isAdmin = role === 'admin';
 
@@ -71,7 +72,13 @@ export default function Team() {
             {team.map(m => (
               <tr key={m.id} className={`border-t border-slate-100 ${m.is_active ? '' : 'opacity-60'}`}>
                 <td className="px-4 py-2">
-                  {m.photo_url ? (
+                  {isAdmin || m.user_id === user?.id ? (
+                    <PhotoUpload
+                      size="sm"
+                      value={m.photo_url}
+                      onChange={url => patch(m.id, { photo_url: url }, url ? 'Photo updated' : 'Photo removed')}
+                    />
+                  ) : m.photo_url ? (
                     <img src={m.photo_url} alt={m.name ?? m.email ?? 'Team member'} className="w-9 h-9 rounded-full object-cover" />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-xs font-medium text-slate-600">
@@ -153,23 +160,9 @@ export default function Team() {
         </table>
       </div>
 
-      {isAdmin && (
-        <div className="mt-6 p-4 border border-slate-200 rounded-lg bg-slate-50">
-          <div className="text-sm font-medium text-slate-900 mb-2">Member photos</div>
-          <p className="text-xs text-slate-500">
-            Use “Add member” to invite a teammate by email — they get access as soon as they sign in at <code>/labs/rhcrm</code>.
-            Paste an image URL below to show their picture.
-          </p>
-          <div className="mt-3 space-y-2">
-            {team.map(m => (
-              <div key={m.id} className="flex items-center gap-2">
-                <span className="text-xs text-slate-500 w-40 truncate">{m.name || m.email}</span>
-                <TextCell value={m.photo_url ?? ''} placeholder="Photo URL" onSave={v => patch(m.id, { photo_url: v || null })} />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <p className="mt-4 text-xs text-slate-500">
+        Click a photo to upload a new one (JPG or PNG, up to 5MB). You can always update your own photo.
+      </p>
     </div>
   );
 }
@@ -216,7 +209,12 @@ function AddMemberDialog({ onAdded }: { onAdded: () => void }) {
           <div><Label className="text-xs">Name</Label><Input value={form.name} onChange={e => set('name', e.target.value)} placeholder="Jane Doe" /></div>
           <div><Label className="text-xs">Email *</Label><Input type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="jane@mitrealityhack.com" /></div>
           <div><Label className="text-xs">Phone</Label><Input value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+1 555 000 1111" /></div>
-          <div><Label className="text-xs">Photo URL</Label><Input value={form.photo_url} onChange={e => set('photo_url', e.target.value)} placeholder="https://…" /></div>
+          <div>
+            <Label className="text-xs">Photo</Label>
+            <div className="mt-1">
+              <PhotoUpload value={form.photo_url || null} onChange={url => set('photo_url', url ?? '')} />
+            </div>
+          </div>
           <div>
             <Label className="text-xs">Role</Label>
             <Select value={form.role} onValueChange={v => set('role', v)}>
