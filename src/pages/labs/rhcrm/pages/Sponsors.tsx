@@ -110,11 +110,11 @@ export default function Sponsors() {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
             <tr>
-              <th className="text-left px-4 py-3">Company</th>
-              <th className="text-left px-4 py-3">Stage</th>
-              <th className="text-left px-4 py-3">Tier</th>
-              <th className="text-left px-4 py-3">Owner</th>
-              <th className="text-center px-4 py-3">Health</th>
+              <SortTh label="Company" k="company_name" sort={sort} onSort={toggleSort} />
+              <SortTh label="Stage" k="stage" sort={sort} onSort={toggleSort} />
+              <SortTh label="Tier" k="tier" sort={sort} onSort={toggleSort} />
+              <SortTh label="Owner" k="owner" sort={sort} onSort={toggleSort} />
+              <SortTh label="Health" k="health" sort={sort} onSort={toggleSort} align="center" />
             </tr>
           </thead>
           <tbody>
