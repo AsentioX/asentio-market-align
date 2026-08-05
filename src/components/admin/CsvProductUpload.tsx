@@ -343,29 +343,8 @@ const CsvProductUpload = () => {
         <MergeModeToggle id="merge-products" checked={mergeMode} onCheckedChange={setMergeMode} disabled={isUploading} />
       </div>
 
-      {rollback && (
-        <Alert className="border-amber-500/50 bg-amber-500/10">
-          <Undo2 className="h-4 w-4 text-amber-500" />
-          <AlertDescription className="flex items-center justify-between">
-            <span className="text-sm">
-              Last import: {rollback.newSlugs.length} new, {rollback.updatedProducts.length} updated
-              <span className="text-muted-foreground ml-1">({rollback.timestamp.toLocaleTimeString()})</span>
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRollback}
-              disabled={isRollingBack}
-              className="ml-2 border-amber-500/50 text-amber-600 hover:bg-amber-500/20"
-            >
-              {isRollingBack ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Undo2 className="w-3 h-3 mr-1" />}
-              Rollback
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
-
       {result && result.errors.length > 0 && (
+
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
