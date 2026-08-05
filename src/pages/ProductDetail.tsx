@@ -15,13 +15,14 @@ const ProductImageCarousel = ({ imageUrl, additionalImages, name }: { imageUrl: 
 
   return (
     <div className="relative w-full bg-muted">
-      <div className="container mx-auto">
-        <div className="relative aspect-[21/9] max-h-[400px] overflow-hidden">
+      <div className="w-full">
+        <div className="relative w-full aspect-[21/9] max-h-[520px] overflow-hidden">
           <img
             src={images[current]}
             alt={`${name} - image ${current + 1}`}
-            className="w-full h-full object-contain"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           />
+
           {images.length > 1 && (
             <>
               <button
