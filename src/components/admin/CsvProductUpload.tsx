@@ -190,7 +190,10 @@ const CsvProductUpload = () => {
         .select('*')
         .in('slug', incomingSlugs);
 
-      const existingSlugSet = new Set((existingProducts || []).map((p: any) => p.slug));
+      const existingBySlug = new Map<string, Record<string, any>>(
+        (existingProducts || []).map((p: any) => [p.slug, p])
+      );
+      const existingSlugSet = new Set(existingBySlug.keys());
 
       let success = 0;
       const errors: string[] = [];
