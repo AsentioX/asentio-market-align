@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, Loader2, Download, AlertCircle, Undo2, FileDown } from 'lucide-react';
+import { Upload, Loader2, Download, AlertCircle, FileDown } from 'lucide-react';
 import { exportRowsCsv, pruneEmpty } from './csvUtils';
 import MergeModeToggle from './MergeModeToggle';
+import ImportHistory from './ImportHistory';
+import { logImport } from './importLog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EXPECTED_HEADERS = [
