@@ -1815,6 +1815,66 @@ export type Database = {
           },
         ]
       }
+      hai_use_cases: {
+        Row: {
+          ai_capabilities: string[] | null
+          created_at: string
+          description: string | null
+          display_order: number
+          domain: string
+          ecosystem_roles: string[] | null
+          human_activities: string[] | null
+          human_capabilities: string[] | null
+          human_interface: string[] | null
+          icon: string | null
+          id: string
+          industry_focus: string[] | null
+          is_featured: boolean
+          name: string
+          slug: string
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_capabilities?: string[] | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          domain: string
+          ecosystem_roles?: string[] | null
+          human_activities?: string[] | null
+          human_capabilities?: string[] | null
+          human_interface?: string[] | null
+          icon?: string | null
+          id?: string
+          industry_focus?: string[] | null
+          is_featured?: boolean
+          name: string
+          slug: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_capabilities?: string[] | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          domain?: string
+          ecosystem_roles?: string[] | null
+          human_activities?: string[] | null
+          human_capabilities?: string[] | null
+          human_interface?: string[] | null
+          icon?: string | null
+          id?: string
+          industry_focus?: string[] | null
+          is_featured?: boolean
+          name?: string
+          slug?: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mydj_adaptation_rules: {
         Row: {
           created_at: string
