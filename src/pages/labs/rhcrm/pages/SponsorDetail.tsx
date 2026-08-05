@@ -113,6 +113,24 @@ export default function SponsorDetail() {
         </MetaField>
       </div>
 
+      {/* Company + assessment details */}
+      <div className="border border-slate-200 rounded-lg bg-white p-4 mb-6">
+        <div className="text-xs uppercase tracking-wider text-slate-500 mb-3">Company details</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <MetaField label="Industry"><EditableText value={sponsor.industry} onSave={v => updateField({ industry: v })} /></MetaField>
+          <MetaField label="Type"><EditableText value={sponsor.sponsor_type} onSave={v => updateField({ sponsor_type: v })} placeholder="e.g. Corporate, Startup" /></MetaField>
+          <MetaField label="Organization type"><EditableText value={sponsor.organization_type} onSave={v => updateField({ organization_type: v })} placeholder="e.g. Nonprofit, Public" /></MetaField>
+          <MetaField label="Website"><EditableText value={sponsor.website} onSave={v => updateField({ website: v })} /></MetaField>
+          <MetaField label="Headquarters"><EditableText value={sponsor.headquarters} onSave={v => updateField({ headquarters: v })} /></MetaField>
+          <MetaField label="2027 sponsorship likelihood"><EditableText value={sponsor.likelihood_2027} onSave={v => updateField({ likelihood_2027: v })} placeholder="e.g. High" /></MetaField>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <MetaField label="Strategic fit / focus"><EditableText value={sponsor.strategic_fit} onSave={v => updateField({ strategic_fit: v })} multiline /></MetaField>
+          <MetaField label="Recommended activation"><EditableText value={sponsor.recommended_activation} onSave={v => updateField({ recommended_activation: v })} multiline /></MetaField>
+          <MetaField label="Recommended next action"><EditableText value={sponsor.recommended_next_action} onSave={v => updateField({ recommended_next_action: v })} multiline /></MetaField>
+        </div>
+      </div>
+
       <Tabs defaultValue="actions">
         <TabsList>
           <TabsTrigger value="actions">Actions ({actions.length})</TabsTrigger>
