@@ -79,12 +79,13 @@ const CsvCompanyUpload = () => {
         .filter(Boolean);
       const { data: existing } = await supabase
         .from('xr_companies')
-        .select('slug')
+        .select('*')
         .in('slug', incomingSlugs);
       const existingSlugs = new Set((existing || []).map((r: any) => r.slug));
 
       let success = 0;
       const errors: string[] = [];
+      const newSlugs: string[] = [];
 
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
