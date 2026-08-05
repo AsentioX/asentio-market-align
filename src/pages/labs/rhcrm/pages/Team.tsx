@@ -8,12 +8,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Users, Shield } from 'lucide-react';
 
+const ROLES = [
+  { value: 'admin', label: 'Admin' },
+  { value: 'sponsorship', label: 'Sponsorship' },
+  { value: 'finance', label: 'Finance' },
+  { value: 'team_rh', label: 'Team RH' },
+];
+const roleLabel = (r: string) => ROLES.find(x => x.value === r)?.label ?? r;
+
 export default function Team() {
   const { role } = useScrmAuth();
   const { data: team = [], refetch } = useTeam();
   const [email, setEmail] = useState('');
-  const [newRole, setNewRole] = useState('committee');
-  const isChair = role === 'chair';
+  const [newRole, setNewRole] = useState('sponsorship');
+  const isChair = role === 'admin';
 
   const invite = async () => {
     if (!email) return;
@@ -33,7 +41,7 @@ export default function Team() {
   return (
     <div className="p-8 max-w-3xl">
       <h1 className="text-2xl font-semibold text-slate-900 flex items-center gap-2"><Users className="w-5 h-5" /> Team</h1>
-      <p className="text-sm text-slate-500 mt-1 mb-6">Sponsorship committee members and their roles.</p>
+      <p className="text-sm text-slate-500 mt-1 mb-6">Sponsorship team members and their roles.</p>
 
       <div className="border border-slate-200 rounded-lg bg-white divide-y divide-slate-100">
         {team.map(m => (
@@ -44,7 +52,7 @@ export default function Team() {
             <div className="flex-1 min-w-0">
               <div className="text-sm text-slate-900 truncate">{m.email ?? m.user_id}</div>
               <div className="text-xs text-slate-500 capitalize flex items-center gap-1">
-                {m.role === 'chair' && <Shield className="w-3 h-3" />} {m.role}
+                {m.role === 'admin' && <Shield className="w-3 h-3" />} {roleLabel(m.role)}
               </div>
             </div>
             {isChair && (
@@ -52,7 +60,7 @@ export default function Team() {
                 <Select value={m.role} onValueChange={v => updateRole(m.id, v)}>
                   <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {['chair','committee','ops','leadership'].map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                    {ROLES.map(r => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Button variant="ghost" size="sm" onClick={() => remove(m.id)}>Remove</Button>
