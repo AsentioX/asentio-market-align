@@ -4,7 +4,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Upload, Loader2, Download, AlertCircle, Undo2, FileDown } from 'lucide-react';
-import { exportRowsCsv } from './csvUtils';
+import { exportRowsCsv, pruneEmpty } from './csvUtils';
+import MergeModeToggle from './MergeModeToggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EXPECTED_HEADERS = [
@@ -106,6 +107,7 @@ interface RollbackData {
 
 const CsvProductUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
+  const [mergeMode, setMergeMode] = useState(true);
   const [isRollingBack, setIsRollingBack] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: string[] } | null>(null);
   const [rollback, setRollback] = useState<RollbackData | null>(null);
@@ -260,7 +262,7 @@ const CsvProductUpload = () => {
             link: row['product url'] || null,
             image_url: row['image url'] || null,
             editors_note: row['editors note'] || null,
-            is_editors_pick: parseBool(row['editors pick']) ?? false,
+            is_editors_pick: parseBool(row['editors pick']) ?? (mergeMode && existingSlugSet.has(slug) ? null : false),
             operating_system: row['operating system'] || null,
             standalone_or_tethered: row['standalone or tethered'] || null,
             sdk_availability: row['sdk availability'] || null,
@@ -297,15 +299,22 @@ const CsvProductUpload = () => {
             additional_images: parseArray(row['additional images']),
           };
 
+          const isExisting = existingSlugSet.has(slug);
+          if (mergeMode && isExisting) {
+            // Merge mode: keep the existing ai_integration value untouched
+            delete product.ai_integration;
+          }
+          const payload = mergeMode && isExisting ? pruneEmpty(product) : product;
+
           const { error } = await supabase
             .from('xr_products')
-            .upsert(product as any, { onConflict: 'slug' });
+            .upsert(payload as any, { onConflict: 'slug' });
 
           if (error) {
             errors.push(`Row ${i + 2} (${name}): ${error.message}`);
           } else {
             success++;
-            if (!existingSlugSet.has(slug)) {
+            if (!isExisting) {
               newSlugs.push(slug);
             }
           }
@@ -366,6 +375,7 @@ const CsvProductUpload = () => {
           <Download className="w-4 h-4 mr-2" />
           Template
         </Button>
+        <MergeModeToggle id="merge-products" checked={mergeMode} onCheckedChange={setMergeMode} disabled={isUploading} />
       </div>
 
       {rollback && (
