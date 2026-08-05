@@ -29,6 +29,10 @@ export default function SponsorDetail() {
   const { data: deliverables = [] } = useDeliverables(id);
   const { data: team = [] } = useTeam();
   const save = useSaveSponsor();
+  const delSponsor = useDeleteSponsor();
+  const navigate = useNavigate();
+  const { role } = useScrmAuth();
+  const isAdmin = role === 'admin';
 
   if (!sponsor) return <div className="p-8 text-slate-500">Loading…</div>;
 
