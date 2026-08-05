@@ -2,15 +2,17 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { ScrmAuthProvider, useScrmAuth } from './lib/useScrmAuth';
 import { Button } from '@/components/ui/button';
 import { Login } from './pages/Login';
+import { ChangePassword } from './pages/ChangePassword';
 import { LayoutDashboard, KanbanSquare, Building2, CheckSquare, Users, LogOut } from 'lucide-react';
 import rhLogo from '@/assets/mit-reality-hack-logo.png.asset.json';
 
 
 function Shell() {
-  const { user, isMember, loading, role, signOut } = useScrmAuth();
+  const { user, isMember, loading, role, mustChangePassword, signOut } = useScrmAuth();
   const nav = useNavigate();
   if (loading) return <div className="min-h-screen bg-white flex items-center justify-center text-slate-500">Loading…</div>;
   if (!user) return <Login />;
+  if (mustChangePassword) return <ChangePassword />;
   if (!isMember) return (
     <div className="min-h-screen bg-white flex items-center justify-center p-8">
       <div className="max-w-md text-center space-y-4">

@@ -15,8 +15,9 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Users, Shield, Trash2, UserPlus } from 'lucide-react';
+import { Users, Shield, Trash2, UserPlus, KeyRound } from 'lucide-react';
 import { PhotoUpload } from '../components/PhotoUpload';
+import { SCRM_DEFAULT_PASSWORD } from './ChangePassword';
 
 const ROLES = [
   { value: 'admin', label: 'Admin' },
@@ -37,6 +38,17 @@ export default function Team() {
   const patch = async (id: string, updates: Record<string, any>, msg = 'Saved') => {
     const { error } = await supabase.from('scrm_user_roles' as any).update(updates).eq('id', id);
     if (error) toast.error(error.message); else { toast.success(msg); refetch(); }
+  };
+  const resetPassword = async (id: string, label: string) => {
+    const { data, error } = await supabase.functions.invoke('scrm-admin-account', {
+      body: { action: 'reset_password', member_id: id },
+    });
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error ?? error?.message ?? 'Could not reset password');
+      return;
+    }
+    toast.success(`${label} reset to the default password`);
+    refetch();
   };
   const remove = async (id: string) => {
     const { error } = await supabase.from('scrm_user_roles' as any).delete().eq('id', id);
@@ -129,7 +141,29 @@ export default function Team() {
                   </div>
                 </td>
                 {isAdmin && (
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-2 text-right whitespace-nowrap">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-900" title="Reset to default password">
+                          <KeyRound className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Reset password to default?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {m.name || m.email || 'This member'} will be able to sign in with the default password
+                            <span className="font-mono"> {SCRM_DEFAULT_PASSWORD}</span> and must set a new one at next login.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => resetPassword(m.id, m.name || m.email || 'Member')}>
+                            Reset password
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-slate-400 hover:text-rose-600">
@@ -162,6 +196,7 @@ export default function Team() {
 
       <p className="mt-4 text-xs text-slate-500">
         Click a photo to upload a new one (JPG or PNG, up to 5MB). You can always update your own photo.
+        {isAdmin && <> Use the key icon to reset a member back to the default password (<span className="font-mono">{SCRM_DEFAULT_PASSWORD}</span>).</>}
       </p>
     </div>
   );
@@ -176,7 +211,7 @@ function AddMemberDialog({ onAdded }: { onAdded: () => void }) {
   const submit = async () => {
     if (!form.email.trim()) { toast.error('Email is required'); return; }
     setSaving(true);
-    const { error } = await supabase.from('scrm_user_roles' as any).insert({
+    const { data: inserted, error } = await supabase.from('scrm_user_roles' as any).insert({
       user_id: null,
       role: form.role,
       email: form.email.trim().toLowerCase(),
@@ -184,10 +219,15 @@ function AddMemberDialog({ onAdded }: { onAdded: () => void }) {
       phone: form.phone.trim() || null,
       photo_url: form.photo_url.trim() || null,
       is_active: true,
+      must_change_password: true,
+    }).select('id').single();
+    if (error) { setSaving(false); toast.error(error.message); return; }
+    const { data: acc } = await supabase.functions.invoke('scrm-admin-account', {
+      body: { action: 'create_account', member_id: (inserted as any)?.id },
     });
     setSaving(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success('Member added — they get access when they sign in');
+    if ((acc as any)?.error) toast.error((acc as any).error);
+    else toast.success(`Member added — default password ${SCRM_DEFAULT_PASSWORD}`);
     setForm({ name: '', email: '', phone: '', photo_url: '', role: 'team_rh' });
     setOpen(false);
     onAdded();
@@ -202,7 +242,7 @@ function AddMemberDialog({ onAdded }: { onAdded: () => void }) {
         <DialogHeader>
           <DialogTitle>Add team member</DialogTitle>
           <DialogDescription>
-            They'll get CRM access with this role the first time they sign in with this email.
+            An account is created with the default password <span className="font-mono">{SCRM_DEFAULT_PASSWORD}</span>. They must set a new password at first login.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
