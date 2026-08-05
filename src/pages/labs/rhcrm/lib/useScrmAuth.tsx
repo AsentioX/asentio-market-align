@@ -23,8 +23,16 @@ export function ScrmAuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const check = async (u: User | null) => {
       if (!u) { setRole(null); setIsMember(false); setLoading(false); return; }
-      const { data } = await supabase.from('scrm_user_roles' as any).select('role').eq('user_id', u.id).limit(1);
-      const r = (data as any)?.[0]?.role ?? null;
+      let { data } = await supabase.from('scrm_user_roles' as any).select('role').eq('user_id', u.id).limit(1);
+      let r = (data as any)?.[0]?.role ?? null;
+      if (!r) {
+        // claim a pending invite created by an admin with this email
+        const { data: claimed } = await supabase.rpc('scrm_claim_pending_membership' as any);
+        if (claimed) {
+          const res = await supabase.from('scrm_user_roles' as any).select('role').eq('user_id', u.id).limit(1);
+          r = (res.data as any)?.[0]?.role ?? null;
+        }
+      }
       if (!r) {
         // bootstrap: if no roles exist at all, self-assign admin
         const { count } = await supabase.from('scrm_user_roles' as any).select('id', { count: 'exact', head: true });
