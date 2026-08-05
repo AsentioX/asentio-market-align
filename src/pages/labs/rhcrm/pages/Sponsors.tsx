@@ -40,12 +40,12 @@ export default function Sponsors() {
           <p className="text-sm text-slate-500 mt-1">{sponsors.length} sponsor accounts</p>
         </div>
         <div className="flex items-center gap-2">
-        <SponsorImportExport sponsors={sponsors} />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
 
             <Button className="bg-slate-900 hover:bg-slate-800"><Plus className="w-4 h-4 mr-1" /> New sponsor</Button>
           </DialogTrigger>
+
           <DialogContent>
             <DialogHeader><DialogTitle>New sponsor</DialogTitle></DialogHeader>
             <div className="space-y-3">
