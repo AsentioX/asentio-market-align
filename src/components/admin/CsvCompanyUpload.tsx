@@ -117,14 +117,28 @@ const CsvCompanyUpload = () => {
           end_of_life_date: row['end of life date'] || null,
         };
 
-        const payload = mergeMode && existingSlugs.has(company.slug) ? pruneEmpty(company) : company;
+        const isExisting = existingSlugs.has(company.slug);
+        const payload = mergeMode && isExisting ? pruneEmpty(company) : company;
         const { error } = await supabase.from('xr_companies').upsert(payload as any, { onConflict: 'slug' });
         if (error) errors.push(`Row ${i + 2} (${name}): ${error.message}`);
-        else success++;
+        else {
+          success++;
+          if (!isExisting) newSlugs.push(company.slug);
+        }
       }
 
       setResult({ success, errors });
+      await logImport({
+        entityType: 'companies',
+        fileName: file.name,
+        mergeMode,
+        successCount: success,
+        errors,
+        newSlugs,
+        previousRows: (existing || []) as Record<string, unknown>[],
+      });
       queryClient.invalidateQueries({ queryKey: ['xr-companies'] });
+      queryClient.invalidateQueries({ queryKey: ['import-logs', 'companies'] });
       toast({
         title: 'CSV Import Complete',
         description: `${success} companies imported. ${errors.length} errors.`,
