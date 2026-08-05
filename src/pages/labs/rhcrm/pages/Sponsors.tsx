@@ -26,7 +26,32 @@ export default function Sponsors() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ company_name: '', industry: '', website: '', tier_target: '' });
 
-  const filtered = useMemo(() => sponsors.filter(s => s.company_name.toLowerCase().includes(q.toLowerCase())), [sponsors, q]);
+  const [sort, setSort] = useState<{ key: string; dir: 'asc' | 'desc' }>({ key: 'company_name', dir: 'asc' });
+
+  const scoreFor = (s: any) => healthScore(s, [], actions.filter(a => a.sponsor_id === s.id));
+
+  const filtered = useMemo(() => {
+    const rows = sponsors.filter(s => s.company_name.toLowerCase().includes(q.toLowerCase()));
+    const val = (s: any) => {
+      switch (sort.key) {
+        case 'stage': return stageLabel(s.stage) ?? '';
+        case 'tier': return s.tier_target ?? '';
+        case 'owner': return ownerName(s.owner_id);
+        case 'health': return scoreFor(s);
+        default: return s.company_name ?? '';
+      }
+    };
+    return [...rows].sort((a, b) => {
+      const av = val(a), bv = val(b);
+      const cmp = typeof av === 'number' && typeof bv === 'number'
+        ? av - bv
+        : String(av).localeCompare(String(bv), undefined, { sensitivity: 'base' });
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
+  }, [sponsors, q, sort, actions, team]);
+
+  const toggleSort = (key: string) =>
+    setSort(prev => prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' });
 
   const create = async () => {
     if (!form.company_name.trim()) return toast.error('Company name required');
