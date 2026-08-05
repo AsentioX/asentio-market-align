@@ -26,12 +26,12 @@ const num = (v: string) => {
 };
 
 const normalizeStage = (v: string) => {
-  if (!v) return 'target_identified';
+  if (!v) return 'potential_sponsor';
   const key = v.trim().toLowerCase().replace(/\s+/g, '_');
   const byKey = STAGES.find((s) => s.key === key);
   if (byKey) return byKey.key;
   const byLabel = STAGES.find((s) => s.label.toLowerCase() === v.trim().toLowerCase());
-  return byLabel ? byLabel.key : 'target_identified';
+  return byLabel ? byLabel.key : 'potential_sponsor';
 };
 
 interface Props {
@@ -63,7 +63,7 @@ const SponsorImportExport = ({ sponsors }: Props) => {
         industry: 'Hardware',
         website: 'https://acme.xr',
         headquarters: 'Boston, MA',
-        stage: 'Initial Contact',
+        stage: 'Contacting',
         priority: 'high',
         tier_target: 'Gold',
         relationship_strength: 3,
