@@ -10,9 +10,9 @@ export function healthScore(s: Sponsor, contacts: Contact[], actions: Action[]):
   if (s.owner_id) score += 10;
   if (openActions.length > 0) score += 20;
   if (contacts.some(c => c.is_decision_maker)) score += 15;
-  const stagesReached = ['proposal_sent','negotiation','verbal_commitment','contract_signed','activation_planning','delivery','post_event','renewal'];
+  const stagesReached = ['discussing','contract_signed','rh_planning','rh_post_event_interview'];
   if (stagesReached.includes(s.stage)) score += 20;
-  if (['contract_signed','activation_planning','delivery','post_event','renewal'].includes(s.stage)) score += 15;
+  if (['contract_signed','rh_planning','rh_post_event_interview'].includes(s.stage)) score += 15;
   return Math.min(100, score);
 }
 
