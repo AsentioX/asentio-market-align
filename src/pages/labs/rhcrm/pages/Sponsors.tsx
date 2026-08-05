@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Search, Building2 } from 'lucide-react';
 import { healthScore, healthColor } from '../lib/health';
 import { toast } from 'sonner';
+import SponsorImportExport from '../components/SponsorImportExport';
+
 
 export default function Sponsors() {
   const { data: sponsors = [] } = useSponsors();
@@ -37,8 +39,11 @@ export default function Sponsors() {
           <h1 className="text-2xl font-semibold text-slate-900">Sponsors</h1>
           <p className="text-sm text-slate-500 mt-1">{sponsors.length} sponsor accounts</p>
         </div>
+        <div className="flex items-center gap-2">
+        <SponsorImportExport sponsors={sponsors} />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
+
             <Button className="bg-slate-900 hover:bg-slate-800"><Plus className="w-4 h-4 mr-1" /> New sponsor</Button>
           </DialogTrigger>
           <DialogContent>
@@ -63,7 +68,9 @@ export default function Sponsors() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
+
 
       <div className="relative mb-4">
         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
