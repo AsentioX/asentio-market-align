@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { parseCSV, exportRowsCsv } from '@/components/admin/csvUtils';
+import { useScrmAuth } from '../lib/useScrmAuth';
 import { STAGES } from '../lib/constants';
 import type { Sponsor } from '../lib/types';
 
@@ -41,6 +42,8 @@ const SponsorImportExport = ({ sponsors }: Props) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const qc = useQueryClient();
+  const { role } = useScrmAuth();
+  const isAdmin = role === 'chair';
 
   const handleExport = () => {
     if (!sponsors.length) return toast.error('No sponsors to export');
@@ -131,12 +134,14 @@ const SponsorImportExport = ({ sponsors }: Props) => {
     <div className="flex items-center gap-2">
       <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden" onChange={handleFile} />
       <Button variant="outline" size="sm" onClick={handleTemplate}>Template</Button>
-      <Button variant="outline" size="sm" onClick={handleExport}>
-        <Download className="w-4 h-4 mr-1" /> Export
-      </Button>
       <Button variant="outline" size="sm" disabled={busy} onClick={() => fileRef.current?.click()}>
         {busy ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />} Import
       </Button>
+      {isAdmin && (
+        <Button variant="outline" size="sm" onClick={handleExport}>
+          <Download className="w-4 h-4 mr-1" /> Export
+        </Button>
+      )}
     </div>
   );
 };
