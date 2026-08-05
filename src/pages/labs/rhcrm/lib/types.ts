@@ -8,6 +8,12 @@ export interface Sponsor {
   stage: string;
   priority: string;
   tier_target: string | null;
+  sponsor_type: string | null;
+  organization_type: string | null;
+  likelihood_2027: string | null;
+  strategic_fit: string | null;
+  recommended_activation: string | null;
+  recommended_next_action: string | null;
   relationship_strength: number | null;
   probability: number | null;
   estimated_value: number | null;

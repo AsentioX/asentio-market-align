@@ -12,13 +12,15 @@ import type { Sponsor } from '../lib/types';
 
 // Columns mirror the sponsor detail page: header meta, meta grid, tabs, notes
 const BASE_COLUMNS = [
-  'company_name', 'industry', 'website', 'headquarters',
+  'company_name', 'industry', 'sponsor_type', 'website', 'headquarters', 'organization_type',
   'stage', 'priority', 'tier_target', 'owner',
+  'likelihood_2027', 'strategic_fit', 'recommended_activation', 'recommended_next_action',
 ];
 
 const BASE_HEADERS = [
-  'Company Name', 'Industry', 'Website', 'Headquarters',
+  'Company Name', 'Industry', 'Type', 'Website', 'Headquarters', 'Organization Type',
   'Stage', 'Priority', 'Tier Target', 'Owner',
+  '2027 Sponsorship Likelihood', 'Strategic Fit / Focus', 'Recommended Activation', 'Recommended Next Action',
 ];
 
 const MOTIVATION_HEADERS = MOTIVATIONS.map((k) => `${MOTIVATION_LABEL[k]} (0-10)`);
@@ -140,8 +142,14 @@ const SponsorImportExport = ({ sponsors }: Props) => {
         {
           company_name: 'Acme XR',
           industry: 'Hardware',
+          sponsor_type: 'Corporate',
           website: 'https://acme.xr',
           headquarters: 'Boston, MA',
+          organization_type: 'Private company',
+          likelihood_2027: 'High',
+          strategic_fit: 'Developer tooling + hardware ecosystem',
+          recommended_activation: 'Hardware lab + workshop',
+          recommended_next_action: 'Send 2027 prospectus',
           stage: 'Contacting',
           priority: 'high',
           tier_target: 'Gold',
@@ -188,8 +196,14 @@ const SponsorImportExport = ({ sponsors }: Props) => {
         const payload: Record<string, unknown> = {
           company_name: name,
           industry: r['industry'] || null,
+          sponsor_type: r['type'] || r['sponsor_type'] || null,
           website: r['website'] || null,
           headquarters: r['headquarters'] || null,
+          organization_type: r['organization type'] || r['organization_type'] || null,
+          likelihood_2027: r['2027 sponsorship likelihood'] || r['likelihood_2027'] || null,
+          strategic_fit: r['strategic fit / focus'] || r['strategic fit'] || r['strategic_fit'] || null,
+          recommended_activation: r['recommended activation'] || r['recommended_activation'] || null,
+          recommended_next_action: r['recommended next action'] || r['recommended_next_action'] || null,
           priority: (r['priority'] || 'medium').toLowerCase(),
           tier_target: r['tier target'] || r['tier_target'] || null,
           notes: r['notes'] || null,

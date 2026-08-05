@@ -4071,14 +4071,20 @@ export type Database = {
           id: string
           industry: string | null
           last_contact_at: string | null
+          likelihood_2027: string | null
           logo_url: string | null
           motivations: Json | null
           notes: string | null
+          organization_type: string | null
           owner_id: string | null
           priority: string
           probability: number | null
+          recommended_activation: string | null
+          recommended_next_action: string | null
           relationship_strength: number | null
+          sponsor_type: string | null
           stage: string
+          strategic_fit: string | null
           tier_target: string | null
           updated_at: string
           website: string | null
@@ -4092,14 +4098,20 @@ export type Database = {
           id?: string
           industry?: string | null
           last_contact_at?: string | null
+          likelihood_2027?: string | null
           logo_url?: string | null
           motivations?: Json | null
           notes?: string | null
+          organization_type?: string | null
           owner_id?: string | null
           priority?: string
           probability?: number | null
+          recommended_activation?: string | null
+          recommended_next_action?: string | null
           relationship_strength?: number | null
+          sponsor_type?: string | null
           stage?: string
+          strategic_fit?: string | null
           tier_target?: string | null
           updated_at?: string
           website?: string | null
@@ -4113,14 +4125,20 @@ export type Database = {
           id?: string
           industry?: string | null
           last_contact_at?: string | null
+          likelihood_2027?: string | null
           logo_url?: string | null
           motivations?: Json | null
           notes?: string | null
+          organization_type?: string | null
           owner_id?: string | null
           priority?: string
           probability?: number | null
+          recommended_activation?: string | null
+          recommended_next_action?: string | null
           relationship_strength?: number | null
+          sponsor_type?: string | null
           stage?: string
+          strategic_fit?: string | null
           tier_target?: string | null
           updated_at?: string
           website?: string | null
