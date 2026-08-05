@@ -170,6 +170,8 @@ const AppContent = () => {
           <Route path="/hai-directory" element={<Directory />} />
           <Route path="/hai-directory/submit" element={<DirectorySubmit />} />
           <Route path="/hai-directory/solution-explorer" element={<SolutionExplorer />} />
+          <Route path="/hai-directory/solutions/:slug" element={<SolutionDetail />} />
+          <Route path="/hai-directory/partner-finder" element={<PartnerFinder />} />
           <Route path="/hai-directory/category/:groupSlug" element={<Navigate to="/hai-directory" replace />} />
           <Route path="/hai-directory/company/:companyName" element={<CompanyDetail />} />
           <Route path="/hai-directory/agencies/:slug" element={<AgencyDetail />} />
