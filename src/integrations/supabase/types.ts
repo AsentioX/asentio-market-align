@@ -4093,7 +4093,7 @@ export type Database = {
           phone: string | null
           photo_url: string | null
           role: Database["public"]["Enums"]["scrm_role"]
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -4104,7 +4104,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           role: Database["public"]["Enums"]["scrm_role"]
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -4115,7 +4115,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           role?: Database["public"]["Enums"]["scrm_role"]
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -5774,6 +5774,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      scrm_claim_pending_membership: { Args: never; Returns: boolean }
       scrm_has_role: {
         Args: {
           _role: Database["public"]["Enums"]["scrm_role"]
