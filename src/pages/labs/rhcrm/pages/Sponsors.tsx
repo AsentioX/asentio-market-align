@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, Building2 } from 'lucide-react';
+import { Plus, Search, Building2, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react';
 import { healthScore, healthColor } from '../lib/health';
 import { toast } from 'sonner';
 import SponsorImportExport from '../components/SponsorImportExport';
@@ -142,5 +142,22 @@ export default function Sponsors() {
         </table>
       </div>
     </div>
+  );
+}
+
+function SortTh({ label, k, sort, onSort, align = 'left' }: { label: string; k: string; sort: { key: string; dir: 'asc' | 'desc' }; onSort: (k: string) => void; align?: 'left' | 'center' }) {
+  const active = sort.key === k;
+  return (
+    <th className={`px-4 py-3 ${align === 'center' ? 'text-center' : 'text-left'}`}>
+      <button
+        onClick={() => onSort(k)}
+        className={`inline-flex items-center gap-1 uppercase tracking-wider hover:text-slate-900 ${active ? 'text-slate-900' : ''}`}
+      >
+        {label}
+        {active
+          ? (sort.dir === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)
+          : <ChevronsUpDown className="w-3 h-3 opacity-40" />}
+      </button>
+    </th>
   );
 }
