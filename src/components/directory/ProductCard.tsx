@@ -38,15 +38,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
       product.is_editors_pick ? 'border-asentio-blue/30 bg-gradient-to-br from-blue-50/50 to-white' : 'border-border'
     }`}>
       {/* Product Image */}
-      <div className="relative aspect-[16/10] bg-muted overflow-hidden">
+      <div className="relative aspect-[16/10] bg-background overflow-hidden">
         {product.image_url ? (
           <img
             src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            alt={`${product.name} by ${product.company}`}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+          <div className="w-full h-full flex items-center justify-center bg-muted">
             <Package className="w-12 h-12 text-muted-foreground/40" />
           </div>
         )}
