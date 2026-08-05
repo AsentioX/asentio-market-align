@@ -227,3 +227,48 @@ export async function analyzeMeeting(transcript: string, sponsor_name: string, s
     actions: { title: string; category: string; waiting_on: 'mit'|'sponsor'; due_in_days: number; priority: 'low'|'medium'|'high' }[];
   };
 }
+
+// Past sponsorships
+export interface PastSponsorship {
+  id: string; sponsor_id: string; year: number; amount: number | null;
+  tier: string | null; feedback: string | null; created_at: string;
+}
+export function usePastSponsorships(sponsorId?: string) {
+  return useQuery({
+    queryKey: ['scrm_past_sponsorships', sponsorId],
+    enabled: !!sponsorId,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('scrm_past_sponsorships' as any)
+        .select('*').eq('sponsor_id', sponsorId!).order('year', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as unknown as PastSponsorship[];
+    },
+  });
+}
+export function useSavePastSponsorship() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (p: Partial<PastSponsorship> & { sponsor_id: string; year: number }) => {
+      const { data: u } = await supabase.auth.getUser();
+      const payload: any = { ...p };
+      if (!p.id) payload.created_by = u.user?.id;
+      const q = p.id
+        ? supabase.from('scrm_past_sponsorships' as any).update(payload).eq('id', p.id).select().maybeSingle()
+        : supabase.from('scrm_past_sponsorships' as any).insert(payload).select().maybeSingle();
+      const { data, error } = await q;
+      if (error) throw error;
+      return data as unknown as PastSponsorship;
+    },
+    onSuccess: (_, v) => qc.invalidateQueries({ queryKey: ['scrm_past_sponsorships', v.sponsor_id] }),
+  });
+}
+export function useDeletePastSponsorship() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id }: { id: string; sponsor_id: string }) => {
+      const { error } = await supabase.from('scrm_past_sponsorships' as any).delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_, v) => qc.invalidateQueries({ queryKey: ['scrm_past_sponsorships', v.sponsor_id] }),
+  });
+}
