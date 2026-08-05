@@ -74,12 +74,13 @@ const CsvAgencyUpload = () => {
         .filter(Boolean);
       const { data: existing } = await supabase
         .from('xr_agencies')
-        .select('slug')
+        .select('*')
         .in('slug', incomingSlugs);
       const existingSlugs = new Set((existing || []).map((r: any) => r.slug));
 
       let success = 0;
       const errors: string[] = [];
+      const newSlugs: string[] = [];
 
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
@@ -102,14 +103,28 @@ const CsvAgencyUpload = () => {
           is_editors_pick: parseBool(row['editors pick']) ?? (mergeMode && existingSlugs.has(slug) ? null : false),
         };
 
-        const payload = mergeMode && existingSlugs.has(slug) ? pruneEmpty(agency) : agency;
+        const isExisting = existingSlugs.has(slug);
+        const payload = mergeMode && isExisting ? pruneEmpty(agency) : agency;
         const { error } = await supabase.from('xr_agencies').upsert(payload as any, { onConflict: 'slug' });
         if (error) errors.push(`Row ${i + 2} (${name}): ${error.message}`);
-        else success++;
+        else {
+          success++;
+          if (!isExisting) newSlugs.push(slug);
+        }
       }
 
       setResult({ success, errors });
+      await logImport({
+        entityType: 'agencies',
+        fileName: file.name,
+        mergeMode,
+        successCount: success,
+        errors,
+        newSlugs,
+        previousRows: (existing || []) as Record<string, unknown>[],
+      });
       queryClient.invalidateQueries({ queryKey: ['xr-agencies'] });
+      queryClient.invalidateQueries({ queryKey: ['import-logs', 'agencies'] });
       toast({
         title: 'CSV Import Complete',
         description: `${success} agencies imported. ${errors.length} errors.`,
