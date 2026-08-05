@@ -24,6 +24,7 @@ import CRMDashboard from '@/components/admin/CRMDashboard';
 import CaseStudiesAdmin from '@/components/admin/CaseStudiesAdmin';
 import ContentAdmin from '@/components/admin/ContentAdmin';
 import HAIFrameworkReference from '@/components/admin/HAIFrameworkReference';
+import { useTableSort, SortableTh } from '@/components/admin/SortableTable';
 
 import {
   AlertDialog,
@@ -80,6 +81,31 @@ const AdminDashboard = () => {
       };
     });
   }, [companies, productCounts]);
+
+  const productSort = useTableSort(products, {
+    company: (p) => p.company,
+    name: (p) => p.name,
+    company_hq: (p) => p.company_hq,
+    price_range: (p) => p.price_range,
+    category: (p) => p.category,
+  });
+  const companySort = useTableSort(companyRows, {
+    name: (c) => c.name,
+    hq: (c) => c.hq,
+    productCount: (c) => c.productCount,
+  });
+  const agencySort = useTableSort(agencies, {
+    name: (a) => a.name,
+    services: (a) => a.services?.[0],
+    regions: (a) => a.regions?.[0],
+  });
+  const useCaseSort = useTableSort(useCases, {
+    title: (u) => u.title,
+    device: (u) => u.device,
+    agency: (u) => u.agency?.name,
+  });
+
+
 
   
   const navigate = useNavigate();
@@ -277,16 +303,16 @@ const AdminDashboard = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Company</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Product</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Company HQ</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Price</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Category</th>
+                          <SortableTh label="Company" sortKey="company" sort={productSort} />
+                          <SortableTh label="Product" sortKey="name" sort={productSort} />
+                          <SortableTh label="Company HQ" sortKey="company_hq" sort={productSort} className="hidden md:table-cell" />
+                          <SortableTh label="Price" sortKey="price_range" sort={productSort} className="hidden md:table-cell" />
+                          <SortableTh label="Category" sortKey="category" sort={productSort} className="hidden md:table-cell" />
                           <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
                       <tbody>
-                        {products.map((product) => (
+                        {productSort.sorted.map((product) => (
                           <tr key={product.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/products/${product.id}/edit`)}>
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
@@ -384,14 +410,14 @@ const AdminDashboard = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Company</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">HQ</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Products</th>
+                          <SortableTh label="Company" sortKey="name" sort={companySort} />
+                          <SortableTh label="HQ" sortKey="hq" sort={companySort} className="hidden md:table-cell" />
+                          <SortableTh label="Products" sortKey="productCount" sort={companySort} className="hidden md:table-cell" />
                           <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">Categories</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {companyRows.map((company) => (
+                        {companySort.sorted.map((company) => (
                           <tr key={company.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/companies/${encodeURIComponent(company.name)}/edit`)}>
                             <td className="py-3 px-4">
                               <p className="font-medium text-foreground">{company.name}</p>
@@ -459,14 +485,14 @@ const AdminDashboard = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Agency</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Services</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">Regions</th>
+                          <SortableTh label="Agency" sortKey="name" sort={agencySort} />
+                          <SortableTh label="Services" sortKey="services" sort={agencySort} className="hidden md:table-cell" />
+                          <SortableTh label="Regions" sortKey="regions" sort={agencySort} className="hidden lg:table-cell" />
                           <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
                       <tbody>
-                        {agencies.map((agency) => (
+                        {agencySort.sorted.map((agency) => (
                           <tr key={agency.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/agencies/${agency.id}/edit`)}>
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
@@ -571,14 +597,14 @@ const AdminDashboard = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Use Case</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">Device</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">Agency</th>
+                          <SortableTh label="Use Case" sortKey="title" sort={useCaseSort} />
+                          <SortableTh label="Device" sortKey="device" sort={useCaseSort} className="hidden md:table-cell" />
+                          <SortableTh label="Agency" sortKey="agency" sort={useCaseSort} className="hidden lg:table-cell" />
                           <th className="text-right py-3 px-4 font-medium text-muted-foreground"></th>
                         </tr>
                       </thead>
                       <tbody>
-                        {useCases.map((useCase) => (
+                        {useCaseSort.sorted.map((useCase) => (
                           <tr key={useCase.id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => navigate(`/admin/use-cases/${useCase.id}/edit`)}>
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
