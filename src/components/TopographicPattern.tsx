@@ -1,10 +1,15 @@
 interface TopographicPatternProps {
   className?: string;
-  variant?: 'light' | 'dark';
+  variant?: 'light' | 'dark' | 'darkBg';
 }
 
 const TopographicPattern = ({ className = '', variant = 'light' }: TopographicPatternProps) => {
-  const strokeColor = variant === 'light' ? 'stroke-foreground/5' : 'stroke-background/10';
+  const strokeColor =
+    variant === 'light'
+      ? 'stroke-foreground/5'
+      : variant === 'dark'
+        ? 'stroke-background/10'
+        : 'stroke-white/25';
   
   return (
     <svg
