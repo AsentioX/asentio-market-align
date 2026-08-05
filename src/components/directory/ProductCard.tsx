@@ -45,7 +45,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             alt={`${product.name} by ${product.company}`}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted">
