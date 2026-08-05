@@ -94,14 +94,18 @@ const CompanyDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Overview header with cover image */}
-      <section className="relative pt-28 md:pt-36 bg-muted h-[30vh] flex flex-col">
+      <section className={`relative pt-28 md:pt-36 h-[30vh] flex flex-col ${company?.cover_image_url ? "bg-muted" : "bg-[#0a0f1f]"}`}>
         {company?.cover_image_url ? (
           <div className="absolute inset-0">
             <img src={company.cover_image_url} alt={`${displayName} cover`} className="w-full h-full object-cover" />
             <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background via-background/60 to-transparent" />
           </div>
         ) : (
-          <TopographicPattern className="opacity-30" />
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f1f] via-[#111a2e] to-[#0a0f1f]" />
+            <TopographicPattern className="opacity-20" />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
+          </>
         )}
         <div className="container mx-auto px-4 md:px-6 relative z-10 flex-1 flex flex-col">
           <div className="mt-auto pt-16 pb-6 md:pb-8 flex items-center gap-4 md:gap-6">
