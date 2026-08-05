@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useSponsor, useSaveSponsor, useContacts, useSaveContact, useDeleteContact,
   useSponsorActions, useSaveAction, useDeleteAction, useMeetings, useSaveMeeting,
-  useDeliverables, useSaveDeliverable, analyzeMeeting } from '../lib/api';
+  useDeliverables, useSaveDeliverable, analyzeMeeting, useTeam } from '../lib/api';
 import { STAGES, stageColor, stageLabel, MOTIVATIONS, MOTIVATION_LABEL, ACTION_LIBRARY, STAGE_SUGGESTIONS, DELIVERABLE_CATEGORIES } from '../lib/constants';
 import { healthScore, healthColor, daysSince, daysUntil } from '../lib/health';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ export default function SponsorDetail() {
   const { data: actions = [] } = useSponsorActions(id);
   const { data: meetings = [] } = useMeetings(id);
   const { data: deliverables = [] } = useDeliverables(id);
+  const { data: team = [] } = useTeam();
   const save = useSaveSponsor();
 
   if (!sponsor) return <div className="p-8 text-slate-500">Loading…</div>;
@@ -109,6 +110,17 @@ export default function SponsorDetail() {
         <MetaField label="Relationship strength (0-10)">
           <Input type="number" min={0} max={10} value={sponsor.relationship_strength ?? 0}
             onChange={e => updateField({ relationship_strength: Number(e.target.value) })} />
+        </MetaField>
+        <MetaField label="Owner">
+          <Select value={sponsor.owner_id ?? 'none'} onValueChange={v => updateField({ owner_id: v === 'none' ? null : v })}>
+            <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Unassigned</SelectItem>
+              {team.filter(m => m.is_active !== false).map(m => (
+                <SelectItem key={m.id} value={m.id}>{m.name || m.email || 'Unnamed'}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </MetaField>
       </div>
 
