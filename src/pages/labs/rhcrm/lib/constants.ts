@@ -74,21 +74,14 @@ export const ACTION_LIBRARY: { category: ActionCategory; title: string; key: str
 
 // Suggested actions by stage
 export const STAGE_SUGGESTIONS: Record<string, string[]> = {
-  target_identified: ['research','warm_intro'],
-  researching: ['warm_intro','linkedin'],
-  initial_contact: ['warm_intro','intro_email'],
-  prospectus_sent: ['follow_up','schedule_meeting'],
-  meeting_scheduled: ['prep_presentation'],
-  presentation_delivered: ['send_summary','answer_questions','schedule_followup'],
-  proposal_sent: ['follow_up','legal_review'],
-  negotiation: ['legal_review','send_contract'],
-  verbal_commitment: ['send_contract','obtain_signature'],
+  potential_sponsor: ['research','warm_intro','linkedin'],
+  contacting: ['intro_email','send_prospectus','follow_up'],
+  discussing: ['schedule_meeting','prep_presentation','send_proposal','legal_review'],
   contract_signed: ['collect_logos','define_challenge','confirm_mentors'],
-  activation_planning: ['confirm_workshop','confirm_prizes','confirm_booth'],
-  delivery: ['add_to_website','publish_announcement'],
-  post_event: ['deliver_resumes','metrics_report','roi_report'],
-  renewal: ['schedule_retro','discuss_renewal','next_year_prospectus'],
-  closed_lost: [],
+  rh_planning: ['confirm_workshop','confirm_prizes','confirm_booth','add_to_website'],
+  rh_post_event_interview: ['deliver_resumes','metrics_report','roi_report','discuss_renewal'],
+  no_this_year: ['next_year_prospectus'],
+  removed: [],
 };
 
 export const DELIVERABLE_CATEGORIES = [
