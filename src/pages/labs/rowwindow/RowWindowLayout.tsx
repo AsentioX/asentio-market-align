@@ -39,6 +39,7 @@ import { usePieceDetector, type Piece } from './usePieceDetector';
 import { PiecesWidget } from './PiecesWidget';
 import { StrokeDebugPanel } from './StrokeDebugPanel';
 import type { ActivityId } from './stroke/profiles';
+import { useWakeLock } from './useWakeLock';
 
 const DURATIONS = [60, 90, 120, 150];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
@@ -46,6 +47,27 @@ const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 type TabId = 'pre' | 'on' | 'post';
 
 const SESSIONS_STORAGE_KEY = 'rowwindow:sessions:v1';
+const ACTIVE_SESSION_KEY = 'rowwindow:active-session:v1';
+
+type PersistedActiveSession = {
+  sessionState: 'active' | 'paused';
+  sessionStartedAt: number;
+  pausedMs: number;
+  pausedAt: number | null;
+};
+
+function readActiveSession(): PersistedActiveSession | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(ACTIVE_SESSION_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw) as PersistedActiveSession;
+    if (!p || typeof p.sessionStartedAt !== 'number') return null;
+    // Ignore stale rows older than 12h.
+    if (Date.now() - p.sessionStartedAt > 12 * 60 * 60 * 1000) return null;
+    return p;
+  } catch { return null; }
+}
 const DASH = '—';
 
 interface RowSession {
@@ -114,12 +136,14 @@ const RowWindowLayout = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Session state (lives on the layout so tabs can read/write it)
-  const [sessionState, setSessionState] = useState<'idle' | 'active' | 'paused'>('idle');
-  const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
+  // Session state (lives on the layout so tabs can read/write it).
+  // Restored from localStorage so a backgrounded/reloaded tab doesn't lose the row.
+  const restoredSession = useRef<PersistedActiveSession | null>(readActiveSession()).current;
+  const [sessionState, setSessionState] = useState<'idle' | 'active' | 'paused'>(restoredSession?.sessionState ?? 'idle');
+  const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(restoredSession?.sessionStartedAt ?? null);
   const [sessionEndedAt, setSessionEndedAt] = useState<number | null>(null);
-  const [pausedMs, setPausedMs] = useState<number>(0);
-  const [pausedAt, setPausedAt] = useState<number | null>(null);
+  const [pausedMs, setPausedMs] = useState<number>(restoredSession?.pausedMs ?? 0);
+  const [pausedAt, setPausedAt] = useState<number | null>(restoredSession?.pausedAt ?? null);
   const [savedSessions, setSavedSessions] = useState<RowSession[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
@@ -180,6 +204,43 @@ const RowWindowLayout = () => {
   // Real device sensors (compass, GPS, BLE heart-rate). Values are null when
   // the corresponding sensor is not live — the UI renders an em-dash.
   const sensors = useRowSensors({ tracking: sessionState === 'active', activity });
+
+  // Keep the screen awake while rowing — otherwise the browser freezes timers,
+  // GPS and motion once the display dims, and the session looks like it stopped.
+  useWakeLock(sessionState === 'active');
+
+  // Persist the in-progress row so a suspended/reloaded tab resumes instead of
+  // silently dropping back to "idle".
+  useEffect(() => {
+    try {
+      if (sessionState === 'idle' || !sessionStartedAt) {
+        localStorage.removeItem(ACTIVE_SESSION_KEY);
+      } else {
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify({
+          sessionState, sessionStartedAt, pausedMs, pausedAt,
+        } satisfies PersistedActiveSession));
+      }
+    } catch { /* storage full / private mode */ }
+  }, [sessionState, sessionStartedAt, pausedMs, pausedAt]);
+
+  // Re-arm sensors when the page comes back to the foreground: iOS drops the
+  // devicemotion stream (and sometimes the geolocation watch) after a lock.
+  useEffect(() => {
+    if (sessionState !== 'active') return;
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      setNow(Date.now());
+      sensors.requestMotion();
+      sensors.requestPosition();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, [sessionState, sensors]);
+
 
   // Waypoints — shared across all 3 tabs, persisted to localStorage.
   const waypointsHook = useWaypoints();

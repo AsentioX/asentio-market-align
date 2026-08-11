@@ -435,6 +435,11 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         return { ...s, spm: res.spm, spmConfidence: res.confidence };
       });
     };
+    // Remove any previous listener first so re-arming (e.g. after the page was
+    // suspended by a screen lock) never stacks duplicate handlers.
+    if (motionHandlerRef.current) {
+      window.removeEventListener('devicemotion', motionHandlerRef.current);
+    }
     motionHandlerRef.current = handler;
     window.addEventListener('devicemotion', handler);
   }, []);
