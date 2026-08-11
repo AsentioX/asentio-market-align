@@ -617,6 +617,9 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
     stopStrokeRecording,
     exportStrokeRecording,
     isStrokeRecording,
+    startRawCapture,
+    snapshotRawCapture,
+    rawCaptureCounts,
   };
 }
 
