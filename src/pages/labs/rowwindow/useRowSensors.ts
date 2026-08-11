@@ -542,6 +542,40 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
   [activity]);
   const isStrokeRecording = useCallback(() => recorderRef.current.active, []);
 
+  // ---- Raw capture API (used by Post-Row export) --------------------------
+  const startRawCapture = useCallback(() => {
+    rawStartedAtRef.current = Date.now();
+    rawImuRef.current = [];
+    rawGpsRef.current = [];
+    rawHeadingRef.current = [];
+    rawHrRef.current = [];
+    rawSpmRef.current = [];
+  }, []);
+
+  const snapshotRawCapture = useCallback((): RawSensorCapture => ({
+    startedAt: rawStartedAtRef.current,
+    endedAt: Date.now(),
+    activity,
+    imu: [...rawImuRef.current],
+    gps: [...rawGpsRef.current],
+    heading: [...rawHeadingRef.current],
+    heartRate: [...rawHrRef.current],
+    spm: [...rawSpmRef.current],
+    device: {
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+      platform: typeof navigator !== 'undefined' ? navigator.platform : '',
+      screen: typeof window !== 'undefined' ? `${window.screen?.width}x${window.screen?.height}` : '',
+    },
+  }), [activity]);
+
+  const rawCaptureCounts = useCallback(() => ({
+    imu: rawImuRef.current.length,
+    gps: rawGpsRef.current.length,
+    heading: rawHeadingRef.current.length,
+    heartRate: rawHrRef.current.length,
+    spm: rawSpmRef.current.length,
+  }), []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
