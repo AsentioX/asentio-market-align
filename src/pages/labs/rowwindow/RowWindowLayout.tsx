@@ -205,6 +205,43 @@ const RowWindowLayout = () => {
   // the corresponding sensor is not live — the UI renders an em-dash.
   const sensors = useRowSensors({ tracking: sessionState === 'active', activity });
 
+  // Keep the screen awake while rowing — otherwise the browser freezes timers,
+  // GPS and motion once the display dims, and the session looks like it stopped.
+  useWakeLock(sessionState === 'active');
+
+  // Persist the in-progress row so a suspended/reloaded tab resumes instead of
+  // silently dropping back to "idle".
+  useEffect(() => {
+    try {
+      if (sessionState === 'idle' || !sessionStartedAt) {
+        localStorage.removeItem(ACTIVE_SESSION_KEY);
+      } else {
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify({
+          sessionState, sessionStartedAt, pausedMs, pausedAt,
+        } satisfies PersistedActiveSession));
+      }
+    } catch { /* storage full / private mode */ }
+  }, [sessionState, sessionStartedAt, pausedMs, pausedAt]);
+
+  // Re-arm sensors when the page comes back to the foreground: iOS drops the
+  // devicemotion stream (and sometimes the geolocation watch) after a lock.
+  useEffect(() => {
+    if (sessionState !== 'active' || mockEnabledRef.current) return;
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      setNow(Date.now());
+      sensors.requestMotion();
+      sensors.requestPosition();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, [sessionState, sensors]);
+
+
   // Waypoints — shared across all 3 tabs, persisted to localStorage.
   const waypointsHook = useWaypoints();
   const [achievedIds, setAchievedIds] = useState<string[]>([]);
