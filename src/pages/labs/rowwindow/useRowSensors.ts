@@ -61,6 +61,41 @@ export interface TrackPoint {
   accuracy: number; // meters
 }
 
+// --- Raw capture ------------------------------------------------------------
+// Every sensor stream is mirrored into plain arrays so a finished row can be
+// exported for offline analysis (JSON / CSV) from the Post-Row tab.
+export interface RawImuSample {
+  t: number;
+  ax: number; ay: number; az: number;   // includes gravity (m/s^2)
+  lax: number | null; lay: number | null; laz: number | null; // linear accel
+  gx: number | null; gy: number | null; gz: number | null;    // rotation rate (deg/s)
+  interval: number | null;
+}
+export interface RawGpsSample {
+  t: number; lat: number; lon: number;
+  speedMs: number | null; accuracy: number | null;
+  altitude: number | null; altitudeAccuracy: number | null; heading: number | null;
+}
+export interface RawHeadingSample { t: number; deg: number; source: 'ios' | 'absolute' | 'relative' }
+export interface RawHrSample { t: number; bpm: number }
+export interface RawSpmSample { t: number; spm: number; confidence: number }
+
+export interface RawSensorCapture {
+  startedAt: number | null;
+  endedAt: number;
+  activity: ActivityId;
+  imu: RawImuSample[];
+  gps: RawGpsSample[];
+  heading: RawHeadingSample[];
+  heartRate: RawHrSample[];
+  spm: RawSpmSample[];
+  device: { userAgent: string; platform: string; screen: string };
+}
+
+// Caps keep memory bounded on long rows (~50 Hz IMU for ~2h).
+const IMU_CAP = 400_000;
+const STREAM_CAP = 100_000;
+
 export interface RowSensorState {
   headingDeg: number | null;
   headingStatus: SensorStatus;
