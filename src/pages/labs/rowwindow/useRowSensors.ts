@@ -226,16 +226,20 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
       // iOS exposes a true compass heading directly.
       const iosHeading = (e as unknown as { webkitCompassHeading?: number }).webkitCompassHeading;
       let heading: number | null = null;
+      let src: RawHeadingSample['source'] = 'relative';
       if (typeof iosHeading === 'number' && !Number.isNaN(iosHeading)) {
         heading = iosHeading;
+        src = 'ios';
       } else if (e.absolute && typeof e.alpha === 'number') {
         // alpha is degrees counter-clockwise from north → convert to clockwise compass
         heading = (360 - e.alpha) % 360;
+        src = 'absolute';
       } else if (typeof e.alpha === 'number') {
         // Best-effort fallback when `absolute` isn't reported (some Androids).
         heading = (360 - e.alpha) % 360;
       }
       if (heading !== null) {
+        push(rawHeadingRef, { t: Date.now(), deg: Math.round(heading * 10) / 10, source: src }, STREAM_CAP);
         setState(s => ({
           ...s,
           headingDeg: Math.round(heading! * 10) / 10,
