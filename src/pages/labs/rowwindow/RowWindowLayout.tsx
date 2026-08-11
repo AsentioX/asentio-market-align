@@ -436,6 +436,7 @@ const RowWindowLayout = () => {
     maxSpmRef.current = 0;
     maxLaneOffsetRef.current = 0;
     sensors.resetDistance();
+    sensors.startRawCapture();
     setAchievedIds([]);
     // Best-effort: trigger sensor permissions on the user-gesture that starts the row.
     if (!mockEnabled) sensors.requestPermissions();
