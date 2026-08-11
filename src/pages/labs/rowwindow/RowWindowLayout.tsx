@@ -8,6 +8,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { OrientationLockControl, useOrientationLock } from './OrientationLock';
 import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, LineChart, Line } from 'recharts';
 import {
   VESSEL_PROFILES,
@@ -1194,6 +1195,7 @@ const OnWaterView = ({
   children,
 }: OnWaterViewProps) => {
   const orientation = useOrientation();
+  const { mode: lockMode, supported: lockSupported, apply: applyLock } = useOrientationLock();
   const headingError = headingDeg !== null ? ((headingDeg - targetHeadingDeg + 540) % 360) - 180 : 0;
   // Pace derives from real GPS ground speed (seconds per 500 m).
   const pacePer500 = speedMs && speedMs > 0.2 ? 500 / speedMs : 0;
