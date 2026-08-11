@@ -47,6 +47,27 @@ const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
 type TabId = 'pre' | 'on' | 'post';
 
 const SESSIONS_STORAGE_KEY = 'rowwindow:sessions:v1';
+const ACTIVE_SESSION_KEY = 'rowwindow:active-session:v1';
+
+type PersistedActiveSession = {
+  sessionState: 'active' | 'paused';
+  sessionStartedAt: number;
+  pausedMs: number;
+  pausedAt: number | null;
+};
+
+function readActiveSession(): PersistedActiveSession | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(ACTIVE_SESSION_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw) as PersistedActiveSession;
+    if (!p || typeof p.sessionStartedAt !== 'number') return null;
+    // Ignore stale rows older than 12h.
+    if (Date.now() - p.sessionStartedAt > 12 * 60 * 60 * 1000) return null;
+    return p;
+  } catch { return null; }
+}
 const DASH = '—';
 
 interface RowSession {
