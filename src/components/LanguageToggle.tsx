@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const languages = [
   { code: 'en', label: 'English', flag: '🇺🇸' },
@@ -15,7 +16,11 @@ const languages = [
   { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
 ] as const;
 
-const LanguageToggle = () => {
+interface LanguageToggleProps {
+  className?: string;
+}
+
+const LanguageToggle = ({ className }: LanguageToggleProps) => {
   const { language, setLanguage } = useLanguage();
 
   const currentLang = languages.find((l) => l.code === language) || languages[0];
@@ -26,7 +31,10 @@ const LanguageToggle = () => {
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2"
+          className={cn(
+            'flex items-center gap-2 px-0 hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0',
+            className
+          )}
         >
           <Globe className="h-4 w-4" />
           <span className="text-sm font-medium">{currentLang.code.toUpperCase()}</span>
@@ -49,3 +57,4 @@ const LanguageToggle = () => {
 };
 
 export default LanguageToggle;
+

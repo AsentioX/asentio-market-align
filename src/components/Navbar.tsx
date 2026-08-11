@@ -73,7 +73,7 @@ const Navbar = () => {
           })}
 
 
-          <LanguageToggle />
+          <LanguageToggle className={`${linkTone} hover:text-asentio-blue transition-colors font-medium`} />
 
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
@@ -114,7 +114,7 @@ const Navbar = () => {
             </Link>
 
             <div className="px-4 py-2">
-              <LanguageToggle />
+              <LanguageToggle className="text-gray-700 hover:text-asentio-blue transition-colors font-medium" />
             </div>
             <Link to="/contact" className="bg-asentio-blue text-white py-2 px-4 rounded mx-4 text-center">
               Contact
