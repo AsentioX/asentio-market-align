@@ -173,6 +173,18 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
   // so a 60 Hz stream doesn't trigger renders.
   const debugSubsRef = useRef<Set<(frame: DebugFrame) => void>>(new Set());
 
+  // Raw capture buffers — mirrored copies of every sensor stream for export.
+  const rawStartedAtRef = useRef<number | null>(null);
+  const rawImuRef = useRef<RawImuSample[]>([]);
+  const rawGpsRef = useRef<RawGpsSample[]>([]);
+  const rawHeadingRef = useRef<RawHeadingSample[]>([]);
+  const rawHrRef = useRef<RawHrSample[]>([]);
+  const rawSpmRef = useRef<RawSpmSample[]>([]);
+  const push = <T,>(buf: React.MutableRefObject<T[]>, item: T, cap: number) => {
+    buf.current.push(item);
+    if (buf.current.length > cap) buf.current.shift();
+  };
+
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
 
   // Live-swap the stroke profile when the caller changes activity.
