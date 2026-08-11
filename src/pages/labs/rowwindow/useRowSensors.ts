@@ -479,6 +479,23 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         ax: a.x, ay: a.y, az: a.z, t: now,
       });
 
+      // Raw IMU capture (accel w/ gravity, linear accel, gyro).
+      const lin = e.acceleration;
+      const rot = e.rotationRate;
+      push(rawImuRef, {
+        t: now,
+        ax: a.x, ay: a.y, az: a.z,
+        lax: lin?.x ?? null, lay: lin?.y ?? null, laz: lin?.z ?? null,
+        gx: rot?.alpha ?? null, gy: rot?.beta ?? null, gz: rot?.gamma ?? null,
+        interval: e.interval ?? null,
+      }, IMU_CAP);
+      if (res.spm !== null) {
+        const last = rawSpmRef.current[rawSpmRef.current.length - 1];
+        if (!last || last.spm !== res.spm) {
+          push(rawSpmRef, { t: now, spm: res.spm, confidence: res.confidence }, STREAM_CAP);
+        }
+      }
+
       latestConfidenceRef.current = res.confidence;
 
       const frame = getLatestDebugFrame(strokeStateRef.current);
@@ -486,6 +503,7 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         pushFrame(recorderRef.current, frame);
         debugSubsRef.current.forEach((cb) => cb(frame));
       }
+
 
       // Only push state updates when SPM changes or confidence shifts enough to
       // matter — avoids 60 Hz re-renders.
