@@ -1888,6 +1888,33 @@ const SessionCard = ({
         </div>
       </div>
 
+      {/* Raw sensor data export — available for rows recorded in this app session. */}
+      <div className="px-3 py-2.5 border-t border-slate-200 bg-slate-50/70">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Raw sensor data</span>
+          {rawCounts ? (
+            <>
+              <span className="text-[11px] text-slate-500">
+                {rawCounts.imu.toLocaleString()} IMU · {rawCounts.gps.toLocaleString()} GPS · {rawCounts.heading.toLocaleString()} compass · {rawCounts.heartRate.toLocaleString()} HR · {rawCounts.spm.toLocaleString()} stroke
+              </span>
+              <div className="flex items-center gap-1.5 flex-wrap ml-auto">
+                <RawBtn label="JSON (all)" onClick={() => onDownloadRaw('json')} primary />
+                <RawBtn label="IMU CSV" onClick={() => onDownloadRaw('imu')} disabled={rawCounts.imu === 0} />
+                <RawBtn label="GPS CSV" onClick={() => onDownloadRaw('gps')} disabled={rawCounts.gps === 0} />
+                <RawBtn label="Compass CSV" onClick={() => onDownloadRaw('heading')} disabled={rawCounts.heading === 0} />
+                <RawBtn label="HR CSV" onClick={() => onDownloadRaw('heartRate')} disabled={rawCounts.heartRate === 0} />
+                <RawBtn label="Stroke CSV" onClick={() => onDownloadRaw('spm')} disabled={rawCounts.spm === 0} />
+              </div>
+            </>
+          ) : (
+            <span className="text-[11px] text-slate-500">
+              Not held in memory — raw capture is only kept until the app is reloaded.
+            </span>
+          )}
+        </div>
+      </div>
+
+
       <div className="grid grid-cols-2 md:grid-cols-5 md:divide-x divide-y md:divide-y-0 divide-slate-200 border-y border-slate-200">
         <InlineStat icon={<Timer className="w-4 h-4" />} label="Elapsed" value={formatElapsed(session.durationMs)} />
         <InlineStat icon={<Route className="w-4 h-4" />} label="Distance" value={distanceKmLabel} />
