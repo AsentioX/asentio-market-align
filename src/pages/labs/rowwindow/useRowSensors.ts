@@ -396,6 +396,7 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         const flags = value.getUint8(0);
         const is16bit = (flags & 0x01) === 1;
         const bpm = is16bit ? value.getUint16(1, /* littleEndian */ true) : value.getUint8(1);
+        push(rawHrRef, { t: Date.now(), bpm }, STREAM_CAP);
         setState(s => ({ ...s, heartRate: bpm, heartRateStatus: 'live' }));
       };
       hrHandlerRef.current = handler;
