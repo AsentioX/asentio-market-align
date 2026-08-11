@@ -226,7 +226,7 @@ const RowWindowLayout = () => {
   // Re-arm sensors when the page comes back to the foreground: iOS drops the
   // devicemotion stream (and sometimes the geolocation watch) after a lock.
   useEffect(() => {
-    if (sessionState !== 'active' || mockEnabledRef.current) return;
+    if (sessionState !== 'active') return;
     const onVisible = () => {
       if (document.visibilityState !== 'visible') return;
       setNow(Date.now());
