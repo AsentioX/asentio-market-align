@@ -188,6 +188,34 @@ const RowWindowLayout = () => {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
+  // Raw sensor captures live in memory only (they're far too large for
+  // localStorage) — keyed by the saved session id.
+  const rawStoreRef = useRef<Map<string, RawSensorCapture>>(new Map());
+  const [rawAvailable, setRawAvailable] = useState<Record<string, ReturnType<typeof rawSampleCounts>>>({});
+
+  const downloadRaw = (s: RowSession, format: 'json' | RawStreamId) => {
+    const raw = rawStoreRef.current.get(s.id);
+    if (!raw) return;
+    const base = `rowwindow-raw-${fileStamp(s.startedAt)}`;
+    if (format === 'json') {
+      downloadBlob(
+        rawToJson(raw, {
+          sessionId: s.id,
+          startedAt: s.startedAt,
+          endedAt: s.endedAt,
+          durationMs: s.durationMs,
+          distanceMeters: s.distanceMeters,
+          startConditions: s.startConditions,
+        }),
+        `${base}.json`,
+        'application/json',
+      );
+    } else {
+      downloadBlob(streamToCsv(raw, format), `${base}-${format}.csv`, 'text/csv');
+    }
+  };
+
+
   // Live row metrics — null when no real sensor is connected (no mock data).
   const spmHistoryRef = useRef<{ t: number; spm: number; pace: number }[]>([]);
   const hrHistoryRef = useRef<{ t: number; bpm: number }[]>([]);
