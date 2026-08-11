@@ -1740,10 +1740,12 @@ interface PostRowViewProps {
   onSelectSession: (id: string) => void;
   onDeleteSession: (id: string) => void;
   onExportSession: (s: RowSession) => void;
+  rawAvailable: Record<string, ReturnType<typeof rawSampleCounts>>;
+  onDownloadRaw: (s: RowSession, format: 'json' | RawStreamId) => void;
   onNewRow: () => void;
 }
 
-const PostRowView = ({ sessions, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
+const PostRowView = ({ sessions, onDeleteSession, onExportSession, rawAvailable, onDownloadRaw, onNewRow }: PostRowViewProps) => {
   if (sessions.length === 0) {
     return (
       <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 text-center">
