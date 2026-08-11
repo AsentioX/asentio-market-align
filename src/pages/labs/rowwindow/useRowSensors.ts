@@ -272,6 +272,15 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         const { latitude, longitude, speed, accuracy, heading } = pos.coords;
         const now = pos.timestamp || Date.now();
         const acc = accuracy ?? 100;
+        // Raw capture: every fix, unfiltered.
+        push(rawGpsRef, {
+          t: now, lat: latitude, lon: longitude,
+          speedMs: typeof speed === 'number' ? speed : null,
+          accuracy: accuracy ?? null,
+          altitude: pos.coords.altitude ?? null,
+          altitudeAccuracy: pos.coords.altitudeAccuracy ?? null,
+          heading: typeof heading === 'number' && !Number.isNaN(heading) ? heading : null,
+        }, STREAM_CAP);
         let computedSpeed = typeof speed === 'number' && speed >= 0 ? speed : null;
         let added = 0;
 
