@@ -136,12 +136,14 @@ const RowWindowLayout = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Session state (lives on the layout so tabs can read/write it)
-  const [sessionState, setSessionState] = useState<'idle' | 'active' | 'paused'>('idle');
-  const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
+  // Session state (lives on the layout so tabs can read/write it).
+  // Restored from localStorage so a backgrounded/reloaded tab doesn't lose the row.
+  const restoredSession = useRef<PersistedActiveSession | null>(readActiveSession()).current;
+  const [sessionState, setSessionState] = useState<'idle' | 'active' | 'paused'>(restoredSession?.sessionState ?? 'idle');
+  const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(restoredSession?.sessionStartedAt ?? null);
   const [sessionEndedAt, setSessionEndedAt] = useState<number | null>(null);
-  const [pausedMs, setPausedMs] = useState<number>(0);
-  const [pausedAt, setPausedAt] = useState<number | null>(null);
+  const [pausedMs, setPausedMs] = useState<number>(restoredSession?.pausedMs ?? 0);
+  const [pausedAt, setPausedAt] = useState<number | null>(restoredSession?.pausedAt ?? null);
   const [savedSessions, setSavedSessions] = useState<RowSession[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
