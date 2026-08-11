@@ -39,6 +39,7 @@ import { usePieceDetector, type Piece } from './usePieceDetector';
 import { PiecesWidget } from './PiecesWidget';
 import { StrokeDebugPanel } from './StrokeDebugPanel';
 import type { ActivityId } from './stroke/profiles';
+import { useWakeLock } from './useWakeLock';
 
 const DURATIONS = [60, 90, 120, 150];
 const LIVE_REFRESH_MS = 10 * 60_000; // refresh NOAA every 10 minutes
