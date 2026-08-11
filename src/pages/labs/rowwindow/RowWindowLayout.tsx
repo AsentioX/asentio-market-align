@@ -1789,6 +1789,23 @@ const PostRowView = ({ sessions, onDeleteSession, onExportSession, rawAvailable,
   );
 };
 
+// Small pill button used by the raw-data export row.
+const RawBtn = ({ label, onClick, disabled, primary }: {
+  label: string; onClick: () => void; disabled?: boolean; primary?: boolean;
+}) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium inline-flex items-center gap-1 border transition disabled:opacity-40 disabled:cursor-not-allowed ${
+      primary
+        ? 'bg-cyan-500/15 hover:bg-cyan-500/25 border-cyan-400/30 text-cyan-800'
+        : 'bg-[hsl(0_0%_100%)] hover:bg-slate-100 border-slate-200 text-slate-700'
+    }`}
+  >
+    <Download className="w-3 h-3" /> {label}
+  </button>
+);
+
 // ============================================================
 // SessionCard — one row session displayed as 4 sections.
 // ============================================================
