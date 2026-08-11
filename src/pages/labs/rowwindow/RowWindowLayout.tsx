@@ -1781,6 +1781,8 @@ const PostRowView = ({ sessions, onDeleteSession, onExportSession, rawAvailable,
             if (confirm('Delete this saved row?')) onDeleteSession(s.id);
           }}
           onExport={() => onExportSession(s)}
+          rawCounts={rawAvailable[s.id] ?? null}
+          onDownloadRaw={(format) => onDownloadRaw(s, format)}
         />
       ))}
     </div>
@@ -1794,10 +1796,14 @@ const SessionCard = ({
   session,
   onDelete,
   onExport,
+  rawCounts,
+  onDownloadRaw,
 }: {
   session: RowSession;
   onDelete: () => void;
   onExport: () => void;
+  rawCounts: ReturnType<typeof rawSampleCounts> | null;
+  onDownloadRaw: (format: 'json' | RawStreamId) => void;
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [show, setShow] = useState({ pace: true, speed: true, hr: true });
