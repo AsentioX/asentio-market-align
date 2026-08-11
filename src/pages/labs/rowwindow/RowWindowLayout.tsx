@@ -30,7 +30,11 @@ import {
 } from './tideEngine';
 import { useRowLocation } from './useRowLocation';
 import { LocationPicker } from './LocationPicker';
-import { useRowSensors, type SensorStatus, type TrackPoint } from './useRowSensors';
+import { useRowSensors, type SensorStatus, type TrackPoint, type RawSensorCapture } from './useRowSensors';
+import {
+  downloadBlob, fileStamp, rawToJson, streamToCsv, rawSampleCounts,
+  type RawStreamId,
+} from './rawExport';
 import { useWaypoints } from './useWaypoints';
 import { useMockRowGPS } from './useMockRowGPS';
 import { WaypointPlanner } from './WaypointPlanner';
