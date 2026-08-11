@@ -760,6 +760,8 @@ const RowWindowLayout = () => {
             onSelectSession={setSelectedSessionId}
             onDeleteSession={deleteSession}
             onExportSession={exportSession}
+            rawAvailable={rawAvailable}
+            onDownloadRaw={downloadRaw}
             onNewRow={() => setTab('pre')}
           />
         )}
