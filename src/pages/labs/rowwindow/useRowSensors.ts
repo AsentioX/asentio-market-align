@@ -61,6 +61,41 @@ export interface TrackPoint {
   accuracy: number; // meters
 }
 
+// --- Raw capture ------------------------------------------------------------
+// Every sensor stream is mirrored into plain arrays so a finished row can be
+// exported for offline analysis (JSON / CSV) from the Post-Row tab.
+export interface RawImuSample {
+  t: number;
+  ax: number; ay: number; az: number;   // includes gravity (m/s^2)
+  lax: number | null; lay: number | null; laz: number | null; // linear accel
+  gx: number | null; gy: number | null; gz: number | null;    // rotation rate (deg/s)
+  interval: number | null;
+}
+export interface RawGpsSample {
+  t: number; lat: number; lon: number;
+  speedMs: number | null; accuracy: number | null;
+  altitude: number | null; altitudeAccuracy: number | null; heading: number | null;
+}
+export interface RawHeadingSample { t: number; deg: number; source: 'ios' | 'absolute' | 'relative' }
+export interface RawHrSample { t: number; bpm: number }
+export interface RawSpmSample { t: number; spm: number; confidence: number }
+
+export interface RawSensorCapture {
+  startedAt: number | null;
+  endedAt: number;
+  activity: ActivityId;
+  imu: RawImuSample[];
+  gps: RawGpsSample[];
+  heading: RawHeadingSample[];
+  heartRate: RawHrSample[];
+  spm: RawSpmSample[];
+  device: { userAgent: string; platform: string; screen: string };
+}
+
+// Caps keep memory bounded on long rows (~50 Hz IMU for ~2h).
+const IMU_CAP = 400_000;
+const STREAM_CAP = 100_000;
+
 export interface RowSensorState {
   headingDeg: number | null;
   headingStatus: SensorStatus;
@@ -138,6 +173,18 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
   // so a 60 Hz stream doesn't trigger renders.
   const debugSubsRef = useRef<Set<(frame: DebugFrame) => void>>(new Set());
 
+  // Raw capture buffers — mirrored copies of every sensor stream for export.
+  const rawStartedAtRef = useRef<number | null>(null);
+  const rawImuRef = useRef<RawImuSample[]>([]);
+  const rawGpsRef = useRef<RawGpsSample[]>([]);
+  const rawHeadingRef = useRef<RawHeadingSample[]>([]);
+  const rawHrRef = useRef<RawHrSample[]>([]);
+  const rawSpmRef = useRef<RawSpmSample[]>([]);
+  const push = <T,>(buf: { current: T[] }, item: T, cap: number) => {
+    buf.current.push(item);
+    if (buf.current.length > cap) buf.current.shift();
+  };
+
   useEffect(() => { trackingRef.current = tracking; }, [tracking]);
 
   // Live-swap the stroke profile when the caller changes activity.
@@ -179,16 +226,20 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
       // iOS exposes a true compass heading directly.
       const iosHeading = (e as unknown as { webkitCompassHeading?: number }).webkitCompassHeading;
       let heading: number | null = null;
+      let src: RawHeadingSample['source'] = 'relative';
       if (typeof iosHeading === 'number' && !Number.isNaN(iosHeading)) {
         heading = iosHeading;
+        src = 'ios';
       } else if (e.absolute && typeof e.alpha === 'number') {
         // alpha is degrees counter-clockwise from north → convert to clockwise compass
         heading = (360 - e.alpha) % 360;
+        src = 'absolute';
       } else if (typeof e.alpha === 'number') {
         // Best-effort fallback when `absolute` isn't reported (some Androids).
         heading = (360 - e.alpha) % 360;
       }
       if (heading !== null) {
+        push(rawHeadingRef, { t: Date.now(), deg: Math.round(heading * 10) / 10, source: src }, STREAM_CAP);
         setState(s => ({
           ...s,
           headingDeg: Math.round(heading! * 10) / 10,
@@ -221,6 +272,15 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         const { latitude, longitude, speed, accuracy, heading } = pos.coords;
         const now = pos.timestamp || Date.now();
         const acc = accuracy ?? 100;
+        // Raw capture: every fix, unfiltered.
+        push(rawGpsRef, {
+          t: now, lat: latitude, lon: longitude,
+          speedMs: typeof speed === 'number' ? speed : null,
+          accuracy: accuracy ?? null,
+          altitude: pos.coords.altitude ?? null,
+          altitudeAccuracy: pos.coords.altitudeAccuracy ?? null,
+          heading: typeof heading === 'number' && !Number.isNaN(heading) ? heading : null,
+        }, STREAM_CAP);
         let computedSpeed = typeof speed === 'number' && speed >= 0 ? speed : null;
         let added = 0;
 
@@ -336,6 +396,7 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         const flags = value.getUint8(0);
         const is16bit = (flags & 0x01) === 1;
         const bpm = is16bit ? value.getUint16(1, /* littleEndian */ true) : value.getUint8(1);
+        push(rawHrRef, { t: Date.now(), bpm }, STREAM_CAP);
         setState(s => ({ ...s, heartRate: bpm, heartRateStatus: 'live' }));
       };
       hrHandlerRef.current = handler;
@@ -418,6 +479,23 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         ax: a.x, ay: a.y, az: a.z, t: now,
       });
 
+      // Raw IMU capture (accel w/ gravity, linear accel, gyro).
+      const lin = e.acceleration;
+      const rot = e.rotationRate;
+      push(rawImuRef, {
+        t: now,
+        ax: a.x, ay: a.y, az: a.z,
+        lax: lin?.x ?? null, lay: lin?.y ?? null, laz: lin?.z ?? null,
+        gx: rot?.alpha ?? null, gy: rot?.beta ?? null, gz: rot?.gamma ?? null,
+        interval: e.interval ?? null,
+      }, IMU_CAP);
+      if (res.spm !== null) {
+        const last = rawSpmRef.current[rawSpmRef.current.length - 1];
+        if (!last || last.spm !== res.spm) {
+          push(rawSpmRef, { t: now, spm: res.spm, confidence: res.confidence }, STREAM_CAP);
+        }
+      }
+
       latestConfidenceRef.current = res.confidence;
 
       const frame = getLatestDebugFrame(strokeStateRef.current);
@@ -425,6 +503,7 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         pushFrame(recorderRef.current, frame);
         debugSubsRef.current.forEach((cb) => cb(frame));
       }
+
 
       // Only push state updates when SPM changes or confidence shifts enough to
       // matter — avoids 60 Hz re-renders.
@@ -462,6 +541,40 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
     exportJson(recorderRef.current, { ...meta, activity }),
   [activity]);
   const isStrokeRecording = useCallback(() => recorderRef.current.active, []);
+
+  // ---- Raw capture API (used by Post-Row export) --------------------------
+  const startRawCapture = useCallback(() => {
+    rawStartedAtRef.current = Date.now();
+    rawImuRef.current = [];
+    rawGpsRef.current = [];
+    rawHeadingRef.current = [];
+    rawHrRef.current = [];
+    rawSpmRef.current = [];
+  }, []);
+
+  const snapshotRawCapture = useCallback((): RawSensorCapture => ({
+    startedAt: rawStartedAtRef.current,
+    endedAt: Date.now(),
+    activity,
+    imu: [...rawImuRef.current],
+    gps: [...rawGpsRef.current],
+    heading: [...rawHeadingRef.current],
+    heartRate: [...rawHrRef.current],
+    spm: [...rawSpmRef.current],
+    device: {
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+      platform: typeof navigator !== 'undefined' ? navigator.platform : '',
+      screen: typeof window !== 'undefined' ? `${window.screen?.width}x${window.screen?.height}` : '',
+    },
+  }), [activity]);
+
+  const rawCaptureCounts = useCallback(() => ({
+    imu: rawImuRef.current.length,
+    gps: rawGpsRef.current.length,
+    heading: rawHeadingRef.current.length,
+    heartRate: rawHrRef.current.length,
+    spm: rawSpmRef.current.length,
+  }), []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -504,6 +617,9 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
     stopStrokeRecording,
     exportStrokeRecording,
     isStrokeRecording,
+    startRawCapture,
+    snapshotRawCapture,
+    rawCaptureCounts,
   };
 }
 

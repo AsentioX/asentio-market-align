@@ -30,7 +30,11 @@ import {
 } from './tideEngine';
 import { useRowLocation } from './useRowLocation';
 import { LocationPicker } from './LocationPicker';
-import { useRowSensors, type SensorStatus, type TrackPoint } from './useRowSensors';
+import { useRowSensors, type SensorStatus, type TrackPoint, type RawSensorCapture } from './useRowSensors';
+import {
+  downloadBlob, fileStamp, rawToJson, streamToCsv, rawSampleCounts,
+  type RawStreamId,
+} from './rawExport';
 import { useWaypoints } from './useWaypoints';
 import { useMockRowGPS } from './useMockRowGPS';
 import { WaypointPlanner } from './WaypointPlanner';
@@ -187,6 +191,34 @@ const RowWindowLayout = () => {
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
+
+  // Raw sensor captures live in memory only (they're far too large for
+  // localStorage) — keyed by the saved session id.
+  const rawStoreRef = useRef<Map<string, RawSensorCapture>>(new Map());
+  const [rawAvailable, setRawAvailable] = useState<Record<string, ReturnType<typeof rawSampleCounts>>>({});
+
+  const downloadRaw = (s: RowSession, format: 'json' | RawStreamId) => {
+    const raw = rawStoreRef.current.get(s.id);
+    if (!raw) return;
+    const base = `rowwindow-raw-${fileStamp(s.startedAt)}`;
+    if (format === 'json') {
+      downloadBlob(
+        rawToJson(raw, {
+          sessionId: s.id,
+          startedAt: s.startedAt,
+          endedAt: s.endedAt,
+          durationMs: s.durationMs,
+          distanceMeters: s.distanceMeters,
+          startConditions: s.startConditions,
+        }),
+        `${base}.json`,
+        'application/json',
+      );
+    } else {
+      downloadBlob(streamToCsv(raw, format), `${base}-${format}.csv`, 'text/csv');
+    }
+  };
+
 
   // Live row metrics — null when no real sensor is connected (no mock data).
   const spmHistoryRef = useRef<{ t: number; spm: number; pace: number }[]>([]);
@@ -404,6 +436,7 @@ const RowWindowLayout = () => {
     maxSpmRef.current = 0;
     maxLaneOffsetRef.current = 0;
     sensors.resetDistance();
+    sensors.startRawCapture();
     setAchievedIds([]);
     // Best-effort: trigger sensor permissions on the user-gesture that starts the row.
     if (!mockEnabled) sensors.requestPermissions();
@@ -472,6 +505,9 @@ const RowWindowLayout = () => {
       hrSeries: [...hrHistoryRef.current],
       pieces: pieceDetector.snapshotPieces(),
     };
+    const raw = sensors.snapshotRawCapture();
+    rawStoreRef.current.set(newId, raw);
+    setRawAvailable((prev) => ({ ...prev, [newId]: rawSampleCounts(raw) }));
     setSavedSessions((prev) => [summary, ...prev]);
     setSelectedSessionId(newId);
     setSessionEndedAt(endedAt);
@@ -724,6 +760,8 @@ const RowWindowLayout = () => {
             onSelectSession={setSelectedSessionId}
             onDeleteSession={deleteSession}
             onExportSession={exportSession}
+            rawAvailable={rawAvailable}
+            onDownloadRaw={downloadRaw}
             onNewRow={() => setTab('pre')}
           />
         )}
@@ -1702,10 +1740,12 @@ interface PostRowViewProps {
   onSelectSession: (id: string) => void;
   onDeleteSession: (id: string) => void;
   onExportSession: (s: RowSession) => void;
+  rawAvailable: Record<string, ReturnType<typeof rawSampleCounts>>;
+  onDownloadRaw: (s: RowSession, format: 'json' | RawStreamId) => void;
   onNewRow: () => void;
 }
 
-const PostRowView = ({ sessions, onDeleteSession, onExportSession, onNewRow }: PostRowViewProps) => {
+const PostRowView = ({ sessions, onDeleteSession, onExportSession, rawAvailable, onDownloadRaw, onNewRow }: PostRowViewProps) => {
   if (sessions.length === 0) {
     return (
       <section className="rounded-2xl border border-slate-200 bg-[hsl(0_0%_100%)] p-5 text-center">
@@ -1741,11 +1781,30 @@ const PostRowView = ({ sessions, onDeleteSession, onExportSession, onNewRow }: P
             if (confirm('Delete this saved row?')) onDeleteSession(s.id);
           }}
           onExport={() => onExportSession(s)}
+          rawCounts={rawAvailable[s.id] ?? null}
+          onDownloadRaw={(format) => onDownloadRaw(s, format)}
         />
       ))}
     </div>
   );
 };
+
+// Small pill button used by the raw-data export row.
+const RawBtn = ({ label, onClick, disabled, primary }: {
+  label: string; onClick: () => void; disabled?: boolean; primary?: boolean;
+}) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium inline-flex items-center gap-1 border transition disabled:opacity-40 disabled:cursor-not-allowed ${
+      primary
+        ? 'bg-cyan-500/15 hover:bg-cyan-500/25 border-cyan-400/30 text-cyan-800'
+        : 'bg-[hsl(0_0%_100%)] hover:bg-slate-100 border-slate-200 text-slate-700'
+    }`}
+  >
+    <Download className="w-3 h-3" /> {label}
+  </button>
+);
 
 // ============================================================
 // SessionCard — one row session displayed as 4 sections.
@@ -1754,10 +1813,14 @@ const SessionCard = ({
   session,
   onDelete,
   onExport,
+  rawCounts,
+  onDownloadRaw,
 }: {
   session: RowSession;
   onDelete: () => void;
   onExport: () => void;
+  rawCounts: ReturnType<typeof rawSampleCounts> | null;
+  onDownloadRaw: (format: 'json' | RawStreamId) => void;
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [show, setShow] = useState({ pace: true, speed: true, hr: true });
@@ -1841,6 +1904,33 @@ const SessionCard = ({
           </button>
         </div>
       </div>
+
+      {/* Raw sensor data export — available for rows recorded in this app session. */}
+      <div className="px-3 py-2.5 border-t border-slate-200 bg-slate-50/70">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Raw sensor data</span>
+          {rawCounts ? (
+            <>
+              <span className="text-[11px] text-slate-500">
+                {rawCounts.imu.toLocaleString()} IMU · {rawCounts.gps.toLocaleString()} GPS · {rawCounts.heading.toLocaleString()} compass · {rawCounts.heartRate.toLocaleString()} HR · {rawCounts.spm.toLocaleString()} stroke
+              </span>
+              <div className="flex items-center gap-1.5 flex-wrap ml-auto">
+                <RawBtn label="JSON (all)" onClick={() => onDownloadRaw('json')} primary />
+                <RawBtn label="IMU CSV" onClick={() => onDownloadRaw('imu')} disabled={rawCounts.imu === 0} />
+                <RawBtn label="GPS CSV" onClick={() => onDownloadRaw('gps')} disabled={rawCounts.gps === 0} />
+                <RawBtn label="Compass CSV" onClick={() => onDownloadRaw('heading')} disabled={rawCounts.heading === 0} />
+                <RawBtn label="HR CSV" onClick={() => onDownloadRaw('heartRate')} disabled={rawCounts.heartRate === 0} />
+                <RawBtn label="Stroke CSV" onClick={() => onDownloadRaw('spm')} disabled={rawCounts.spm === 0} />
+              </div>
+            </>
+          ) : (
+            <span className="text-[11px] text-slate-500">
+              Not held in memory — raw capture is only kept until the app is reloaded.
+            </span>
+          )}
+        </div>
+      </div>
+
 
       <div className="grid grid-cols-2 md:grid-cols-5 md:divide-x divide-y md:divide-y-0 divide-slate-200 border-y border-slate-200">
         <InlineStat icon={<Timer className="w-4 h-4" />} label="Elapsed" value={formatElapsed(session.durationMs)} />
