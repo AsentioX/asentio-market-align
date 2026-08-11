@@ -73,7 +73,7 @@ const Navbar = () => {
           })}
 
 
-          <LanguageToggle />
+          <LanguageToggle className={`${linkTone} hover:text-asentio-blue transition-colors font-medium`} />
 
           <Link to="/contact">
             <Button variant="default" className="bg-asentio-blue hover:bg-asentio-blue/90">
