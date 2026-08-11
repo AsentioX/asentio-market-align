@@ -505,6 +505,9 @@ const RowWindowLayout = () => {
       hrSeries: [...hrHistoryRef.current],
       pieces: pieceDetector.snapshotPieces(),
     };
+    const raw = sensors.snapshotRawCapture();
+    rawStoreRef.current.set(newId, raw);
+    setRawAvailable((prev) => ({ ...prev, [newId]: rawSampleCounts(raw) }));
     setSavedSessions((prev) => [summary, ...prev]);
     setSelectedSessionId(newId);
     setSessionEndedAt(endedAt);
