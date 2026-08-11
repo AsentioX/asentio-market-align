@@ -1364,21 +1364,29 @@ const OnWaterView = ({
   );
 
   const controlsSection = (
-    <div className="flex gap-2">
-      <button
-        onClick={onPauseResume}
-        className="flex-1 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
-      >
-        {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
-      </button>
-      <button
-        onClick={onEnd}
-        className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 border border-rose-500/40 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
-      >
-        <Square className="w-4 h-4" /> End Row
-      </button>
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <button
+          onClick={onPauseResume}
+          className="flex-1 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+        >
+          {sessionState === 'active' ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4" /> Resume</>}
+        </button>
+        <button
+          onClick={onEnd}
+          className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 border border-rose-500/40 font-medium text-sm inline-flex items-center justify-center gap-2 transition"
+        >
+          <Square className="w-4 h-4" /> End Row
+        </button>
+      </div>
+      <OrientationLockControl
+        mode={lockMode}
+        supported={lockSupported}
+        onChange={(m) => { void applyLock(m); }}
+      />
     </div>
   );
+
 
   if (orientation === 'landscape') {
     // Landscape: two-column layout. Compass spans top, map + pieces on the
