@@ -180,7 +180,7 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
   const rawHeadingRef = useRef<RawHeadingSample[]>([]);
   const rawHrRef = useRef<RawHrSample[]>([]);
   const rawSpmRef = useRef<RawSpmSample[]>([]);
-  const push = <T,>(buf: React.MutableRefObject<T[]>, item: T, cap: number) => {
+  const push = <T,>(buf: { current: T[] }, item: T, cap: number) => {
     buf.current.push(item);
     if (buf.current.length > cap) buf.current.shift();
   };
