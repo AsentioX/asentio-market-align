@@ -3,24 +3,47 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useXRProducts, XRProduct } from "@/hooks/useXRProducts";
-import { XRCompany, useXRCompanies, companyValues } from "@/hooks/useXRCompanies";
-import RelatedCompanies from "@/components/directory/RelatedCompanies";
-import CompanyHAIExtras from "@/components/directory/CompanyHAIExtras";
-import { Card, CardContent } from "@/components/ui/card";
+import { XRCompany, useXRCompanies } from "@/hooks/useXRCompanies";
+import { useHAIUseCases } from "@/hooks/useHAIUseCases";
+import {
+  useCasesForCompany,
+  partnersForCompany,
+  partnerGroupsForCompany,
+  similarCompanies,
+  solutionPartnersForCompany,
+} from "@/lib/haiMatching";
+import CompanyUseCases from "@/components/directory/company/CompanyUseCases";
+import CompanyProducts from "@/components/directory/company/CompanyProducts";
+import CompanyPartners from "@/components/directory/company/CompanyPartners";
+import CompanySolutionFit from "@/components/directory/company/CompanySolutionFit";
+import CompanyCapabilities from "@/components/directory/company/CompanyCapabilities";
+import CompanyEcosystem from "@/components/directory/company/CompanyEcosystem";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import TopographicPattern from "@/components/TopographicPattern";
 import ARBackground from "@/components/ARBackground";
 import { useSeo } from "@/hooks/useSeo";
-import { HAI_DIMENSIONS } from "@/lib/haiFramework";
-import { ExternalLink, MapPin, Package, Loader2, Sparkles, Users, Calendar, Landmark } from "lucide-react";
+import { HAI_CATEGORIES } from "@/lib/haiFramework";
+import { ExternalLink, MapPin, Package, Loader2, Sparkles, Users, ArrowRight } from "lucide-react";
 import { trackPageView, trackEvent } from "@/lib/analytics";
+
+/** Derive the top-level Category label from the company's interfaces / AI capabilities. */
+const categoryFor = (company?: XRCompany | null): string | null => {
+  if (!company) return null;
+  const match = HAI_CATEGORIES.find(
+    (c) =>
+      c.human_interface.some((v) => (company.human_interface || []).includes(v)) ||
+      (c.ai_capabilities || []).some((v) => (company.ai_capabilities || []).includes(v)),
+  );
+  return match?.value || null;
+};
 
 const CompanyDetail = () => {
   const { companyName } = useParams<{ companyName: string }>();
   const key = decodeURIComponent(companyName || "");
   const { data: allProducts, isLoading: productsLoading } = useXRProducts({});
   const { data: allCompanies } = useXRCompanies({});
+  const { data: haiUseCases } = useHAIUseCases();
 
   const { data: company, isLoading: companyLoading } = useQuery({
     queryKey: ["xr-company-profile", key],
@@ -47,11 +70,29 @@ const CompanyDetail = () => {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [allProducts, displayName, company]);
 
+  const matchedUseCases = useMemo(
+    () => useCasesForCompany(company, haiUseCases, 8),
+    [company, haiUseCases],
+  );
+  const partnerGroups = useMemo(
+    () => partnerGroupsForCompany(company, allCompanies, haiUseCases),
+    [company, allCompanies, haiUseCases],
+  );
+  const partners = useMemo(
+    () => partnersForCompany(company, allCompanies, haiUseCases, 6),
+    [company, allCompanies, haiUseCases],
+  );
+  const similar = useMemo(() => similarCompanies(company, allCompanies), [company, allCompanies]);
+  const solutionPartners = useMemo(
+    () => solutionPartnersForCompany(company, allCompanies, haiUseCases),
+    [company, allCompanies, haiUseCases],
+  );
+
   useSeo({
     title: `${displayName} — Company Profile | Asentio HAI Directory`,
     description:
       company?.description ||
-      `${displayName} in the Asentio HAI Directory: the human activities, capabilities, AI and interfaces it augments.`,
+      `${displayName} in the Asentio HAI Directory: the use cases it enables, the products it ships and the partners it should work with.`,
     canonicalPath: `/hai-directory/company/${encodeURIComponent(company?.slug || key)}`,
     ogImage: company?.logo_url || undefined,
   });
@@ -92,11 +133,15 @@ const CompanyDetail = () => {
   }
 
   const perspective = company?.asentio_perspective;
+  const category = categoryFor(company);
+  const primaryRole = (company?.ecosystem_roles || [])[0];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Overview header with cover image */}
-      <section className={`relative pt-28 md:pt-36 h-[30vh] flex flex-col ${company?.cover_image_url ? "bg-muted" : "bg-[#0a0f1f]"}`}>
+      {/* 1. Company overview */}
+      <section
+        className={`relative pt-28 md:pt-36 h-[30vh] flex flex-col ${company?.cover_image_url ? "bg-muted" : "bg-[#0a0f1f]"}`}
+      >
         {company?.cover_image_url ? (
           <div className="absolute inset-0">
             <img src={company.cover_image_url} alt={`${displayName} cover`} className="w-full h-full object-cover" />
@@ -128,100 +173,91 @@ const CompanyDetail = () => {
         </div>
       </section>
 
-      {/* Mission, meta, description and website link */}
-      <section className="container mx-auto px-4 md:px-6 pt-6 md:pt-8">
+      <section className="container mx-auto px-4 md:px-6 pt-6 md:pt-8 pb-10 md:pb-12">
         <div className="w-12 h-1 bg-asentio-red mb-4" />
 
-        {company?.mission && (
-          <p className="text-lg md:text-xl text-foreground/90 max-w-3xl leading-relaxed mb-3 italic">
-            {company.mission}
-          </p>
-        )}
-
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-          {company?.hq_location && (
-            <span className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" /> {company.hq_location}
-            </span>
-          )}
-          {company?.founded_year && (
-            <span className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" /> Founded {company.founded_year}
-            </span>
-          )}
-          {company?.company_size && (
-            <span className="flex items-center gap-1">
-              <Users className="w-4 h-4" /> {company.company_size}
-            </span>
-          )}
-          {companyProducts.length > 0 && (
-            <span className="flex items-center gap-1">
-              <Package className="w-4 h-4" /> {companyProducts.length} product
-              {companyProducts.length !== 1 ? "s" : ""}
-            </span>
-          )}
-        </div>
-
-        {(company?.description || company?.website) && (
-          <div className="flex flex-col md:flex-row md:items-start gap-6 max-w-5xl">
-            {company?.description && (
-              <p className="text-base text-muted-foreground leading-relaxed flex-1">{company.description}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="lg:col-span-2">
+            {(category || primaryRole) && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {category && <Badge className="bg-asentio-blue text-white">{category}</Badge>}
+                {primaryRole && <Badge variant="outline">{primaryRole}</Badge>}
+              </div>
             )}
-            {company?.website && (
-              <a href={company.website} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
-                <Button className="bg-asentio-blue hover:bg-asentio-blue/90">
-                  <ExternalLink className="w-4 h-4 mr-2" /> Visit website
+
+            {company?.mission && (
+              <p className="text-lg md:text-xl text-foreground/90 leading-relaxed mb-3 italic">{company.mission}</p>
+            )}
+            {company?.description && (
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed">{company.description}</p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mt-6">
+              {company?.hq_location && (
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" /> {company.hq_location}
+                </span>
+              )}
+              {company?.company_size && (
+                <span className="flex items-center gap-1">
+                  <Users className="w-4 h-4" /> {company.company_size}
+                </span>
+              )}
+              {companyProducts.length > 0 && (
+                <span className="flex items-center gap-1">
+                  <Package className="w-4 h-4" /> {companyProducts.length} product
+                  {companyProducts.length !== 1 ? "s" : ""}
+                </span>
+              )}
+              {company?.website && (
+                <a
+                  href={company.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-asentio-blue hover:underline"
+                >
+                  <ExternalLink className="w-4 h-4" /> Website
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 lg:pt-1">
+            {companyProducts.length > 0 && (
+              <a href="#products">
+                <Button className="w-full bg-asentio-blue hover:bg-asentio-blue/90">
+                  View products <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </a>
             )}
+            <a href="#partners">
+              <Button variant="outline" className="w-full">
+                Find partner matches
+              </Button>
+            </a>
           </div>
-        )}
-      </section>
-
-      {/* Human-AI Framework */}
-      <section className="container mx-auto px-4 md:px-6 py-8 md:py-12">
-        <div className="w-12 h-1 bg-asentio-red mb-4" />
-        <h2 className="text-xl font-semibold text-foreground mb-1">Human-AI profile</h2>
-        <p className="text-sm text-muted-foreground mb-6">How {displayName} augments human capability through AI.</p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {HAI_DIMENSIONS.map((dimension) => {
-            const values = company ? companyValues(company, dimension.key) : [];
-            if (values.length === 0) return null;
-            return (
-              <div key={dimension.key} className="bg-card border border-border rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-foreground">{dimension.label}</h3>
-                <p className="text-[11px] text-muted-foreground mb-3">{dimension.question}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {values.map((v) => (
-                    <Link
-                      key={v}
-                      to={`/hai-directory?${dimension.key}=${encodeURIComponent(v)}`}
-                      className="inline-flex"
-                    >
-                      <Badge
-                        variant="secondary"
-                        className="text-xs hover:bg-asentio-red hover:text-primary-foreground transition-colors"
-                      >
-                        {v}
-                      </Badge>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
         </div>
       </section>
 
-      {/* Human use cases + partner matches, derived from the framework */}
-      {company && <CompanyHAIExtras company={company} allCompanies={allCompanies} />}
+      {/* 2. What they enable */}
+      {company && (
+        <CompanyUseCases company={company} companyName={displayName} useCases={matchedUseCases} />
+      )}
 
+      {/* 3. Products & platforms */}
+      <CompanyProducts products={companyProducts} companyName={displayName} />
 
+      {/* 4. Who should they work with? */}
+      <CompanyPartners companyName={displayName} groups={partnerGroups} />
+
+      {/* 5. Human + AI solution fit */}
+      {company && (
+        <CompanySolutionFit company={company} companyName={displayName} useCases={matchedUseCases} />
+      )}
 
       {/* Asentio Perspective — proprietary commentary */}
       {perspective && (
-        <section className="container mx-auto px-4 md:px-6 pb-10">
+        <section className="container mx-auto px-4 md:px-6 pb-12">
           <div className="rounded-2xl bg-asentio-blue/5 border border-asentio-red/30 border-l-4 border-l-asentio-red p-6 md:p-8">
             <p className="text-xs uppercase tracking-[0.2em] text-asentio-red font-semibold mb-3 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" /> Asentio Perspective
@@ -232,106 +268,16 @@ const CompanyDetail = () => {
         </section>
       )}
 
-      {/* Related companies */}
-      {company && <RelatedCompanies company={company} all={allCompanies} />}
+      {/* 6. Detailed capabilities & taxonomy */}
+      {company && <CompanyCapabilities company={company} />}
 
-      {/* Product timeline */}
-      {companyProducts.length > 0 && (
-        <section className="container mx-auto px-4 md:px-6 pb-16">
-          <h2 className="text-xl font-semibold text-foreground mb-6">Product timeline</h2>
-          <div className="relative">
-            <div className="absolute left-4 md:left-6 top-0 bottom-0 w-0.5 bg-border" />
-            <div className="space-y-8">
-              {companyProducts.map((product) => (
-                <TimelineItem key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-    </div>
-  );
-};
-
-const ChipPanel = ({ title, items }: { title: string; items?: string[] | null }) => {
-  if (!items || items.length === 0) return null;
-  return (
-    <div className="bg-card border border-border rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-foreground mb-3">{title}</h3>
-      <div className="flex flex-wrap gap-1.5">
-        {items.map((item) => (
-          <Badge key={item} variant="secondary" className="text-xs">
-            {item}
-          </Badge>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const TimelineItem = ({ product }: { product: XRProduct }) => {
-  const date = new Date(product.created_at);
-  const dateStr = date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-
-  return (
-    <div className="relative flex gap-4 md:gap-6 pl-2">
-      <div className="relative z-10 mt-1.5 w-5 h-5 rounded-full bg-asentio-blue border-2 border-background flex-shrink-0" />
-
-      <Card className="flex-1 hover:shadow-md transition-shadow">
-        <CardContent className="p-4 md:p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <Link
-                  to={`/hai-directory/${product.slug}`}
-                  className="font-semibold text-foreground hover:text-asentio-red transition-colors"
-                >
-                  {product.name}
-                </Link>
-                {product.is_editors_pick && <Badge className="bg-asentio-blue text-white text-xs">Editor's Pick</Badge>}
-              </div>
-              <p className="text-xs text-muted-foreground mb-2">{dateStr}</p>
-              {product.description && (
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{product.description}</p>
-              )}
-              <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-                <Badge variant="outline">{product.category}</Badge>
-                <Badge variant="outline">{product.shipping_status}</Badge>
-                {product.price_range && (
-                  <span className="font-medium text-foreground">
-                    {product.price_range}
-                    {product.price_type === "subscription" ? `/${product.billing_period === "year" ? "yr" : "mo"}` : ""}
-                  </span>
-                )}
-                {product.region && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    {product.region}
-                  </span>
-                )}
-              </div>
-            </div>
-            {product.image_url && (
-              <img
-                src={product.image_url}
-                alt={product.name}
-                loading="lazy"
-                className="w-20 h-20 object-cover rounded-md flex-shrink-0 hidden sm:block"
-              />
-            )}
-          </div>
-          {product.link && (
-            <a
-              href={product.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-asentio-blue hover:underline mt-2"
-            >
-              <ExternalLink className="w-3 h-3" /> Visit Product
-            </a>
-          )}
-        </CardContent>
-      </Card>
+      {/* 7. Explore the ecosystem */}
+      <CompanyEcosystem
+        companyName={displayName}
+        partners={partners}
+        similar={similar}
+        solutionPartners={solutionPartners}
+      />
     </div>
   );
 };
