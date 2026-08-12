@@ -24,9 +24,10 @@ import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
 import { Building2, Package, Layers, Briefcase, Plus, Compass, X, Search, Loader2 } from 'lucide-react';
 
 const Directory = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'use-cases';
   const [activeTab, setActiveTab] = useState(initialTab);
+  const useCaseSlug = searchParams.get('useCase');
 
   const initialSelections = useMemo(() => {
     const next: HAISelections = {};
@@ -79,6 +80,43 @@ const Directory = () => {
   }, [useCases, allCompanies]);
 
   const groups = useMemo(() => groupByDomain(filteredUseCases), [filteredUseCases]);
+
+  /* ---- Use-case scoped ecosystem results ---- */
+  const activeUseCase = useMemo(
+    () => (useCaseSlug ? (useCases || []).find((u) => u.slug === useCaseSlug) || null : null),
+    [useCases, useCaseSlug]
+  );
+
+  const useCaseMatches = useMemo(
+    () => companiesForUseCase(allCompanies, activeUseCase),
+    [allCompanies, activeUseCase]
+  );
+
+  const scopedCompanies = useMemo(() => {
+    if (!activeUseCase) return companies;
+    const q = companySearch.trim().toLowerCase();
+    const items = useCaseMatches.map((m) => m.item);
+    if (!q) return items;
+    return items.filter((c) =>
+      [c.name, c.description, c.hq_location].filter(Boolean).join(' ').toLowerCase().includes(q)
+    );
+  }, [activeUseCase, companies, useCaseMatches, companySearch]);
+
+  const scopedCompanyNames = useMemo(
+    () => new Set(useCaseMatches.map((m) => m.item.name.toLowerCase())),
+    [useCaseMatches]
+  );
+
+  const scopedProducts = useMemo(() => {
+    if (!activeUseCase) return products;
+    return (products || []).filter((p) => scopedCompanyNames.has((p.company || '').toLowerCase()));
+  }, [activeUseCase, products, scopedCompanyNames]);
+
+  const clearUseCase = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('useCase');
+    setSearchParams(next, { replace: true });
+  };
 
   const activeChips = Object.entries(selections).flatMap(([key, values]) =>
     (values || []).map((value) => ({ key: key as HAIDimensionKey, value }))
@@ -141,6 +179,48 @@ const Directory = () => {
               </Link>
             </div>
           </div>
+
+          {activeUseCase && (
+            <div className="mb-8 rounded-2xl border border-asentio-red/30 bg-asentio-red/5 p-5 md:p-6">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-asentio-red font-semibold mb-1">
+                    Filtered by use case
+                  </p>
+                  <h2 className="text-xl font-bold text-foreground">{activeUseCase.name}</h2>
+                  {activeUseCase.summary && (
+                    <p className="text-sm text-muted-foreground max-w-2xl mt-1">{activeUseCase.summary}</p>
+                  )}
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {[
+                      ...(activeUseCase.human_activities || []),
+                      ...(activeUseCase.ai_capabilities || []),
+                      ...(activeUseCase.human_interface || []),
+                    ]
+                      .slice(0, 8)
+                      .map((v) => (
+                        <Badge key={v} variant="secondary" className="text-[10px]">
+                          {v}
+                        </Badge>
+                      ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    {scopedCompanies?.length || 0} companies · {scopedProducts?.length || 0} products matched
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Link to={`/hai-directory/solutions/${activeUseCase.slug}`}>
+                    <Button variant="outline" className="whitespace-nowrap">
+                      Full solution stack
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" onClick={clearUseCase} className="whitespace-nowrap">
+                    <X className="w-4 h-4 mr-1" /> Clear
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ---------------- Use cases: the front door ---------------- */}
           <TabsContent value="use-cases">
@@ -219,7 +299,7 @@ const Directory = () => {
             )}
 
             <div className="py-6">
-              <CompanyGrid companies={companies} isLoading={companiesLoading} />
+              <CompanyGrid companies={scopedCompanies} isLoading={companiesLoading} />
             </div>
           </TabsContent>
 
@@ -229,7 +309,7 @@ const Directory = () => {
               <DirectoryViewToggle view={viewMode} onViewChange={setViewMode} />
             </div>
             <div className="py-4">
-              <DirectoryGrid products={products} isLoading={productsLoading} view={viewMode} />
+              <DirectoryGrid products={scopedProducts} isLoading={productsLoading} view={viewMode} />
             </div>
           </TabsContent>
 
