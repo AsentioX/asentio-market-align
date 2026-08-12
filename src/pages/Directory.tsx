@@ -133,6 +133,12 @@ const Directory = () => {
   });
 
   useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) setActiveTab(tab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  useEffect(() => {
     trackPageView('/hai-directory');
   }, []);
 
