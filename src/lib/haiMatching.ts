@@ -285,3 +285,112 @@ export const partnersForCompany = (
 
   return results.sort((a, b) => b.score - a.score).slice(0, limit);
 };
+
+/* ------------------------------------------------------------------ */
+/* Partner grouping + ecosystem lenses                                 */
+/* ------------------------------------------------------------------ */
+
+/** Human-readable partner themes, derived from the AI capability a partner adds. */
+const AI_CAPABILITY_GROUPS: Record<string, string> = {
+  Reason: 'AI & Reasoning Partners',
+  Perceive: 'Perception & Vision Partners',
+  Communicate: 'Voice & Language Partners',
+  Plan: 'Planning & Forecasting Partners',
+  Automate: 'Automation & Workflow Partners',
+  Embody: 'Robotics & Embodiment Partners',
+  Spatial: 'Spatial Intelligence Partners',
+  Deploy: 'Edge & Deployment Partners',
+};
+
+const ROLE_GROUPS: Record<string, string> = {
+  Intelligence: 'Intelligence Partners',
+  Experience: 'Device & Experience Partners',
+  Distribution: 'Distribution Partners',
+  Services: 'Services & Integration Partners',
+};
+
+export interface PartnerGroup {
+  label: string;
+  partners: PartnerMatchResult[];
+}
+
+const groupLabelFor = (match: PartnerMatchResult, company: XRCompany): string => {
+  const added = match.matches.find((m) => m.key === 'ai_capabilities')?.values || [];
+  const novel = added.find((v) => AI_CAPABILITY_GROUPS[v]);
+  if (novel) return AI_CAPABILITY_GROUPS[novel];
+  const role = (match.item.ecosystem_roles || []).find(
+    (r) => ROLE_GROUPS[r] && !(company.ecosystem_roles || []).includes(r)
+  );
+  if (role) return ROLE_GROUPS[role];
+  return 'Complementary Partners';
+};
+
+/** Partner matches organised into themed groups for the company page. */
+export const partnerGroupsForCompany = (
+  company: XRCompany | null | undefined,
+  all: XRCompany[] | undefined,
+  useCases?: HAIUseCase[],
+  maxGroups = 4,
+  perGroup = 3
+): PartnerGroup[] => {
+  if (!company) return [];
+  const matches = partnersForCompany(company, all, useCases, 40);
+  const groups = new Map<string, PartnerMatchResult[]>();
+  matches.forEach((m) => {
+    const label = groupLabelFor(m, company);
+    const list = groups.get(label) || [];
+    if (list.length < perGroup) list.push(m);
+    groups.set(label, list);
+  });
+  return Array.from(groups.entries())
+    .map(([label, partners]) => ({ label, partners }))
+    .sort((a, b) => b.partners[0].score - a.partners[0].score)
+    .slice(0, maxGroups);
+};
+
+const SIMILARITY_WEIGHTS: { key: HAIDimensionKey; label: string; weight: number }[] = [
+  { key: 'human_activities', label: 'Same human activities', weight: 4 },
+  { key: 'ai_capabilities', label: 'Same AI capabilities', weight: 3 },
+  { key: 'human_interface', label: 'Same interface', weight: 3 },
+  { key: 'industry_focus', label: 'Same industries', weight: 2 },
+  { key: 'human_capabilities', label: 'Augments the same human capability', weight: 2 },
+];
+
+/** Companies that look like this one — competitors and near-neighbours. */
+export const similarCompanies = (
+  company: XRCompany | null | undefined,
+  all: XRCompany[] | undefined,
+  limit = 6
+): MatchResult<XRCompany>[] => {
+  if (!company || !all) return [];
+  return all
+    .filter((c) => c.id !== company.id)
+    .map((c) => {
+      let score = 0;
+      const matches: DimensionMatch[] = [];
+      SIMILARITY_WEIGHTS.forEach(({ key, label, weight }) => {
+        const shared = overlap(companyValues(company, key), companyValues(c, key));
+        if (shared.length > 0) {
+          score += shared.length * weight;
+          matches.push({ key, label, values: shared });
+        }
+      });
+      // Same layer of the stack = genuinely comparable.
+      if (overlap(c.ecosystem_roles, company.ecosystem_roles).length > 0) score += 3;
+      return { item: c, score, matches, reasons: matches.map((m) => m.label) };
+    })
+    .filter((r) => r.score >= 8 && r.matches.length >= 2)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+};
+
+/** Companies that could combine with this one to deliver a complete solution. */
+export const solutionPartnersForCompany = (
+  company: XRCompany | null | undefined,
+  all: XRCompany[] | undefined,
+  useCases?: HAIUseCase[],
+  limit = 6
+): PartnerMatchResult[] =>
+  partnersForCompany(company, all, useCases, 40)
+    .filter((m) => m.sharedUseCases.length > 0)
+    .slice(0, limit);
