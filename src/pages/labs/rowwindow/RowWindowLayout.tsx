@@ -1046,7 +1046,7 @@ const statusLabel = (s: SensorStatus, fallback = 'Idle') => {
   return fallback;
 };
 
-const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }) => {
+const SensorsPanel = ({ sensors, children }: { sensors: ReturnType<typeof useRowSensors>; children?: React.ReactNode }) => {
   const showCompassBtn = sensors.headingStatus !== 'live' && sensors.headingStatus !== 'unavailable';
   const showPosBtn = sensors.positionStatus !== 'live' && sensors.positionStatus !== 'unavailable';
   const showHrBtn = sensors.heartRateStatus !== 'live';
