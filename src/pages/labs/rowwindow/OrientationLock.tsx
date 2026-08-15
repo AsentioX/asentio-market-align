@@ -77,7 +77,7 @@ export const OrientationLockControl = ({ mode, supported, onChange, className }:
 
   return (
     <div className={className}>
-      <div className="flex items-center gap-1 rounded-lg border border-white/20 bg-white/5 p-1">
+      <div className="flex items-center gap-1 rounded-lg border border-white/20 bg-white/5 p-1 h-full w-full">
         <span className="pl-1.5 pr-0.5 text-white/60" aria-hidden>
           <Lock className="w-3.5 h-3.5" />
         </span>
