@@ -1046,7 +1046,7 @@ const statusLabel = (s: SensorStatus, fallback = 'Idle') => {
   return fallback;
 };
 
-const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }) => {
+const SensorsPanel = ({ sensors, children }: { sensors: ReturnType<typeof useRowSensors>; children?: React.ReactNode }) => {
   const showCompassBtn = sensors.headingStatus !== 'live' && sensors.headingStatus !== 'unavailable';
   const showPosBtn = sensors.positionStatus !== 'live' && sensors.positionStatus !== 'unavailable';
   const showHrBtn = sensors.heartRateStatus !== 'live';
@@ -1142,7 +1142,9 @@ const SensorsPanel = ({ sensors }: { sensors: ReturnType<typeof useRowSensors> }
           )}
         </div>
       )}
+      {children && <div className="mt-3">{children}</div>}
       <div className="mt-2 space-y-2 text-[11px] text-slate-600 leading-relaxed">
+
         <div className="flex items-start gap-2">
           <span className="mt-0.5 text-slate-400">•</span>
           <p><strong className="text-slate-700">Compass &amp; GPS</strong> — require device permission (iOS will prompt on tap).</p>
@@ -1443,10 +1445,9 @@ const OnWaterView = ({
           </div>
         </div>
         <div className="mt-[100vh] space-y-3">
-          {piecesSection}
           {environmentSection}
         </div>
-        <SensorsPanel sensors={sensors} />
+        <SensorsPanel sensors={sensors}>{piecesSection}</SensorsPanel>
       </>
     );
   }
@@ -1456,10 +1457,9 @@ const OnWaterView = ({
       {compassSection}
       {children}
       {metricsSection}
-      {piecesSection}
       {environmentSection}
       {controlsSection}
-      <SensorsPanel sensors={sensors} />
+      <SensorsPanel sensors={sensors}>{piecesSection}</SensorsPanel>
     </>
   );
 };
