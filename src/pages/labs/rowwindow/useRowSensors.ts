@@ -363,6 +363,41 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
   // -------------------------------------------------------------------------
   // Heart rate (Web Bluetooth)
   // -------------------------------------------------------------------------
+  // Shared wiring so both the explicit pairing flow and the silent
+  // auto-reconnect (for already-permitted devices) share one code path.
+  const attachHrDevice = useCallback(async (device: BluetoothDevice, defaultLabel?: string) => {
+    hrDeviceRef.current = device;
+    device.addEventListener('gattserverdisconnected', () => {
+      setState(s => ({ ...s, heartRateStatus: 'idle', heartRate: null }));
+    });
+
+    const server = await device.gatt!.connect();
+    const service = await server.getPrimaryService(HR_SERVICE);
+    const char = await service.getCharacteristic(HR_MEASUREMENT_CHAR);
+    hrCharRef.current = char;
+
+    const handler = (event: Event) => {
+      const value = (event.target as BluetoothRemoteGATTCharacteristic).value;
+      if (!value) return;
+      // Bluetooth HR Measurement format:
+      //   byte 0 = flags; bit 0 indicates 16-bit (vs 8-bit) HR value.
+      const flags = value.getUint8(0);
+      const is16bit = (flags & 0x01) === 1;
+      const bpm = is16bit ? value.getUint16(1, /* littleEndian */ true) : value.getUint8(1);
+      push(rawHrRef, { t: Date.now(), bpm }, STREAM_CAP);
+      setState(s => ({ ...s, heartRate: bpm, heartRateStatus: 'live' }));
+    };
+    hrHandlerRef.current = handler;
+    char.addEventListener('characteristicvaluechanged', handler);
+    await char.startNotifications();
+
+    setState(s => ({
+      ...s,
+      heartRateStatus: 'live',
+      heartRateDeviceName: device.name ?? defaultLabel ?? 'Heart Rate Monitor',
+    }));
+  }, []);
+
   const connectHeartRate = useCallback(async (opts?: { namePrefixes?: string[]; defaultLabel?: string }) => {
     const bt = (navigator as unknown as { bluetooth?: Bluetooth }).bluetooth;
     if (!bt) {
@@ -378,36 +413,7 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         filters,
         optionalServices: [HR_SERVICE],
       });
-      hrDeviceRef.current = device;
-      device.addEventListener('gattserverdisconnected', () => {
-        setState(s => ({ ...s, heartRateStatus: 'idle', heartRate: null }));
-      });
-
-      const server = await device.gatt!.connect();
-      const service = await server.getPrimaryService(HR_SERVICE);
-      const char = await service.getCharacteristic(HR_MEASUREMENT_CHAR);
-      hrCharRef.current = char;
-
-      const handler = (event: Event) => {
-        const value = (event.target as BluetoothRemoteGATTCharacteristic).value;
-        if (!value) return;
-        // Bluetooth HR Measurement format:
-        //   byte 0 = flags; bit 0 indicates 16-bit (vs 8-bit) HR value.
-        const flags = value.getUint8(0);
-        const is16bit = (flags & 0x01) === 1;
-        const bpm = is16bit ? value.getUint16(1, /* littleEndian */ true) : value.getUint8(1);
-        push(rawHrRef, { t: Date.now(), bpm }, STREAM_CAP);
-        setState(s => ({ ...s, heartRate: bpm, heartRateStatus: 'live' }));
-      };
-      hrHandlerRef.current = handler;
-      char.addEventListener('characteristicvaluechanged', handler);
-      await char.startNotifications();
-
-      setState(s => ({
-        ...s,
-        heartRateStatus: 'live',
-        heartRateDeviceName: device.name ?? opts?.defaultLabel ?? 'Heart Rate Monitor',
-      }));
+      await attachHrDevice(device, opts?.defaultLabel);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
       setState(s => ({
@@ -415,7 +421,34 @@ export function useRowSensors({ tracking, activity = 'rowing' }: UseRowSensorsOp
         heartRateStatus: /cancel|user/i.test(msg) ? 'denied' : 'error',
       }));
     }
-  }, []);
+  }, [attachHrDevice]);
+
+  // Silently reconnect to a heart-rate monitor the user already granted
+  // permission for, so no manual "Pair heart-rate monitor" tap is needed.
+  useEffect(() => {
+    let cancelled = false;
+    const bt = (navigator as unknown as {
+      bluetooth?: Bluetooth & { getDevices?: () => Promise<BluetoothDevice[]> };
+    }).bluetooth;
+    if (!bt?.getDevices) return;
+
+    (async () => {
+      try {
+        const devices = await bt.getDevices!();
+        if (cancelled || !devices.length) return;
+        for (const device of devices) {
+          if (cancelled || hrDeviceRef.current) return;
+          try {
+            await attachHrDevice(device);
+            return;
+          } catch { /* try next known device */ }
+        }
+      } catch { /* permissions unavailable — user can pair manually */ }
+    })();
+
+    return () => { cancelled = true; };
+  }, [attachHrDevice]);
+
 
   const disconnectHeartRate = useCallback(() => {
     try {
