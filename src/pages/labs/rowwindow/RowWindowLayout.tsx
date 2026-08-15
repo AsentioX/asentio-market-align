@@ -1142,7 +1142,9 @@ const SensorsPanel = ({ sensors, children }: { sensors: ReturnType<typeof useRow
           )}
         </div>
       )}
+      {children && <div className="mt-3">{children}</div>}
       <div className="mt-2 space-y-2 text-[11px] text-slate-600 leading-relaxed">
+
         <div className="flex items-start gap-2">
           <span className="mt-0.5 text-slate-400">•</span>
           <p><strong className="text-slate-700">Compass &amp; GPS</strong> — require device permission (iOS will prompt on tap).</p>
