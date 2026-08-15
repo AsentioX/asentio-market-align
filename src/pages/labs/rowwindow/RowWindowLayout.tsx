@@ -1445,10 +1445,9 @@ const OnWaterView = ({
           </div>
         </div>
         <div className="mt-[100vh] space-y-3">
-          {piecesSection}
           {environmentSection}
         </div>
-        <SensorsPanel sensors={sensors} />
+        <SensorsPanel sensors={sensors}>{piecesSection}</SensorsPanel>
       </>
     );
   }
@@ -1458,10 +1457,9 @@ const OnWaterView = ({
       {compassSection}
       {children}
       {metricsSection}
-      {piecesSection}
       {environmentSection}
       {controlsSection}
-      <SensorsPanel sensors={sensors} />
+      <SensorsPanel sensors={sensors}>{piecesSection}</SensorsPanel>
     </>
   );
 };
