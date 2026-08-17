@@ -9,6 +9,7 @@ import { useSeo } from '@/hooks/useSeo';
 import { useXRCompanies } from '@/hooks/useXRCompanies';
 import { useHAIUseCases } from '@/hooks/useHAIUseCases';
 import { HAVE_OPTIONS, NEED_OPTIONS, findPartners, PartnerMatchResult } from '@/lib/haiMatching';
+import { SOLUTION_LAYERS } from '@/lib/haiFramework';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 
 const FitStars = ({ rating }: { rating: number }) => (
