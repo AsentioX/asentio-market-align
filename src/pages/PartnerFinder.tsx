@@ -136,6 +136,28 @@ const PartnerFinder = () => {
     [companies, have, need, useCases]
   );
 
+  const groupedResults = useMemo(() => {
+    const top = results.slice(0, 24);
+    const groups = SOLUTION_LAYERS.map((layer) => ({
+      label: layer.label,
+      description: layer.description,
+      matches: top.filter((m) =>
+        ((m.item.ecosystem_roles as string[] | null) || []).some((r) => layer.roles.includes(r))
+      ),
+    }));
+    const categorized = new Set(groups.flatMap((g) => g.matches.map((m) => m.item.id)));
+    const other = top.filter((m) => !categorized.has(m.item.id));
+    if (other.length > 0) {
+      groups.push({
+        label: 'Other',
+        description: 'Companies without a defined ecosystem role yet.',
+        matches: other,
+      });
+    }
+    return groups.filter((g) => g.matches.length > 0);
+  }, [results]);
+
+
   return (
     <div className="min-h-screen bg-background">
       <section className="relative pt-28 md:pt-36 pb-12 bg-[#0a0f1f] overflow-hidden">
