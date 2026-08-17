@@ -19,6 +19,7 @@ import Directory from "./pages/Directory";
 import SolutionExplorer from "./pages/SolutionExplorer";
 import SolutionDetail from "./pages/SolutionDetail";
 import PartnerFinder from "./pages/PartnerFinder";
+import UseCaseExplorer from "./pages/UseCaseExplorer";
 import ProductDetail from "./pages/ProductDetail";
 import CompanyDetail from "./pages/CompanyDetail";
 import DirectorySubmit from "./pages/DirectorySubmit";
