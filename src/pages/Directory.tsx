@@ -7,10 +7,8 @@ import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryV
 import CompanyGrid from '@/components/directory/CompanyGrid';
 import CompanyHAIFilterBar from '@/components/directory/CompanyHAIFilterBar';
 import AgencyGrid from '@/components/directory/AgencyGrid';
-import UseCaseSolutionCard from '@/components/directory/UseCaseSolutionCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
 
@@ -18,14 +16,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRCompanies, CompanyFilters, HAISelections } from '@/hooks/useXRCompanies';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
-import { useHAIUseCases, groupByDomain } from '@/hooks/useHAIUseCases';
+import { useHAIUseCases } from '@/hooks/useHAIUseCases';
 import { companiesForUseCase } from '@/lib/haiMatching';
 import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
-import { Building2, Package, Layers, Briefcase, Plus, Compass, X, Search, Loader2 } from 'lucide-react';
+import { Building2, Package, Layers, Briefcase, Plus, Compass, X } from 'lucide-react';
 
 const Directory = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'use-cases';
+  const initialTab = searchParams.get('tab') || 'companies';
   const [activeTab, setActiveTab] = useState(initialTab);
   const useCaseSlug = searchParams.get('useCase');
 
@@ -42,7 +40,6 @@ const Directory = () => {
   const [selections, setSelections] = useState<HAISelections>(initialSelections);
   const [logic, setLogic] = useState<'AND' | 'OR'>('AND');
   const [companySearch, setCompanySearch] = useState('');
-  const [useCaseSearch, setUseCaseSearch] = useState('');
 
   const companyFilters: CompanyFilters = useMemo(
     () => ({ search: companySearch || undefined, selections, logic }),
@@ -57,29 +54,7 @@ const Directory = () => {
   const { data: allCompanies } = useXRCompanies({});
   const { data: products, isLoading: productsLoading } = useXRProducts(productFilters);
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies(agencyFilters);
-  const { data: useCases, isLoading: useCasesLoading } = useHAIUseCases();
-
-  const filteredUseCases = useMemo(() => {
-    const q = useCaseSearch.trim().toLowerCase();
-    if (!q) return useCases;
-    return (useCases || []).filter((u) =>
-      [u.name, u.domain, u.summary, u.description, ...(u.human_activities || []), ...(u.industry_focus || [])]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase()
-        .includes(q)
-    );
-  }, [useCases, useCaseSearch]);
-
-  const countsByUseCase = useMemo(() => {
-    const map: Record<string, number> = {};
-    (useCases || []).forEach((uc) => {
-      map[uc.id] = companiesForUseCase(allCompanies, uc).length;
-    });
-    return map;
-  }, [useCases, allCompanies]);
-
-  const groups = useMemo(() => groupByDomain(filteredUseCases), [filteredUseCases]);
+  const { data: useCases } = useHAIUseCases();
 
   /* ---- Use-case scoped ecosystem results ---- */
   const activeUseCase = useMemo(
@@ -153,11 +128,7 @@ const Directory = () => {
       <div className="container mx-auto px-4 py-10 md:py-14">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-            <TabsList className="grid w-full sm:max-w-2xl grid-cols-4">
-              <TabsTrigger value="use-cases" className="flex items-center gap-2">
-                <Layers className="w-4 h-4" />
-                <span className="hidden sm:inline">Use Cases</span>
-              </TabsTrigger>
+            <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
               <TabsTrigger value="companies" className="flex items-center gap-2">
                 <Building2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Companies</span>
@@ -172,7 +143,12 @@ const Directory = () => {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Link to="/hai-directory/use-cases">
+                <Button variant="outline" className="whitespace-nowrap border-2">
+                  <Layers className="w-4 h-4 mr-2" /> Use Cases
+                </Button>
+              </Link>
               <Link to="/hai-directory/partner-finder">
                 <Button variant="outline" className="whitespace-nowrap border-2">
                   <Compass className="w-4 h-4 mr-2" /> Partner Finder
@@ -227,59 +203,6 @@ const Directory = () => {
               </div>
             </div>
           )}
-
-          {/* ---------------- Use cases: the front door ---------------- */}
-          <TabsContent value="use-cases">
-            <div className="max-w-3xl mb-10">
-              <div className="w-12 h-1 bg-asentio-red mb-5" />
-              <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-3">
-                What are you trying to build?
-              </h2>
-              <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
-                Everything begins with the human. Choose the outcome someone is trying to achieve, and we
-                will assemble the intelligence, interfaces and companies that make it possible.
-              </p>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  value={useCaseSearch}
-                  onChange={(e) => setUseCaseSearch(e.target.value)}
-                  placeholder="Search use cases — remote maintenance, translation, warehouse picking…"
-                  className="pl-9 h-12"
-                />
-              </div>
-            </div>
-
-            {useCasesLoading ? (
-              <div className="flex justify-center py-16">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : groups.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-10">No use cases match that search.</p>
-            ) : (
-              <div className="space-y-14">
-                {groups.map((group) => (
-                  <div key={group.domain}>
-                    <div className="flex items-baseline gap-3 mb-6">
-                      <h3 className="text-sm uppercase tracking-[0.2em] font-semibold text-foreground">
-                        {group.domain}
-                      </h3>
-                      <span className="text-xs text-muted-foreground">{group.useCases.length}</span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                      {group.useCases.map((uc) => (
-                        <UseCaseSolutionCard
-                          key={uc.id}
-                          useCase={uc}
-                          companyCount={countsByUseCase[uc.id]}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
 
           <TabsContent value="companies">
             <CompanyHAIFilterBar
