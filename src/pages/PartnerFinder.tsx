@@ -194,7 +194,7 @@ const PartnerFinder = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 md:px-6 pb-20 max-w-5xl">
+      <section className="container mx-auto px-4 md:px-6 pb-20 max-w-7xl">
         {!have && !need ? (
           <p className="text-sm text-muted-foreground text-center py-8">
             Choose at least one option above to see matches.
