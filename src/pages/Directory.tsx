@@ -7,10 +7,8 @@ import DirectoryViewToggle, { ViewMode } from '@/components/directory/DirectoryV
 import CompanyGrid from '@/components/directory/CompanyGrid';
 import CompanyHAIFilterBar from '@/components/directory/CompanyHAIFilterBar';
 import AgencyGrid from '@/components/directory/AgencyGrid';
-import UseCaseSolutionCard from '@/components/directory/UseCaseSolutionCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
 
@@ -18,14 +16,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useXRCompanies, CompanyFilters, HAISelections } from '@/hooks/useXRCompanies';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
-import { useHAIUseCases, groupByDomain } from '@/hooks/useHAIUseCases';
+import { useHAIUseCases } from '@/hooks/useHAIUseCases';
 import { companiesForUseCase } from '@/lib/haiMatching';
 import { HAI_DIMENSIONS, HAIDimensionKey } from '@/lib/haiFramework';
-import { Building2, Package, Layers, Briefcase, Plus, Compass, X, Search, Loader2 } from 'lucide-react';
+import { Building2, Package, Layers, Briefcase, Plus, Compass, X } from 'lucide-react';
 
 const Directory = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'use-cases';
+  const initialTab = searchParams.get('tab') || 'companies';
   const [activeTab, setActiveTab] = useState(initialTab);
   const useCaseSlug = searchParams.get('useCase');
 
@@ -42,7 +40,6 @@ const Directory = () => {
   const [selections, setSelections] = useState<HAISelections>(initialSelections);
   const [logic, setLogic] = useState<'AND' | 'OR'>('AND');
   const [companySearch, setCompanySearch] = useState('');
-  const [useCaseSearch, setUseCaseSearch] = useState('');
 
   const companyFilters: CompanyFilters = useMemo(
     () => ({ search: companySearch || undefined, selections, logic }),
@@ -57,7 +54,7 @@ const Directory = () => {
   const { data: allCompanies } = useXRCompanies({});
   const { data: products, isLoading: productsLoading } = useXRProducts(productFilters);
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies(agencyFilters);
-  const { data: useCases, isLoading: useCasesLoading } = useHAIUseCases();
+  const { data: useCases } = useHAIUseCases();
 
   /* ---- Use-case scoped ecosystem results ---- */
   const activeUseCase = useMemo(
