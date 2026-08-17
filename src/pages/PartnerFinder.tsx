@@ -11,16 +11,6 @@ import { HAVE_OPTIONS, NEED_OPTIONS, findPartners, PartnerMatchResult } from '@/
 import { SOLUTION_LAYERS } from '@/lib/haiFramework';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 
-const FitStars = ({ rating }: { rating: number }) => (
-  <span className="inline-flex items-center gap-0.5" aria-label={`Fit ${rating} of 5`}>
-    {[1, 2, 3, 4, 5].map((i) => (
-      <Star
-        key={i}
-        className={`w-3.5 h-3.5 ${i <= rating ? 'fill-asentio-red text-asentio-red' : 'text-muted-foreground/30'}`}
-      />
-    ))}
-  </span>
-);
 
 const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
   const c = match.item;
