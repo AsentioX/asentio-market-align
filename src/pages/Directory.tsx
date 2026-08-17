@@ -131,11 +131,7 @@ const Directory = () => {
       <div className="container mx-auto px-4 py-10 md:py-14">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-            <TabsList className="grid w-full sm:max-w-2xl grid-cols-4">
-              <TabsTrigger value="use-cases" className="flex items-center gap-2">
-                <Layers className="w-4 h-4" />
-                <span className="hidden sm:inline">Use Cases</span>
-              </TabsTrigger>
+            <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
               <TabsTrigger value="companies" className="flex items-center gap-2">
                 <Building2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Companies</span>
@@ -150,7 +146,12 @@ const Directory = () => {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Link to="/hai-directory/use-cases">
+                <Button variant="outline" className="whitespace-nowrap border-2">
+                  <Layers className="w-4 h-4 mr-2" /> Use Cases
+                </Button>
+              </Link>
               <Link to="/hai-directory/partner-finder">
                 <Button variant="outline" className="whitespace-nowrap border-2">
                   <Compass className="w-4 h-4 mr-2" /> Partner Finder
