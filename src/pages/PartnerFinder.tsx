@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, Loader2, Star, RotateCcw, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Building2, Loader2, RotateCcw, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TopographicPattern from '@/components/TopographicPattern';
 import ARBackground from '@/components/ARBackground';
@@ -11,16 +11,6 @@ import { HAVE_OPTIONS, NEED_OPTIONS, findPartners, PartnerMatchResult } from '@/
 import { SOLUTION_LAYERS } from '@/lib/haiFramework';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 
-const FitStars = ({ rating }: { rating: number }) => (
-  <span className="inline-flex items-center gap-0.5" aria-label={`Fit ${rating} of 5`}>
-    {[1, 2, 3, 4, 5].map((i) => (
-      <Star
-        key={i}
-        className={`w-3.5 h-3.5 ${i <= rating ? 'fill-asentio-red text-asentio-red' : 'text-muted-foreground/30'}`}
-      />
-    ))}
-  </span>
-);
 
 const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
   const c = match.item;
@@ -46,7 +36,6 @@ const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
             >
               {c.name}
             </Link>
-            <FitStars rating={match.rating} />
           </div>
           {c.description && <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{c.description}</p>}
         </div>
