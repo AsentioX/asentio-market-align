@@ -31,7 +31,7 @@ const UseCaseExplorer = () => {
   const countsByUseCase = useMemo(() => {
     const counts: Record<string, number> = {};
     (useCases || []).forEach((uc) => {
-      counts[uc.id] = companiesForUseCase(uc, allCompanies).length;
+      counts[uc.id] = companiesForUseCase(allCompanies, uc).length;
     });
     return counts;
   }, [useCases, allCompanies]);
