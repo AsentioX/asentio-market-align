@@ -59,28 +59,6 @@ const Directory = () => {
   const { data: agencies, isLoading: agenciesLoading } = useXRAgencies(agencyFilters);
   const { data: useCases, isLoading: useCasesLoading } = useHAIUseCases();
 
-  const filteredUseCases = useMemo(() => {
-    const q = useCaseSearch.trim().toLowerCase();
-    if (!q) return useCases;
-    return (useCases || []).filter((u) =>
-      [u.name, u.domain, u.summary, u.description, ...(u.human_activities || []), ...(u.industry_focus || [])]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase()
-        .includes(q)
-    );
-  }, [useCases, useCaseSearch]);
-
-  const countsByUseCase = useMemo(() => {
-    const map: Record<string, number> = {};
-    (useCases || []).forEach((uc) => {
-      map[uc.id] = companiesForUseCase(allCompanies, uc).length;
-    });
-    return map;
-  }, [useCases, allCompanies]);
-
-  const groups = useMemo(() => groupByDomain(filteredUseCases), [filteredUseCases]);
-
   /* ---- Use-case scoped ecosystem results ---- */
   const activeUseCase = useMemo(
     () => (useCaseSlug ? (useCases || []).find((u) => u.slug === useCaseSlug) || null : null),
