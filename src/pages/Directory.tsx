@@ -206,59 +206,6 @@ const Directory = () => {
             </div>
           )}
 
-          {/* ---------------- Use cases: the front door ---------------- */}
-          <TabsContent value="use-cases">
-            <div className="max-w-3xl mb-10">
-              <div className="w-12 h-1 bg-asentio-red mb-5" />
-              <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-3">
-                What are you trying to build?
-              </h2>
-              <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
-                Everything begins with the human. Choose the outcome someone is trying to achieve, and we
-                will assemble the intelligence, interfaces and companies that make it possible.
-              </p>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  value={useCaseSearch}
-                  onChange={(e) => setUseCaseSearch(e.target.value)}
-                  placeholder="Search use cases — remote maintenance, translation, warehouse picking…"
-                  className="pl-9 h-12"
-                />
-              </div>
-            </div>
-
-            {useCasesLoading ? (
-              <div className="flex justify-center py-16">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : groups.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-10">No use cases match that search.</p>
-            ) : (
-              <div className="space-y-14">
-                {groups.map((group) => (
-                  <div key={group.domain}>
-                    <div className="flex items-baseline gap-3 mb-6">
-                      <h3 className="text-sm uppercase tracking-[0.2em] font-semibold text-foreground">
-                        {group.domain}
-                      </h3>
-                      <span className="text-xs text-muted-foreground">{group.useCases.length}</span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                      {group.useCases.map((uc) => (
-                        <UseCaseSolutionCard
-                          key={uc.id}
-                          useCase={uc}
-                          companyCount={countsByUseCase[uc.id]}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
           <TabsContent value="companies">
             <CompanyHAIFilterBar
               search={companySearch}
