@@ -228,11 +228,23 @@ const PartnerFinder = () => {
               {results.length} potential partner{results.length !== 1 ? 's' : ''}
             </h2>
             <p className="text-muted-foreground mb-8">
-              Ranked by how well they complement what you already build.
+              Grouped by where they sit in the Human + AI solution stack, ranked by how well they
+              complement what you already build.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {results.slice(0, 24).map((m) => (
-                <PartnerCard key={m.item.id} match={m} />
+            <div className="space-y-12">
+              {groupedResults.map((group) => (
+                <div key={group.label}>
+                  <div className="flex items-baseline gap-3 mb-1">
+                    <h3 className="text-lg font-semibold text-foreground">{group.label}</h3>
+                    <span className="text-xs text-muted-foreground">{group.matches.length}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-5">{group.description}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {group.matches.map((m) => (
+                      <PartnerCard key={m.item.id} match={m} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </>
