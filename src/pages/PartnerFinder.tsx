@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, Loader2, Star, RotateCcw, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Building2, Loader2, RotateCcw, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TopographicPattern from '@/components/TopographicPattern';
 import ARBackground from '@/components/ARBackground';
