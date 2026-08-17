@@ -97,6 +97,7 @@ const OptionGrid = ({
 const PartnerFinder = () => {
   const [have, setHave] = useState<string>();
   const [need, setNeed] = useState<string>();
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { data: companies, isLoading } = useXRCompanies({});
   const { data: useCases } = useHAIUseCases();
