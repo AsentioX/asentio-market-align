@@ -63,17 +63,6 @@ const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
         </ul>
       )}
 
-      {match.sharedUseCases.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {match.sharedUseCases.map((u) => (
-            <Link key={u.id} to={`/hai-directory/solutions/${u.slug}`}>
-              <Badge variant="secondary" className="text-[10px] hover:bg-asentio-red hover:text-primary-foreground">
-                {u.name}
-              </Badge>
-            </Link>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
