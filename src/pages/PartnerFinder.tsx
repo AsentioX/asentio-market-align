@@ -46,7 +46,6 @@ const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
             >
               {c.name}
             </Link>
-            <FitStars rating={match.rating} />
           </div>
           {c.description && <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{c.description}</p>}
         </div>
