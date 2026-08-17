@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, Loader2, Star, RotateCcw } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Building2, Loader2, Star, RotateCcw, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TopographicPattern from '@/components/TopographicPattern';
 import ARBackground from '@/components/ARBackground';
@@ -64,17 +63,6 @@ const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
         </ul>
       )}
 
-      {match.sharedUseCases.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {match.sharedUseCases.map((u) => (
-            <Link key={u.id} to={`/hai-directory/solutions/${u.slug}`}>
-              <Badge variant="secondary" className="text-[10px] hover:bg-asentio-red hover:text-primary-foreground">
-                {u.name}
-              </Badge>
-            </Link>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
@@ -109,6 +97,7 @@ const OptionGrid = ({
 const PartnerFinder = () => {
   const [have, setHave] = useState<string>();
   const [need, setNeed] = useState<string>();
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { data: companies, isLoading } = useXRCompanies({});
   const { data: useCases } = useHAIUseCases();
@@ -205,7 +194,7 @@ const PartnerFinder = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 md:px-6 pb-20 max-w-5xl">
+      <section className="container mx-auto px-4 md:px-6 pb-20 max-w-7xl">
         {!have && !need ? (
           <p className="text-sm text-muted-foreground text-center py-8">
             Choose at least one option above to see matches.
@@ -231,21 +220,37 @@ const PartnerFinder = () => {
               Grouped by where they sit in the Human + AI solution stack, ranked by how well they
               complement what you already build.
             </p>
-            <div className="space-y-12">
-              {groupedResults.map((group) => (
-                <div key={group.label}>
-                  <div className="flex items-baseline gap-3 mb-1">
-                    <h3 className="text-lg font-semibold text-foreground">{group.label}</h3>
-                    <span className="text-xs text-muted-foreground">{group.matches.length}</span>
+            <div className="space-y-3">
+              {groupedResults.map((group) => {
+                const isOpen = expanded[group.label] ?? false;
+                return (
+                  <div key={group.label} className="rounded-xl border border-border bg-card/50 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setExpanded((p) => ({ ...p, [group.label]: !isOpen }))}
+                      className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-muted/40 transition-colors"
+                    >
+                      <div className="flex items-baseline gap-3 min-w-0">
+                        <h3 className="text-lg font-semibold text-foreground truncate">{group.label}</h3>
+                        <span className="text-xs text-muted-foreground flex-shrink-0">{group.matches.length}</span>
+                      </div>
+                      <ChevronDown
+                        className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-5 pt-1">
+                        <p className="text-sm text-muted-foreground mb-5">{group.description}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                          {group.matches.map((m) => (
+                            <PartnerCard key={m.item.id} match={m} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-sm text-muted-foreground mb-5">{group.description}</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {group.matches.map((m) => (
-                      <PartnerCard key={m.item.id} match={m} />
-                    ))}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}
