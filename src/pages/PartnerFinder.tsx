@@ -15,7 +15,10 @@ import { trackPageView, trackEvent } from '@/lib/analytics';
 const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
   const c = match.item;
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 transition-all hover:border-asentio-red/40 hover:shadow-md">
+    <Link
+      to={`/hai-directory/company/${encodeURIComponent(c.slug || c.name)}`}
+      className="block rounded-2xl border border-border bg-card p-5 transition-all hover:border-asentio-red/40 hover:shadow-md"
+    >
       <div className="flex items-start gap-4">
         {c.logo_url ? (
           <img
@@ -30,12 +33,9 @@ const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
-            <Link
-              to={`/hai-directory/company/${encodeURIComponent(c.slug || c.name)}`}
-              className="font-semibold text-foreground hover:text-asentio-red transition-colors"
-            >
+            <span className="font-semibold text-foreground hover:text-asentio-red transition-colors">
               {c.name}
-            </Link>
+            </span>
           </div>
           {c.description && <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{c.description}</p>}
         </div>
@@ -51,8 +51,7 @@ const PartnerCard = ({ match }: { match: PartnerMatchResult }) => {
           ))}
         </ul>
       )}
-
-    </div>
+    </Link>
   );
 };
 
