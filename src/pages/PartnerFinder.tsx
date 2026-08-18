@@ -219,9 +219,12 @@ const PartnerFinder = () => {
                       onClick={() => setExpanded((p) => ({ ...p, [group.label]: !isOpen }))}
                       className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-muted/40 transition-colors"
                     >
-                      <div className="flex items-baseline gap-3 min-w-0">
-                        <h3 className="text-lg font-semibold text-foreground truncate">{group.label}</h3>
-                        <span className="text-xs text-muted-foreground flex-shrink-0">{group.matches.length}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-baseline gap-3 min-w-0">
+                          <h3 className="text-lg font-semibold text-foreground truncate">{group.label}</h3>
+                          <span className="text-xs text-muted-foreground flex-shrink-0">{group.matches.length}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{group.description}</p>
                       </div>
                       <ChevronDown
                         className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
