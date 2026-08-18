@@ -12,8 +12,10 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
   const interfaces = (company.human_interface || []).slice(0, 2);
   const aiCaps = (company.ai_capabilities || []).slice(0, 2);
   const industries = (company.industry_focus || []).slice(0, 2);
+  const detailPath = `/hai-directory/company/${encodeURIComponent(company.slug || company.name)}`;
 
   return (
+    <Link to={detailPath} className="block h-full">
     <Card className="group relative h-full hover:shadow-lg transition-all duration-300 border border-border/60 hover:border-asentio-red/40 overflow-hidden">
       <div className="absolute left-0 top-0 w-1 h-0 bg-asentio-red transition-all duration-300 group-hover:h-full" />
 
@@ -34,12 +36,9 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <Link
-                to={`/hai-directory/company/${encodeURIComponent(company.slug || company.name)}`}
-                className="font-semibold text-foreground group-hover:text-asentio-red transition-colors truncate"
-              >
+              <span className="font-semibold text-foreground group-hover:text-asentio-red transition-colors truncate">
                 {company.name}
-              </Link>
+              </span>
               {company.is_editors_pick && (
                 <Star className="w-3.5 h-3.5 text-asentio-red fill-asentio-red flex-shrink-0" />
               )}
@@ -78,15 +77,11 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         <div className="mt-auto pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-3 flex-wrap">
             {(company.ecosystem_roles || [])[0] && <span>{(company.ecosystem_roles || [])[0]}</span>}
-            
           </div>
           <div className="flex items-center gap-3">
-            <Link
-              to={`/hai-directory/company/${encodeURIComponent(company.slug || company.name)}`}
-              className="text-asentio-blue hover:underline font-medium"
-            >
+            <span className="text-asentio-blue font-medium group-hover:underline">
               Profile
-            </Link>
+            </span>
             {company.website && (
               <a
                 href={company.website}
@@ -103,6 +98,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 };
 
