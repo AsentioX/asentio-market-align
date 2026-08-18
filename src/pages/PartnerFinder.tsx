@@ -64,19 +64,6 @@ const ResultCard = ({ match }: { match: PartnerRecommendation }) => {
       </dl>
 
       <p className="mt-3 text-sm text-muted-foreground flex-1">{match.explanation}</p>
-
-      <div className="mt-4 pt-3 border-t border-border flex items-center gap-4 text-xs">
-        <Link to={href} className="font-medium text-asentio-red hover:underline">
-          View Company
-        </Link>
-        <span className="text-border">·</span>
-        <Link
-          to={`/contact?subject=${encodeURIComponent(`Introduction to ${c.name}`)}`}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          Request Introduction
-        </Link>
-      </div>
     </div>
   );
 };
