@@ -36,6 +36,9 @@ const ResultCard = ({ match }: { match: PartnerRecommendation }) => {
         )}
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-foreground truncate">{c.name}</h3>
+          {c.mission && (
+            <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">{c.mission}</p>
+          )}
         </div>
       </div>
 
