@@ -102,6 +102,28 @@ const PartnerFinder = () => {
     [companies, query, useCases]
   );
 
+  const groups = useMemo(() => {
+    const layers = SOLUTION_LAYERS.map((l) => ({
+      label: l.label,
+      description: l.description,
+      matches: results.filter((m) => (m.company.ecosystem_roles || []).some((r) => l.roles.includes(r))),
+    }));
+    const claimed = new Set(layers.flatMap((l) => l.matches.map((m) => m.company.id)));
+    const other = results.filter((m) => !claimed.has(m.company.id));
+    if (other.length) {
+      layers.push({
+        label: 'Other',
+        description: 'Companies that fit your request but are not yet mapped to a stack layer.',
+        matches: other,
+      });
+    }
+    return layers.filter((l) => l.matches.length > 0);
+  }, [results]);
+
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const toggle = (label: string) => setOpen((p) => ({ ...p, [label]: !p[label] }));
+
+
   const handleSubmit = (q: PartnerQuery) => {
     setQuery(q);
     trackEvent(
