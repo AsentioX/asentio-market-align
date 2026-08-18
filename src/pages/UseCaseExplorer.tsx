@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Loader2, Search } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Loader2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import TopographicPattern from '@/components/TopographicPattern';
 import ARBackground from '@/components/ARBackground';
@@ -13,6 +13,7 @@ import { trackPageView } from '@/lib/analytics';
 
 const UseCaseExplorer = () => {
   const [search, setSearch] = useState('');
+  const [open, setOpen] = useState<Record<string, boolean>>({});
   const { data: useCases, isLoading } = useHAIUseCases();
   const { data: allCompanies } = useXRCompanies({});
 
@@ -48,29 +49,31 @@ const UseCaseExplorer = () => {
 
   const groups = useMemo(() => groupByDomain(filtered), [filtered]);
 
+  const toggle = (domain: string) => setOpen((p) => ({ ...p, [domain]: !p[domain] }));
+
   return (
     <div className="min-h-screen bg-background">
-      <section className="relative pt-28 md:pt-36 pb-10 bg-muted">
-        <TopographicPattern className="opacity-30" />
+      <section className="relative pt-28 md:pt-32 pb-10 bg-[#0a0f1f] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f1f] via-[#111a2e] to-[#0a0f1f]" />
+        <TopographicPattern variant="darkBg" className="opacity-50" />
         <ARBackground />
-        <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-5xl">
+        <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-7xl">
           <Link
             to="/hai-directory"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
+            className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white mb-6"
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Directory
+            <ArrowLeft className="w-4 h-4" /> HAI Directory
           </Link>
           <div className="w-12 h-1 bg-asentio-red mb-4" />
-          <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">What are you trying to build?</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Everything begins with the human. Choose the outcome someone is trying to achieve, and we will
-            assemble the intelligence, interfaces and companies that make it possible.
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Use Cases</h1>
+          <p className="text-base text-white/70 max-w-2xl">
+            What are you trying to build? Everything begins with the human outcome.
           </p>
         </div>
       </section>
 
-      <section className="container mx-auto px-4 md:px-6 py-10 md:py-14">
-        <div className="max-w-3xl mb-10">
+      <section className="container mx-auto px-4 md:px-6 -mt-6 relative z-20 max-w-7xl">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-lg">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -81,31 +84,58 @@ const UseCaseExplorer = () => {
             />
           </div>
         </div>
+      </section>
 
+      <section className="container mx-auto px-4 md:px-6 py-12 max-w-7xl">
         {isLoading ? (
-          <div className="flex justify-center py-16">
+          <div className="flex justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
         ) : groups.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-10">No use cases match that search.</p>
+          <p className="text-sm text-muted-foreground text-center py-12">No use cases match that search.</p>
         ) : (
-          <div className="space-y-14">
-            {groups.map((group) => (
-              <div key={group.domain}>
-                <div className="flex items-baseline gap-3 mb-6">
-                  <h2 className="text-sm uppercase tracking-[0.2em] font-semibold text-foreground">
-                    {group.domain}
-                  </h2>
-                  <span className="text-xs text-muted-foreground">{group.useCases.length}</span>
+          <>
+            <div className="w-12 h-1 bg-asentio-red mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-1">
+              {filtered.length} use case{filtered.length !== 1 ? 's' : ''}
+            </h2>
+            <p className="text-muted-foreground mb-8">
+              Grouped by domain — expand a domain to explore the outcomes and the companies that enable them.
+            </p>
+            <div className="space-y-4">
+              {groups.map((group) => (
+                <div key={group.domain} className="rounded-2xl border border-border bg-card/40 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggle(group.domain)}
+                    className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/40 transition-colors"
+                  >
+                    <ChevronRight
+                      className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${
+                        open[group.domain] ? 'rotate-90' : ''
+                      }`}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-foreground">{group.domain}</h3>
+                        <span className="text-xs font-bold text-asentio-red">{group.useCases.length}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {group.useCases.map((uc) => uc.name).join(' · ')}
+                      </p>
+                    </div>
+                  </button>
+                  {open[group.domain] && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-5 pt-0">
+                      {group.useCases.map((uc) => (
+                        <UseCaseSolutionCard key={uc.id} useCase={uc} companyCount={countsByUseCase[uc.id]} />
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {group.useCases.map((uc) => (
-                    <UseCaseSolutionCard key={uc.id} useCase={uc} companyCount={countsByUseCase[uc.id]} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
     </div>
