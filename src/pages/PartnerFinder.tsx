@@ -161,13 +161,40 @@ const PartnerFinder = () => {
             <p className="text-muted-foreground mb-8">
               Ranked by how well each company completes your solution — complementary, not competing.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {results.map((m) => (
-                <ResultCard key={m.company.id} match={m} />
+            <div className="space-y-4">
+              {groups.map((group) => (
+                <div key={group.label} className="rounded-2xl border border-border bg-card/40 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggle(group.label)}
+                    className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/40 transition-colors"
+                  >
+                    <ChevronRight
+                      className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${
+                        open[group.label] ? 'rotate-90' : ''
+                      }`}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-foreground">{group.label}</h3>
+                        <span className="text-xs font-bold text-asentio-red">{group.matches.length}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-1">{group.description}</p>
+                    </div>
+                  </button>
+                  {open[group.label] && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-5 pt-0">
+                      {group.matches.map((m) => (
+                        <ResultCard key={m.company.id} match={m} />
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </>
         )}
+
       </section>
     </div>
   );
