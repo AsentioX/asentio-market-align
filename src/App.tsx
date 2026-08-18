@@ -20,6 +20,7 @@ import SolutionExplorer from "./pages/SolutionExplorer";
 import SolutionDetail from "./pages/SolutionDetail";
 import PartnerFinder from "./pages/PartnerFinder";
 import UseCaseExplorer from "./pages/UseCaseExplorer";
+import HAIUseCaseResults from "./pages/HAIUseCaseResults";
 import ProductDetail from "./pages/ProductDetail";
 import CompanyDetail from "./pages/CompanyDetail";
 import DirectorySubmit from "./pages/DirectorySubmit";
@@ -177,7 +178,8 @@ const AppContent = () => {
           <Route path="/hai-directory/category/:groupSlug" element={<Navigate to="/hai-directory" replace />} />
           <Route path="/hai-directory/company/:companyName" element={<CompanyDetail />} />
           <Route path="/hai-directory/agencies/:slug" element={<AgencyDetail />} />
-          <Route path="/hai-directory/use-cases/:slug" element={<UseCaseDetail />} />
+          <Route path="/hai-directory/use-cases/:slug" element={<HAIUseCaseResults />} />
+          <Route path="/hai-directory/xr-use-cases/:slug" element={<UseCaseDetail />} />
           <Route path="/hai-directory/:slug" element={<ProductDetail />} />
           <Route path="/labs" element={<Labs />} />
           <Route path="/labs/wo-buddy" element={<WOBuddyLayout />} />
