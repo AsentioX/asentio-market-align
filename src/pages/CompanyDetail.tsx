@@ -24,7 +24,7 @@ import TopographicPattern from "@/components/TopographicPattern";
 import ARBackground from "@/components/ARBackground";
 import { useSeo } from "@/hooks/useSeo";
 import { HAI_CATEGORIES } from "@/lib/haiFramework";
-import { ExternalLink, MapPin, Package, Loader2, Sparkles, Users, ArrowRight } from "lucide-react";
+import { ExternalLink, MapPin, Package, Loader2, Sparkles, Users, ArrowRight, ArrowLeft } from "lucide-react";
 import { trackPageView, trackEvent } from "@/lib/analytics";
 
 /** Derive the top-level Category label from the company's interfaces / AI capabilities. */
