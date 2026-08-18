@@ -16,7 +16,7 @@ interface Props {
 
 const UseCaseSolutionCard = ({ useCase, companyCount }: Props) => (
   <Link
-    to={`/hai-directory?tab=companies&useCase=${useCase.slug}`}
+    to={`/hai-directory/use-cases/${useCase.slug}`}
     className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 transition-all hover:border-asentio-red/50 hover:shadow-lg"
   >
     <div className="flex items-start justify-between mb-4">
