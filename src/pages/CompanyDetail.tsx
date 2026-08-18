@@ -164,7 +164,7 @@ const CompanyDetail = () => {
               className="text-muted-foreground hover:text-foreground bg-background/60 backdrop-blur-sm hover:bg-background/80"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Back
+              Back to Directory
             </Button>
           </div>
           <div className="mt-auto pt-16 pb-6 md:pb-8 flex items-center gap-4 md:gap-6">
