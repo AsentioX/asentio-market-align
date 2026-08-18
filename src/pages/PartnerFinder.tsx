@@ -35,9 +35,6 @@ const ResultCard = ({ match }: { match: PartnerRecommendation }) => {
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-asentio-red">{match.score}% Match</span>
-          </div>
           <h3 className="font-semibold text-foreground truncate">{c.name}</h3>
         </div>
       </div>
