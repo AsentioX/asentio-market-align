@@ -57,8 +57,10 @@ const ResultCard = ({ match }: { match: MatchResult<XRCompany> }) => {
         )}
       </dl>
 
-      {match.reasons.length > 0 && (
-        <p className="mt-3 text-sm text-muted-foreground flex-1">{match.reasons[0]}</p>
+      {match.reasons.find((r) => !r.startsWith('Human Activities')) && (
+        <p className="mt-3 text-sm text-muted-foreground flex-1">
+          {match.reasons.find((r) => !r.startsWith('Human Activities'))}
+        </p>
       )}
     </Link>
   );
