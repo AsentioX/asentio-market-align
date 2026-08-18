@@ -156,6 +156,17 @@ const CompanyDetail = () => {
           </>
         )}
         <div className="container mx-auto px-4 md:px-6 relative z-10 flex-1 flex flex-col">
+          <div className="pt-24 md:pt-28">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.history.back()}
+              className="text-muted-foreground hover:text-foreground bg-background/60 backdrop-blur-sm hover:bg-background/80"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              Back
+            </Button>
+          </div>
           <div className="mt-auto pt-16 pb-6 md:pb-8 flex items-center gap-4 md:gap-6">
             {company?.logo_url ? (
               <img
