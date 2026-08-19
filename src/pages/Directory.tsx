@@ -180,24 +180,26 @@ const Directory = () => {
               </Button>
             </Link>
           </div>
-
-          <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
-            <TabsTrigger value="companies" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Companies</span>
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              <span className="hidden sm:inline">Products</span>
-            </TabsTrigger>
-            <TabsTrigger value="agencies" className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4" />
-              <span className="hidden sm:inline">Agencies</span>
-            </TabsTrigger>
-          </TabsList>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex items-center justify-center mb-8">
+            <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
+              <TabsTrigger value="companies" className="flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Companies</span>
+              </TabsTrigger>
+              <TabsTrigger value="products" className="flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                <span className="hidden sm:inline">Products</span>
+              </TabsTrigger>
+              <TabsTrigger value="agencies" className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4" />
+                <span className="hidden sm:inline">Agencies</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
 
           {activeUseCase && (
             <div className="mb-8 rounded-2xl border border-asentio-red/30 bg-asentio-red/5 p-5 md:p-6">
