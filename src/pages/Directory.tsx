@@ -247,6 +247,7 @@ const Directory = () => {
               onSearchChange={setCompanySearch}
               selections={selections}
               onChange={setSelections}
+              counts={countsByDimension}
             />
 
             {activeChips.length > 0 && (
