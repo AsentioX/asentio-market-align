@@ -21,6 +21,7 @@ interface CompanyHAIFilterBarProps {
   onSearchChange: (value: string) => void;
   selections: HAISelections;
   onChange: (selections: HAISelections) => void;
+  counts?: Partial<Record<HAIDimensionKey, Record<string, number>>>;
 }
 
 const CompanyHAIFilterBar = ({
