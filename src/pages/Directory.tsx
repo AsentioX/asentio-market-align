@@ -244,6 +244,14 @@ const Directory = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        <div className="flex justify-center py-10">
+          <Link to="/hai-directory/submit">
+            <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
+              <Plus className="w-4 h-4 mr-2" /> Add your company
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
