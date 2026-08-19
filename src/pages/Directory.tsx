@@ -13,7 +13,7 @@ import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useXRCompanies, CompanyFilters, HAISelections } from '@/hooks/useXRCompanies';
+import { useXRCompanies, CompanyFilters, HAISelections, matchesSelections, companyValues } from '@/hooks/useXRCompanies';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
 import { useHAIUseCases } from '@/hooks/useHAIUseCases';
@@ -87,6 +87,47 @@ const Directory = () => {
     return (products || []).filter((p) => scopedCompanyNames.has((p.company || '').toLowerCase()));
   }, [activeUseCase, products, scopedCompanyNames]);
 
+  /** Live company counts per filter value (reflects other active filters + search). */
+  const FILTER_DIMENSION_KEYS: HAIDimensionKey[] = [
+    'hai_category',
+    'human_activities',
+    'human_capabilities',
+    'ai_capabilities',
+    'industry_focus',
+  ];
+  const countsByDimension = useMemo(() => {
+    const counts: Partial<Record<HAIDimensionKey, Record<string, number>>> = {};
+    if (!allCompanies) return counts;
+    const q = companySearch.trim().toLowerCase();
+    FILTER_DIMENSION_KEYS.forEach((key) => {
+      const otherSelections: HAISelections = { ...selections };
+      delete otherSelections[key];
+      const base = allCompanies.filter((c) => {
+        if (q) {
+          const hay = [
+            c.name,
+            c.description,
+            c.mission,
+            ...HAI_DIMENSIONS.flatMap((d) => companyValues(c, d.key)),
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return matchesSelections(c, otherSelections, logic);
+      });
+      const dim = HAI_DIMENSIONS.find((d) => d.key === key)!;
+      const map: Record<string, number> = {};
+      dim.values.forEach((v) => {
+        map[v] = base.filter((c) => matchesSelections(c, { [key]: [v] }, 'AND')).length;
+      });
+      counts[key] = map;
+    });
+    return counts;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allCompanies, selections, companySearch, logic]);
+
   const clearUseCase = () => {
     const next = new URLSearchParams(searchParams);
     next.delete('useCase');
@@ -139,24 +180,26 @@ const Directory = () => {
               </Button>
             </Link>
           </div>
-
-          <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
-            <TabsTrigger value="companies" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Companies</span>
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              <span className="hidden sm:inline">Products</span>
-            </TabsTrigger>
-            <TabsTrigger value="agencies" className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4" />
-              <span className="hidden sm:inline">Agencies</span>
-            </TabsTrigger>
-          </TabsList>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex items-center justify-center mb-8">
+            <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
+              <TabsTrigger value="companies" className="flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Companies</span>
+              </TabsTrigger>
+              <TabsTrigger value="products" className="flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                <span className="hidden sm:inline">Products</span>
+              </TabsTrigger>
+              <TabsTrigger value="agencies" className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4" />
+                <span className="hidden sm:inline">Agencies</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
 
           {activeUseCase && (
             <div className="mb-8 rounded-2xl border border-asentio-red/30 bg-asentio-red/5 p-5 md:p-6">
@@ -206,6 +249,7 @@ const Directory = () => {
               onSearchChange={setCompanySearch}
               selections={selections}
               onChange={setSelections}
+              counts={countsByDimension}
             />
 
             {activeChips.length > 0 && (
