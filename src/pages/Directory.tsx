@@ -87,6 +87,47 @@ const Directory = () => {
     return (products || []).filter((p) => scopedCompanyNames.has((p.company || '').toLowerCase()));
   }, [activeUseCase, products, scopedCompanyNames]);
 
+  /** Live company counts per filter value (reflects other active filters + search). */
+  const FILTER_DIMENSION_KEYS: HAIDimensionKey[] = [
+    'hai_category',
+    'human_activities',
+    'human_capabilities',
+    'ai_capabilities',
+    'industry_focus',
+  ];
+  const countsByDimension = useMemo(() => {
+    const counts: Partial<Record<HAIDimensionKey, Record<string, number>>> = {};
+    if (!allCompanies) return counts;
+    const q = companySearch.trim().toLowerCase();
+    FILTER_DIMENSION_KEYS.forEach((key) => {
+      const otherSelections: HAISelections = { ...selections };
+      delete otherSelections[key];
+      const base = allCompanies.filter((c) => {
+        if (q) {
+          const hay = [
+            c.name,
+            c.description,
+            c.mission,
+            ...HAI_DIMENSIONS.flatMap((d) => companyValues(c, d.key)),
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return matchesSelections(c, otherSelections, logic);
+      });
+      const dim = HAI_DIMENSIONS.find((d) => d.key === key)!;
+      const map: Record<string, number> = {};
+      dim.values.forEach((v) => {
+        map[v] = base.filter((c) => matchesSelections(c, { [key]: [v] }, 'AND')).length;
+      });
+      counts[key] = map;
+    });
+    return counts;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allCompanies, selections, companySearch, logic]);
+
   const clearUseCase = () => {
     const next = new URLSearchParams(searchParams);
     next.delete('useCase');
