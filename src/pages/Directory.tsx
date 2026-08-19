@@ -126,41 +126,37 @@ const Directory = () => {
       <DirectoryHeader />
 
       <div className="container mx-auto px-4 py-10 md:py-14">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-            <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
-              <TabsTrigger value="companies" className="flex items-center gap-2">
-                <Building2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Companies</span>
-              </TabsTrigger>
-              <TabsTrigger value="products" className="flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                <span className="hidden sm:inline">Products</span>
-              </TabsTrigger>
-              <TabsTrigger value="agencies" className="flex items-center gap-2">
-                <Briefcase className="w-4 h-4" />
-                <span className="hidden sm:inline">Agencies</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <Link to="/hai-directory/use-cases">
-                <Button variant="outline" className="whitespace-nowrap border-2">
-                  <Layers className="w-4 h-4 mr-2" /> Use Cases
-                </Button>
-              </Link>
-              <Link to="/hai-directory/partner-finder">
-                <Button variant="outline" className="whitespace-nowrap border-2">
-                  <Compass className="w-4 h-4 mr-2" /> Partner Finder
-                </Button>
-              </Link>
-              <Link to="/hai-directory/submit">
-                <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
-                  <Plus className="w-4 h-4 mr-2" /> Add your company
-                </Button>
-              </Link>
-            </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link to="/hai-directory/use-cases">
+              <Button variant="outline" className="whitespace-nowrap border-2">
+                <Layers className="w-4 h-4 mr-2" /> Use Cases
+              </Button>
+            </Link>
+            <Link to="/hai-directory/partner-finder">
+              <Button variant="outline" className="whitespace-nowrap border-2">
+                <Compass className="w-4 h-4 mr-2" /> Partner Finder
+              </Button>
+            </Link>
           </div>
+
+          <TabsList className="grid w-full sm:max-w-lg grid-cols-3">
+            <TabsTrigger value="companies" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Companies</span>
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              <span className="hidden sm:inline">Products</span>
+            </TabsTrigger>
+            <TabsTrigger value="agencies" className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4" />
+              <span className="hidden sm:inline">Agencies</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 
           {activeUseCase && (
             <div className="mb-8 rounded-2xl border border-asentio-red/30 bg-asentio-red/5 p-5 md:p-6">
@@ -248,6 +244,14 @@ const Directory = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        <div className="flex justify-center py-10">
+          <Link to="/hai-directory/submit">
+            <Button className="bg-asentio-red hover:bg-asentio-red/90 text-white whitespace-nowrap">
+              <Plus className="w-4 h-4 mr-2" /> Add your company
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
