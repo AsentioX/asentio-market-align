@@ -13,7 +13,7 @@ import { trackPageView, trackEvent } from '@/lib/analytics';
 import { useSeo } from '@/hooks/useSeo';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useXRCompanies, CompanyFilters, HAISelections } from '@/hooks/useXRCompanies';
+import { useXRCompanies, CompanyFilters, HAISelections, matchesSelections, companyValues } from '@/hooks/useXRCompanies';
 import { useXRProducts, ProductFilters } from '@/hooks/useXRProducts';
 import { useXRAgencies, AgencyFilters } from '@/hooks/useXRAgencies';
 import { useHAIUseCases } from '@/hooks/useHAIUseCases';
