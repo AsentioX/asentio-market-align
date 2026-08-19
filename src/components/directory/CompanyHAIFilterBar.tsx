@@ -90,6 +90,7 @@ const CompanyHAIFilterBar = ({
                     : dimension.values
                   ).map((value) => {
                     const id = `${key}-${value}`;
+                    const count = counts?.[key]?.[value] ?? 0;
                     return (
                       <label
                         key={value}
@@ -102,7 +103,12 @@ const CompanyHAIFilterBar = ({
                           checked={selected.includes(value)}
                           onCheckedChange={() => toggle(key, value)}
                         />
-                        <span>{haiValueLabel(key, value)}</span>
+                        <span className="flex-1">{haiValueLabel(key, value)}</span>
+                        {count > 0 && (
+                          <span className="text-xs text-muted-foreground/70 tabular-nums">
+                            {count}
+                          </span>
+                        )}
                       </label>
                     );
                   })}
