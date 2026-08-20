@@ -462,6 +462,14 @@ export const findUseCaseMatches = (
       raw += local * weight;
     });
 
+    // Keep results on-topic: a use case mapped to other industries is demoted.
+    if (industry) {
+      const ucIndustries = ucValues(uc, 'industry_focus');
+      if (ucIndustries.length > 0 && overlap(industry.industry_focus, ucIndustries).length === 0) {
+        raw *= 0.35;
+      }
+    }
+
     const contextBits = [
       industry?.label,
       roleOpt?.label,
