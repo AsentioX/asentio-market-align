@@ -366,3 +366,44 @@ export const findPartnerMatches = (
 };
 
 export const providesLabel = (r: PartnerRecommendation) => titleCase(r.provides.slice(0, 3));
+
+/* ------------------------------------------------------------------ */
+/* Prefill: derive a Partner Finder query from a use case              */
+/* ------------------------------------------------------------------ */
+
+const bestOption = (options: PFOption[], uc: HAIUseCase): PFOption | undefined => {
+  const text = `${uc.name} ${uc.summary || ''}`.toLowerCase();
+  const scored = options
+    .map((o) => {
+      let s = (o.keywords || []).concat(o.label.toLowerCase()).some((k) => text.includes(k.toLowerCase())) ? 6 : 0;
+      s += PRIORITY_KEYS.reduce(
+        (sum, key) =>
+          sum +
+          overlap(
+            profileValues(o, key),
+            ((uc as unknown as Record<string, string[] | null>)[key] || []) as string[]
+          ).length,
+        0
+      );
+      return { o, s };
+    })
+    .sort((a, b) => b.s - a.s);
+  return scored[0] && scored[0].s > 0 ? scored[0].o : undefined;
+};
+
+/**
+ * Pre-populate the Partner Finder from a use case: what is being built, the
+ * intelligence and interfaces it requires, and the market it serves.
+ */
+export const partnerQueryForUseCase = (uc: HAIUseCase): PartnerQuery => {
+  const building = bestOption(BUILDING_OPTIONS, uc);
+  const needs = NEED_MULTI_OPTIONS.filter(
+    (n) =>
+      overlap(n.ai_capabilities, uc.ai_capabilities).length > 0 ||
+      overlap(n.human_interface, uc.human_interface).length > 0
+  )
+    .slice(0, 4)
+    .map((n) => n.value);
+  const market = MARKET_OPTIONS.find((m) => overlap(m.industry_focus, uc.industry_focus).length > 0);
+  return { building: building?.value, needs, market: market?.value };
+};

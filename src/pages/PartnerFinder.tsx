@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Building2, ChevronRight, Loader2 } from 'lucide-react';
 import { SOLUTION_LAYERS } from '@/lib/haiFramework';
 
@@ -8,11 +8,12 @@ import ARBackground from '@/components/ARBackground';
 import PartnerFinderWidget from '@/components/directory/PartnerFinderWidget';
 import { useSeo } from '@/hooks/useSeo';
 import { useXRCompanies } from '@/hooks/useXRCompanies';
-import { useHAIUseCases } from '@/hooks/useHAIUseCases';
+import { useHAIUseCases, useHAIUseCase } from '@/hooks/useHAIUseCases';
 import {
   findPartnerMatches,
   PartnerQuery,
   PartnerRecommendation,
+  partnerQueryForUseCase,
 } from '@/lib/partnerFinder';
 import { trackPageView, trackEvent } from '@/lib/analytics';
 
@@ -69,10 +70,23 @@ const ResultCard = ({ match }: { match: PartnerRecommendation }) => {
 };
 
 const PartnerFinder = () => {
+  const [searchParams] = useSearchParams();
+  const useCaseSlug = searchParams.get('useCase') || undefined;
   const [query, setQuery] = useState<PartnerQuery | null>(null);
 
   const { data: companies, isLoading } = useXRCompanies({});
   const { data: useCases } = useHAIUseCases();
+  const { data: seedUseCase } = useHAIUseCase(useCaseSlug);
+
+  // Arriving from a use case: pre-populate the widget and run the search.
+  const initial = useMemo(
+    () => (seedUseCase ? partnerQueryForUseCase(seedUseCase) : undefined),
+    [seedUseCase]
+  );
+
+  useEffect(() => {
+    if (initial) setQuery(initial);
+  }, [initial]);
 
   useSeo({
     title: 'Partner Finder — Find Your Human + AI Partners | Asentio',
@@ -138,13 +152,15 @@ const PartnerFinder = () => {
           <div className="w-12 h-1 bg-asentio-red mb-4" />
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Partner Finder</h1>
           <p className="text-base text-white/70 max-w-2xl">
-            Who should you partner with to build your Human + AI solution?
+            {seedUseCase
+              ? `Partners who can help you deliver ${seedUseCase.name}.`
+              : 'Who should you partner with to build your Human + AI solution?'}
           </p>
         </div>
       </section>
 
       <section className="container mx-auto px-4 md:px-6 -mt-6 relative z-20 max-w-7xl">
-        <PartnerFinderWidget onSubmit={handleSubmit} onReset={() => setQuery(null)} />
+        <PartnerFinderWidget onSubmit={handleSubmit} onReset={() => setQuery(null)} initial={initial} />
       </section>
 
       <section className="container mx-auto px-4 md:px-6 py-12 max-w-7xl">

@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Building2, ChevronRight, Loader2 } from 'lucide-react';
-import { SOLUTION_LAYERS } from '@/lib/haiFramework';
+import { ArrowLeft, ArrowRight, Building2, ChevronRight, Loader2, Sparkles } from 'lucide-react';
+import {
+  SOLUTION_LAYERS,
+  haiActivityLabel,
+  haiAICapabilityLabel,
+  haiCapabilityLabel,
+  haiInterfaceLabel,
+} from '@/lib/haiFramework';
+import { Button } from '@/components/ui/button';
+import { useXRProducts } from '@/hooks/useXRProducts';
 import TopographicPattern from '@/components/TopographicPattern';
 import ARBackground from '@/components/ARBackground';
 import { useSeo } from '@/hooks/useSeo';
@@ -90,6 +98,12 @@ const HAIUseCaseResults = () => {
 
   const results = useMemo(() => companiesForUseCase(companies, useCase), [companies, useCase]);
 
+  const { data: allProducts } = useXRProducts({});
+  const products = useMemo(() => {
+    const names = new Set(results.slice(0, 20).map((r) => r.item.name.toLowerCase()));
+    return (allProducts || []).filter((p) => names.has((p.company || '').toLowerCase())).slice(0, 6);
+  }, [allProducts, results]);
+
   const groups = useMemo(() => {
     const layers = SOLUTION_LAYERS.map((l) => ({
       label: l.label,
@@ -140,6 +154,112 @@ const HAIUseCaseResults = () => {
           </div>
         </div>
       </section>
+
+
+      {/* How this use case works — the framework, told as a story */}
+      {useCase && (
+        <section className="container mx-auto px-4 md:px-6 pt-12 max-w-7xl">
+          <div className="rounded-2xl border border-border bg-card/40 p-6 md:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                  What the person is accomplishing
+                </p>
+                <ul className="space-y-1 text-sm text-foreground">
+                  {(useCase.human_activities || []).map((v) => (
+                    <li key={v}>{haiActivityLabel(v)}</li>
+                  ))}
+                  {(useCase.human_activities || []).length === 0 && (
+                    <li className="text-muted-foreground">Not yet mapped</li>
+                  )}
+                </ul>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                  How AI helps the human
+                </p>
+                <ul className="space-y-1 text-sm text-foreground">
+                  {(useCase.human_capabilities || []).map((v) => (
+                    <li key={v}>{haiCapabilityLabel(v)}</li>
+                  ))}
+                  {(useCase.human_capabilities || []).length === 0 && (
+                    <li className="text-muted-foreground">Not yet mapped</li>
+                  )}
+                </ul>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                  AI capabilities required
+                </p>
+                <ul className="space-y-1 text-sm text-foreground">
+                  {(useCase.ai_capabilities || []).map((v) => (
+                    <li key={v}>{haiAICapabilityLabel(v)}</li>
+                  ))}
+                  {(useCase.ai_capabilities || []).length === 0 && (
+                    <li className="text-muted-foreground">Not yet mapped</li>
+                  )}
+                </ul>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                  Best interfaces
+                </p>
+                <ul className="space-y-1 text-sm text-foreground">
+                  {(useCase.human_interface || []).map((v) => (
+                    <li key={v}>{haiInterfaceLabel(v)}</li>
+                  ))}
+                  {(useCase.human_interface || []).length === 0 && (
+                    <li className="text-muted-foreground">Not yet mapped</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+
+            {useCase.description && (
+              <p className="mt-6 pt-6 border-t border-border text-sm text-muted-foreground leading-relaxed">
+                {useCase.description}
+              </p>
+            )}
+
+            <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <p className="text-sm text-muted-foreground">
+                Building this? See which companies complete the stack around you.
+              </p>
+              <Button asChild className="bg-asentio-red hover:bg-asentio-red/90 text-white">
+                <Link to={`/hai-directory/partner-finder?useCase=${useCase.slug}`}>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Find Partners for This Use Case
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Relevant products */}
+      {products.length > 0 && (
+        <section className="container mx-auto px-4 md:px-6 pt-12 max-w-7xl">
+          <div className="w-12 h-1 bg-asentio-red mb-4" />
+          <h2 className="text-2xl font-bold text-foreground mb-1">Relevant products</h2>
+          <p className="text-muted-foreground mb-6">Shipping products from companies enabling this use case.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {products.map((p) => (
+              <Link
+                key={p.id}
+                to={`/hai-directory/${p.slug}`}
+                className="rounded-2xl border border-border bg-card p-5 transition-all hover:border-asentio-red/40 hover:shadow-md"
+              >
+                <p className="text-xs text-muted-foreground">{p.company}</p>
+                <h3 className="font-semibold text-foreground">{p.name}</h3>
+                {p.description && (
+                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{p.description}</p>
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="container mx-auto px-4 md:px-6 py-12 max-w-7xl">
         {isLoading ? (
