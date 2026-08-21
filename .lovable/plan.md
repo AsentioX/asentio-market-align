@@ -41,7 +41,7 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 1. What's Last Been Said — activity summaries + paste/upload import for notes (e.g. Granola)
 2. Stakeholders / Contacts
 3. Actionable Tasks — checklist, due dates, Google Tasks sync, "spawn as card"
-4. Project Overview & Milestones — goals + document links
+4. Project Overview & Milestones — goals plus a **Linked Documents** list: paste any Google Docs / Sheets / Slides / Drive URL to attach it. Each link auto-detects its type, shows the right icon, an editable label, who added it, and opens in a new tab. Links can also be attached to an individual task from the Actionable Tasks tab.
 5. Prioritization Logic — plain-language explanation of the X/Y/Z placement
 6. Schedule & Calendar — due dates, linked events, checkpoints
 
