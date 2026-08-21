@@ -60,6 +60,7 @@ export interface TdzStakeholder {
   email: string | null;
   avatar_url: string | null;
   notes: string | null;
+  contact_id: string | null;
 }
 
 export interface TdzDocument {
