@@ -197,6 +197,73 @@ export const useToDoooZ = (userId: string | undefined) => {
     await supabase.from('tdz_documents').delete().eq('id', id);
   }, []);
 
+  const createContact = useCallback(
+    async (payload: Partial<TdzContact>) => {
+      if (!userId) return null;
+      const { data, error } = await supabase
+        .from('tdz_contacts')
+        .insert({ user_id: userId, name: payload.name?.trim() || 'Unnamed', ...payload } as never)
+        .select()
+        .single();
+      if (error) {
+        toast.error(error.message);
+        return null;
+      }
+      setContacts((prev) => [...prev, data as TdzContact]);
+      return data as TdzContact;
+    },
+    [userId],
+  );
+
+  const updateContact = useCallback(async (id: string, patch: Partial<TdzContact>) => {
+    setContacts((prev) => prev.map((c) => (c.id === id ? { ...c, ...(patch as TdzContact) } : c)));
+    const { error } = await supabase.from('tdz_contacts').update(patch).eq('id', id);
+    if (error) toast.error(error.message);
+  }, []);
+
+  const deleteContact = useCallback(async (id: string) => {
+    setContacts((prev) => prev.filter((c) => c.id !== id));
+    const { error } = await supabase.from('tdz_contacts').delete().eq('id', id);
+    if (error) toast.error(error.message);
+  }, []);
+
+  const syncContacts = useCallback(
+    async (slot: TdzAccountSlot) => {
+      if (!userId) return;
+      const res = await syncGoogleContacts(userId, slot, contacts);
+      const { data } = await supabase.from('tdz_contacts').select('*').order('name');
+      setContacts((data ?? []) as TdzContact[]);
+      toast.success(`${slot} Google contacts synced — ${res.added} new, ${res.updated} updated`);
+    },
+    [userId, contacts],
+  );
+
+  const linkContactToCard = useCallback(
+    async (projectId: string, contact: TdzContact, role?: string | null) => {
+      if (!userId) return;
+      if (stakeholders.some((s) => s.project_id === projectId && s.contact_id === contact.id)) {
+        toast.info(`${contact.name} is already on this card`);
+        return;
+      }
+      const { data, error } = await supabase
+        .from('tdz_stakeholders')
+        .insert({
+          user_id: userId,
+          project_id: projectId,
+          contact_id: contact.id,
+          name: contact.name,
+          role: role ?? contact.job_title ?? null,
+          email: contact.email,
+          avatar_url: contact.avatar_url,
+        } as never)
+        .select()
+        .single();
+      if (error) return toast.error(error.message);
+      setStakeholders((prev) => [...prev, data as TdzStakeholder]);
+    },
+    [userId, stakeholders],
+  );
+
   return {
     loading,
     cards,
@@ -206,6 +273,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     stakeholders,
     documents,
     connections,
+    contacts,
     cardById,
     childrenOf,
     reload: load,
@@ -222,6 +290,12 @@ export const useToDoooZ = (userId: string | undefined) => {
     addDocument,
     updateDocument,
     removeDocument,
+    createContact,
+    updateContact,
+    deleteContact,
+    syncContacts,
+    linkContactToCard,
     setConnections,
   };
 };
+
