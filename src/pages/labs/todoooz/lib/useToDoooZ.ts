@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { syncGoogleContacts } from './contacts';
+import { authorizeGoogleAccount } from './gis';
 import {
   GoogleAuthNeeded,
   designateAccount,
@@ -243,7 +244,8 @@ export const useToDoooZ = (userId: string | undefined) => {
     async (slot: TdzAccountSlot) => {
       if (!userId) return;
       try {
-        const res = await syncGoogleContacts(userId, slot, contacts);
+        const email = connections.find((c) => c.account_slot === slot)?.account_email;
+        const res = await syncGoogleContacts(userId, slot, contacts, email);
         const { data } = await supabase.from('tdz_contacts').select('*').order('name');
         setContacts((data ?? []) as TdzContact[]);
         toast.success(`${slot} Google contacts imported — ${res.added} new, ${res.updated} updated`);
@@ -251,24 +253,37 @@ export const useToDoooZ = (userId: string | undefined) => {
         handleGoogleError(err);
       }
     },
-    [userId, contacts, handleGoogleError],
+    [userId, contacts, connections, handleGoogleError],
   );
 
   const syncCalendar = useCallback(
     async (slot: TdzAccountSlot) => {
       if (!userId) return;
       try {
-        const count = await importGoogleCalendar(userId, slot);
+        const email = connections.find((c) => c.account_slot === slot)?.account_email;
+        const count = await importGoogleCalendar(userId, slot, email);
         await load();
         toast.success(`${slot} calendar imported — ${count} events`);
       } catch (err) {
         handleGoogleError(err);
       }
     },
-    [userId, load, handleGoogleError],
+    [userId, load, connections, handleGoogleError],
   );
 
   const googleIdentities = useCallback(async (): Promise<GoogleIdentity[]> => listGoogleIdentities(), []);
+
+  /** Authorise an additional Google account (e.g. a personal one) via Google's picker. */
+  const addGoogleAccount = useCallback(async (): Promise<GoogleIdentity | null> => {
+    try {
+      const identity = await authorizeGoogleAccount();
+      toast.success(`${identity.email} authorised`);
+      return identity;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not authorise that Google account');
+      return null;
+    }
+  }, []);
 
   const setAccountSlot = useCallback(
     async (slot: TdzAccountSlot, identity: GoogleIdentity) => {
@@ -360,6 +375,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     syncContacts,
     syncCalendar,
     googleIdentities,
+    addGoogleAccount,
     setAccountSlot,
     removeAccount,
     swapAccounts,

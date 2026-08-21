@@ -9,6 +9,8 @@ import type { TdzAccountSlot } from './types';
  * the browsing session. No token is ever written to the database.
  */
 const TOKEN_KEY = 'tdz.google.provider_token';
+const ACCOUNT_TOKEN_KEY = 'tdz.google.tokens'; // { [email]: access_token }
+const IDENTITY_KEY = 'tdz.google.identities'; // extra accounts authorised via GIS
 
 export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/contacts.readonly',
@@ -17,6 +19,33 @@ export const GOOGLE_SCOPES = [
 
 export const rememberProviderToken = (token?: string | null) => {
   if (token) sessionStorage.setItem(TOKEN_KEY, token);
+};
+
+const readJson = <T,>(store: Storage, key: string, fallback: T): T => {
+  try {
+    return JSON.parse(store.getItem(key) ?? '') as T;
+  } catch {
+    return fallback;
+  }
+};
+
+/** Per-account access tokens obtained through the GIS account picker. */
+export const rememberAccountToken = (email: string, token: string) => {
+  const map = readJson<Record<string, string>>(sessionStorage, ACCOUNT_TOKEN_KEY, {});
+  map[email.toLowerCase()] = token;
+  sessionStorage.setItem(ACCOUNT_TOKEN_KEY, JSON.stringify(map));
+};
+
+export const forgetAccountToken = (email: string) => {
+  const map = readJson<Record<string, string>>(sessionStorage, ACCOUNT_TOKEN_KEY, {});
+  delete map[email.toLowerCase()];
+  sessionStorage.setItem(ACCOUNT_TOKEN_KEY, JSON.stringify(map));
+};
+
+export const getAccountToken = (email?: string | null): string | null => {
+  if (!email) return null;
+  const map = readJson<Record<string, string>>(sessionStorage, ACCOUNT_TOKEN_KEY, {});
+  return map[email.toLowerCase()] ?? null;
 };
 
 export const getProviderToken = async (): Promise<string | null> => {
@@ -29,19 +58,28 @@ export const getProviderToken = async (): Promise<string | null> => {
 };
 
 export class GoogleAuthNeeded extends Error {
-  constructor() {
-    super('Google access has expired. Sign in with Google again to re-authorise Contacts and Calendar.');
+  constructor(email?: string | null) {
+    super(
+      email
+        ? `Google access for ${email} has expired. Re-authorise that account from the Accounts panel.`
+        : 'Google access has expired. Re-authorise the account from the Accounts panel.',
+    );
     this.name = 'GoogleAuthNeeded';
   }
 }
 
-const gfetch = async (url: string) => {
-  const token = await getProviderToken();
-  if (!token) throw new GoogleAuthNeeded();
+/**
+ * Fetch a Google API using the token for a specific account when we have one,
+ * falling back to the Supabase session token (the account used to sign in).
+ */
+const gfetch = async (url: string, email?: string | null) => {
+  const token = getAccountToken(email) ?? (await getProviderToken());
+  if (!token) throw new GoogleAuthNeeded(email);
   const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   if (res.status === 401 || res.status === 403) {
-    sessionStorage.removeItem(TOKEN_KEY);
-    throw new GoogleAuthNeeded();
+    if (email) forgetAccountToken(email);
+    else sessionStorage.removeItem(TOKEN_KEY);
+    throw new GoogleAuthNeeded(email);
   }
   if (!res.ok) throw new Error(`Google API error (${res.status})`);
   return res.json();
@@ -78,7 +116,21 @@ export const listGoogleIdentities = async (): Promise<GoogleIdentity[]> => {
       avatar_url: d.avatar_url ?? d.picture ?? null,
     });
   }
+  // Merge in accounts authorised separately through the Google account picker.
+  const extra = readJson<GoogleIdentity[]>(localStorage, IDENTITY_KEY, []);
+  extra.forEach((e) => {
+    if (!rows.some((r) => r.email.toLowerCase() === e.email.toLowerCase())) rows.push(e);
+  });
   return rows;
+};
+
+/** Persist an extra Google identity authorised via the account picker. */
+export const rememberIdentity = (identity: GoogleIdentity) => {
+  const list = readJson<GoogleIdentity[]>(localStorage, IDENTITY_KEY, []).filter(
+    (i) => i.email.toLowerCase() !== identity.email.toLowerCase(),
+  );
+  list.push(identity);
+  localStorage.setItem(IDENTITY_KEY, JSON.stringify(list));
 };
 
 /** Assign a Google identity to the Work or Personal slot. */
@@ -155,14 +207,14 @@ interface GEvent {
   end?: { dateTime?: string; date?: string };
 }
 
-export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot) => {
+export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot, email?: string | null) => {
   const timeMin = new Date(Date.now() - 86400000).toISOString();
   const timeMax = new Date(Date.now() + 21 * 86400000).toISOString();
   const url =
     'https://www.googleapis.com/calendar/v3/calendars/primary/events' +
     `?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}` +
     '&singleEvents=true&orderBy=startTime&maxResults=250';
-  const json = (await gfetch(url)) as { items?: GEvent[] };
+  const json = (await gfetch(url, email)) as { items?: GEvent[] };
   const items = json.items ?? [];
 
   const rows = items
@@ -222,7 +274,7 @@ interface GConn {
   organizations?: { name?: string; title?: string }[];
 }
 
-export const fetchGooglePeople = async (): Promise<GooglePerson[]> => {
+export const fetchGooglePeople = async (email?: string | null): Promise<GooglePerson[]> => {
   const people: GooglePerson[] = [];
   let pageToken: string | undefined;
   do {
@@ -230,7 +282,7 @@ export const fetchGooglePeople = async (): Promise<GooglePerson[]> => {
       'https://people.googleapis.com/v1/people/me/connections' +
       '?personFields=names,emailAddresses,phoneNumbers,photos,organizations&pageSize=500' +
       (pageToken ? `&pageToken=${pageToken}` : '');
-    const json = (await gfetch(url)) as { connections?: GConn[]; nextPageToken?: string };
+    const json = (await gfetch(url, email)) as { connections?: GConn[]; nextPageToken?: string };
     (json.connections ?? []).forEach((c) => {
       const email = c.emailAddresses?.[0]?.value;
       if (!email) return;

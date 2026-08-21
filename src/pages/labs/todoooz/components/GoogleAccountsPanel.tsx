@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeftRight, Briefcase, CalendarDays, Home, Loader2, RefreshCw, Unlink, Users } from 'lucide-react';
+import { ArrowLeftRight, Briefcase, CalendarDays, Home, Loader2, Plus, RefreshCw, Unlink, Users } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,7 @@ interface Props {
   onSwap: () => Promise<void>;
   onSyncContacts: (slot: TdzAccountSlot) => Promise<void>;
   onSyncCalendar: (slot: TdzAccountSlot) => Promise<void>;
+  onAddAccount: () => Promise<GoogleIdentity | null>;
 }
 
 const SLOTS: { key: TdzAccountSlot; label: string; icon: typeof Briefcase }[] = [
@@ -33,6 +34,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
   onSwap,
   onSyncContacts,
   onSyncCalendar,
+  onAddAccount,
 }) => {
   const [identities, setIdentities] = useState<GoogleIdentity[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -85,7 +87,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
                 <div className="mt-2 space-y-1.5">
                   {identities.length === 0 && (
                     <p className="text-[11px] text-white/40">
-                      No Google account detected on this session. Sign out and continue with Google to link one.
+                      No Google account authorised yet. Use “Add Google account” below to connect one.
                     </p>
                   )}
                   {identities.map((id) => {
@@ -162,6 +164,25 @@ const GoogleAccountsPanel: React.FC<Props> = ({
               </div>
             );
           })}
+
+          <Button
+            size="sm"
+            disabled={busy === 'add'}
+            onClick={() =>
+              run('add', async () => {
+                const identity = await onAddAccount();
+                if (identity) setIdentities(await loadIdentities());
+              })
+            }
+            className="w-full bg-white/10 text-xs text-white hover:bg-white/20"
+          >
+            {busy === 'add' ? (
+              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Plus className="mr-1 h-3.5 w-3.5" />
+            )}
+            Add Google account
+          </Button>
 
           <Button
             variant="ghost"

@@ -454,6 +454,7 @@ const ToDoooZLayout: React.FC = () => {
         onSwap={tdz.swapAccounts}
         onSyncContacts={tdz.syncContacts}
         onSyncCalendar={tdz.syncCalendar}
+        onAddAccount={tdz.addGoogleAccount}
       />
 
       <ShortcutOverlay open={helpOpen} onOpenChange={setHelpOpen} />
