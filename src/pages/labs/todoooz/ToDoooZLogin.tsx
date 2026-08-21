@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Boxes } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { lovable } from '@/integrations/lovable/index';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -36,12 +38,17 @@ const ToDoooZLogin: React.FC = () => {
   };
 
   const google = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/labs/todoooz` },
+    const result = await lovable.auth.signInWithOAuth('google', {
+      redirect_uri: window.location.origin,
     });
-    if (error) toast.error(error.message);
+    if (result.error) {
+      toast.error(result.error.message ?? 'Google sign-in failed');
+      return;
+    }
+    if (result.redirected) return;
+    window.location.href = '/labs/todoooz';
   };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
