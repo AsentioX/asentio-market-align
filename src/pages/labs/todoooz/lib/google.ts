@@ -116,7 +116,21 @@ export const listGoogleIdentities = async (): Promise<GoogleIdentity[]> => {
       avatar_url: d.avatar_url ?? d.picture ?? null,
     });
   }
+  // Merge in accounts authorised separately through the Google account picker.
+  const extra = readJson<GoogleIdentity[]>(localStorage, IDENTITY_KEY, []);
+  extra.forEach((e) => {
+    if (!rows.some((r) => r.email.toLowerCase() === e.email.toLowerCase())) rows.push(e);
+  });
   return rows;
+};
+
+/** Persist an extra Google identity authorised via the account picker. */
+export const rememberIdentity = (identity: GoogleIdentity) => {
+  const list = readJson<GoogleIdentity[]>(localStorage, IDENTITY_KEY, []).filter(
+    (i) => i.email.toLowerCase() !== identity.email.toLowerCase(),
+  );
+  list.push(identity);
+  localStorage.setItem(IDENTITY_KEY, JSON.stringify(list));
 };
 
 /** Assign a Google identity to the Work or Personal slot. */
