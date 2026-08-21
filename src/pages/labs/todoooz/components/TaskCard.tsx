@@ -165,7 +165,6 @@ const TaskCard: React.FC<Props> = ({
                       {card.context_label}
                     </span>
                   )}
-                  {done}/{tasks.length || 0} tasks
                 </span>
                 <div className="flex items-center gap-2" />
 
