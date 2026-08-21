@@ -25,6 +25,7 @@ import type {
   TdzCard,
   TdzDocument,
   TdzEvent,
+  TdzContact,
   TdzStakeholder,
   TdzTask,
 } from '../lib/types';
@@ -57,6 +58,7 @@ interface Props {
   stakeholders: TdzStakeholder[];
   documents: TdzDocument[];
   events: TdzEvent[];
+  contacts: TdzContact[];
   tab: TabKey;
   onTab: (t: TabKey) => void;
   onClose: () => void;
@@ -68,6 +70,8 @@ interface Props {
     deleteTask: (id: string) => void;
     addActivity: (projectId: string, summary: string, detail?: string) => void;
     addStakeholder: (projectId: string, payload: Partial<TdzStakeholder>) => void;
+    linkContactToCard: (projectId: string, contact: TdzContact, role?: string | null) => void;
+    openContacts: () => void;
     removeStakeholder: (id: string) => void;
     addDocument: (projectId: string, url: string, title: string, type: string, taskId?: string | null) => void;
     updateDocument: (id: string, patch: Partial<TdzDocument>) => void;
@@ -87,6 +91,7 @@ const DetailDrawer: React.FC<Props> = ({
   stakeholders,
   documents,
   events,
+  contacts,
   tab,
   onTab,
   onClose,
@@ -98,6 +103,7 @@ const DetailDrawer: React.FC<Props> = ({
   const [docTitle, setDocTitle] = useState('');
   const [personName, setPersonName] = useState('');
   const [personRole, setPersonRole] = useState('');
+  const [contactQuery, setContactQuery] = useState('');
 
   const theme = card ? resolveTheme(card, parent) : null;
   const linkedEvents = useMemo(
@@ -216,6 +222,47 @@ const DetailDrawer: React.FC<Props> = ({
           </TabsContent>
 
           <TabsContent value="people" className="space-y-3 pt-4">
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-wide text-white/40">Link from contacts</span>
+                <button onClick={api.openContacts} className="text-[11px] text-indigo-300 hover:text-indigo-200">
+                  Manage contacts
+                </button>
+              </div>
+              <Input
+                value={contactQuery}
+                onChange={(e) => setContactQuery(e.target.value)}
+                placeholder="Search your master contacts…"
+                className="mt-2 border-white/10 bg-white/5 text-sm"
+              />
+              {contactQuery.trim() && (
+                <ul className="mt-2 max-h-44 space-y-1 overflow-y-auto">
+                  {contacts
+                    .filter((c) =>
+                      [c.name, c.email, c.company, c.job_title]
+                        .filter(Boolean)
+                        .some((v) => String(v).toLowerCase().includes(contactQuery.trim().toLowerCase())),
+                    )
+                    .slice(0, 8)
+                    .map((c) => (
+                      <li key={c.id}>
+                        <button
+                          onClick={() => {
+                            api.linkContactToCard(card.id, c);
+                            setContactQuery('');
+                          }}
+                          className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-xs text-white/80 hover:bg-white/10"
+                        >
+                          <span>{c.name}</span>
+                          <span className="text-[10px] text-white/40">
+                            {[c.job_title, c.company].filter(Boolean).join(' · ') || c.email}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
             <div className="flex gap-2">
               <Input
                 value={personName}
