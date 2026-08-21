@@ -4216,6 +4216,349 @@ export type Database = {
         }
         Relationships: []
       }
+      tdz_activity_logs: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          occurred_at: string
+          project_id: string
+          source: string
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          occurred_at?: string
+          project_id: string
+          source?: string
+          summary: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          occurred_at?: string
+          project_id?: string
+          source?: string
+          summary?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tdz_activity_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tdz_calendar_events: {
+        Row: {
+          account_slot: string
+          all_day: boolean
+          created_at: string
+          ends_at: string
+          google_event_id: string | null
+          id: string
+          location: string | null
+          meeting_link: string | null
+          project_id: string | null
+          starts_at: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          account_slot?: string
+          all_day?: boolean
+          created_at?: string
+          ends_at: string
+          google_event_id?: string | null
+          id?: string
+          location?: string | null
+          meeting_link?: string | null
+          project_id?: string | null
+          starts_at: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          account_slot?: string
+          all_day?: boolean
+          created_at?: string
+          ends_at?: string
+          google_event_id?: string | null
+          id?: string
+          location?: string | null
+          meeting_link?: string | null
+          project_id?: string | null
+          starts_at?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tdz_calendar_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tdz_documents: {
+        Row: {
+          added_at: string
+          doc_type: string
+          id: string
+          project_id: string
+          task_id: string | null
+          title: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          doc_type?: string
+          id?: string
+          project_id: string
+          task_id?: string | null
+          title: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          doc_type?: string
+          id?: string
+          project_id?: string
+          task_id?: string | null
+          title?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tdz_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tdz_documents_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tdz_google_connections: {
+        Row: {
+          account_email: string | null
+          account_slot: string
+          created_at: string
+          id: string
+          last_synced_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          account_email?: string | null
+          account_slot: string
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          account_email?: string | null
+          account_slot?: string
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tdz_projects: {
+        Row: {
+          collapsed: boolean
+          color_theme: string | null
+          context_label: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          grouping_key: string | null
+          id: string
+          last_activity_at: string
+          mode: string
+          parent_id: string | null
+          priority: string
+          progress: number
+          sort_order: number
+          status: string
+          time_bucket: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          collapsed?: boolean
+          color_theme?: string | null
+          context_label?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          grouping_key?: string | null
+          id?: string
+          last_activity_at?: string
+          mode?: string
+          parent_id?: string | null
+          priority?: string
+          progress?: number
+          sort_order?: number
+          status?: string
+          time_bucket?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          collapsed?: boolean
+          color_theme?: string | null
+          context_label?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          grouping_key?: string | null
+          id?: string
+          last_activity_at?: string
+          mode?: string
+          parent_id?: string | null
+          priority?: string
+          progress?: number
+          sort_order?: number
+          status?: string
+          time_bucket?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tdz_projects_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tdz_stakeholders: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          project_id: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          project_id: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          project_id?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tdz_stakeholders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tdz_tasks: {
+        Row: {
+          account_slot: string | null
+          created_at: string
+          done: boolean
+          due_date: string | null
+          google_task_id: string | null
+          id: string
+          notes: string | null
+          project_id: string
+          rank: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_slot?: string | null
+          created_at?: string
+          done?: boolean
+          due_date?: string | null
+          google_task_id?: string | null
+          id?: string
+          notes?: string | null
+          project_id: string
+          rank?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_slot?: string | null
+          created_at?: string
+          done?: boolean
+          due_date?: string | null
+          google_task_id?: string | null
+          id?: string
+          notes?: string | null
+          project_id?: string
+          rank?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tdz_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wobuddy_achievements: {
         Row: {
           created_at: string
