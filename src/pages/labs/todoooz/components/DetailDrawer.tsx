@@ -445,13 +445,6 @@ const DetailDrawer: React.FC<Props> = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="logic" className="space-y-2 pt-4">
-            {explainPlacement(card).map((line) => (
-              <p key={line} className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-white/70">
-                {line}
-              </p>
-            ))}
-          </TabsContent>
 
           <TabsContent value="schedule" className="space-y-3 pt-4">
             <label className="block text-xs text-white/50">
