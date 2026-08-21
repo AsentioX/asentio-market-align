@@ -140,12 +140,6 @@ const TaskCard: React.FC<Props> = ({
                   {card.context_label}
                 </span>
               )}
-              <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-                style={{ background: `hsl(${priority.hsl} / 0.18)`, color: `hsl(${priority.hsl})` }}
-              >
-                {priority.key === 'core' ? 'Core' : priority.label}
-              </span>
             </div>
           </div>
 
