@@ -15,7 +15,7 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 - Grouping switcher: By Project / By Client-Category / By Topic
 - Environment switcher: AR Passthrough (pure `#000000`), Slate Dark, 360° Studio
 - Cmd+K global search scoped to the active mode
-- Profile menu with Google sync status indicator
+- Profile menu with two Google account slots (Work / Personal), each showing the connected email, sync status, and Connect / Reconnect / Disconnect actions
 
 ### 3D spatial matrix
 - X columns: Today / This Week / This Month / Backlog
