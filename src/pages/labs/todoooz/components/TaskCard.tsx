@@ -114,55 +114,83 @@ const TaskCard: React.FC<Props> = ({
               >
                 {priority.key === 'core' ? 'Core' : priority.label}
               </span>
+              <button
+                type="button"
+                title="View details"
+                aria-label="View details"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpen();
+                }}
+                className="shrink-0 rounded p-0.5 text-white/45 hover:bg-white/10 hover:text-white"
+              >
+                <Eye className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                title={expanded ? 'Minimize card' : 'Expand card'}
+                aria-label={expanded ? 'Minimize card' : 'Expand card'}
+                aria-expanded={expanded}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded((v) => !v);
+                }}
+                className="shrink-0 rounded p-0.5 text-white/45 hover:bg-white/10 hover:text-white"
+              >
+                {expanded ? <ChevronsDownUp className="h-3.5 w-3.5" /> : <ChevronsUpDown className="h-3.5 w-3.5" />}
+              </button>
             </div>
             <h4 className="line-clamp-2 text-sm font-semibold leading-snug text-white">{card.title}</h4>
           </div>
 
+          {expanded && (
+            <>
+              {top.length > 0 && (
+                <ul className="mb-2 space-y-1">
+                  {top.map((t) => (
+                    <li key={t.id} className="flex items-center gap-2 text-xs text-white/70">
+                      <input
+                        type="checkbox"
+                        checked={t.done}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={() => onToggleTask(t)}
+                        className="h-3.5 w-3.5 shrink-0 rounded border-white/30 bg-transparent accent-[hsl(var(--tdz-accent))]"
+                      />
+                      <span className={cn('truncate', t.done && 'text-white/35 line-through')}>{t.title}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-          {top.length > 0 && (
-            <ul className="mb-2 space-y-1">
-              {top.map((t) => (
-                <li key={t.id} className="flex items-center gap-2 text-xs text-white/70">
-                  <input
-                    type="checkbox"
-                    checked={t.done}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => onToggleTask(t)}
-                    className="h-3.5 w-3.5 shrink-0 rounded border-white/30 bg-transparent accent-[hsl(var(--tdz-accent))]"
-                  />
-                  <span className={cn('truncate', t.done && 'text-white/35 line-through')}>{t.title}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+              <Progress value={pct} className="h-1 bg-white/10" />
 
-          <Progress value={pct} className="h-1 bg-white/10" />
-
-          <div className="mt-2 flex items-center justify-between text-[10px] text-white/45">
-            <span>
-              {done}/{tasks.length || 0} tasks
-            </span>
-            <div className="flex items-center gap-2">
-              {card.due_date && (
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {new Date(card.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              <div className="mt-2 flex items-center justify-between text-[10px] text-white/45">
+                <span>
+                  {done}/{tasks.length || 0} tasks
                 </span>
-              )}
-              {childCount > 0 && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleCollapse();
-                  }}
-                  className="flex items-center gap-1 rounded px-1 py-0.5 hover:bg-white/10 hover:text-white"
-                >
-                  {card.collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                  {childCount} sub-task{childCount === 1 ? '' : 's'} · {childDone} done
-                </button>
-              )}
-            </div>
-          </div>
+                <div className="flex items-center gap-2">
+                  {card.due_date && (
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {new Date(card.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                    </span>
+                  )}
+                  {childCount > 0 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleCollapse();
+                      }}
+                      className="flex items-center gap-1 rounded px-1 py-0.5 hover:bg-white/10 hover:text-white"
+                    >
+                      {card.collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                      {childCount} sub-task{childCount === 1 ? '' : 's'} · {childDone} done
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </ContextMenuTrigger>
 
