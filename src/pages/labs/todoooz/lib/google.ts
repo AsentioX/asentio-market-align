@@ -9,6 +9,8 @@ import type { TdzAccountSlot } from './types';
  * the browsing session. No token is ever written to the database.
  */
 const TOKEN_KEY = 'tdz.google.provider_token';
+const ACCOUNT_TOKEN_KEY = 'tdz.google.tokens'; // { [email]: access_token }
+const IDENTITY_KEY = 'tdz.google.identities'; // extra accounts authorised via GIS
 
 export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/contacts.readonly',
@@ -17,6 +19,33 @@ export const GOOGLE_SCOPES = [
 
 export const rememberProviderToken = (token?: string | null) => {
   if (token) sessionStorage.setItem(TOKEN_KEY, token);
+};
+
+const readJson = <T,>(store: Storage, key: string, fallback: T): T => {
+  try {
+    return JSON.parse(store.getItem(key) ?? '') as T;
+  } catch {
+    return fallback;
+  }
+};
+
+/** Per-account access tokens obtained through the GIS account picker. */
+export const rememberAccountToken = (email: string, token: string) => {
+  const map = readJson<Record<string, string>>(sessionStorage, ACCOUNT_TOKEN_KEY, {});
+  map[email.toLowerCase()] = token;
+  sessionStorage.setItem(ACCOUNT_TOKEN_KEY, JSON.stringify(map));
+};
+
+export const forgetAccountToken = (email: string) => {
+  const map = readJson<Record<string, string>>(sessionStorage, ACCOUNT_TOKEN_KEY, {});
+  delete map[email.toLowerCase()];
+  sessionStorage.setItem(ACCOUNT_TOKEN_KEY, JSON.stringify(map));
+};
+
+export const getAccountToken = (email?: string | null): string | null => {
+  if (!email) return null;
+  const map = readJson<Record<string, string>>(sessionStorage, ACCOUNT_TOKEN_KEY, {});
+  return map[email.toLowerCase()] ?? null;
 };
 
 export const getProviderToken = async (): Promise<string | null> => {
@@ -29,19 +58,28 @@ export const getProviderToken = async (): Promise<string | null> => {
 };
 
 export class GoogleAuthNeeded extends Error {
-  constructor() {
-    super('Google access has expired. Sign in with Google again to re-authorise Contacts and Calendar.');
+  constructor(email?: string | null) {
+    super(
+      email
+        ? `Google access for ${email} has expired. Re-authorise that account from the Accounts panel.`
+        : 'Google access has expired. Re-authorise the account from the Accounts panel.',
+    );
     this.name = 'GoogleAuthNeeded';
   }
 }
 
-const gfetch = async (url: string) => {
-  const token = await getProviderToken();
-  if (!token) throw new GoogleAuthNeeded();
+/**
+ * Fetch a Google API using the token for a specific account when we have one,
+ * falling back to the Supabase session token (the account used to sign in).
+ */
+const gfetch = async (url: string, email?: string | null) => {
+  const token = getAccountToken(email) ?? (await getProviderToken());
+  if (!token) throw new GoogleAuthNeeded(email);
   const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   if (res.status === 401 || res.status === 403) {
-    sessionStorage.removeItem(TOKEN_KEY);
-    throw new GoogleAuthNeeded();
+    if (email) forgetAccountToken(email);
+    else sessionStorage.removeItem(TOKEN_KEY);
+    throw new GoogleAuthNeeded(email);
   }
   if (!res.ok) throw new Error(`Google API error (${res.status})`);
   return res.json();
