@@ -179,12 +179,11 @@ const DetailDrawer: React.FC<Props> = ({
         </SheetHeader>
 
         <Tabs value={tab} onValueChange={(v) => onTab(v as TabKey)} className="mt-4">
-          <TabsList className="grid w-full grid-cols-6 bg-white/5 text-[10px]">
+          <TabsList className="grid w-full grid-cols-5 bg-white/5 text-[10px]">
             <TabsTrigger value="said">Timeline</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="logic">Logic</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
           </TabsList>
 
