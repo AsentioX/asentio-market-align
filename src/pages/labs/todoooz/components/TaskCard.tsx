@@ -96,42 +96,44 @@ const TaskCard: React.FC<Props> = ({
             />
           )}
 
-          {isChild && parent && (
-            <div className="mb-1 flex items-center gap-1 text-[10px] text-white/45">
-              <CornerDownRight className="h-3 w-3" />
-              <span className="truncate">{parent.title}</span>
-            </div>
-          )}
+          <div className="mb-1 flex items-center gap-1">
+            {isChild && parent ? (
+              <div className="flex min-w-0 flex-1 items-center gap-1 text-[10px] text-white/45">
+                <CornerDownRight className="h-3 w-3 shrink-0" />
+                <span className="truncate">{parent.title}</span>
+              </div>
+            ) : (
+              <span className="flex-1" />
+            )}
+            <button
+              type="button"
+              title="View details"
+              aria-label="View details"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen();
+              }}
+              className="shrink-0 rounded p-0.5 text-white/45 hover:bg-white/10 hover:text-white"
+            >
+              <Eye className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              title={expanded ? 'Minimize card' : 'Expand card'}
+              aria-label={expanded ? 'Minimize card' : 'Expand card'}
+              aria-expanded={expanded}
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded((v) => !v);
+              }}
+              className="shrink-0 rounded p-0.5 text-white/45 hover:bg-white/10 hover:text-white"
+            >
+              {expanded ? <ChevronsDownUp className="h-3.5 w-3.5" /> : <ChevronsUpDown className="h-3.5 w-3.5" />}
+            </button>
+          </div>
 
           <div className="mb-1.5">
-            <div className="mb-1 flex items-start gap-1">
-              <h4 className="line-clamp-2 flex-1 text-sm font-semibold leading-snug text-white">{card.title}</h4>
-              <button
-                type="button"
-                title="View details"
-                aria-label="View details"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpen();
-                }}
-                className="shrink-0 rounded p-0.5 text-white/45 hover:bg-white/10 hover:text-white"
-              >
-                <Eye className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                title={expanded ? 'Minimize card' : 'Expand card'}
-                aria-label={expanded ? 'Minimize card' : 'Expand card'}
-                aria-expanded={expanded}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpanded((v) => !v);
-                }}
-                className="shrink-0 rounded p-0.5 text-white/45 hover:bg-white/10 hover:text-white"
-              >
-                {expanded ? <ChevronsDownUp className="h-3.5 w-3.5" /> : <ChevronsUpDown className="h-3.5 w-3.5" />}
-              </button>
-            </div>
+            <h4 className="mb-1 line-clamp-2 text-sm font-semibold leading-snug text-white">{card.title}</h4>
             <div className="flex flex-wrap items-center gap-1">
               {card.context_label && (
                 <span className="inline-block rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
