@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Building2, Bot, Camera, Wine } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, Briefcase, Brain, Gamepad2, HeartPulse, FlaskConical, Music, Scale, Wallet, Car, Waves, Eye, MapPin, HardHat, Sparkles, Leaf, ShieldCheck, Building2, Bot, Camera, Wine, Boxes } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LabApp {
@@ -67,6 +67,14 @@ const labApps: LabApp[] = [
     status: 'beta',
     tags: ['Automotive', 'AI', 'Luxury'],
     link: '/labs/tastudio',
+  },
+  {
+    name: 'ToDoooZ',
+    description: 'Spatial productivity. A 3D task matrix, an AI Chief of Staff, dual Google calendars, and AR passthrough for headsets.',
+    icon: <Boxes className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Spatial', 'Productivity', 'AR'],
+    link: '/labs/todoooz',
   },
   {
     name: 'RowWindow',
