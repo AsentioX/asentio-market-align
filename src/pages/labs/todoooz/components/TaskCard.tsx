@@ -100,22 +100,23 @@ const TaskCard: React.FC<Props> = ({
             </div>
           )}
 
-          <div className="mb-1.5 flex items-start justify-between gap-2">
-            <div className="min-w-0">
+          <div className="mb-1.5">
+            <div className="mb-1 flex flex-wrap items-center gap-1">
               {card.context_label && (
-                <span className="mb-1 inline-block rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
+                <span className="inline-block rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
                   {card.context_label}
                 </span>
               )}
-              <h4 className="truncate text-sm font-semibold text-white">{card.title}</h4>
+              <span
+                className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
+                style={{ background: `hsl(${priority.hsl} / 0.18)`, color: `hsl(${priority.hsl})` }}
+              >
+                {priority.key === 'core' ? 'Core' : priority.label}
+              </span>
             </div>
-            <span
-              className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-              style={{ background: `hsl(${priority.hsl} / 0.18)`, color: `hsl(${priority.hsl})` }}
-            >
-              {priority.label}
-            </span>
+            <h4 className="line-clamp-2 text-sm font-semibold leading-snug text-white">{card.title}</h4>
           </div>
+
 
           {top.length > 0 && (
             <ul className="mb-2 space-y-1">
