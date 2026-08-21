@@ -60,14 +60,17 @@ const ToDoooZLayout: React.FC = () => {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
+      rememberProviderToken(s?.provider_token);
       setAuthReady(true);
     });
     supabase.auth.getSession().then(({ data: d }) => {
       setSession(d.session);
+      rememberProviderToken(d.session?.provider_token);
       setAuthReady(true);
     });
     return () => data.subscription.unsubscribe();
   }, []);
+
 
   const userId = session?.user?.id;
   const tdz = useToDoooZ(userId);
@@ -250,6 +253,16 @@ const ToDoooZLayout: React.FC = () => {
           <Users className="mr-1 h-3.5 w-3.5" /> Contacts
         </Button>
 
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setAccountsOpen(true)}
+          className="text-white/50 hover:text-white"
+        >
+          <Briefcase className="mr-1 h-3.5 w-3.5" /> Accounts
+        </Button>
+
+
         <Button variant="ghost" size="sm" onClick={() => setHelpOpen(true)} className="text-white/50 hover:text-white">
           <Command className="mr-1 h-3.5 w-3.5" /> Shortcuts
         </Button>
@@ -302,7 +315,29 @@ const ToDoooZLayout: React.FC = () => {
             <div className="flex h-64 items-center justify-center text-white/40">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
+          ) : tdz.cards.length === 0 ? (
+            <div className="mx-auto mt-16 max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center">
+              <h2 className="text-base font-semibold text-white">Your workspace is empty</h2>
+              <p className="mt-1 text-xs text-white/50">
+                Assign your Google accounts to Work and Personal, import your contacts and calendar, then add
+                your first card.
+              </p>
+              <div className="mt-4 flex justify-center gap-2">
+                <Button size="sm" onClick={() => setAccountsOpen(true)} className="bg-indigo-500 hover:bg-indigo-400">
+                  Set up Google accounts
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => createCard('today', 'core')}
+                  className="border-white/15 bg-transparent hover:bg-white/10"
+                >
+                  New card
+                </Button>
+              </div>
+            </div>
           ) : (
+
             <SpatialMatrix
               cards={visibleCards}
               tasks={tdz.tasks}
@@ -409,7 +444,20 @@ const ToDoooZLayout: React.FC = () => {
         }}
       />
 
+      <GoogleAccountsPanel
+        open={accountsOpen}
+        onOpenChange={setAccountsOpen}
+        connections={tdz.connections}
+        loadIdentities={tdz.googleIdentities}
+        onDesignate={tdz.setAccountSlot}
+        onRemove={tdz.removeAccount}
+        onSwap={tdz.swapAccounts}
+        onSyncContacts={tdz.syncContacts}
+        onSyncCalendar={tdz.syncCalendar}
+      />
+
       <ShortcutOverlay open={helpOpen} onOpenChange={setHelpOpen} />
+
     </div>
   );
 };
