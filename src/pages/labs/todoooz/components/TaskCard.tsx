@@ -102,18 +102,8 @@ const TaskCard: React.FC<Props> = ({
           )}
 
           <div className="mb-1.5">
-            <div className="mb-1 flex flex-wrap items-center gap-1">
-              {card.context_label && (
-                <span className="inline-block rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
-                  {card.context_label}
-                </span>
-              )}
-              <span
-                className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-                style={{ background: `hsl(${priority.hsl} / 0.18)`, color: `hsl(${priority.hsl})` }}
-              >
-                {priority.key === 'core' ? 'Core' : priority.label}
-              </span>
+            <div className="mb-1 flex items-start gap-1">
+              <h4 className="line-clamp-2 flex-1 text-sm font-semibold leading-snug text-white">{card.title}</h4>
               <button
                 type="button"
                 title="View details"
@@ -140,8 +130,21 @@ const TaskCard: React.FC<Props> = ({
                 {expanded ? <ChevronsDownUp className="h-3.5 w-3.5" /> : <ChevronsUpDown className="h-3.5 w-3.5" />}
               </button>
             </div>
-            <h4 className="line-clamp-2 text-sm font-semibold leading-snug text-white">{card.title}</h4>
+            <div className="flex flex-wrap items-center gap-1">
+              {card.context_label && (
+                <span className="inline-block rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
+                  {card.context_label}
+                </span>
+              )}
+              <span
+                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
+                style={{ background: `hsl(${priority.hsl} / 0.18)`, color: `hsl(${priority.hsl})` }}
+              >
+                {priority.key === 'core' ? 'Core' : priority.label}
+              </span>
+            </div>
           </div>
+
 
           {expanded && (
             <>

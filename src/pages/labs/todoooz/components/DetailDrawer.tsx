@@ -337,6 +337,15 @@ const DetailDrawer: React.FC<Props> = ({
           </TabsContent>
 
           <TabsContent value="overview" className="space-y-4 pt-4">
+            <div>
+              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Tag</div>
+              <Input
+                value={card.context_label ?? ''}
+                onChange={(e) => api.patchCard(card.id, { context_label: e.target.value || null })}
+                placeholder="e.g. Fundraise, Engineering, Home"
+                className="border-white/10 bg-white/5 text-sm"
+              />
+            </div>
             <Textarea
               value={card.description ?? ''}
               onChange={(e) => api.patchCard(card.id, { description: e.target.value })}
