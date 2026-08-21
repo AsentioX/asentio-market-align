@@ -11,7 +11,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import ColorSwatchRow from './ColorSwatchRow';
-import { depthStyle, depthTier, PRIORITIES } from '../lib/matrix';
+import { depthStyle, depthTier } from '../lib/matrix';
 import { resolveTheme, themeVars } from '../lib/theme';
 import type { TdzCard, TdzTask } from '../lib/types';
 
@@ -53,7 +53,6 @@ const TaskCard: React.FC<Props> = ({
   const [expanded, setExpanded] = useState(true);
   const theme = resolveTheme(card, parent);
   const tier = depthTier(card);
-  const priority = PRIORITIES.find((p) => p.key === card.priority)!;
   const top = tasks.slice(0, 3);
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : card.progress;
@@ -140,12 +139,6 @@ const TaskCard: React.FC<Props> = ({
                   {card.context_label}
                 </span>
               )}
-              <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-                style={{ background: `hsl(${priority.hsl} / 0.18)`, color: `hsl(${priority.hsl})` }}
-              >
-                {priority.key === 'core' ? 'Core' : priority.label}
-              </span>
             </div>
           </div>
 
