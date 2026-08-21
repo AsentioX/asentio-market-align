@@ -3,7 +3,7 @@
 A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal mode switching, a rules-based AI Chief of Staff, a Google Workspace calendar sidebar, and an AR passthrough theme for smart glasses.
 
 ## Decisions locked in
-- Real per-user Google OAuth (each user connects their own Google account for Calendar + Tasks)
+- Real per-user Google OAuth — each user can connect **two separate Google accounts**: one for Work, one for Personal (Calendar + Tasks on each)
 - AI Chief of Staff is rules-based (deterministic from due dates, recency, progress)
 - Z-axis depth via CSS 3D transforms (crisp text, AR-friendly)
 
