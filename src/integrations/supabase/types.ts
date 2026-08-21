@@ -4418,8 +4418,11 @@ export type Database = {
       tdz_google_connections: {
         Row: {
           account_email: string | null
+          account_name: string | null
           account_slot: string
+          avatar_url: string | null
           created_at: string
+          google_sub: string | null
           id: string
           last_synced_at: string | null
           status: string
@@ -4427,8 +4430,11 @@ export type Database = {
         }
         Insert: {
           account_email?: string | null
+          account_name?: string | null
           account_slot: string
+          avatar_url?: string | null
           created_at?: string
+          google_sub?: string | null
           id?: string
           last_synced_at?: string | null
           status?: string
@@ -4436,8 +4442,11 @@ export type Database = {
         }
         Update: {
           account_email?: string | null
+          account_name?: string | null
           account_slot?: string
+          avatar_url?: string | null
           created_at?: string
+          google_sub?: string | null
           id?: string
           last_synced_at?: string | null
           status?: string
