@@ -167,26 +167,8 @@ const TaskCard: React.FC<Props> = ({
                   )}
                   {done}/{tasks.length || 0} tasks
                 </span>
-                <div className="flex items-center gap-2">
-                  {card.due_date && (
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {new Date(card.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                    </span>
-                  )}
-                  {childCount > 0 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleCollapse();
-                      }}
-                      className="flex items-center gap-1 rounded px-1 py-0.5 hover:bg-white/10 hover:text-white"
-                    >
-                      {card.collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                      {childCount} sub-task{childCount === 1 ? '' : 's'} · {childDone} done
-                    </button>
-                  )}
-                </div>
+                <div className="flex items-center gap-2" />
+
               </div>
             </>
           )}
