@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ColorSwatchRow from './ColorSwatchRow';
-import { explainPlacement } from '../lib/matrix';
+
 import { resolveTheme } from '../lib/theme';
 import type {
   TdzActivity,
