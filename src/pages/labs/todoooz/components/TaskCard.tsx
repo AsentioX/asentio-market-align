@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronDown, ChevronRight, CornerDownRight, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronDown, ChevronRight, ChevronsDownUp, ChevronsUpDown, CornerDownRight, Clock, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import {
