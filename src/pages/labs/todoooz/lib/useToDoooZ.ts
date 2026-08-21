@@ -2,10 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { seedToDoooZ } from './seed';
+import { syncGoogleContacts } from './contacts';
 import type {
+  TdzAccountSlot,
   TdzActivity,
   TdzCard,
   TdzConnection,
+  TdzContact,
   TdzDocument,
   TdzEvent,
   TdzStakeholder,
@@ -20,11 +23,12 @@ export const useToDoooZ = (userId: string | undefined) => {
   const [stakeholders, setStakeholders] = useState<TdzStakeholder[]>([]);
   const [documents, setDocuments] = useState<TdzDocument[]>([]);
   const [connections, setConnections] = useState<TdzConnection[]>([]);
+  const [contacts, setContacts] = useState<TdzContact[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!userId) return;
-    const [c, t, e, a, s, d, g] = await Promise.all([
+    const [c, t, e, a, s, d, g, ct] = await Promise.all([
       supabase.from('tdz_projects').select('*').order('sort_order'),
       supabase.from('tdz_tasks').select('*').order('rank'),
       supabase.from('tdz_calendar_events').select('*').order('starts_at'),
@@ -32,6 +36,7 @@ export const useToDoooZ = (userId: string | undefined) => {
       supabase.from('tdz_stakeholders').select('*'),
       supabase.from('tdz_documents').select('*').order('added_at'),
       supabase.from('tdz_google_connections').select('*'),
+      supabase.from('tdz_contacts').select('*').order('name'),
     ]);
     setCards((c.data ?? []) as TdzCard[]);
     setTasks((t.data ?? []) as TdzTask[]);
@@ -40,6 +45,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     setStakeholders((s.data ?? []) as TdzStakeholder[]);
     setDocuments((d.data ?? []) as TdzDocument[]);
     setConnections((g.data ?? []) as TdzConnection[]);
+    setContacts((ct.data ?? []) as TdzContact[]);
     setLoading(false);
     return (c.data ?? []).length;
   }, [userId]);
