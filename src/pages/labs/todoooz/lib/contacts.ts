@@ -19,8 +19,9 @@ export const syncGoogleContacts = async (
   userId: string,
   slot: TdzAccountSlot,
   existing: TdzContact[],
+  email?: string | null,
 ): Promise<{ added: number; updated: number }> => {
-  const incoming = await fetchGooglePeople();
+  const incoming = await fetchGooglePeople(email);
   const byEmail = new Map(existing.filter((c) => c.email).map((c) => [c.email!.toLowerCase(), c]));
   const now = new Date().toISOString();
 

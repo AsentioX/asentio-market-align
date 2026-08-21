@@ -207,14 +207,14 @@ interface GEvent {
   end?: { dateTime?: string; date?: string };
 }
 
-export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot) => {
+export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot, email?: string | null) => {
   const timeMin = new Date(Date.now() - 86400000).toISOString();
   const timeMax = new Date(Date.now() + 21 * 86400000).toISOString();
   const url =
     'https://www.googleapis.com/calendar/v3/calendars/primary/events' +
     `?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}` +
     '&singleEvents=true&orderBy=startTime&maxResults=250';
-  const json = (await gfetch(url)) as { items?: GEvent[] };
+  const json = (await gfetch(url, email)) as { items?: GEvent[] };
   const items = json.items ?? [];
 
   const rows = items
@@ -274,7 +274,7 @@ interface GConn {
   organizations?: { name?: string; title?: string }[];
 }
 
-export const fetchGooglePeople = async (): Promise<GooglePerson[]> => {
+export const fetchGooglePeople = async (email?: string | null): Promise<GooglePerson[]> => {
   const people: GooglePerson[] = [];
   let pageToken: string | undefined;
   do {
@@ -282,7 +282,7 @@ export const fetchGooglePeople = async (): Promise<GooglePerson[]> => {
       'https://people.googleapis.com/v1/people/me/connections' +
       '?personFields=names,emailAddresses,phoneNumbers,photos,organizations&pageSize=500' +
       (pageToken ? `&pageToken=${pageToken}` : '');
-    const json = (await gfetch(url)) as { connections?: GConn[]; nextPageToken?: string };
+    const json = (await gfetch(url, email)) as { connections?: GConn[]; nextPageToken?: string };
     (json.connections ?? []).forEach((c) => {
       const email = c.emailAddresses?.[0]?.value;
       if (!email) return;
