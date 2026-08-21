@@ -61,4 +61,4 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 2. Matrix grid, cards, Z-depth, drag-to-move
 3. Detail drawer with all 6 tabs
 4. Calendar sidebar + Chief of Staff nudges
-5. Google OAuth connect + sync edge function
+5. Google OAuth connect for both account slots + sync edge function
