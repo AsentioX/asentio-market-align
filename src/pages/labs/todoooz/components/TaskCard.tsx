@@ -11,7 +11,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import ColorSwatchRow from './ColorSwatchRow';
-import { depthStyle, depthTier, PRIORITIES } from '../lib/matrix';
+import { depthStyle, depthTier } from '../lib/matrix';
 import { resolveTheme, themeVars } from '../lib/theme';
 import type { TdzCard, TdzTask } from '../lib/types';
 
