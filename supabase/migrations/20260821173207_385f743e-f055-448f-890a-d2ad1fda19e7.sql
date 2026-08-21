@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.tdz_validate_parent() FROM PUBLIC, anon, authenticated;
