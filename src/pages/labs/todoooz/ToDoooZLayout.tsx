@@ -10,6 +10,7 @@ import {
   LogOut,
   Search,
   Sparkles,
+  Users,
 } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
