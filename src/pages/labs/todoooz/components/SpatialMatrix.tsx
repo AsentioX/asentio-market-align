@@ -62,7 +62,7 @@ const SpatialMatrix: React.FC<Props> = ({
 
         {PRIORITIES.map((p) => (
           <React.Fragment key={p.key}>
-            <div className="flex items-center">
+            <div className="flex items-start">
               <div
                 className="w-full rounded-lg border px-2 py-3 text-[11px] font-semibold uppercase tracking-wide"
                 style={{
