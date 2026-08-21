@@ -30,7 +30,7 @@ import type {
   TdzTask,
 } from '../lib/types';
 
-export const TAB_KEYS = ['said', 'people', 'tasks', 'overview', 'logic', 'schedule'] as const;
+export const TAB_KEYS = ['said', 'people', 'tasks', 'overview', 'schedule'] as const;
 export type TabKey = (typeof TAB_KEYS)[number];
 
 const detectDocType = (url: string) => {
