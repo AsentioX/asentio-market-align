@@ -117,28 +117,6 @@ const DetailDrawer: React.FC<Props> = ({
         style={theme ? ({ '--tdz-accent': theme.hsl } as React.CSSProperties) : undefined}
       >
         <SheetHeader className="space-y-2 text-left">
-          {parent && (
-            <button
-              onClick={() => api.openCard(parent.id)}
-              className="flex items-center gap-1 text-xs text-white/50 hover:text-white"
-            >
-              <CornerDownRight className="h-3 w-3" /> {parent.title}
-            </button>
-          )}
-          <SheetTitle className="text-white">
-            <Input
-              value={card.title}
-              onChange={(e) => api.patchCard(card.id, { title: e.target.value })}
-              className="border-none bg-transparent p-0 text-lg font-semibold text-white focus-visible:ring-0"
-            />
-          </SheetTitle>
-          <div className="flex flex-wrap items-center gap-2">
-            <ColorSwatchRow
-              value={card.color_theme}
-              allowInherit={!!parent}
-              onChange={(key) => api.patchCard(card.id, { color_theme: key })}
-            />
-          </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <select
               value={card.parent_id ?? ''}
@@ -159,6 +137,20 @@ const DetailDrawer: React.FC<Props> = ({
                 Promote to top level
               </Button>
             )}
+          </div>
+          <SheetTitle className="text-white">
+            <Input
+              value={card.title}
+              onChange={(e) => api.patchCard(card.id, { title: e.target.value })}
+              className="border-none bg-transparent p-0 text-lg font-semibold text-white focus-visible:ring-0"
+            />
+          </SheetTitle>
+          <div className="flex flex-wrap items-center gap-2">
+            <ColorSwatchRow
+              value={card.color_theme}
+              allowInherit={!!parent}
+              onChange={(key) => api.patchCard(card.id, { color_theme: key })}
+            />
           </div>
           {children.length > 0 && (
             <div className="rounded-lg border border-white/10 bg-white/[0.03] p-2">
