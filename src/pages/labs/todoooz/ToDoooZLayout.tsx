@@ -33,7 +33,10 @@ import ChiefOfStaff from './components/ChiefOfStaff';
 import DetailDrawer, { TAB_KEYS, type TabKey } from './components/DetailDrawer';
 import ShortcutOverlay from './components/ShortcutOverlay';
 import ContactsCRM from './components/ContactsCRM';
+import GoogleAccountsPanel from './components/GoogleAccountsPanel';
 import { useToDoooZ } from './lib/useToDoooZ';
+import { rememberProviderToken } from './lib/google';
+
 import { useKeyboardNav } from './lib/useKeyboardNav';
 import { buildNudges, completionRing } from './lib/chiefOfStaff';
 import type { TdzBucket, TdzEnvironment, TdzPriority, TdzViewMode } from './lib/types';
@@ -79,6 +82,8 @@ const ToDoooZLayout: React.FC = () => {
   const [assistantOpen, setAssistantOpen] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
+  const [accountsOpen, setAccountsOpen] = useState(false);
+
   const searchRef = useRef<HTMLInputElement>(null);
 
   const visibleCards = useMemo(() => {
