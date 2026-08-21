@@ -89,9 +89,13 @@ export interface TdzConnection {
   id: string;
   account_slot: TdzAccountSlot;
   account_email: string | null;
+  account_name?: string | null;
+  avatar_url?: string | null;
+  google_sub?: string | null;
   status: string;
   last_synced_at: string | null;
 }
+
 
 export interface TdzContact {
   id: string;

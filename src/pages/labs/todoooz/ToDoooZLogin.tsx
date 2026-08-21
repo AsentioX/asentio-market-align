@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Boxes } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
+import { GOOGLE_SCOPES, rememberProviderToken } from './lib/google';
+
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,14 +42,18 @@ const ToDoooZLogin: React.FC = () => {
   const google = async () => {
     const result = await lovable.auth.signInWithOAuth('google', {
       redirect_uri: window.location.origin,
+      extraParams: { scope: `openid email profile ${GOOGLE_SCOPES}`, access_type: 'online', prompt: 'consent' },
     });
     if (result.error) {
       toast.error(result.error.message ?? 'Google sign-in failed');
       return;
     }
     if (result.redirected) return;
+    const { data } = await supabase.auth.getSession();
+    rememberProviderToken(data.session?.provider_token);
     window.location.href = '/labs/todoooz';
   };
+
 
 
   return (
