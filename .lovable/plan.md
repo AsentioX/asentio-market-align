@@ -23,10 +23,11 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 - Z depth from `last_activity_timestamp`: <1h forward + glow, <24h mid, older flat
 - Drag a card between cells to update its X/Y coordinates
 
-### Project cards
+### Project / task cards
 - Context pill, avatar/logo badge, title, priority pill
 - Top 2–3 ranked micro-tasks with working checkboxes, progress bar
 - Inline expand for up to 10 subtasks; click opens the detail drawer
+- **Parent / sub-task cards**: any card can be assigned a parent card. A sub-task card shows a "↳ Parent title" breadcrumb chip at the top and sits visually nested (indented, slightly smaller, tinted border) behind its parent in the matrix cell. Parent cards show a "N sub-tasks · M done" roll-up and a collapse toggle that hides/reveals their children in the grid. Sub-tasks can still be dragged independently to their own X/Y cell; dragging a parent moves its collapsed children with it. Completing all children prompts to complete the parent. Nesting is limited to two levels to keep the 3D grid readable.
 
 ### Calendar sidebar (320px, collapsible)
 - Filters by active mode; Agenda view and 24-hour Time view with a live now-line
@@ -45,10 +46,13 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 5. Prioritization Logic — plain-language explanation of the X/Y/Z placement
 6. Schedule & Calendar — due dates, linked events, checkpoints
 
+The drawer header shows the parent breadcrumb (when the card is a sub-task) and lists child cards with progress, plus a "Set parent" picker and "Promote to top level" action.
+
 ## Technical section
 
 - Route `/labs/todoooz` (nested tabs inside one layout), added to the nav/footer hide list, and a new Labs card entry.
 - Tables prefixed `tdz_` with RLS scoped to `auth.uid()` and explicit GRANTs: `tdz_projects`, `tdz_tasks`, `tdz_activity_logs`, `tdz_stakeholders`, `tdz_calendar_events`, `tdz_documents` (`project_id`, nullable `task_id`, `url`, `title`, `doc_type` doc/sheet/slide/drive/other, `added_at`). Fields follow the schema in the request, with `user_id` added to every table. `tdz_calendar_events` and synced tasks carry an `account_slot` ('work' | 'personal') so data from the two Google accounts stays separated and mode filtering is exact.
+- Card hierarchy: `tdz_projects` gets a self-referencing nullable `parent_id` (`references tdz_projects(id) on delete cascade`), a `sort_order`, and a `collapsed` flag. Depth is capped at 2 by a validation trigger that also blocks self/cycle references; the client fetches flat and builds the tree in memory.
 - Auth: Google sign-in via the existing Supabase auth setup, isolated to this app (own provider/guard, like WO.Buddy and PerkPath). Signing in is separate from connecting data accounts — a user can sign in once and attach two Google accounts.
 - Google data: per-user Google App User Connector (Calendar + Tasks scopes). Connection keys are stored server-side and encrypted in a `tdz_google_connections` table keyed by `(user_id, account_slot)`, so one row holds the Work account and another the Personal account. The connect flow is launched twice — once per slot — and each stores the returned account email for display. This needs a one-time OAuth client setup step from you; until it is connected, the sidebar and task sync fall back to locally stored data so the app stays fully usable.
 - Edge functions: `tdz-google-sync` takes an `account_slot`, decrypts that slot's connection key, and pulls calendar events + task lists for that account (and pushes task completion back). Unified mode fans out to both slots and merges results.
