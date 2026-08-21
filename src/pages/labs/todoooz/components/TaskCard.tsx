@@ -50,6 +50,7 @@ const TaskCard: React.FC<Props> = ({
   onDelete,
   onDragStart,
 }) => {
+  const [expanded, setExpanded] = useState(true);
   const theme = resolveTheme(card, parent);
   const tier = depthTier(card);
   const priority = PRIORITIES.find((p) => p.key === card.priority)!;
