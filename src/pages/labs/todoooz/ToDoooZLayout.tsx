@@ -268,21 +268,18 @@ const ToDoooZLayout: React.FC = () => {
                   key={slot}
                   onSelect={(e) => {
                     e.preventDefault();
-                    toast.info(
-                      conn
-                        ? `${slot} account connected as ${conn.account_email ?? 'Google user'}`
-                        : `Connect a Google account for ${slot} from Settings once calendar sync is enabled.`,
-                    );
+                    setAccountsOpen(true);
                   }}
                   className="flex items-center justify-between text-xs focus:bg-white/10"
                 >
                   <span className="capitalize">{slot}</span>
                   <span className={conn ? 'text-emerald-300' : 'text-white/35'}>
-                    {conn ? (conn.account_email ?? 'Connected') : 'Not connected'}
+                    {conn ? (conn.account_email ?? 'Connected') : 'Not assigned'}
                   </span>
                 </DropdownMenuItem>
               );
             })}
+
             <DropdownMenuSeparator className="bg-white/10" />
             <DropdownMenuItem
               onSelect={() => supabase.auth.signOut()}
