@@ -23,10 +23,11 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 - Z depth from `last_activity_timestamp`: <1h forward + glow, <24h mid, older flat
 - Drag a card between cells to update its X/Y coordinates
 
-### Project cards
+### Project / task cards
 - Context pill, avatar/logo badge, title, priority pill
 - Top 2–3 ranked micro-tasks with working checkboxes, progress bar
 - Inline expand for up to 10 subtasks; click opens the detail drawer
+- **Parent / sub-task cards**: any card can be assigned a parent card. A sub-task card shows a "↳ Parent title" breadcrumb chip at the top and sits visually nested (indented, slightly smaller, tinted border) behind its parent in the matrix cell. Parent cards show a "N sub-tasks · M done" roll-up and a collapse toggle that hides/reveals their children in the grid. Sub-tasks can still be dragged independently to their own X/Y cell; dragging a parent moves its collapsed children with it. Completing all children prompts to complete the parent. Nesting is limited to two levels to keep the 3D grid readable.
 
 ### Calendar sidebar (320px, collapsible)
 - Filters by active mode; Agenda view and 24-hour Time view with a live now-line
