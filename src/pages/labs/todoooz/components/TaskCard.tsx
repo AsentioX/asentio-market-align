@@ -74,8 +74,10 @@ const TaskCard: React.FC<Props> = ({
           onDoubleClick={onOpen}
           style={{ ...themeVars(theme, isChild ? 0.55 : 1), ...depthStyle(tier) }}
           className={cn(
-            'group relative cursor-pointer rounded-xl border p-3 text-left transition-all duration-200',
-            'bg-[hsl(var(--tdz-accent)/0.06)] backdrop-blur-md',
+            'group relative cursor-pointer rounded-xl border p-3 text-left transition-all duration-200 backdrop-blur-md',
+            isChild
+              ? 'bg-[hsl(var(--tdz-accent)/0.06)]'
+              : 'bg-[hsl(var(--tdz-accent)/0.15)]',
             'border-[hsl(var(--tdz-accent)/0.35)] hover:border-[hsl(var(--tdz-accent)/0.7)]',
             isChild && 'ml-4 scale-[0.97] border-dashed',
             focused && 'ring-2 ring-[hsl(var(--tdz-accent))] ring-offset-2 ring-offset-transparent',
