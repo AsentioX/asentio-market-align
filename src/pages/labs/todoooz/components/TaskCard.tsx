@@ -53,7 +53,6 @@ const TaskCard: React.FC<Props> = ({
   const [expanded, setExpanded] = useState(true);
   const theme = resolveTheme(card, parent);
   const tier = depthTier(card);
-  const priority = PRIORITIES.find((p) => p.key === card.priority)!;
   const top = tasks.slice(0, 3);
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : card.progress;
