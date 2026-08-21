@@ -1,8 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { seedToDoooZ } from './seed';
 import { syncGoogleContacts } from './contacts';
+import {
+  GoogleAuthNeeded,
+  designateAccount,
+  disconnectAccount,
+  importGoogleCalendar,
+  listGoogleIdentities,
+  swapSlots,
+  type GoogleIdentity,
+} from './google';
+
 import type {
   TdzAccountSlot,
   TdzActivity,
@@ -52,17 +61,9 @@ export const useToDoooZ = (userId: string | undefined) => {
 
   useEffect(() => {
     if (!userId) return;
-    let cancelled = false;
-    (async () => {
-      const count = await load();
-      if (cancelled || count !== 0) return;
-      await seedToDoooZ(userId);
-      await load();
-    })();
-    return () => {
-      cancelled = true;
-    };
+    load();
   }, [userId, load]);
+
 
   const childrenOf = useMemo(() => {
     const map = new Map<string, TdzCard[]>();
