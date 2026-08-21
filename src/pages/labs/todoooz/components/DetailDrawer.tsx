@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ColorSwatchRow from './ColorSwatchRow';
-import { explainPlacement } from '../lib/matrix';
+
 import { resolveTheme } from '../lib/theme';
 import type {
   TdzActivity,
@@ -30,7 +30,7 @@ import type {
   TdzTask,
 } from '../lib/types';
 
-export const TAB_KEYS = ['said', 'people', 'tasks', 'overview', 'logic', 'schedule'] as const;
+export const TAB_KEYS = ['said', 'people', 'tasks', 'overview', 'schedule'] as const;
 export type TabKey = (typeof TAB_KEYS)[number];
 
 const detectDocType = (url: string) => {
@@ -179,12 +179,11 @@ const DetailDrawer: React.FC<Props> = ({
         </SheetHeader>
 
         <Tabs value={tab} onValueChange={(v) => onTab(v as TabKey)} className="mt-4">
-          <TabsList className="grid w-full grid-cols-6 bg-white/5 text-[10px]">
+          <TabsList className="grid w-full grid-cols-5 bg-white/5 text-[10px]">
             <TabsTrigger value="said">Timeline</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="logic">Logic</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
           </TabsList>
 
@@ -446,13 +445,6 @@ const DetailDrawer: React.FC<Props> = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="logic" className="space-y-2 pt-4">
-            {explainPlacement(card).map((line) => (
-              <p key={line} className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-white/70">
-                {line}
-              </p>
-            ))}
-          </TabsContent>
 
           <TabsContent value="schedule" className="space-y-3 pt-4">
             <label className="block text-xs text-white/50">
