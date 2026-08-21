@@ -29,6 +29,14 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 - Inline expand for up to 10 subtasks; click opens the detail drawer
 - **Parent / sub-task cards**: any card can be assigned a parent card. A sub-task card shows a "↳ Parent title" breadcrumb chip at the top and sits visually nested (indented, slightly smaller, tinted border) behind its parent in the matrix cell. Parent cards show a "N sub-tasks · M done" roll-up and a collapse toggle that hides/reveals their children in the grid. Sub-tasks can still be dragged independently to their own X/Y cell; dragging a parent moves its collapsed children with it. Completing all children prompts to complete the parent. Nesting is limited to two levels to keep the 3D grid readable.
 
+### Keyboard control (full mouse-free operation)
+- Arrow keys / `hjkl` move a focus ring between cards; `Tab` and `Shift+Tab` jump between matrix cells; focused card always scrolls into view with a visible focus outline.
+- `Enter` opens the detail drawer, `Esc` closes it; `[` and `]` cycle drawer tabs.
+- `E` inline-edit title, `N` new card in the focused cell, `Shift+N` new sub-task under the focused card, `Space` toggle complete, `X` collapse/expand children, `Delete` delete with confirm.
+- `Shift + arrows` moves the focused card between cells (the keyboard equivalent of dragging); `1–4` sets priority row, `Q/W/R/T` sets the time column.
+- `M` toggles Work/Personal mode, `C` toggles the calendar sidebar, `A` toggles the AI Chief of Staff, `/` focuses search, `G` then `T` jumps to Today.
+- `?` opens a shortcut cheat-sheet overlay listing every binding.
+
 ### Calendar sidebar (320px, collapsible)
 - Filters by active mode; Agenda view and 24-hour Time view with a live now-line
 - Events show location, meeting link, and linked project tag
@@ -57,6 +65,7 @@ The drawer header shows the parent breadcrumb (when the card is a sub-task) and 
 - Google data: per-user Google App User Connector (Calendar + Tasks scopes). Connection keys are stored server-side and encrypted in a `tdz_google_connections` table keyed by `(user_id, account_slot)`, so one row holds the Work account and another the Personal account. The connect flow is launched twice — once per slot — and each stores the returned account email for display. This needs a one-time OAuth client setup step from you; until it is connected, the sidebar and task sync fall back to locally stored data so the app stays fully usable.
 - Edge functions: `tdz-google-sync` takes an `account_slot`, decrypts that slot's connection key, and pulls calendar events + task lists for that account (and pushes task completion back). Unified mode fans out to both slots and merges results.
 - Rules engine and matrix math live in `src/pages/labs/todoooz/lib/` — no AI calls.
+- Keyboard layer: a single `useKeyboardNav` hook holds focused-card state and a central keymap table (also used to render the `?` cheat-sheet), with window-level listeners suppressed while typing in inputs or when a modal owns focus. Cards are real focusable elements with `role="gridcell"`/`aria-selected` so screen readers and keyboard focus stay in sync.
 - Styling: Tailwind `perspective-1000` / `transform-gpu` / `translate-z-*` utilities added to the config; glassmorphic cards (`backdrop-blur-md`, `bg-slate-900/80`, `border-white/10`); indigo-violet for Work, emerald-cyan for Personal; shadcn Dialog, Drawer, Badge, Progress, Tabs, Card, Switch, ToggleGroup; Lucide icons.
 - Seed data on first sign-in so the matrix is populated immediately.
 
