@@ -10,6 +10,7 @@ import {
   LogOut,
   Search,
   Sparkles,
+  Users,
 } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,6 +32,7 @@ import CalendarSidebar from './components/CalendarSidebar';
 import ChiefOfStaff from './components/ChiefOfStaff';
 import DetailDrawer, { TAB_KEYS, type TabKey } from './components/DetailDrawer';
 import ShortcutOverlay from './components/ShortcutOverlay';
+import ContactsCRM from './components/ContactsCRM';
 import { useToDoooZ } from './lib/useToDoooZ';
 import { useKeyboardNav } from './lib/useKeyboardNav';
 import { buildNudges, completionRing } from './lib/chiefOfStaff';
@@ -76,6 +78,7 @@ const ToDoooZLayout: React.FC = () => {
   const [calCollapsed, setCalCollapsed] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [contactsOpen, setContactsOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const visibleCards = useMemo(() => {
@@ -233,6 +236,15 @@ const ToDoooZLayout: React.FC = () => {
           ))}
         </select>
 
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setContactsOpen(true)}
+          className="text-white/50 hover:text-white"
+        >
+          <Users className="mr-1 h-3.5 w-3.5" /> Contacts
+        </Button>
+
         <Button variant="ghost" size="sm" onClick={() => setHelpOpen(true)} className="text-white/50 hover:text-white">
           <Command className="mr-1 h-3.5 w-3.5" /> Shortcuts
         </Button>
@@ -341,6 +353,7 @@ const ToDoooZLayout: React.FC = () => {
         stakeholders={openCard ? tdz.stakeholders.filter((s) => s.project_id === openCard.id) : []}
         documents={openCard ? tdz.documents.filter((d) => d.project_id === openCard.id) : []}
         events={tdz.events}
+        contacts={tdz.contacts}
         tab={tab}
         onTab={setTab}
         onClose={() => setOpenId(null)}
@@ -353,6 +366,8 @@ const ToDoooZLayout: React.FC = () => {
           addActivity: tdz.addActivity,
           addStakeholder: tdz.addStakeholder,
           removeStakeholder: tdz.removeStakeholder,
+          linkContactToCard: tdz.linkContactToCard,
+          openContacts: () => setContactsOpen(true),
           addDocument: tdz.addDocument,
           updateDocument: tdz.updateDocument,
           removeDocument: tdz.removeDocument,
@@ -371,6 +386,24 @@ const ToDoooZLayout: React.FC = () => {
             if (card) toast.success('Sub-task card created');
           },
           openCard: (id) => setOpenId(id),
+        }}
+      />
+
+      <ContactsCRM
+        open={contactsOpen}
+        onOpenChange={setContactsOpen}
+        contacts={tdz.contacts}
+        stakeholders={tdz.stakeholders}
+        cardById={tdz.cardById}
+        api={{
+          createContact: tdz.createContact,
+          updateContact: tdz.updateContact,
+          deleteContact: tdz.deleteContact,
+          syncContacts: tdz.syncContacts,
+        }}
+        onOpenCard={(id) => {
+          setFocusedId(id);
+          setOpenId(id);
         }}
       />
 

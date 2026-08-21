@@ -60,6 +60,7 @@ export interface TdzStakeholder {
   email: string | null;
   avatar_url: string | null;
   notes: string | null;
+  contact_id: string | null;
 }
 
 export interface TdzDocument {
@@ -90,4 +91,23 @@ export interface TdzConnection {
   account_email: string | null;
   status: string;
   last_synced_at: string | null;
+}
+
+export interface TdzContact {
+  id: string;
+  user_id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  company: string | null;
+  job_title: string | null;
+  avatar_url: string | null;
+  notes: string | null;
+  tags: string[];
+  source: string;
+  account_slot: string | null;
+  google_resource_id: string | null;
+  last_synced_at: string | null;
+  created_at: string;
+  updated_at: string;
 }

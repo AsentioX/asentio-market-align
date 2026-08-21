@@ -4310,6 +4310,63 @@ export type Database = {
           },
         ]
       }
+      tdz_contacts: {
+        Row: {
+          account_slot: string | null
+          avatar_url: string | null
+          company: string | null
+          created_at: string
+          email: string | null
+          google_resource_id: string | null
+          id: string
+          job_title: string | null
+          last_synced_at: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          source: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_slot?: string | null
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          google_resource_id?: string | null
+          id?: string
+          job_title?: string | null
+          last_synced_at?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_slot?: string | null
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          google_resource_id?: string | null
+          id?: string
+          job_title?: string | null
+          last_synced_at?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tdz_documents: {
         Row: {
           added_at: string
@@ -4465,6 +4522,7 @@ export type Database = {
       tdz_stakeholders: {
         Row: {
           avatar_url: string | null
+          contact_id: string | null
           created_at: string
           email: string | null
           id: string
@@ -4476,6 +4534,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          contact_id?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -4487,6 +4546,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          contact_id?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -4497,6 +4557,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tdz_stakeholders_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_contacts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tdz_stakeholders_project_id_fkey"
             columns: ["project_id"]
