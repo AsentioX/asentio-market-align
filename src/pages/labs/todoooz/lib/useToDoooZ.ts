@@ -358,6 +358,12 @@ export const useToDoooZ = (userId: string | undefined) => {
     updateContact,
     deleteContact,
     syncContacts,
+    syncCalendar,
+    googleIdentities,
+    setAccountSlot,
+    removeAccount,
+    swapAccounts,
+
     linkContactToCard,
     setConnections,
   };
