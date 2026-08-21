@@ -234,16 +234,73 @@ export const useToDoooZ = (userId: string | undefined) => {
     if (error) toast.error(error.message);
   }, []);
 
+  const handleGoogleError = useCallback((err: unknown) => {
+    if (err instanceof GoogleAuthNeeded) toast.error(err.message);
+    else toast.error(err instanceof Error ? err.message : 'Google sync failed');
+  }, []);
+
   const syncContacts = useCallback(
     async (slot: TdzAccountSlot) => {
       if (!userId) return;
-      const res = await syncGoogleContacts(userId, slot, contacts);
-      const { data } = await supabase.from('tdz_contacts').select('*').order('name');
-      setContacts((data ?? []) as TdzContact[]);
-      toast.success(`${slot} Google contacts synced — ${res.added} new, ${res.updated} updated`);
+      try {
+        const res = await syncGoogleContacts(userId, slot, contacts);
+        const { data } = await supabase.from('tdz_contacts').select('*').order('name');
+        setContacts((data ?? []) as TdzContact[]);
+        toast.success(`${slot} Google contacts imported — ${res.added} new, ${res.updated} updated`);
+      } catch (err) {
+        handleGoogleError(err);
+      }
     },
-    [userId, contacts],
+    [userId, contacts, handleGoogleError],
   );
+
+  const syncCalendar = useCallback(
+    async (slot: TdzAccountSlot) => {
+      if (!userId) return;
+      try {
+        const count = await importGoogleCalendar(userId, slot);
+        await load();
+        toast.success(`${slot} calendar imported — ${count} events`);
+      } catch (err) {
+        handleGoogleError(err);
+      }
+    },
+    [userId, load, handleGoogleError],
+  );
+
+  const googleIdentities = useCallback(async (): Promise<GoogleIdentity[]> => listGoogleIdentities(), []);
+
+  const setAccountSlot = useCallback(
+    async (slot: TdzAccountSlot, identity: GoogleIdentity) => {
+      if (!userId) return;
+      try {
+        await designateAccount(userId, slot, identity);
+        await load();
+        toast.success(`${identity.email} set as your ${slot} account`);
+      } catch (err) {
+        handleGoogleError(err);
+      }
+    },
+    [userId, load, handleGoogleError],
+  );
+
+  const removeAccount = useCallback(
+    async (slot: TdzAccountSlot) => {
+      if (!userId) return;
+      await disconnectAccount(userId, slot);
+      await load();
+    },
+    [userId, load],
+  );
+
+  const swapAccounts = useCallback(async () => {
+    if (!userId) return;
+    await swapSlots(userId);
+    await load();
+    toast.success('Work and personal accounts swapped');
+  }, [userId, load]);
+
+
 
   const linkContactToCard = useCallback(
     async (projectId: string, contact: TdzContact, role?: string | null) => {
