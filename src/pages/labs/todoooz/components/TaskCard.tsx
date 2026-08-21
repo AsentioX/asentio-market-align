@@ -159,7 +159,12 @@ const TaskCard: React.FC<Props> = ({
               <Progress value={pct} className="h-1 bg-white/10" />
 
               <div className="mt-2 flex items-center justify-between text-[10px] text-white/45">
-                <span>
+                <span className="flex items-center gap-1.5">
+                  {card.context_label && (
+                    <span className="inline-block rounded-full bg-white/10 px-2 py-0.5 uppercase tracking-wide text-white/60">
+                      {card.context_label}
+                    </span>
+                  )}
                   {done}/{tasks.length || 0} tasks
                 </span>
                 <div className="flex items-center gap-2">
