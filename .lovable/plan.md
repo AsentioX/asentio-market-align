@@ -48,10 +48,10 @@ A new Labs app at `/labs/todoooz`: a 3D spatial task matrix with Work/Personal m
 ## Technical section
 
 - Route `/labs/todoooz` (nested tabs inside one layout), added to the nav/footer hide list, and a new Labs card entry.
-- Tables prefixed `tdz_` with RLS scoped to `auth.uid()` and explicit GRANTs: `tdz_projects`, `tdz_tasks`, `tdz_activity_logs`, `tdz_stakeholders`, `tdz_calendar_events`, plus `tdz_google_connections` for per-user OAuth tokens. Fields follow the schema in the request, with `user_id` added to every table.
-- Auth: Google sign-in via the existing Supabase auth setup, isolated to this app (own provider/guard, like WO.Buddy and PerkPath).
-- Google data: per-user Google App User Connector (Calendar + Tasks scopes). This needs a one-time OAuth client connect step from you; until it is connected, the sidebar and task sync fall back to locally stored data so the app stays fully usable.
-- Edge functions: `tdz-google-sync` (pull calendar events + task lists, push task completion back).
+- Tables prefixed `tdz_` with RLS scoped to `auth.uid()` and explicit GRANTs: `tdz_projects`, `tdz_tasks`, `tdz_activity_logs`, `tdz_stakeholders`, `tdz_calendar_events`. Fields follow the schema in the request, with `user_id` added to every table. `tdz_calendar_events` and synced tasks carry an `account_slot` ('work' | 'personal') so data from the two Google accounts stays separated and mode filtering is exact.
+- Auth: Google sign-in via the existing Supabase auth setup, isolated to this app (own provider/guard, like WO.Buddy and PerkPath). Signing in is separate from connecting data accounts — a user can sign in once and attach two Google accounts.
+- Google data: per-user Google App User Connector (Calendar + Tasks scopes). Connection keys are stored server-side and encrypted in a `tdz_google_connections` table keyed by `(user_id, account_slot)`, so one row holds the Work account and another the Personal account. The connect flow is launched twice — once per slot — and each stores the returned account email for display. This needs a one-time OAuth client setup step from you; until it is connected, the sidebar and task sync fall back to locally stored data so the app stays fully usable.
+- Edge functions: `tdz-google-sync` takes an `account_slot`, decrypts that slot's connection key, and pulls calendar events + task lists for that account (and pushes task completion back). Unified mode fans out to both slots and merges results.
 - Rules engine and matrix math live in `src/pages/labs/todoooz/lib/` — no AI calls.
 - Styling: Tailwind `perspective-1000` / `transform-gpu` / `translate-z-*` utilities added to the config; glassmorphic cards (`backdrop-blur-md`, `bg-slate-900/80`, `border-white/10`); indigo-violet for Work, emerald-cyan for Personal; shadcn Dialog, Drawer, Badge, Progress, Tabs, Card, Switch, ToggleGroup; Lucide icons.
 - Seed data on first sign-in so the matrix is populated immediately.
