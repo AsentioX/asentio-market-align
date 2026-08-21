@@ -176,7 +176,7 @@ const SpatialMatrix: React.FC<Props> = ({
                 </div>
               );
             })}
-          </React.Fragment>
+          </div>
         ))}
       </div>
     </div>
