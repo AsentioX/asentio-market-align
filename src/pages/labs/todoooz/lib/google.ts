@@ -295,13 +295,16 @@ export const importGoogleCalendarRange = async (
       ends_at: new Date(e.end?.dateTime ?? `${e.end?.date ?? e.start!.date}T23:59:00`).toISOString(),
     }));
 
-  // Replace this slot's synced events, keep manually created ones.
+  // Replace only this slot's synced events inside the window; keep manual ones
+  // and anything imported for other date ranges.
   await supabase
     .from('tdz_calendar_events')
     .delete()
     .eq('user_id', userId)
     .eq('account_slot', slot)
-    .not('google_event_id', 'is', null);
+    .not('google_event_id', 'is', null)
+    .gte('starts_at', timeMin)
+    .lt('starts_at', timeMax);
 
   if (rows.length) {
     const { error } = await supabase.from('tdz_calendar_events').insert(rows);
@@ -316,6 +319,17 @@ export const importGoogleCalendarRange = async (
 
   return rows.length;
 };
+
+/** Default sync window: yesterday → three weeks out. */
+export const importGoogleCalendar = (userId: string, slot: TdzAccountSlot, email?: string | null) =>
+  importGoogleCalendarRange(
+    userId,
+    slot,
+    new Date(Date.now() - 86400000),
+    new Date(Date.now() + 21 * 86400000),
+    email,
+  );
+
 
 /* -------------------------------------------------------------- Contacts */
 
