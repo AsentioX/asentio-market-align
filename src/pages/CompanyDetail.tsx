@@ -34,7 +34,6 @@ const CompanyDetail = () => {
   const { companyName } = useParams<{ companyName: string }>();
   const key = decodeURIComponent(companyName || "");
   const { data: allProducts, isLoading: productsLoading } = useXRProducts({});
-  const { data: allCompanies } = useXRCompanies({});
   const { data: haiUseCases } = useHAIUseCases();
 
   const { data: company, isLoading: companyLoading } = useQuery({
