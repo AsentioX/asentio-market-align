@@ -109,7 +109,12 @@ const SpatialMatrix: React.FC<Props> = ({
     else onReorder([...list.slice(0, index), source, ...list.slice(index)]);
   };
 
-  /** The colored insertion marker rendered between cards. */
+  /** hsl string for a priority key, used to color the drop line after the dragged card. */
+  const hslForPriority = (key: TdzPriority) =>
+    PRIORITIES.find((p) => p.key === key)?.hsl ?? '0 0% 70%';
+
+  /** The colored insertion marker rendered between cards, matching the dragged card's priority. */
+  const draggedHsl = draggingId ? hslForPriority(cardById.get(draggingId)?.priority ?? 'core') : null;
   const DropLine = ({ hsl }: { hsl: string }) => (
     <div className="relative h-0.5 rounded-full" style={{ background: `hsl(${hsl})` }}>
       <span
