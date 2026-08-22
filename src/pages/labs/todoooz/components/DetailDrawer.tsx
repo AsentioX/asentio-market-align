@@ -188,6 +188,36 @@ const DetailDrawer: React.FC<Props> = ({
     api.reorderTasks(card.id, next, sourceId);
   };
 
+  /** Move a task up/down among its own siblings (children travel with a root). */
+  const siblingsOf = (t: TdzTask) =>
+    orderedTasks
+      .map((f) => f.task)
+      .filter((x) => (x.parent_task_id ?? null) === (t.parent_task_id ?? null));
+
+  const moveTask = (t: TdzTask, dir: -1 | 1) => {
+    const flat = orderedTasks.map((f) => f.task);
+    const sibs = siblingsOf(t);
+    const i = sibs.findIndex((x) => x.id === t.id);
+    const neighbour = sibs[i + dir];
+    if (!neighbour) return;
+
+    const block = flat.filter((x) => x.id === t.id || x.parent_task_id === t.id);
+    const blockIds = new Set(block.map((x) => x.id));
+    const rest = flat.filter((x) => !blockIds.has(x.id));
+
+    let insertAt: number;
+    if (dir === -1) {
+      insertAt = rest.findIndex((x) => x.id === neighbour.id);
+    } else {
+      const nBlock = rest.filter((x) => x.id === neighbour.id || x.parent_task_id === neighbour.id);
+      const last = nBlock[nBlock.length - 1];
+      insertAt = rest.findIndex((x) => x.id === last.id) + 1;
+    }
+    if (insertAt < 0) return;
+    const next = [...rest.slice(0, insertAt), ...block, ...rest.slice(insertAt)];
+    api.reorderTasks(card.id, next, t.id);
+  };
+
 
   return (
     <Sheet open={!!card} onOpenChange={(v) => !v && onClose()}>
