@@ -201,6 +201,61 @@ export const useToDoooZ = (userId: string | undefined) => {
     [pushTask],
   );
 
+  /**
+   * Nest a task under another task (or promote it to root with `null`).
+   * Google Tasks allows a single level, so children of a task that becomes a
+   * subtask are re-attached to the same new parent.
+   */
+  const setTaskParent = useCallback(
+    async (taskId: string, parentTaskId: string | null) => {
+      const current = tasksRef.current;
+      const task = current.find((t) => t.id === taskId);
+      if (!task || taskId === parentTaskId) return;
+      const parent = parentTaskId ? current.find((t) => t.id === parentTaskId) : null;
+      if (parentTaskId && !parent) return;
+      if (parent?.parent_task_id === taskId) return; // no cycles
+      const children = parentTaskId ? current.filter((t) => t.parent_task_id === taskId) : [];
+      const moving = [task, ...children];
+      const targetParent = parentTaskId ?? null;
+
+      commitTasks((prev) =>
+        prev.map((t) =>
+          moving.some((m) => m.id === t.id) ? { ...t, parent_task_id: targetParent } : t,
+        ),
+      );
+      const results = await Promise.all(
+        moving.map((m) =>
+          supabase.from('tdz_tasks').update({ parent_task_id: targetParent }).eq('id', m.id),
+        ),
+      );
+      const failed = results.find((r) => r.error);
+      if (failed?.error) {
+        toast.error(failed.error.message);
+        load();
+        return;
+      }
+
+      const card = cards.find((c) => c.id === task.project_id);
+      const parentGoogleId = parent?.google_task_id ?? null;
+      for (const m of moving) {
+        if (!m.google_task_id) continue;
+        try {
+          await moveGoogleTask(
+            m.project_id,
+            m.google_task_id,
+            null,
+            parentGoogleId,
+            emailForSlot(m.account_slot ?? card?.mode),
+          );
+        } catch (err) {
+          if (!(err instanceof GoogleAuthNeeded)) console.error('Google Tasks nest failed', err);
+        }
+      }
+    },
+    [cards, emailForSlot, commitTasks, load],
+  );
+
+
   const deleteTask = useCallback(
     async (id: string) => {
       const current = tasksRef.current;
