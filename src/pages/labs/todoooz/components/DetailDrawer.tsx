@@ -129,6 +129,18 @@ const DetailDrawer: React.FC<Props> = ({
         .slice(0, 100),
     [events],
   );
+  /** Activities + linked calendar events merged into one reverse-chronological feed. */
+  const timelineEntries = useMemo(() => {
+    const items: (
+      | { kind: 'activity'; id: string; at: string; activity: TdzActivity }
+      | { kind: 'event'; id: string; at: string; event: TdzEvent }
+    )[] = [
+      ...activities.map((a) => ({ kind: 'activity' as const, id: `a-${a.id}`, at: a.occurred_at, activity: a })),
+      ...linkedEvents.map((e) => ({ kind: 'event' as const, id: `e-${e.id}`, at: e.starts_at, event: e })),
+    ];
+    return items.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  }, [activities, linkedEvents]);
+
 
   if (!card) return null;
 
@@ -258,17 +270,51 @@ const DetailDrawer: React.FC<Props> = ({
               Add to timeline
             </Button>
             <div className="space-y-2">
-              {activities.map((a) => (
-                <div key={a.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                  <div className="flex items-center justify-between text-[10px] text-white/40">
-                    <span className="uppercase tracking-wide">{a.source}</span>
-                    <span>{new Date(a.occurred_at).toLocaleString()}</span>
+              {timelineEntries.map((entry) =>
+                entry.kind === 'activity' ? (
+                  <div key={entry.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                    <div className="flex items-center justify-between text-[10px] text-white/40">
+                      <span className="uppercase tracking-wide">{entry.activity.source}</span>
+                      <span>{new Date(entry.at).toLocaleString()}</span>
+                    </div>
+                    <div className="mt-1 text-sm text-white/85">{entry.activity.summary}</div>
+                    {entry.activity.detail && (
+                      <p className="mt-1 whitespace-pre-wrap text-xs text-white/50">{entry.activity.detail}</p>
+                    )}
                   </div>
-                  <div className="mt-1 text-sm text-white/85">{a.summary}</div>
-                  {a.detail && <p className="mt-1 whitespace-pre-wrap text-xs text-white/50">{a.detail}</p>}
-                </div>
-              ))}
-              {activities.length === 0 && <p className="text-xs text-white/40">Nothing captured yet.</p>}
+                ) : (
+                  <div
+                    key={entry.id}
+                    className="rounded-lg border p-3"
+                    style={{
+                      borderColor: 'hsl(var(--tdz-accent) / 0.35)',
+                      background: 'hsl(var(--tdz-accent) / 0.08)',
+                    }}
+                  >
+                    <div className="flex items-center justify-between text-[10px] text-white/40">
+                      <span className="inline-flex items-center gap-1 uppercase tracking-wide">
+                        <CalendarDays className="h-3 w-3" /> Calendar
+                      </span>
+                      <span>{new Date(entry.at).toLocaleString()}</span>
+                    </div>
+                    <div className="mt-1 text-sm text-white/85">{entry.event.title}</div>
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-white/50">
+                      {entry.event.location && <span>{entry.event.location}</span>}
+                      {entry.event.meeting_link && (
+                        <a
+                          href={entry.event.meeting_link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sky-300 hover:underline"
+                        >
+                          Join
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ),
+              )}
+              {timelineEntries.length === 0 && <p className="text-xs text-white/40">Nothing captured yet.</p>}
             </div>
           </TabsContent>
 
