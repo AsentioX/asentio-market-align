@@ -13,7 +13,9 @@ interface Props {
   onUpdateEvent?: (id: string, patch: Partial<TdzEvent>) => Promise<void> | void;
   onDeleteEvent?: (id: string) => Promise<void> | void;
   onOpenCard?: (id: string) => void;
+  onSpawnCard?: (event: TdzEvent) => void;
 }
+
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
