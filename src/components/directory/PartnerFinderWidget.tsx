@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Check, ChevronsUpDown, RotateCcw, Search, Sparkles, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Check, ChevronsUpDown, RotateCcw, Sparkles } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Command,
