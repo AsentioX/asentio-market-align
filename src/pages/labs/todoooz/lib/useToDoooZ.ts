@@ -172,8 +172,13 @@ export const useToDoooZ = (userId: string | undefined) => {
   );
 
   const addTask = useCallback(
-    async (projectId: string, title: string, due?: string | null, parentTaskId?: string | null) => {
-      if (!userId || !title.trim()) return;
+    async (
+      projectId: string,
+      title: string,
+      due?: string | null,
+      parentTaskId?: string | null,
+    ): Promise<TdzTask | undefined> => {
+      if (!userId || !title.trim()) return undefined;
       const { data, error } = await supabase
         .from('tdz_tasks')
         .insert({
@@ -185,9 +190,13 @@ export const useToDoooZ = (userId: string | undefined) => {
         })
         .select()
         .single();
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return undefined;
+      }
       commitTasks((prev) => [...prev, data as TdzTask]);
       pushTask((data as TdzTask).id);
+      return data as TdzTask;
     },
     [userId, pushTask],
   );
