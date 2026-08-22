@@ -190,6 +190,10 @@ const SpatialMatrix: React.FC<Props> = ({
                               setDropTarget({ bucket: b.key, priority: p.key, beforeId });
                           }}
                           onDrop={(e) => handleCardDrop(e, card.id, b.key, p.key)}
+                          onDragEnd={() => {
+                            setDraggingId(null);
+                            setDropTarget(null);
+                          }}
                         >
                           {active && dropTarget?.beforeId === card.id && <DropLine hsl={p.hsl} />}
 
