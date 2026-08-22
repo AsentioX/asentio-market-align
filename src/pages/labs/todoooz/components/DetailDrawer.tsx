@@ -12,6 +12,7 @@ import {
   Plus,
   Presentation,
   Trash2,
+  Undo2,
   Users,
   X,
 } from 'lucide-react';
@@ -288,13 +289,27 @@ const DetailDrawer: React.FC<Props> = ({
               <div className="mb-1 text-[10px] uppercase tracking-wide text-white/40">Sub-task cards</div>
               <ul className="space-y-1">
                 {children.map((c) => (
-                  <li key={c.id}>
+                  <li key={c.id} className="flex items-center gap-1">
                     <button
                       onClick={() => api.openCard(c.id)}
-                      className="flex w-full items-center justify-between text-xs text-white/70 hover:text-white"
+                      className="flex flex-1 items-center justify-between text-xs text-white/70 hover:text-white"
                     >
                       <span className="truncate">{c.title}</span>
                       <span className="text-white/35">{c.progress}%</span>
+                    </button>
+                    <button
+                      title="Import back into task list"
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `Import "${c.title}" back into this card's task list? The sub-task card will be removed.`,
+                          )
+                        )
+                          api.importCardAsTask(c, card.id);
+                      }}
+                      className="shrink-0 rounded p-1 text-white/40 hover:bg-white/10 hover:text-white"
+                    >
+                      <Undo2 className="h-3.5 w-3.5" />
                     </button>
                   </li>
                 ))}
