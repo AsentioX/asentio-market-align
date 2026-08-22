@@ -356,6 +356,7 @@ const ToDoooZLayout: React.FC = () => {
               tasks={tdz.tasks}
               cardById={tdz.cardById}
               childrenOf={tdz.childrenOf}
+              cardContacts={cardContacts}
               focusedId={focusedId}
               onFocus={setFocusedId}
               onOpen={(id) => {
