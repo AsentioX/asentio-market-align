@@ -6,10 +6,12 @@ import type { TdzCard, TdzEvent } from '../lib/types';
 interface Props {
   events: TdzEvent[];
   cardById: Map<string, TdzCard>;
+  cards?: TdzCard[];
   collapsed: boolean;
   onToggle: () => void;
   onUpdateEvent?: (id: string, patch: Partial<TdzEvent>) => Promise<void> | void;
   onDeleteEvent?: (id: string) => Promise<void> | void;
+  onOpenCard?: (id: string) => void;
 }
 
 const fmt = (iso: string) =>
@@ -25,18 +27,27 @@ const toLocalInput = (iso: string) => {
 const CalendarSidebar: React.FC<Props> = ({
   events,
   cardById,
+  cards = [],
   collapsed,
   onToggle,
   onUpdateEvent,
   onDeleteEvent,
+  onOpenCard,
 }) => {
   const [view, setView] = useState<'agenda' | 'time'>('agenda');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<{ title: string; location: string; starts_at: string; ends_at: string }>({
+  const [draft, setDraft] = useState<{
+    title: string;
+    location: string;
+    starts_at: string;
+    ends_at: string;
+    project_id: string;
+  }>({
     title: '',
     location: '',
     starts_at: '',
     ends_at: '',
+    project_id: '',
   });
 
   const startEdit = (e: TdzEvent) => {
@@ -46,6 +57,7 @@ const CalendarSidebar: React.FC<Props> = ({
       location: e.location ?? '',
       starts_at: toLocalInput(e.starts_at),
       ends_at: toLocalInput(e.ends_at),
+      project_id: e.project_id ?? '',
     });
   };
 
@@ -56,9 +68,11 @@ const CalendarSidebar: React.FC<Props> = ({
       location: draft.location.trim() || null,
       starts_at: new Date(draft.starts_at).toISOString(),
       ends_at: new Date(draft.ends_at).toISOString(),
+      project_id: draft.project_id || null,
     });
     setEditingId(null);
   };
+
   const now = new Date();
 
   const upcoming = useMemo(
