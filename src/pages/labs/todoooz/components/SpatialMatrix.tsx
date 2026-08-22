@@ -28,6 +28,7 @@ const SpatialMatrix: React.FC<Props> = ({
   tasks,
   cardById,
   childrenOf,
+  cardContacts,
   focusedId,
   onFocus,
   onOpen,
