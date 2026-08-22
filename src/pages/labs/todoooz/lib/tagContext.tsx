@@ -5,20 +5,12 @@ export const DEFAULT_TAG_COLOR = '#6366f1';
 
 export const TAG_COLOR_OPTIONS = [
   '#6366f1',
-  '#8b5cf6',
-  '#a855f7',
-  '#d946ef',
   '#0ea5e9',
-  '#06b6d4',
-  '#14b8a6',
   '#10b981',
-  '#84cc16',
-  '#eab308',
   '#f59e0b',
-  '#f97316',
   '#ef4444',
-  '#f43f5e',
   '#ec4899',
+  '#a855f7',
   '#64748b',
 ];
 
