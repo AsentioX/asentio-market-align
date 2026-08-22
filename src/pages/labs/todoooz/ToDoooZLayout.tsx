@@ -431,7 +431,18 @@ const ToDoooZLayout: React.FC = () => {
               due_date: task.due_date,
               sort_order: tdz.cards.length,
             });
-            if (card) toast.success('Sub-task card created');
+            if (!card) return;
+            // The task now lives on as its own card, so it leaves the parent list.
+            tdz.deleteTask(task.id);
+            toast.success('Sub-task card created', {
+              action: {
+                label: 'Undo',
+                onClick: () => {
+                  tdz.deleteCard(card.id);
+                  tdz.addTask(parent.id, task.title, task.due_date);
+                },
+              },
+            });
           },
           openCard: (id) => setOpenId(id),
           deleteCard: (id) => {
