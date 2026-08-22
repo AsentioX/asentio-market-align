@@ -15,6 +15,7 @@ const IDENTITY_KEY = 'tdz.google.identities'; // extra accounts authorised via G
 export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/contacts.readonly',
   'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/tasks.readonly',
 ].join(' ');
 
 export const rememberProviderToken = (token?: string | null) => {
