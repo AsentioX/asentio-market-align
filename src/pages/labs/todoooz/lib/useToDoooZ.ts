@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { syncGoogleContacts } from './contacts';
@@ -37,6 +37,13 @@ import type {
 export const useToDoooZ = (userId: string | undefined) => {
   const [cards, setCards] = useState<TdzCard[]>([]);
   const [tasks, setTasks] = useState<TdzTask[]>([]);
+  /** Mirror of `tasks` that is updated synchronously so back-to-back mutations
+   *  (e.g. move sub-tasks then delete the parent) never read a stale snapshot. */
+  const tasksRef = useRef<TdzTask[]>([]);
+  const commitTasks = useCallback((next: TdzTask[] | ((prev: TdzTask[]) => TdzTask[])) => {
+    tasksRef.current = typeof next === 'function' ? (next as (p: TdzTask[]) => TdzTask[])(tasksRef.current) : next;
+    setTasks(tasksRef.current);
+  }, []);
   const [events, setEvents] = useState<TdzEvent[]>([]);
   const [activities, setActivities] = useState<TdzActivity[]>([]);
   const [stakeholders, setStakeholders] = useState<TdzStakeholder[]>([]);
@@ -60,7 +67,7 @@ export const useToDoooZ = (userId: string | undefined) => {
       supabase.from('tdz_tags').select('*').order('name'),
     ]);
     setCards((c.data ?? []) as TdzCard[]);
-    setTasks((t.data ?? []) as TdzTask[]);
+    commitTasks((t.data ?? []) as TdzTask[]);
     setEvents((e.data ?? []) as TdzEvent[]);
     setActivities((a.data ?? []) as TdzActivity[]);
     setStakeholders((s.data ?? []) as TdzStakeholder[]);
@@ -154,7 +161,7 @@ export const useToDoooZ = (userId: string | undefined) => {
 
   const toggleTask = useCallback(
     async (task: TdzTask) => {
-      setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done: !t.done } : t)));
+      commitTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done: !t.done } : t)));
       await supabase.from('tdz_tasks').update({ done: !task.done }).eq('id', task.id);
       await patchCard(task.project_id, {}, true);
       pushTask(task.id);
@@ -177,7 +184,7 @@ export const useToDoooZ = (userId: string | undefined) => {
         .select()
         .single();
       if (error) return toast.error(error.message);
-      setTasks((prev) => [...prev, data as TdzTask]);
+      commitTasks((prev) => [...prev, data as TdzTask]);
       pushTask((data as TdzTask).id);
     },
     [userId, pushTask],
@@ -185,7 +192,7 @@ export const useToDoooZ = (userId: string | undefined) => {
 
   const updateTask = useCallback(
     async (id: string, patch: Partial<TdzTask>) => {
-      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...(patch as TdzTask) } : t)));
+      commitTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...(patch as TdzTask) } : t)));
       await supabase.from('tdz_tasks').update(patch).eq('id', id);
       pushTask(id);
     },
@@ -194,12 +201,17 @@ export const useToDoooZ = (userId: string | undefined) => {
 
   const deleteTask = useCallback(
     async (id: string) => {
-      const task = tasks.find((t) => t.id === id);
+      const current = tasksRef.current;
+      const task = current.find((t) => t.id === id);
       // Children cascade in the database; mirror that locally and on Google.
-      const children = tasks.filter((t) => t.parent_task_id === id);
+      // Only tasks that still live on the same card cascade — ones already moved
+      // to another card were re-parented and must survive.
+      const children = current.filter(
+        (t) => t.parent_task_id === id && t.project_id === task?.project_id,
+      );
       const removed = [task, ...children].filter(Boolean) as TdzTask[];
       const removedIds = new Set(removed.map((t) => t.id));
-      setTasks((prev) => prev.filter((t) => !removedIds.has(t.id)));
+      commitTasks((prev) => prev.filter((t) => !removedIds.has(t.id)));
       await supabase.from('tdz_tasks').delete().eq('id', id);
       for (const t of removed) {
         if (!t.google_task_id) continue;
@@ -215,7 +227,7 @@ export const useToDoooZ = (userId: string | undefined) => {
         }
       }
     },
-    [tasks, cards, emailForSlot],
+    [cards, emailForSlot, commitTasks],
   );
 
   /**
@@ -225,10 +237,10 @@ export const useToDoooZ = (userId: string | undefined) => {
    */
   const moveTasksToCard = useCallback(
     async (taskIds: string[], targetProjectId: string) => {
-      const moving = tasks.filter((t) => taskIds.includes(t.id));
+      const moving = tasksRef.current.filter((t) => taskIds.includes(t.id));
       if (!moving.length) return;
       const movingIds = new Set(moving.map((t) => t.id));
-      setTasks((prev) =>
+      commitTasks((prev) =>
         prev.map((t) =>
           movingIds.has(t.id)
             ? {
@@ -266,7 +278,7 @@ export const useToDoooZ = (userId: string | undefined) => {
       }
       for (const t of moving) await pushTask(t.id);
     },
-    [tasks, cards, emailForSlot, pushTask],
+    [cards, emailForSlot, pushTask, commitTasks],
   );
 
 
@@ -278,7 +290,7 @@ export const useToDoooZ = (userId: string | undefined) => {
   const reorderTasks = useCallback(
     async (projectId: string, ordered: TdzTask[], movedId?: string) => {
       const rankById = new Map(ordered.map((t, i) => [t.id, i]));
-      setTasks((prev) =>
+      commitTasks((prev) =>
         prev.map((t) => (rankById.has(t.id) ? { ...t, rank: rankById.get(t.id) as number } : t)),
       );
       const results = await Promise.all(
