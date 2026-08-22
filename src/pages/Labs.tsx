@@ -14,6 +14,38 @@ interface LabApp {
 
 const labApps: LabApp[] = [
   {
+    name: 'RowWindow',
+    description: 'Launch-window calculator for rowers at BIAC. Tide forecast, vessel-aware wind thresholds, and chop alerts for safer rows.',
+    icon: <Waves className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Rowing', 'Tides', 'Safety'],
+    link: '/labs/rowwindow',
+  },
+  {
+    name: 'Care Kits',
+    description: 'Personalized safety kits for aging parents living independently. Take a 2-minute quiz, get a tailored plan — privacy-first, no cameras.',
+    icon: <ShieldCheck className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Eldercare', 'Health', 'Family'],
+    link: '/labs/carekits',
+  },
+  {
+    name: 'ToDoooZ',
+    description: 'Spatial productivity. A 3D task matrix, an AI Chief of Staff, dual Google calendars, and AR passthrough for headsets.',
+    icon: <Boxes className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['Spatial', 'Productivity', 'AR'],
+    link: '/labs/todoooz',
+  },
+  {
+    name: 'RHCRM',
+    description: 'Lightweight mission control for sponsorship teams. AI meeting summaries, action extraction, and a pipeline built for volunteer committees.',
+    icon: <Briefcase className="w-8 h-8" />,
+    status: 'beta',
+    tags: ['CRM', 'Sponsorship', 'AI'],
+    link: '/labs/rhcrm',
+  },
+  {
     name: 'W.O.Buddy',
     description: 'Track your workouts, earn scores, compete with friends, and visualize your fitness progress.',
     icon: <Dumbbell className="w-8 h-8" />,
@@ -69,22 +101,6 @@ const labApps: LabApp[] = [
     link: '/labs/tastudio',
   },
   {
-    name: 'ToDoooZ',
-    description: 'Spatial productivity. A 3D task matrix, an AI Chief of Staff, dual Google calendars, and AR passthrough for headsets.',
-    icon: <Boxes className="w-8 h-8" />,
-    status: 'beta',
-    tags: ['Spatial', 'Productivity', 'AR'],
-    link: '/labs/todoooz',
-  },
-  {
-    name: 'RowWindow',
-    description: 'Launch-window calculator for rowers at BIAC. Tide forecast, vessel-aware wind thresholds, and chop alerts for safer rows.',
-    icon: <Waves className="w-8 h-8" />,
-    status: 'beta',
-    tags: ['Rowing', 'Tides', 'Safety'],
-    link: '/labs/rowwindow',
-  },
-  {
     name: 'AOTU.ai',
     description: 'AI operators for real-world automation. BrainFrame edge platform, modular VisionCapsules, and pre-packaged solutions.',
     icon: <Eye className="w-8 h-8" />,
@@ -125,15 +141,6 @@ const labApps: LabApp[] = [
     link: '/labs/verdant',
   },
   {
-
-    name: 'Care Kits',
-    description: 'Personalized safety kits for aging parents living independently. Take a 2-minute quiz, get a tailored plan — privacy-first, no cameras.',
-    icon: <ShieldCheck className="w-8 h-8" />,
-    status: 'beta',
-    tags: ['Eldercare', 'Health', 'Family'],
-    link: '/labs/carekits',
-  },
-  {
     name: 'Asentio OS',
     description: 'Executive operating dashboard for a consulting business — CRM, contracts, invoices, expenses, forecasting, and an AI copilot in one place.',
     icon: <Building2 className="w-8 h-8" />,
@@ -165,15 +172,6 @@ const labApps: LabApp[] = [
     tags: ['Consumer', 'AI', 'Smart Glasses'],
     link: '/labs/justgrapes',
   },
-  {
-    name: 'RHCRM',
-    description: 'Lightweight mission control for sponsorship teams. AI meeting summaries, action extraction, and a pipeline built for volunteer committees.',
-    icon: <Briefcase className="w-8 h-8" />,
-    status: 'beta',
-    tags: ['CRM', 'Sponsorship', 'AI'],
-    link: '/labs/rhcrm',
-  },
-
 ];
 
 const statusColors: Record<string, string> = {
@@ -199,7 +197,7 @@ const Labs = () => {
             <span className="text-sm font-semibold uppercase tracking-widest">Asentio Labs</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Experiments &amp; Tools
+            Experiments & Tools
           </h1>
           <p className="text-lg text-muted-foreground">
             Early-stage apps and utilities we're building for the XR ecosystem. Try them out, break them, and tell us what you think.
