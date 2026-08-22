@@ -72,6 +72,7 @@ const CalendarSidebar: React.FC<Props> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const dayRefs = useRef(new Map<string, HTMLDivElement>());
   const pendingScrollDay = useRef<string | null>(null);
+  const didInitScroll = useRef(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<{
@@ -204,6 +205,24 @@ const CalendarSidebar: React.FC<Props> = ({
       node.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [grouped]);
+
+  /** On first load (refresh) or when events arrive, jump the agenda to today. */
+  useEffect(() => {
+    if (didInitScroll.current) return;
+    if (view !== 'agenda' || grouped.length === 0) return;
+    didInitScroll.current = true;
+    const todayKey = new Date().toDateString();
+    let targetKey = todayKey;
+    if (!dayRefs.current.has(todayKey)) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const future = grouped.find(([day]) => new Date(day) >= todayStart);
+      targetKey = future ? future[0] : grouped[grouped.length - 1][0];
+    }
+    const node = dayRefs.current.get(targetKey);
+    if (node) node.scrollIntoView({ block: 'start' });
+    else pendingScrollDay.current = targetKey;
+  }, [grouped, view]);
 
   const monthGrid = useMemo(() => {
     const first = startOfMonth(monthCursor);
@@ -362,7 +381,12 @@ const CalendarSidebar: React.FC<Props> = ({
                 if (el) dayRefs.current.set(day, el);
                 else dayRefs.current.delete(day);
               }}
-              className="mb-4"
+              className={cn(
+                'mb-4 rounded-lg',
+                new Date(day) < new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                  ? 'bg-amber-500/[0.04] p-2 opacity-55'
+                  : 'p-0',
+              )}
             >
 
               <div className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-white/35">
