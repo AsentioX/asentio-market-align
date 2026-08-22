@@ -4263,6 +4263,7 @@ export type Database = {
           all_day: boolean
           created_at: string
           ends_at: string
+          google_calendar_id: string | null
           google_event_id: string | null
           id: string
           location: string | null
@@ -4277,6 +4278,7 @@ export type Database = {
           all_day?: boolean
           created_at?: string
           ends_at: string
+          google_calendar_id?: string | null
           google_event_id?: string | null
           id?: string
           location?: string | null
@@ -4291,6 +4293,7 @@ export type Database = {
           all_day?: boolean
           created_at?: string
           ends_at?: string
+          google_calendar_id?: string | null
           google_event_id?: string | null
           id?: string
           location?: string | null
@@ -4317,6 +4320,7 @@ export type Database = {
           company: string | null
           created_at: string
           email: string | null
+          google_etag: string | null
           google_resource_id: string | null
           id: string
           job_title: string | null
@@ -4335,6 +4339,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          google_etag?: string | null
           google_resource_id?: string | null
           id?: string
           job_title?: string | null
@@ -4353,6 +4358,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          google_etag?: string | null
           google_resource_id?: string | null
           id?: string
           job_title?: string | null
@@ -4462,6 +4468,7 @@ export type Database = {
           created_at: string
           description: string | null
           due_date: string | null
+          google_task_list_id: string | null
           grouping_key: string | null
           id: string
           last_activity_at: string
@@ -4483,6 +4490,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          google_task_list_id?: string | null
           grouping_key?: string | null
           id?: string
           last_activity_at?: string
@@ -4504,6 +4512,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          google_task_list_id?: string | null
           grouping_key?: string | null
           id?: string
           last_activity_at?: string
