@@ -85,6 +85,8 @@ interface Props {
     spawnCard: (task: TdzTask) => void;
     openCard: (id: string) => void;
     deleteCard: (id: string) => void;
+    updateEvent: (id: string, patch: Partial<TdzEvent>) => void;
+
   };
 }
 
