@@ -126,6 +126,19 @@ const ToDoooZLayout: React.FC = () => {
   );
   const ring = useMemo(() => completionRing(visibleTasks), [visibleTasks]);
 
+  const cardContacts = useMemo(() => {
+    const m = new Map<string, { name: string; avatar_url: string | null }[]>();
+    for (const s of tdz.stakeholders) {
+      if (!s.project_id) continue;
+      const arr = m.get(s.project_id) ?? [];
+      if (!arr.some((c) => c.name === s.name && c.avatar_url === s.avatar_url)) {
+        arr.push({ name: s.name, avatar_url: s.avatar_url });
+      }
+      m.set(s.project_id, arr);
+    }
+    return m;
+  }, [tdz.stakeholders]);
+
   const openCard = tdz.cardById.get(openId ?? '') ?? null;
   const openParent = openCard?.parent_id ? (tdz.cardById.get(openCard.parent_id) ?? null) : null;
 
@@ -343,6 +356,7 @@ const ToDoooZLayout: React.FC = () => {
               tasks={tdz.tasks}
               cardById={tdz.cardById}
               childrenOf={tdz.childrenOf}
+              cardContacts={cardContacts}
               focusedId={focusedId}
               onFocus={setFocusedId}
               onOpen={(id) => {

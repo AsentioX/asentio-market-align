@@ -17,6 +17,11 @@ import type { TdzCard, TdzTask } from '../lib/types';
 import { flattenTaskTree } from '../lib/taskTree';
 import { useTagLibrary } from '../lib/tagContext';
 
+export interface LinkedContact {
+  name: string;
+  avatar_url: string | null;
+}
+
 interface Props {
   card: TdzCard;
   parent?: TdzCard | null;
@@ -25,6 +30,7 @@ interface Props {
   childDone: number;
   focused: boolean;
   isChild: boolean;
+  linkedContacts?: LinkedContact[];
   onFocus: () => void;
   onOpen: () => void;
   onToggleTask: (task: TdzTask) => void;
@@ -43,6 +49,7 @@ const TaskCard: React.FC<Props> = ({
   childDone,
   focused,
   isChild,
+  linkedContacts,
   onFocus,
   onOpen,
   onToggleTask,
@@ -60,6 +67,10 @@ const TaskCard: React.FC<Props> = ({
   const all = flattenTaskTree(tasks);
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : card.progress;
+
+  const contacts = linkedContacts ?? [];
+  const shown = contacts.slice(0, 3);
+  const overflow = contacts.length - shown.length;
 
   return (
     <ContextMenu>
@@ -167,27 +178,57 @@ const TaskCard: React.FC<Props> = ({
               <Progress value={pct} className="h-1 bg-white/10" />
 
               <div className="mt-2 flex items-center justify-between text-[10px] text-white/45">
-                <span className="flex items-center gap-1.5">
-                  {(card.context_label ?? '')
-                    .split(',')
-                    .map((t) => t.trim())
-                    .filter(Boolean)
-                    .map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-block rounded-full px-2 py-0.5 uppercase tracking-wide"
-                        style={{
-                          backgroundColor: `${colorFor(tag)}26`,
-                          color: colorFor(tag),
-                          border: `1px solid ${colorFor(tag)}59`,
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                </span>
+                <div className="flex min-w-0 items-center gap-1.5">
+                  {shown.length > 0 && (
+                    <div className="flex shrink-0 items-center -space-x-1.5" title={contacts.map((c) => c.name).join(', ')}>
+                      {shown.map((c, i) =>
+                        c.avatar_url ? (
+                          <img
+                            key={i}
+                            src={c.avatar_url}
+                            alt={c.name}
+                            loading="lazy"
+                            className="h-[18px] w-[18px] rounded-full border border-black/60 object-cover"
+                            style={{ zIndex: shown.length - i }}
+                          />
+                        ) : (
+                          <span
+                            key={i}
+                            className="flex h-[18px] w-[18px] items-center justify-center rounded-full border border-black/60 bg-white/15 text-[8px] font-semibold text-white"
+                            style={{ zIndex: shown.length - i }}
+                          >
+                            {c.name.slice(0, 1).toUpperCase()}
+                          </span>
+                        ),
+                      )}
+                      {overflow > 0 && (
+                        <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full border border-black/60 bg-white/15 text-[8px] font-semibold text-white">
+                          +{overflow}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <span className="flex min-w-0 items-center gap-1.5">
+                    {(card.context_label ?? '')
+                      .split(',')
+                      .map((t) => t.trim())
+                      .filter(Boolean)
+                      .map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-block rounded-full px-2 py-0.5 uppercase tracking-wide"
+                          style={{
+                            backgroundColor: `${colorFor(tag)}26`,
+                            color: colorFor(tag),
+                            border: `1px solid ${colorFor(tag)}59`,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                  </span>
+                </div>
                 <div className="flex items-center gap-2" />
-
               </div>
             </>
           )}

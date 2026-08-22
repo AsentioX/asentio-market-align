@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import TaskCard from './TaskCard';
+import TaskCard, { type LinkedContact } from './TaskCard';
 import { BUCKETS, PRIORITIES, sortCards } from '../lib/matrix';
 import type { TdzBucket, TdzCard, TdzPriority, TdzTask } from '../lib/types';
 import { resolveTheme } from '../lib/theme';
@@ -11,6 +11,7 @@ interface Props {
   tasks: TdzTask[];
   cardById: Map<string, TdzCard>;
   childrenOf: Map<string, TdzCard[]>;
+  cardContacts?: Map<string, LinkedContact[]>;
   focusedId: string | null;
   onFocus: (id: string) => void;
   onOpen: (id: string) => void;
@@ -27,6 +28,7 @@ const SpatialMatrix: React.FC<Props> = ({
   tasks,
   cardById,
   childrenOf,
+  cardContacts,
   focusedId,
   onFocus,
   onOpen,
@@ -38,6 +40,7 @@ const SpatialMatrix: React.FC<Props> = ({
   onReorder,
 }) => {
   const tasksFor = (id: string) => tasks.filter((t) => t.project_id === id);
+  const contactsFor = (id: string) => cardContacts?.get(id) ?? [];
 
   /** Where the dragged card would land: null beforeId means "end of the cell". */
   const [dropTarget, setDropTarget] = useState<
@@ -213,6 +216,7 @@ const SpatialMatrix: React.FC<Props> = ({
                             childDone={kids.filter((k) => k.status === 'done').length}
                             focused={focusedId === card.id}
                             isChild={false}
+                            linkedContacts={contactsFor(card.id)}
                             onFocus={() => onFocus(card.id)}
                             onOpen={() => onOpen(card.id)}
                             onToggleTask={onToggleTask}
@@ -236,6 +240,7 @@ const SpatialMatrix: React.FC<Props> = ({
                                 childDone={0}
                                 focused={focusedId === kid.id}
                                 isChild
+                                linkedContacts={contactsFor(kid.id)}
                                 onFocus={() => onFocus(kid.id)}
                                 onOpen={() => onOpen(kid.id)}
                                 onToggleTask={onToggleTask}
@@ -268,6 +273,7 @@ const SpatialMatrix: React.FC<Props> = ({
                             childDone={0}
                             focused={focusedId === kid.id}
                             isChild
+                            linkedContacts={contactsFor(kid.id)}
                             onFocus={() => onFocus(kid.id)}
                             onOpen={() => onOpen(kid.id)}
                             onToggleTask={onToggleTask}
