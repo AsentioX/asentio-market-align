@@ -1,18 +1,9 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import type { TdzTag } from './types';
 
-export const DEFAULT_TAG_COLOR = '#6366f1';
+export const DEFAULT_TAG_COLOR = '#2A6FDB';
 
-export const TAG_COLOR_OPTIONS = [
-  '#6366f1',
-  '#0ea5e9',
-  '#10b981',
-  '#f59e0b',
-  '#ef4444',
-  '#ec4899',
-  '#a855f7',
-  '#64748b',
-];
+export const TAG_COLOR_OPTIONS = TDZ_THEMES.map((t) => t.hex);
 
 interface TagLibrary {
   tags: TdzTag[];
