@@ -251,14 +251,6 @@ const CompanyDetail = () => {
 
       {/* 6. Detailed capabilities & taxonomy */}
       {company && <CompanyCapabilities company={company} />}
-
-      {/* 7. Explore the ecosystem */}
-      <CompanyEcosystem
-        companyName={displayName}
-        partners={partners}
-        similar={similar}
-        solutionPartners={solutionPartners}
-      />
     </div>
   );
 };
