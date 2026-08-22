@@ -58,7 +58,7 @@ const UseCaseFinderWidget = ({ onChange }: Props) => {
           index={2}
           label="Role"
           question="What best describes your role?"
-          placeholder={industry ? 'Select your role' : 'Select a role'}
+          placeholder="Select a role"
           options={roleOptions}
           context={[industryOpt]}
           value={role}
