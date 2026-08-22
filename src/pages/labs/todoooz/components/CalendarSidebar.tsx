@@ -61,9 +61,18 @@ const CalendarSidebar: React.FC<Props> = ({
   onDeleteEvent,
   onOpenCard,
   onSpawnCard,
+  onLoadRange,
 }) => {
 
   const [view, setView] = useState<'agenda' | 'time'>('agenda');
+  const [monthOpen, setMonthOpen] = useState(false);
+  const [monthCursor, setMonthCursor] = useState(() => startOfMonth(new Date()));
+  const [loadingRange, setLoadingRange] = useState(false);
+  const loadedMonths = useRef(new Set<string>());
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dayRefs = useRef(new Map<string, HTMLDivElement>());
+  const pendingScrollDay = useRef<string | null>(null);
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<{
     title: string;
