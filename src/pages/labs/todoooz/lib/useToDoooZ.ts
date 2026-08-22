@@ -8,6 +8,7 @@ import {
   designateAccount,
   disconnectAccount,
   importGoogleCalendar,
+  importGoogleTasks,
   listGoogleIdentities,
   swapSlots,
   type GoogleIdentity,
