@@ -40,6 +40,7 @@ export interface TdzTask {
   rank: number;
   account_slot: string | null;
   google_task_id: string | null;
+  parent_task_id: string | null;
   created_at: string;
   updated_at: string;
 }
