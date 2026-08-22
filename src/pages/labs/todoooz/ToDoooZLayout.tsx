@@ -358,6 +358,7 @@ const ToDoooZLayout: React.FC = () => {
               }}
               onToggleTask={tdz.toggleTask}
               onPatch={tdz.patchCard}
+              onReorder={tdz.reorderCards}
               onCreate={(b, p) => createCard(b, p)}
               onAddSub={(parentId) => createCard('today', 'core', parentId)}
               onDelete={(id) => {
