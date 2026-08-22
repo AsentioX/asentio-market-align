@@ -31,6 +31,7 @@ import SpatialMatrix from './components/SpatialMatrix';
 import CalendarSidebar from './components/CalendarSidebar';
 import ChiefOfStaff from './components/ChiefOfStaff';
 import DetailDrawer, { TAB_KEYS, type TabKey } from './components/DetailDrawer';
+import { TagProvider } from './lib/tagContext';
 import ShortcutOverlay from './components/ShortcutOverlay';
 import ContactsCRM from './components/ContactsCRM';
 import GoogleAccountsPanel from './components/GoogleAccountsPanel';
@@ -203,6 +204,12 @@ const ToDoooZLayout: React.FC = () => {
   );
 
   return (
+    <TagProvider
+      tags={tdz.tags}
+      createTag={tdz.createTag}
+      updateTag={tdz.updateTag}
+      deleteTag={tdz.deleteTag}
+    >
     <div className={cn('min-h-screen text-white', envClass[environment])}>
       <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b border-white/10 bg-black/40 px-4 py-3 backdrop-blur-xl">
         <Link to="/labs" className="flex items-center gap-2">
@@ -460,6 +467,7 @@ const ToDoooZLayout: React.FC = () => {
       <ShortcutOverlay open={helpOpen} onOpenChange={setHelpOpen} />
 
     </div>
+    </TagProvider>
   );
 };
 
