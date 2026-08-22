@@ -131,7 +131,98 @@ const CalendarSidebar: React.FC<Props> = ({
     return [...map.entries()];
   }, [upcoming]);
 
+  const eventsByDay = useMemo(() => {
+    const m = new Map<string, number>();
+    upcoming.forEach((e) => {
+      const k = new Date(e.starts_at).toDateString();
+      m.set(k, (m.get(k) ?? 0) + 1);
+    });
+    return m;
+  }, [upcoming]);
+
+  /** Earliest month currently pulled in — anything before this needs an import. */
+  const earliestLoaded = useMemo(() => {
+    const first = upcoming[0];
+    const base = first ? new Date(first.starts_at) : new Date();
+    return startOfMonth(base);
+  }, [upcoming]);
+
+  const loadMonth = useCallback(
+    async (month: Date) => {
+      if (!onLoadRange) return;
+      const key = monthKey(month);
+      if (loadedMonths.current.has(key)) return;
+      loadedMonths.current.add(key);
+      setLoadingRange(true);
+      try {
+        await onLoadRange(startOfMonth(month), addMonths(month, 1));
+      } finally {
+        setLoadingRange(false);
+      }
+    },
+    [onLoadRange],
+  );
+
+  /** Pull in earlier events as the user scrolls back through the agenda. */
+  const handleScroll = useCallback(async () => {
+    const el = scrollRef.current;
+    if (!el || view !== 'agenda' || loadingRange || !onLoadRange) return;
+    if (el.scrollTop > 60) return;
+    const target = addMonths(earliestLoaded, -1);
+    if (loadedMonths.current.has(monthKey(target))) return;
+    const prevHeight = el.scrollHeight;
+    await loadMonth(target);
+    requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop += scrollRef.current.scrollHeight - prevHeight;
+      }
+    });
+  }, [view, loadingRange, onLoadRange, earliestLoaded, loadMonth]);
+
+  const jumpToDay = useCallback(
+    async (day: Date) => {
+      setView('agenda');
+      const key = day.toDateString();
+      const node = dayRefs.current.get(key);
+      if (node) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      pendingScrollDay.current = key;
+      await loadMonth(startOfMonth(day));
+    },
+    [loadMonth],
+  );
+
+  // After a month import lands, scroll to the day the user picked.
+  useEffect(() => {
+    const key = pendingScrollDay.current;
+    if (!key) return;
+    const node = dayRefs.current.get(key);
+    if (node) {
+      pendingScrollDay.current = null;
+      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [grouped]);
+
+  const monthGrid = useMemo(() => {
+    const first = startOfMonth(monthCursor);
+    const lead = first.getDay();
+    const days: (Date | null)[] = Array.from({ length: lead }, () => null);
+    const total = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 0).getDate();
+    for (let i = 1; i <= total; i++) days.push(new Date(monthCursor.getFullYear(), monthCursor.getMonth(), i));
+    while (days.length % 7 !== 0) days.push(null);
+    return days;
+  }, [monthCursor]);
+
+  const goMonth = (delta: number) => {
+    const next = addMonths(monthCursor, delta);
+    setMonthCursor(next);
+    void loadMonth(next);
+  };
+
   const nowPct = ((now.getHours() * 60 + now.getMinutes()) / 1440) * 100;
+
 
   if (collapsed) {
     return (
