@@ -21,7 +21,7 @@ Reordering also syncs to Google Tasks. After a drop, the moved task is sent to G
 - The confirmation toast offers "Undo", which restores the subtask on the parent card.
 - Reversing later: setting the new card's Parent back from the Parent picker in the drawer re-attaches it; clearing the parent leaves it standalone. Re-selecting the original parent also restores the subtask entry on that parent's task list.
 
-## 2. Collapsible sections in card details
+## 3. Collapsible sections in card details
 
 Tabs stay as they are. Inside them, each block gets a clickable header with a chevron that expands/collapses:
 - Overview: Mode, Tags, Notes, Linked documents (Delete Card stays always visible at the bottom)
