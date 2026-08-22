@@ -11,6 +11,7 @@ import {
   importGoogleTasks,
   pushTaskToGoogle,
   deleteGoogleTask,
+  moveGoogleTask,
   pushEventToGoogle,
   deleteGoogleEvent,
   pushContactToGoogle,
