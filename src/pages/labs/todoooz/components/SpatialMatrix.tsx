@@ -200,7 +200,7 @@ const SpatialMatrix: React.FC<Props> = ({
                             setDropTarget(null);
                           }}
                         >
-                          {active && dropTarget?.beforeId === card.id && <DropLine hsl={p.hsl} />}
+                          {active && dropTarget?.beforeId === card.id && <DropLine hsl={draggedHsl ?? p.hsl} />}
 
                           <TaskCard
                             card={card}
