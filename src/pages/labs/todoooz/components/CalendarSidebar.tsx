@@ -246,7 +246,23 @@ const CalendarSidebar: React.FC<Props> = ({
                             <ExternalLink className="h-3 w-3" /> Join
                           </a>
                         )}
-                        {project && <span className="rounded bg-white/10 px-1.5 py-0.5">{project.title}</span>}
+                        {project ? (
+                          <button
+                            onClick={() => onOpenCard?.(project.id)}
+                            className="rounded bg-white/10 px-1.5 py-0.5 text-white/70 hover:bg-white/20 hover:text-white"
+                          >
+                            {project.title}
+                          </button>
+                        ) : (
+                          onUpdateEvent && (
+                            <button
+                              onClick={() => startEdit(e)}
+                              className="rounded border border-dashed border-white/15 px-1.5 py-0.5 text-white/40 hover:text-white"
+                            >
+                              + Link card
+                            </button>
+                          )
+                        )}
                       </div>
                       </>
                       )}
