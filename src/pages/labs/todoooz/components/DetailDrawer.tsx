@@ -129,6 +129,18 @@ const DetailDrawer: React.FC<Props> = ({
         .slice(0, 100),
     [events],
   );
+  /** Activities + linked calendar events merged into one reverse-chronological feed. */
+  const timelineEntries = useMemo(() => {
+    const items: (
+      | { kind: 'activity'; id: string; at: string; activity: TdzActivity }
+      | { kind: 'event'; id: string; at: string; event: TdzEvent }
+    )[] = [
+      ...activities.map((a) => ({ kind: 'activity' as const, id: `a-${a.id}`, at: a.occurred_at, activity: a })),
+      ...linkedEvents.map((e) => ({ kind: 'event' as const, id: `e-${e.id}`, at: e.starts_at, event: e })),
+    ];
+    return items.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  }, [activities, linkedEvents]);
+
 
   if (!card) return null;
 
