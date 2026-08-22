@@ -91,7 +91,7 @@ const ContactsCRM: React.FC<Props> = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full border-white/10 bg-slate-950/95 text-white backdrop-blur-xl sm:max-w-3xl"
+        className="flex h-full w-full flex-col overflow-hidden border-white/10 bg-slate-950/95 text-white backdrop-blur-xl sm:max-w-3xl"
       >
         <SheetHeader>
           <SheetTitle className="text-white">Contacts</SheetTitle>
@@ -149,8 +149,8 @@ const ContactsCRM: React.FC<Props> = ({
           </div>
         </div>
 
-        <div className="mt-4 grid max-h-[calc(100vh-220px)] grid-cols-1 gap-4 overflow-hidden md:grid-cols-[1fr_1fr]">
-          <div className="overflow-y-auto pr-1">
+        <div className="mt-4 grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden md:grid-cols-[1fr_1fr]">
+          <div className="min-h-0 overflow-y-auto pr-1">
             <div className="mb-2 text-[11px] text-white/40">{filtered.length} contacts</div>
             <ul className="space-y-1.5">
               {filtered.map((c) => (
@@ -185,7 +185,7 @@ const ContactsCRM: React.FC<Props> = ({
             </ul>
           </div>
 
-          <div className="overflow-y-auto rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="min-h-0 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.02] p-4">
             {!selected ? (
               <p className="text-xs text-white/40">Select a contact to edit their details.</p>
             ) : (
