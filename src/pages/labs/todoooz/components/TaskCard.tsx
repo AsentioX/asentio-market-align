@@ -52,6 +52,8 @@ const TaskCard: React.FC<Props> = ({
   onDragStart,
 }) => {
   const [expanded, setExpanded] = useState(true);
+  const { colorFor } = useTagLibrary();
+
   const theme = resolveTheme(card, parent);
   const tier = depthTier(card);
   const top = tasks.slice(0, 3);
