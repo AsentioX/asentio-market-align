@@ -126,7 +126,12 @@ const SpatialMatrix: React.FC<Props> = ({
                       const kids = childrenOf.get(card.id) ?? [];
                       const inCell = kids.filter((k) => k.time_bucket === b.key && k.priority === p.key);
                       return (
-                        <div key={card.id} className="space-y-2">
+                        <div
+                          key={card.id}
+                          className="space-y-2"
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => handleCardDrop(e, card.id, b.key, p.key)}
+                        >
                           <TaskCard
                             card={card}
                             tasks={tasksFor(card.id)}
