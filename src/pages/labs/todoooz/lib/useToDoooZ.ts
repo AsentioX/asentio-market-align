@@ -161,12 +161,14 @@ export const useToDoooZ = (userId: string | undefined) => {
 
   const toggleTask = useCallback(
     async (task: TdzTask) => {
-      commitTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done: !t.done } : t)));
-      await supabase.from('tdz_tasks').update({ done: !task.done }).eq('id', task.id);
+      const done = !task.done;
+      const completed_at = done ? new Date().toISOString() : null;
+      commitTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done, completed_at } : t)));
+      await supabase.from('tdz_tasks').update({ done, completed_at }).eq('id', task.id);
       await patchCard(task.project_id, {}, true);
       pushTask(task.id);
     },
-    [patchCard, pushTask],
+    [patchCard, pushTask, commitTasks],
   );
 
   const addTask = useCallback(
@@ -346,9 +348,9 @@ export const useToDoooZ = (userId: string | undefined) => {
         toast.error(error.message);
         return;
       }
-      // Card linking is a ToDoooZ-only concept — nothing to push to Google.
+      // Card / task linking is a ToDoooZ-only concept — nothing to push to Google.
       const keys = Object.keys(patch);
-      if (keys.length && keys.every((k) => k === 'project_id')) return;
+      if (keys.length && keys.every((k) => k === 'project_id' || k === 'task_id')) return;
 
       const { data } = await supabase.from('tdz_calendar_events').select('*').eq('id', id).maybeSingle();
       const event = data as TdzEvent | null;
@@ -600,10 +602,16 @@ export const useToDoooZ = (userId: string | undefined) => {
 
 
   const linkContactToCard = useCallback(
-    async (projectId: string, contact: TdzContact, role?: string | null) => {
+    async (projectId: string, contact: TdzContact, role?: string | null, taskId?: string | null) => {
       if (!userId) return;
-      if (stakeholders.some((s) => s.project_id === projectId && s.contact_id === contact.id)) {
-        toast.info(`${contact.name} is already on this card`);
+      const duplicate = stakeholders.some(
+        (s) =>
+          s.contact_id === contact.id &&
+          s.project_id === projectId &&
+          (s.task_id ?? null) === (taskId ?? null),
+      );
+      if (duplicate) {
+        toast.info(`${contact.name} is already linked here`);
         return;
       }
       const { data, error } = await supabase
@@ -611,6 +619,7 @@ export const useToDoooZ = (userId: string | undefined) => {
         .insert({
           user_id: userId,
           project_id: projectId,
+          task_id: taskId ?? null,
           contact_id: contact.id,
           name: contact.name,
           role: role ?? contact.job_title ?? null,
@@ -624,6 +633,14 @@ export const useToDoooZ = (userId: string | undefined) => {
     },
     [userId, stakeholders],
   );
+
+  /** Attach a contact to a specific task / subtask (also visible on the card). */
+  const linkContactToTask = useCallback(
+    async (task: TdzTask, contact: TdzContact, role?: string | null) =>
+      linkContactToCard(task.project_id, contact, role, task.id),
+    [linkContactToCard],
+  );
+
 
   const createTag = useCallback(
     async (name: string, color = '#6366f1') => {
@@ -707,6 +724,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     swapAccounts,
 
     linkContactToCard,
+    linkContactToTask,
     setConnections,
   };
 };

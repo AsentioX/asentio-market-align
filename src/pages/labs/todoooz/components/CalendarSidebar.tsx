@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { TdzCard, TdzEvent } from '../lib/types';
+import type { TdzCard, TdzEvent, TdzTask } from '../lib/types';
 import { resolveTheme } from '../lib/theme';
 
 interface Props {
   events: TdzEvent[];
   cardById: Map<string, TdzCard>;
   cards?: TdzCard[];
+  tasks?: TdzTask[];
   collapsed: boolean;
   onToggle: () => void;
   onUpdateEvent?: (id: string, patch: Partial<TdzEvent>) => Promise<void> | void;
@@ -31,6 +32,7 @@ const CalendarSidebar: React.FC<Props> = ({
   events,
   cardById,
   cards = [],
+  tasks = [],
   collapsed,
   onToggle,
   onUpdateEvent,
@@ -47,12 +49,14 @@ const CalendarSidebar: React.FC<Props> = ({
     starts_at: string;
     ends_at: string;
     project_id: string;
+    task_id: string;
   }>({
     title: '',
     location: '',
     starts_at: '',
     ends_at: '',
     project_id: '',
+    task_id: '',
   });
 
   const startEdit = (e: TdzEvent) => {
@@ -63,6 +67,7 @@ const CalendarSidebar: React.FC<Props> = ({
       starts_at: toLocalInput(e.starts_at),
       ends_at: toLocalInput(e.ends_at),
       project_id: e.project_id ?? '',
+      task_id: e.task_id ?? '',
     });
   };
 
@@ -74,6 +79,7 @@ const CalendarSidebar: React.FC<Props> = ({
       starts_at: new Date(draft.starts_at).toISOString(),
       ends_at: new Date(draft.ends_at).toISOString(),
       project_id: draft.project_id || null,
+      task_id: draft.project_id ? draft.task_id || null : null,
     });
     setEditingId(null);
   };
@@ -179,7 +185,7 @@ const CalendarSidebar: React.FC<Props> = ({
                           />
                           <select
                             value={draft.project_id}
-                            onChange={(ev) => setDraft((d) => ({ ...d, project_id: ev.target.value }))}
+                            onChange={(ev) => setDraft((d) => ({ ...d, project_id: ev.target.value, task_id: '' }))}
                             aria-label="Linked card"
                             className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
                           >
@@ -190,6 +196,23 @@ const CalendarSidebar: React.FC<Props> = ({
                               </option>
                             ))}
                           </select>
+                          {draft.project_id && (
+                            <select
+                              value={draft.task_id}
+                              onChange={(ev) => setDraft((d) => ({ ...d, task_id: ev.target.value }))}
+                              aria-label="Linked task"
+                              className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
+                            >
+                              <option value="">Card level (no specific task)</option>
+                              {tasks
+                                .filter((t) => t.project_id === draft.project_id)
+                                .map((t) => (
+                                  <option key={t.id} value={t.id} className="bg-neutral-900">
+                                    {t.title}
+                                  </option>
+                                ))}
+                            </select>
+                          )}
 
                           <div className="flex items-center gap-1.5">
                             <button

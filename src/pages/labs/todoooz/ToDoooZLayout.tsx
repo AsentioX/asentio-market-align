@@ -372,6 +372,7 @@ const ToDoooZLayout: React.FC = () => {
           events={visibleEvents}
           cardById={tdz.cardById}
           cards={visibleCards}
+          tasks={tdz.tasks}
           collapsed={calCollapsed}
           onToggle={() => setCalCollapsed((v) => !v)}
           onUpdateEvent={tdz.updateEvent}
@@ -439,6 +440,7 @@ const ToDoooZLayout: React.FC = () => {
           addStakeholder: tdz.addStakeholder,
           removeStakeholder: tdz.removeStakeholder,
           linkContactToCard: tdz.linkContactToCard,
+          linkContactToTask: tdz.linkContactToTask,
           openContacts: () => setContactsOpen(true),
           addDocument: tdz.addDocument,
           updateDocument: tdz.updateDocument,

@@ -41,6 +41,8 @@ export interface TdzTask {
   account_slot: string | null;
   google_task_id: string | null;
   parent_task_id: string | null;
+  completed_at: string | null;
+  google_updated_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -56,7 +58,8 @@ export interface TdzActivity {
 
 export interface TdzStakeholder {
   id: string;
-  project_id: string;
+  project_id: string | null;
+  task_id: string | null;
   name: string;
   role: string | null;
   email: string | null;
@@ -78,6 +81,7 @@ export interface TdzDocument {
 export interface TdzEvent {
   id: string;
   project_id: string | null;
+  task_id: string | null;
   account_slot: string;
   title: string;
   location: string | null;
@@ -88,6 +92,7 @@ export interface TdzEvent {
   google_event_id?: string | null;
   google_calendar_id?: string | null;
 }
+
 
 export interface TdzConnection {
   id: string;

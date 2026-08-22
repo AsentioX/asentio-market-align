@@ -70,13 +70,19 @@ interface Props {
   api: {
     patchCard: (id: string, patch: Partial<TdzCard>) => void;
     toggleTask: (task: TdzTask) => void;
-    addTask: (projectId: string, title: string, due?: string | null) => void;
+    addTask: (projectId: string, title: string, due?: string | null, parentTaskId?: string | null) => void;
     updateTask: (id: string, patch: Partial<TdzTask>) => void;
     deleteTask: (id: string) => void;
     reorderTasks: (projectId: string, ordered: TdzTask[], movedId?: string) => void;
     addActivity: (projectId: string, summary: string, detail?: string) => void;
     addStakeholder: (projectId: string, payload: Partial<TdzStakeholder>) => void;
-    linkContactToCard: (projectId: string, contact: TdzContact, role?: string | null) => void;
+    linkContactToCard: (
+      projectId: string,
+      contact: TdzContact,
+      role?: string | null,
+      taskId?: string | null,
+    ) => void;
+    linkContactToTask: (task: TdzTask, contact: TdzContact, role?: string | null) => void;
     openContacts: () => void;
     removeStakeholder: (id: string) => void;
     addDocument: (projectId: string, url: string, title: string, type: string, taskId?: string | null) => void;
@@ -115,6 +121,10 @@ const DetailDrawer: React.FC<Props> = ({
   const [contactQuery, setContactQuery] = useState('');
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [openTaskId, setOpenTaskId] = useState<string | null>(null);
+  const [subtaskFor, setSubtaskFor] = useState<string | null>(null);
+  const [subtaskTitle, setSubtaskTitle] = useState('');
+  const [taskContactQuery, setTaskContactQuery] = useState('');
 
   const theme = card ? resolveTheme(card, parent) : null;
   const linkedEvents = useMemo(
@@ -394,7 +404,14 @@ const DetailDrawer: React.FC<Props> = ({
                     </div>
                     <div>
                       <div className="text-sm text-white">{s.name}</div>
-                      <div className="text-[11px] text-white/45">{s.role ?? '—'}</div>
+                      <div className="text-[11px] text-white/45">
+                        {s.role ?? '—'}
+                        {s.task_id && (
+                          <span className="ml-1 rounded bg-white/10 px-1 text-[9px] text-white/55">
+                            {tasks.find((t) => t.id === s.task_id)?.title ?? 'task'}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <button onClick={() => api.removeStakeholder(s.id)} className="text-white/30 hover:text-rose-300">
@@ -437,9 +454,14 @@ const DetailDrawer: React.FC<Props> = ({
               </Button>
             </div>
             <ul className="space-y-2">
-              {orderedTasks.map(({ task: t, depth }) => (
-                <li
-                  key={t.id}
+              {orderedTasks.map(({ task: t, depth }) => {
+                const taskPeople = stakeholders.filter((s) => s.task_id === t.id);
+                const taskEvents = events.filter((e) => e.task_id === t.id);
+                const taskDocs = documents.filter((d) => d.task_id === t.id);
+                const open = openTaskId === t.id;
+                return (
+                <li key={t.id} style={{ marginLeft: depth ? 20 : 0 }} className="space-y-1">
+                <div
                   draggable
                   onDragStart={() => setDragId(t.id)}
                   onDragEnd={() => {
@@ -454,7 +476,6 @@ const DetailDrawer: React.FC<Props> = ({
                     e.preventDefault();
                     dropOn(t.id);
                   }}
-                  style={{ marginLeft: depth ? 20 : 0 }}
                   className={`flex items-center gap-2 rounded-lg border p-2.5 transition ${
                     depth
                       ? 'border-white/[0.06] border-l-2 border-l-white/20 bg-white/[0.02]'
@@ -471,9 +492,24 @@ const DetailDrawer: React.FC<Props> = ({
                     className="h-4 w-4 accent-[hsl(var(--tdz-accent))]"
                   />
 
-                  <span className={`flex-1 truncate text-sm ${t.done ? 'text-white/35 line-through' : 'text-white/85'}`}>
+                  <button
+                    onClick={() => setOpenTaskId(open ? null : t.id)}
+                    className={`flex-1 truncate text-left text-sm ${t.done ? 'text-white/35 line-through' : 'text-white/85'}`}
+                  >
                     {t.title}
-                  </span>
+                  </button>
+                  {taskPeople.length > 0 && (
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded bg-white/10 px-1.5 text-[9px] text-white/60">
+                      <Users className="h-3 w-3" />
+                      {taskPeople.length}
+                    </span>
+                  )}
+                  {taskEvents.length > 0 && (
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded bg-white/10 px-1.5 text-[9px] text-white/60">
+                      <CalendarDays className="h-3 w-3" />
+                      {new Date(taskEvents[0].starts_at).toLocaleDateString()}
+                    </span>
+                  )}
                   <input
                     type="date"
                     value={t.due_date ? t.due_date.slice(0, 10) : ''}
@@ -482,6 +518,18 @@ const DetailDrawer: React.FC<Props> = ({
                     }
                     className="rounded border border-white/10 bg-transparent px-1 text-[10px] text-white/60"
                   />
+                  {!depth && (
+                    <button
+                      onClick={() => {
+                        setSubtaskFor(subtaskFor === t.id ? null : t.id);
+                        setSubtaskTitle('');
+                      }}
+                      title="Add subtask"
+                      className="text-white/35 hover:text-white"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  )}
                   <button
                     onClick={() => api.spawnCard(t)}
                     title="Spawn as sub-task card"
@@ -492,11 +540,175 @@ const DetailDrawer: React.FC<Props> = ({
                   <button onClick={() => api.deleteTask(t.id)} className="text-white/30 hover:text-rose-300">
                     <Trash2 className="h-4 w-4" />
                   </button>
+                </div>
+
+                {subtaskFor === t.id && (
+                  <div className="ml-6 flex gap-2">
+                    <Input
+                      autoFocus
+                      value={subtaskTitle}
+                      onChange={(e) => setSubtaskTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && subtaskTitle.trim()) {
+                          api.addTask(card.id, subtaskTitle, null, t.id);
+                          setSubtaskTitle('');
+                          setSubtaskFor(null);
+                        }
+                        if (e.key === 'Escape') setSubtaskFor(null);
+                      }}
+                      placeholder="Subtask title…"
+                      className="h-8 border-white/10 bg-white/5 text-xs"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={!subtaskTitle.trim()}
+                      onClick={() => {
+                        api.addTask(card.id, subtaskTitle, null, t.id);
+                        setSubtaskTitle('');
+                        setSubtaskFor(null);
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                )}
+
+                {open && (
+                  <div className="ml-6 space-y-3 rounded-lg border border-white/10 bg-white/[0.02] p-3">
+                    <Input
+                      value={t.title}
+                      onChange={(e) => api.updateTask(t.id, { title: e.target.value })}
+                      className="h-8 border-white/10 bg-white/5 text-sm"
+                    />
+                    <Textarea
+                      defaultValue={t.notes ?? ''}
+                      onBlur={(e) => {
+                        if ((t.notes ?? '') !== e.target.value) api.updateTask(t.id, { notes: e.target.value || null });
+                      }}
+                      placeholder="Task notes (synced to Google Tasks)…"
+                      className="min-h-[70px] border-white/10 bg-white/5 text-xs"
+                    />
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-white/45">
+                      <span>{t.account_slot ? `${t.account_slot} account` : 'local task'}</span>
+                      {t.google_task_id ? <span>· synced with Google Tasks</span> : <span>· not yet on Google</span>}
+                      {t.completed_at && <span>· completed {new Date(t.completed_at).toLocaleDateString()}</span>}
+                    </div>
+
+                    {/* People on this task */}
+                    <div className="space-y-1.5">
+                      <div className="text-[10px] uppercase tracking-wide text-white/40">People</div>
+                      {taskPeople.map((s) => (
+                        <div key={s.id} className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1 text-xs">
+                          <span className="truncate text-white/80">
+                            {s.name}
+                            {s.role && <span className="text-white/40"> · {s.role}</span>}
+                          </span>
+                          <button onClick={() => api.removeStakeholder(s.id)} className="text-white/30 hover:text-rose-300">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                      <Input
+                        value={taskContactQuery}
+                        onChange={(e) => setTaskContactQuery(e.target.value)}
+                        placeholder="Search contacts to link…"
+                        className="h-8 border-white/10 bg-white/5 text-xs"
+                      />
+                      {taskContactQuery.trim() && (
+                        <ul className="max-h-36 space-y-1 overflow-y-auto">
+                          {contacts
+                            .filter((c) =>
+                              [c.name, c.email, c.company, c.job_title]
+                                .filter(Boolean)
+                                .some((v) => String(v).toLowerCase().includes(taskContactQuery.trim().toLowerCase())),
+                            )
+                            .slice(0, 6)
+                            .map((c) => (
+                              <li key={c.id}>
+                                <button
+                                  onClick={() => {
+                                    api.linkContactToTask(t, c);
+                                    setTaskContactQuery('');
+                                  }}
+                                  className="flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-xs text-white/80 hover:bg-white/10"
+                                >
+                                  <span>{c.name}</span>
+                                  <span className="text-[10px] text-white/40">
+                                    {[c.job_title, c.company].filter(Boolean).join(' · ') || c.email}
+                                  </span>
+                                </button>
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    {/* Calendar events on this task */}
+                    <div className="space-y-1.5">
+                      <div className="text-[10px] uppercase tracking-wide text-white/40">Calendar</div>
+                      {taskEvents.map((e) => (
+                        <div key={e.id} className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1 text-xs">
+                          <span className="truncate text-white/80">
+                            {new Date(e.starts_at).toLocaleString()} · {e.title}
+                          </span>
+                          <button
+                            onClick={() => api.updateEvent(e.id, { task_id: null })}
+                            className="text-white/30 hover:text-rose-300"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                      <select
+                        value=""
+                        aria-label="Link an event to this task"
+                        onChange={(ev) => {
+                          if (ev.target.value)
+                            api.updateEvent(ev.target.value, { task_id: t.id, project_id: card.id });
+                        }}
+                        className="w-full rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white"
+                      >
+                        <option value="">+ Link an event…</option>
+                        {events
+                          .filter((e) => !e.task_id && (!e.project_id || e.project_id === card.id))
+                          .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
+                          .slice(0, 60)
+                          .map((e) => (
+                            <option key={e.id} value={e.id} className="bg-neutral-900">
+                              {new Date(e.starts_at).toLocaleDateString()} · {e.title}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+
+                    {/* Attachments imported from Google */}
+                    {taskDocs.length > 0 && (
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] uppercase tracking-wide text-white/40">Attachments</div>
+                        {taskDocs.map((d) => (
+                          <a
+                            key={d.id}
+                            href={d.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-2 rounded-md bg-white/5 px-2 py-1 text-xs text-white/75 hover:bg-white/10"
+                          >
+                            {docIcon(d.doc_type)}
+                            <span className="flex-1 truncate">{d.title}</span>
+                            <ExternalLink className="h-3.5 w-3.5 text-white/40" />
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
                 </li>
-              ))}
+                );
+              })}
               {tasks.length === 0 && <li className="text-xs text-white/40">No tasks yet.</li>}
             </ul>
           </TabsContent>
+
 
           <TabsContent value="overview" className="space-y-3 pt-4">
             <CollapsibleSection id="overview-mode" title="Mode & tags">

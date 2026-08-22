@@ -372,9 +372,15 @@ interface GTask {
   notes?: string;
   status?: string;
   due?: string;
+  completed?: string;
+  updated?: string;
+  deleted?: boolean;
+  hidden?: boolean;
   position?: string;
   parent?: string;
+  links?: { type?: string; description?: string; link?: string }[];
 }
+
 
 /**
  * Import Google Tasks for one account slot.
@@ -395,7 +401,9 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
         '?showCompleted=true&showHidden=false&maxResults=100',
       email,
     )) as { items?: GTask[] };
-    const items = (json.items ?? []).filter((t) => (t.title ?? '').trim().length > 0);
+    const items = (json.items ?? []).filter(
+      (t) => (t.title ?? '').trim().length > 0 && !t.deleted,
+    );
     if (items.length === 0) continue;
 
     // Find or create the card for this list.
@@ -468,12 +476,15 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
         notes: t.notes ?? null,
         done: t.status === 'completed',
         due_date: t.due ? t.due.slice(0, 10) : null,
+        completed_at: t.completed ?? null,
+        google_updated_at: t.updated ?? null,
         account_slot: slot,
         google_task_id: t.id,
         parent_task_id: parentGoogleId ? (localIdByGoogleId.get(parentGoogleId) ?? null) : null,
         rank: i,
       };
       const existingId = byGoogleId.get(t.id);
+      let localId = existingId;
       if (existingId) {
         await supabase.from('tdz_tasks').update(row as never).eq('id', existingId);
         localIdByGoogleId.set(t.id, existingId);
@@ -484,11 +495,39 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
           .select('id')
           .single();
         if (error) throw error;
-        localIdByGoogleId.set(t.id, (inserted as { id: string }).id);
+        localId = (inserted as { id: string }).id;
+        localIdByGoogleId.set(t.id, localId);
+      }
+
+      // Google Tasks "attachments" are a read-only links array — mirror them
+      // into ToDoooZ documents, matched on task + url so re-imports update.
+      if (localId && t.links?.length) {
+        const { data: existingDocs } = await supabase
+          .from('tdz_documents')
+          .select('id, url')
+          .eq('task_id', localId);
+        const docIdByUrl = new Map(
+          ((existingDocs ?? []) as { id: string; url: string }[]).map((d) => [d.url, d.id]),
+        );
+        for (const link of t.links) {
+          if (!link.link) continue;
+          const docRow = {
+            user_id: userId,
+            project_id: cardId,
+            task_id: localId,
+            url: link.link,
+            title: link.description?.trim() || link.link.replace(/^https?:\/\//, '').slice(0, 60),
+            doc_type: link.type === 'email' ? 'email' : link.link.includes('drive.google.com') ? 'drive' : 'other',
+          };
+          const docId = docIdByUrl.get(link.link);
+          if (docId) await supabase.from('tdz_documents').update(docRow as never).eq('id', docId);
+          else await supabase.from('tdz_documents').insert(docRow as never);
+        }
       }
       imported++;
     }
   }
+
 
   await supabase
     .from('tdz_google_connections')
