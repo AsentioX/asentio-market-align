@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ColorSwatchRow from './ColorSwatchRow';
+import TagEditor from './TagEditor';
 
 import { resolveTheme } from '../lib/theme';
 import type {
@@ -105,7 +106,6 @@ const DetailDrawer: React.FC<Props> = ({
   const [personName, setPersonName] = useState('');
   const [personRole, setPersonRole] = useState('');
   const [contactQuery, setContactQuery] = useState('');
-  const [tagInput, setTagInput] = useState('');
 
   const theme = card ? resolveTheme(card, parent) : null;
   const linkedEvents = useMemo(
@@ -120,12 +120,6 @@ const DetailDrawer: React.FC<Props> = ({
     .filter(Boolean);
   const setTags = (next: string[]) =>
     api.patchCard(card.id, { context_label: next.length ? next.join(', ') : null });
-  const addTag = () => {
-    const value = tagInput.trim().replace(/,+$/, '').trim();
-    setTagInput('');
-    if (!value || tags.some((t) => t.toLowerCase() === value.toLowerCase())) return;
-    setTags([...tags, value]);
-  };
 
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
