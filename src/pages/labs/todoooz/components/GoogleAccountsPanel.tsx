@@ -225,24 +225,41 @@ const GoogleAccountsPanel: React.FC<Props> = ({
             );
           })}
 
-          <Button
-            size="sm"
-            disabled={busy === 'add'}
-            onClick={() =>
-              run('add', async () => {
-                const identity = await onAddAccount();
-                if (identity) await refresh(false);
-              })
-            }
-            className="w-full bg-white/10 text-xs text-white hover:bg-white/20"
-          >
-            {busy === 'add' ? (
-              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Plus className="mr-1 h-3.5 w-3.5" />
-            )}
-            Add Google account
-          </Button>
+          {embedded ? (
+            <div className="rounded-xl border border-amber-400/25 bg-amber-400/10 p-3">
+              <p className="text-[11px] text-amber-100">
+                Google blocks its sign-in screen inside embedded previews. Open ToDoooZ in its own browser tab
+                to add or re-authorise a Google account.
+              </p>
+              <Button
+                size="sm"
+                onClick={() => window.open(window.location.href, '_blank', 'noopener')}
+                className="mt-2 w-full bg-amber-400/20 text-xs text-amber-50 hover:bg-amber-400/30"
+              >
+                <ExternalLink className="mr-1 h-3.5 w-3.5" /> Open in new tab
+              </Button>
+            </div>
+          ) : (
+            <Button
+              size="sm"
+              disabled={busy === 'add'}
+              onClick={() =>
+                run('add', async () => {
+                  const identity = await onAddAccount();
+                  if (identity) await refresh(false);
+                })
+              }
+              className="w-full bg-white/10 text-xs text-white hover:bg-white/20"
+            >
+              {busy === 'add' ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Plus className="mr-1 h-3.5 w-3.5" />
+              )}
+              Add Google account
+            </Button>
+          )}
+
 
           <Button
             variant="ghost"
