@@ -2,7 +2,11 @@
 
 import { createLovableAuth } from "@lovable.dev/cloud-auth-js";
 import { supabase } from "../supabase/client";
-const lovableAuth = createLovableAuth();
+
+const LOVABLE_PROJECT_ID = "7cc82ef6-9d47-478d-9731-39b1d0bc5782";
+const lovableAuth = createLovableAuth({
+  oauthBrokerUrl: "https://oauth.lovable.app/initiate",
+});
 
 type SignInOptions = {
   redirect_uri?: string;
@@ -16,6 +20,7 @@ export const lovable = {
         ...opts,
         extraParams: {
           ...opts?.extraParams,
+          project_id: LOVABLE_PROJECT_ID,
         },
       });
 
