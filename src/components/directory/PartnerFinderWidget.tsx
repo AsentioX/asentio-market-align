@@ -68,7 +68,7 @@ const ColumnShell = ({
       <span className="text-xs font-semibold uppercase tracking-wider text-foreground">{label}</span>
       {optional && <span className="text-[10px] text-muted-foreground">optional</span>}
     </div>
-    <p className="text-[11px] text-muted-foreground mt-0.5 mb-2 line-clamp-1">{question}</p>
+    <div className="mb-2" />
     {children}
   </div>
 );
