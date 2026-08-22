@@ -12,10 +12,11 @@ const TOKEN_KEY = 'tdz.google.provider_token';
 const ACCOUNT_TOKEN_KEY = 'tdz.google.tokens'; // { [email]: access_token }
 const IDENTITY_KEY = 'tdz.google.identities'; // extra accounts authorised via GIS
 
+// Read/write scopes: ToDoooZ mirrors edits back into the Google account.
 export const GOOGLE_SCOPES = [
-  'https://www.googleapis.com/auth/contacts.readonly',
-  'https://www.googleapis.com/auth/calendar.readonly',
-  'https://www.googleapis.com/auth/tasks.readonly',
+  'https://www.googleapis.com/auth/contacts',
+  'https://www.googleapis.com/auth/calendar.events',
+  'https://www.googleapis.com/auth/tasks',
 ].join(' ');
 
 export const rememberProviderToken = (token?: string | null) => {
@@ -73,17 +74,34 @@ export class GoogleAuthNeeded extends Error {
  * Fetch a Google API using the token for a specific account when we have one,
  * falling back to the Supabase session token (the account used to sign in).
  */
-const gfetch = async (url: string, email?: string | null) => {
+const gfetch = async (
+  url: string,
+  email?: string | null,
+  init?: { method?: string; body?: unknown },
+) => {
   const token = getAccountToken(email) ?? (await getProviderToken());
   if (!token) throw new GoogleAuthNeeded(email);
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await fetch(url, {
+    method: init?.method ?? 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: init?.body ? JSON.stringify(init.body) : undefined,
+  });
   if (res.status === 401 || res.status === 403) {
     if (email) forgetAccountToken(email);
     else sessionStorage.removeItem(TOKEN_KEY);
     throw new GoogleAuthNeeded(email);
   }
-  if (!res.ok) throw new Error(`Google API error (${res.status})`);
-  return res.json();
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    console.error(`Google API error [${res.status}] ${url}: ${detail}`);
+    throw new Error(`Google API error (${res.status})`);
+  }
+  if (res.status === 204) return {};
+  const text = await res.text();
+  return text ? JSON.parse(text) : {};
 };
 
 /** Google identities linked to the currently signed-in user. */
