@@ -356,7 +356,15 @@ const CalendarSidebar: React.FC<Props> = ({
         {view === 'agenda' &&
           grouped.map(([day, list]) => (
 
-            <div key={day} className="mb-4">
+            <div
+              key={day}
+              ref={(el) => {
+                if (el) dayRefs.current.set(day, el);
+                else dayRefs.current.delete(day);
+              }}
+              className="mb-4"
+            >
+
               <div className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-white/35">
                 {new Date(day).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
               </div>
