@@ -489,6 +489,8 @@ const DetailDrawer: React.FC<Props> = ({
                 const taskEvents = events.filter((e) => e.task_id === t.id);
                 const taskDocs = documents.filter((d) => d.task_id === t.id);
                 const open = openTaskId === t.id;
+                const sibs = siblingsOf(t);
+                const sibIndex = sibs.findIndex((x) => x.id === t.id);
                 return (
                 <li key={t.id} style={{ marginLeft: depth ? 20 : 0 }} className="space-y-1">
                 <div
@@ -515,6 +517,29 @@ const DetailDrawer: React.FC<Props> = ({
                   }`}
                 >
                   <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-white/25" />
+                  <div className="flex shrink-0 flex-col">
+                    <button
+                      type="button"
+                      title="Move up"
+                      aria-label="Move up"
+                      disabled={sibIndex <= 0}
+                      onClick={() => moveTask(t, -1)}
+                      className="text-white/30 hover:text-white disabled:opacity-20 disabled:hover:text-white/30"
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      title="Move down"
+                      aria-label="Move down"
+                      disabled={sibIndex < 0 || sibIndex >= sibs.length - 1}
+                      onClick={() => moveTask(t, 1)}
+                      className="text-white/30 hover:text-white disabled:opacity-20 disabled:hover:text-white/30"
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                  </div>
+
                   <input
                     type="checkbox"
                     checked={t.done}
