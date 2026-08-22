@@ -6,6 +6,8 @@ import {
   FileSpreadsheet,
   FileText,
   Folder,
+  ChevronDown,
+  ChevronUp,
   GripVertical,
   Plus,
   Presentation,
@@ -186,6 +188,36 @@ const DetailDrawer: React.FC<Props> = ({
     if (targetIndex < 0) return;
     const next = [...rest.slice(0, targetIndex), ...block, ...rest.slice(targetIndex)];
     api.reorderTasks(card.id, next, sourceId);
+  };
+
+  /** Move a task up/down among its own siblings (children travel with a root). */
+  const siblingsOf = (t: TdzTask) =>
+    orderedTasks
+      .map((f) => f.task)
+      .filter((x) => (x.parent_task_id ?? null) === (t.parent_task_id ?? null));
+
+  const moveTask = (t: TdzTask, dir: -1 | 1) => {
+    const flat = orderedTasks.map((f) => f.task);
+    const sibs = siblingsOf(t);
+    const i = sibs.findIndex((x) => x.id === t.id);
+    const neighbour = sibs[i + dir];
+    if (!neighbour) return;
+
+    const block = flat.filter((x) => x.id === t.id || x.parent_task_id === t.id);
+    const blockIds = new Set(block.map((x) => x.id));
+    const rest = flat.filter((x) => !blockIds.has(x.id));
+
+    let insertAt: number;
+    if (dir === -1) {
+      insertAt = rest.findIndex((x) => x.id === neighbour.id);
+    } else {
+      const nBlock = rest.filter((x) => x.id === neighbour.id || x.parent_task_id === neighbour.id);
+      const last = nBlock[nBlock.length - 1];
+      insertAt = rest.findIndex((x) => x.id === last.id) + 1;
+    }
+    if (insertAt < 0) return;
+    const next = [...rest.slice(0, insertAt), ...block, ...rest.slice(insertAt)];
+    api.reorderTasks(card.id, next, t.id);
   };
 
 
@@ -459,6 +491,8 @@ const DetailDrawer: React.FC<Props> = ({
                 const taskEvents = events.filter((e) => e.task_id === t.id);
                 const taskDocs = documents.filter((d) => d.task_id === t.id);
                 const open = openTaskId === t.id;
+                const sibs = siblingsOf(t);
+                const sibIndex = sibs.findIndex((x) => x.id === t.id);
                 return (
                 <li key={t.id} style={{ marginLeft: depth ? 20 : 0 }} className="space-y-1">
                 <div
@@ -485,6 +519,29 @@ const DetailDrawer: React.FC<Props> = ({
                   }`}
                 >
                   <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-white/25" />
+                  <div className="flex shrink-0 flex-col">
+                    <button
+                      type="button"
+                      title="Move up"
+                      aria-label="Move up"
+                      disabled={sibIndex <= 0}
+                      onClick={() => moveTask(t, -1)}
+                      className="text-white/30 hover:text-white disabled:opacity-20 disabled:hover:text-white/30"
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      title="Move down"
+                      aria-label="Move down"
+                      disabled={sibIndex < 0 || sibIndex >= sibs.length - 1}
+                      onClick={() => moveTask(t, 1)}
+                      className="text-white/30 hover:text-white disabled:opacity-20 disabled:hover:text-white/30"
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                  </div>
+
                   <input
                     type="checkbox"
                     checked={t.done}
