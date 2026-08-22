@@ -754,6 +754,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     toggleTask,
     addTask,
     updateTask,
+    setTaskParent,
     deleteTask,
     moveTasksToCard,
     reorderTasks,
