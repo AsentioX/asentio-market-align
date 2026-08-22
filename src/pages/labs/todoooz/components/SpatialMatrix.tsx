@@ -216,6 +216,7 @@ const SpatialMatrix: React.FC<Props> = ({
                             childDone={kids.filter((k) => k.status === 'done').length}
                             focused={focusedId === card.id}
                             isChild={false}
+                            linkedContacts={contactsFor(card.id)}
                             onFocus={() => onFocus(card.id)}
                             onOpen={() => onOpen(card.id)}
                             onToggleTask={onToggleTask}
