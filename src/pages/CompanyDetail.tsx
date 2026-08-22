@@ -246,19 +246,6 @@ const CompanyDetail = () => {
         <CompanySolutionFit company={company} companyName={displayName} useCases={matchedUseCases} />
       )}
 
-      {/* Asentio Perspective — proprietary commentary */}
-      {perspective && (
-        <section className="container mx-auto px-4 md:px-6 pb-12">
-          <div className="rounded-2xl bg-asentio-blue/5 border border-asentio-red/30 border-l-4 border-l-asentio-red p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.2em] text-asentio-red font-semibold mb-3 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> Asentio Perspective
-            </p>
-            <p className="text-foreground text-lg leading-relaxed whitespace-pre-line font-light">{perspective}</p>
-            <p className="text-xs text-muted-foreground mt-4">Proprietary analysis by Asentio.</p>
-          </div>
-        </section>
-      )}
-
       {/* 6. Detailed capabilities & taxonomy */}
       {company && <CompanyCapabilities company={company} />}
     </div>
