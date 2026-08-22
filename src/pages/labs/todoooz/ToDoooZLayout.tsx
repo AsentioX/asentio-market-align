@@ -371,10 +371,15 @@ const ToDoooZLayout: React.FC = () => {
         <CalendarSidebar
           events={visibleEvents}
           cardById={tdz.cardById}
+          cards={visibleCards}
           collapsed={calCollapsed}
           onToggle={() => setCalCollapsed((v) => !v)}
           onUpdateEvent={tdz.updateEvent}
           onDeleteEvent={tdz.deleteEvent}
+          onOpenCard={(id) => {
+            setFocusedId(id);
+            setOpenId(id);
+          }}
         />
       </div>
 
@@ -406,6 +411,7 @@ const ToDoooZLayout: React.FC = () => {
         onClose={() => setOpenId(null)}
         api={{
           patchCard: tdz.patchCard,
+          updateEvent: tdz.updateEvent,
           toggleTask: tdz.toggleTask,
           addTask: tdz.addTask,
           updateTask: tdz.updateTask,

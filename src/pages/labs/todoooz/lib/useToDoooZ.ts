@@ -346,6 +346,10 @@ export const useToDoooZ = (userId: string | undefined) => {
         toast.error(error.message);
         return;
       }
+      // Card linking is a ToDoooZ-only concept — nothing to push to Google.
+      const keys = Object.keys(patch);
+      if (keys.length && keys.every((k) => k === 'project_id')) return;
+
       const { data } = await supabase.from('tdz_calendar_events').select('*').eq('id', id).maybeSingle();
       const event = data as TdzEvent | null;
       if (!event) return;

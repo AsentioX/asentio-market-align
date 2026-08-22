@@ -6,10 +6,12 @@ import type { TdzCard, TdzEvent } from '../lib/types';
 interface Props {
   events: TdzEvent[];
   cardById: Map<string, TdzCard>;
+  cards?: TdzCard[];
   collapsed: boolean;
   onToggle: () => void;
   onUpdateEvent?: (id: string, patch: Partial<TdzEvent>) => Promise<void> | void;
   onDeleteEvent?: (id: string) => Promise<void> | void;
+  onOpenCard?: (id: string) => void;
 }
 
 const fmt = (iso: string) =>
@@ -25,18 +27,27 @@ const toLocalInput = (iso: string) => {
 const CalendarSidebar: React.FC<Props> = ({
   events,
   cardById,
+  cards = [],
   collapsed,
   onToggle,
   onUpdateEvent,
   onDeleteEvent,
+  onOpenCard,
 }) => {
   const [view, setView] = useState<'agenda' | 'time'>('agenda');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<{ title: string; location: string; starts_at: string; ends_at: string }>({
+  const [draft, setDraft] = useState<{
+    title: string;
+    location: string;
+    starts_at: string;
+    ends_at: string;
+    project_id: string;
+  }>({
     title: '',
     location: '',
     starts_at: '',
     ends_at: '',
+    project_id: '',
   });
 
   const startEdit = (e: TdzEvent) => {
@@ -46,6 +57,7 @@ const CalendarSidebar: React.FC<Props> = ({
       location: e.location ?? '',
       starts_at: toLocalInput(e.starts_at),
       ends_at: toLocalInput(e.ends_at),
+      project_id: e.project_id ?? '',
     });
   };
 
@@ -56,9 +68,11 @@ const CalendarSidebar: React.FC<Props> = ({
       location: draft.location.trim() || null,
       starts_at: new Date(draft.starts_at).toISOString(),
       ends_at: new Date(draft.ends_at).toISOString(),
+      project_id: draft.project_id || null,
     });
     setEditingId(null);
   };
+
   const now = new Date();
 
   const upcoming = useMemo(
@@ -158,6 +172,20 @@ const CalendarSidebar: React.FC<Props> = ({
                             placeholder="Location"
                             className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
                           />
+                          <select
+                            value={draft.project_id}
+                            onChange={(ev) => setDraft((d) => ({ ...d, project_id: ev.target.value }))}
+                            aria-label="Linked card"
+                            className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
+                          >
+                            <option value="">No linked card</option>
+                            {cards.map((c) => (
+                              <option key={c.id} value={c.id} className="bg-neutral-900">
+                                {c.title}
+                              </option>
+                            ))}
+                          </select>
+
                           <div className="flex items-center gap-1.5">
                             <button
                               onClick={saveEdit}
@@ -218,7 +246,23 @@ const CalendarSidebar: React.FC<Props> = ({
                             <ExternalLink className="h-3 w-3" /> Join
                           </a>
                         )}
-                        {project && <span className="rounded bg-white/10 px-1.5 py-0.5">{project.title}</span>}
+                        {project ? (
+                          <button
+                            onClick={() => onOpenCard?.(project.id)}
+                            className="rounded bg-white/10 px-1.5 py-0.5 text-white/70 hover:bg-white/20 hover:text-white"
+                          >
+                            {project.title}
+                          </button>
+                        ) : (
+                          onUpdateEvent && (
+                            <button
+                              onClick={() => startEdit(e)}
+                              className="rounded border border-dashed border-white/15 px-1.5 py-0.5 text-white/40 hover:text-white"
+                            >
+                              + Link card
+                            </button>
+                          )
+                        )}
                       </div>
                       </>
                       )}

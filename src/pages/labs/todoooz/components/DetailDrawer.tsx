@@ -85,6 +85,8 @@ interface Props {
     spawnCard: (task: TdzTask) => void;
     openCard: (id: string) => void;
     deleteCard: (id: string) => void;
+    updateEvent: (id: string, patch: Partial<TdzEvent>) => void;
+
   };
 }
 
@@ -119,6 +121,15 @@ const DetailDrawer: React.FC<Props> = ({
     () => (card ? events.filter((e) => e.project_id === card.id) : []),
     [card, events],
   );
+  const linkableEvents = useMemo(
+    () =>
+      events
+        .filter((e) => !e.project_id)
+        .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
+        .slice(0, 100),
+    [events],
+  );
+
   if (!card) return null;
 
   const tags = (card.context_label ?? '')
@@ -557,10 +568,38 @@ const DetailDrawer: React.FC<Props> = ({
               {linkedEvents.map((e) => (
                 <div key={e.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-2.5 text-xs">
                   <CalendarDays className="h-4 w-4 text-white/40" />
-                  <span className="flex-1 truncate text-white/80">{e.title}</span>
-                  <span className="text-white/40">{new Date(e.starts_at).toLocaleString()}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-white/80">{e.title}</div>
+                    {e.location && <div className="truncate text-[10px] text-white/40">{e.location}</div>}
+                  </div>
+                  <span className="shrink-0 text-white/40">{new Date(e.starts_at).toLocaleString()}</span>
+                  <button
+                    onClick={() => api.updateEvent(e.id, { project_id: null })}
+                    aria-label="Unlink event"
+                    className="shrink-0 text-white/30 hover:text-rose-300"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               ))}
+              {linkableEvents.length > 0 && (
+                <select
+                  value=""
+                  aria-label="Link an event"
+                  onChange={(ev) => {
+                    if (ev.target.value) api.updateEvent(ev.target.value, { project_id: card.id });
+                  }}
+                  className="w-full rounded-md border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white"
+                >
+                  <option value="">+ Link an event…</option>
+                  {linkableEvents.map((e) => (
+                    <option key={e.id} value={e.id} className="bg-neutral-900">
+                      {new Date(e.starts_at).toLocaleDateString()} · {e.title}
+                    </option>
+                  ))}
+                </select>
+              )}
+
               <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-white/60">
                 Checkpoints: {tasks.filter((t) => t.due_date).length} dated task
                 {tasks.filter((t) => t.due_date).length === 1 ? '' : 's'} · {done}/{tasks.length} complete
