@@ -160,11 +160,18 @@ const TaskCard: React.FC<Props> = ({
 
               <div className="mt-2 flex items-center justify-between text-[10px] text-white/45">
                 <span className="flex items-center gap-1.5">
-                  {card.context_label && (
-                    <span className="inline-block rounded-full bg-white/10 px-2 py-0.5 uppercase tracking-wide text-white/60">
-                      {card.context_label}
-                    </span>
-                  )}
+                  {(card.context_label ?? '')
+                    .split(',')
+                    .map((t) => t.trim())
+                    .filter(Boolean)
+                    .map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-block rounded-full bg-white/10 px-2 py-0.5 uppercase tracking-wide text-white/60"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                 </span>
                 <div className="flex items-center gap-2" />
 
