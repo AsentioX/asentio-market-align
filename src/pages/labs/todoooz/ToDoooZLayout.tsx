@@ -439,6 +439,7 @@ const ToDoooZLayout: React.FC = () => {
           addStakeholder: tdz.addStakeholder,
           removeStakeholder: tdz.removeStakeholder,
           linkContactToCard: tdz.linkContactToCard,
+          linkContactToTask: tdz.linkContactToTask,
           openContacts: () => setContactsOpen(true),
           addDocument: tdz.addDocument,
           updateDocument: tdz.updateDocument,
