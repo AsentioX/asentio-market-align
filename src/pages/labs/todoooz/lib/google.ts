@@ -133,6 +133,42 @@ export const rememberIdentity = (identity: GoogleIdentity) => {
   localStorage.setItem(IDENTITY_KEY, JSON.stringify(list));
 };
 
+/**
+ * Ping Google with each cached per-account token to see whether the account is
+ * still authorised. Dead tokens are dropped so the UI can prompt for re-auth.
+ * The account used to sign in (no picker token) is treated as authorised.
+ */
+export const validateAccountTokens = async (
+  identities: GoogleIdentity[],
+): Promise<Record<string, boolean>> => {
+  const status: Record<string, boolean> = {};
+  await Promise.all(
+    identities.map(async (identity) => {
+      const email = identity.email.toLowerCase();
+      const token = getAccountToken(email);
+      if (!token) {
+        // Falls back to the Supabase session token when this is the signed-in account.
+        status[email] = Boolean(await getProviderToken());
+        return;
+      }
+      try {
+        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.status === 401 || res.status === 403) {
+          forgetAccountToken(email);
+          status[email] = false;
+          return;
+        }
+        status[email] = res.ok;
+      } catch {
+        status[email] = false;
+      }
+    }),
+  );
+  return status;
+};
+
 /** Assign a Google identity to the Work or Personal slot. */
 export const designateAccount = async (
   userId: string,

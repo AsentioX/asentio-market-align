@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowLeftRight, Briefcase, CalendarDays, Home, Loader2, Plus, RefreshCw, Unlink, Users } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ArrowLeftRight, Briefcase, CalendarDays, Home, Loader2, Plus, RefreshCw, ShieldAlert, Unlink, Users } from 'lucide-react';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { GoogleIdentity } from '../lib/google';
+import { validateAccountTokens, type GoogleIdentity } from '../lib/google';
 import type { TdzAccountSlot, TdzConnection } from '../lib/types';
 
 interface Props {
@@ -37,11 +38,41 @@ const GoogleAccountsPanel: React.FC<Props> = ({
   onAddAccount,
 }) => {
   const [identities, setIdentities] = useState<GoogleIdentity[]>([]);
+  const [authStatus, setAuthStatus] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refresh = useCallback(
+    async (notify: boolean) => {
+      setRefreshing(true);
+      try {
+        const rows = await loadIdentities();
+        setIdentities(rows);
+        const status = await validateAccountTokens(rows);
+        setAuthStatus(status);
+        if (notify) {
+          const expired = rows.filter((r) => status[r.email.toLowerCase()] === false).length;
+          if (rows.length === 0) toast.info('No Google accounts linked yet');
+          else if (expired > 0)
+            toast.warning(
+              `${rows.length} Google account${rows.length === 1 ? '' : 's'} linked · ${expired} need${
+                expired === 1 ? 's' : ''
+              } re-authorisation`,
+            );
+          else toast.success(`${rows.length} Google account${rows.length === 1 ? '' : 's'} linked`);
+        }
+      } catch (err) {
+        if (notify) toast.error(err instanceof Error ? err.message : 'Could not refresh Google accounts');
+      } finally {
+        setRefreshing(false);
+      }
+    },
+    [loadIdentities],
+  );
 
   useEffect(() => {
-    if (open) loadIdentities().then(setIdentities);
-  }, [open, loadIdentities]);
+    if (open) refresh(false);
+  }, [open, refresh]);
 
   const run = async (key: string, fn: () => Promise<void>) => {
     setBusy(key);
@@ -51,6 +82,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
       setBusy(null);
     }
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,34 +124,62 @@ const GoogleAccountsPanel: React.FC<Props> = ({
                   )}
                   {identities.map((id) => {
                     const active = conn?.account_email === id.email;
+                    const expired = authStatus[id.email.toLowerCase()] === false;
                     return (
-                      <button
-                        key={`${key}-${id.email}`}
-                        onClick={() => run(`${key}-${id.email}`, () => onDesignate(key, id))}
-                        className={cn(
-                          'flex w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs transition',
-                          active
-                            ? 'border-emerald-400/40 bg-emerald-400/10 text-white'
-                            : 'border-white/10 bg-white/[0.02] text-white/60 hover:bg-white/[0.06]',
-                        )}
-                      >
-                        {id.avatar_url ? (
-                          <img src={id.avatar_url} alt="" className="h-6 w-6 rounded-full" />
-                        ) : (
-                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-[10px]">
-                            {id.email.slice(0, 2).toUpperCase()}
+                      <div key={`${key}-${id.email}`} className="space-y-1">
+                        <button
+                          onClick={() => run(`${key}-${id.email}`, () => onDesignate(key, id))}
+                          className={cn(
+                            'flex w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs transition',
+                            active
+                              ? 'border-emerald-400/40 bg-emerald-400/10 text-white'
+                              : 'border-white/10 bg-white/[0.02] text-white/60 hover:bg-white/[0.06]',
+                          )}
+                        >
+                          {id.avatar_url ? (
+                            <img src={id.avatar_url} alt="" className="h-6 w-6 rounded-full" />
+                          ) : (
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-[10px]">
+                              {id.email.slice(0, 2).toUpperCase()}
+                            </span>
+                          )}
+                          <span className="flex-1 truncate">
+                            {id.name ?? id.email}
+                            <span className="block truncate text-[10px] text-white/35">{id.email}</span>
                           </span>
+                          {busy === `${key}-${id.email}` ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            active && <span className="text-[10px] text-emerald-300">Selected</span>
+                          )}
+                        </button>
+                        {expired && (
+                          <div className="flex items-center gap-2 pl-1">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] text-amber-300">
+                              <ShieldAlert className="h-3 w-3" /> Needs re-authorisation
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              disabled={busy === `re-${id.email}`}
+                              onClick={() =>
+                                run(`re-${id.email}`, async () => {
+                                  const identity = await onAddAccount();
+                                  if (identity) await refresh(false);
+                                })
+                              }
+                              className="h-6 px-2 text-[10px] text-amber-200 hover:text-white"
+                            >
+                              {busy === `re-${id.email}` ? (
+                                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                              ) : (
+                                <RefreshCw className="mr-1 h-3 w-3" />
+                              )}
+                              Re-authorise
+                            </Button>
+                          </div>
                         )}
-                        <span className="flex-1 truncate">
-                          {id.name ?? id.email}
-                          <span className="block truncate text-[10px] text-white/35">{id.email}</span>
-                        </span>
-                        {busy === `${key}-${id.email}` ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          active && <span className="text-[10px] text-emerald-300">Selected</span>
-                        )}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -171,7 +231,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
             onClick={() =>
               run('add', async () => {
                 const identity = await onAddAccount();
-                if (identity) setIdentities(await loadIdentities());
+                if (identity) await refresh(false);
               })
             }
             className="w-full bg-white/10 text-xs text-white hover:bg-white/20"
@@ -201,10 +261,16 @@ const GoogleAccountsPanel: React.FC<Props> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => loadIdentities().then(setIdentities)}
+            disabled={refreshing}
+            onClick={() => refresh(true)}
             className="w-full text-[11px] text-white/35 hover:text-white"
           >
-            <RefreshCw className="mr-1 h-3 w-3" /> Refresh linked Google accounts
+            {refreshing ? (
+              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-1 h-3 w-3" />
+            )}
+            Refresh linked Google accounts
           </Button>
         </div>
       </DialogContent>
