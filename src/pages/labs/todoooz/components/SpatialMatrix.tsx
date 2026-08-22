@@ -207,7 +207,14 @@ const SpatialMatrix: React.FC<Props> = ({
                             onColor={(key) => onPatch(card.id, { color_theme: key })}
                             onAddSub={() => onAddSub(card.id)}
                             onDelete={() => onDelete(card.id)}
-                            onDragStart={(e) => e.dataTransfer.setData('text/tdz-card', card.id)}
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData('text/tdz-card', card.id);
+                              setDraggingId(card.id);
+                            }}
+                            onDragEnd={() => {
+                              setDraggingId(null);
+                              setDropTarget(null);
+                            }}
                           />
                           {!card.collapsed &&
                             inCell.map((kid) => (
