@@ -144,8 +144,12 @@ const TaskCard: React.FC<Props> = ({
             <>
               {top.length > 0 && (
                 <ul className="mb-2 space-y-1">
-                  {top.map((t) => (
-                    <li key={t.id} className="flex items-center gap-2 text-xs text-white/70">
+                  {top.map(({ task: t, depth }) => (
+                    <li
+                      key={t.id}
+                      style={{ marginLeft: depth ? 14 : 0 }}
+                      className="flex items-center gap-2 text-xs text-white/70"
+                    >
                       <input
                         type="checkbox"
                         checked={t.done}
