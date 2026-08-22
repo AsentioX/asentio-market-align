@@ -124,6 +124,7 @@ const DetailDrawer: React.FC<Props> = ({
 
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+  const orderedTasks = flattenTaskTree(tasks);
 
   return (
     <Sheet open={!!card} onOpenChange={(v) => !v && onClose()}>
