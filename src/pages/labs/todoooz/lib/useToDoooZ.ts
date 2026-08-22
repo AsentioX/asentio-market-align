@@ -299,6 +299,22 @@ export const useToDoooZ = (userId: string | undefined) => {
     await supabase.from('tdz_documents').delete().eq('id', id);
   }, []);
 
+  /** Mirror a local contact into Google Contacts. */
+  const pushContact = useCallback(
+    async (contactId: string) => {
+      const { data } = await supabase.from('tdz_contacts').select('*').eq('id', contactId).maybeSingle();
+      const contact = data as TdzContact | null;
+      if (!contact) return;
+      try {
+        await pushContactToGoogle(contact, emailForSlot(contact.account_slot));
+      } catch (err) {
+        if (err instanceof GoogleAuthNeeded) return;
+        console.error('Google contact sync failed', err);
+      }
+    },
+    [emailForSlot],
+  );
+
   const createContact = useCallback(
     async (payload: Partial<TdzContact>) => {
       if (!userId) return null;
@@ -541,6 +557,8 @@ export const useToDoooZ = (userId: string | undefined) => {
     syncContacts,
     syncCalendar,
     syncTasks,
+    updateEvent,
+    deleteEvent,
     googleIdentities,
     addGoogleAccount,
     setAccountSlot,
