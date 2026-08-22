@@ -121,6 +121,10 @@ const DetailDrawer: React.FC<Props> = ({
   const [contactQuery, setContactQuery] = useState('');
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [openTaskId, setOpenTaskId] = useState<string | null>(null);
+  const [subtaskFor, setSubtaskFor] = useState<string | null>(null);
+  const [subtaskTitle, setSubtaskTitle] = useState('');
+  const [taskContactQuery, setTaskContactQuery] = useState('');
 
   const theme = card ? resolveTheme(card, parent) : null;
   const linkedEvents = useMemo(
