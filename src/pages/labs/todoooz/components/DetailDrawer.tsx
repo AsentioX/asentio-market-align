@@ -70,13 +70,19 @@ interface Props {
   api: {
     patchCard: (id: string, patch: Partial<TdzCard>) => void;
     toggleTask: (task: TdzTask) => void;
-    addTask: (projectId: string, title: string, due?: string | null) => void;
+    addTask: (projectId: string, title: string, due?: string | null, parentTaskId?: string | null) => void;
     updateTask: (id: string, patch: Partial<TdzTask>) => void;
     deleteTask: (id: string) => void;
     reorderTasks: (projectId: string, ordered: TdzTask[], movedId?: string) => void;
     addActivity: (projectId: string, summary: string, detail?: string) => void;
     addStakeholder: (projectId: string, payload: Partial<TdzStakeholder>) => void;
-    linkContactToCard: (projectId: string, contact: TdzContact, role?: string | null) => void;
+    linkContactToCard: (
+      projectId: string,
+      contact: TdzContact,
+      role?: string | null,
+      taskId?: string | null,
+    ) => void;
+    linkContactToTask: (task: TdzTask, contact: TdzContact, role?: string | null) => void;
     openContacts: () => void;
     removeStakeholder: (id: string) => void;
     addDocument: (projectId: string, url: string, title: string, type: string, taskId?: string | null) => void;
