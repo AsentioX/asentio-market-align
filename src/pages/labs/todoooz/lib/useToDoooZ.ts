@@ -435,6 +435,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     deleteContact,
     syncContacts,
     syncCalendar,
+    syncTasks,
     googleIdentities,
     addGoogleAccount,
     setAccountSlot,
