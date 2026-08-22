@@ -121,6 +121,15 @@ const DetailDrawer: React.FC<Props> = ({
     () => (card ? events.filter((e) => e.project_id === card.id) : []),
     [card, events],
   );
+  const linkableEvents = useMemo(
+    () =>
+      events
+        .filter((e) => !e.project_id)
+        .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
+        .slice(0, 100),
+    [events],
+  );
+
   if (!card) return null;
 
   const tags = (card.context_label ?? '')
