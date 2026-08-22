@@ -406,7 +406,7 @@ const DetailDrawer: React.FC<Props> = ({
             <Textarea
               value={card.description ?? ''}
               onChange={(e) => api.patchCard(card.id, { description: e.target.value })}
-              placeholder="What does done look like?"
+              placeholder="Notes"
               className="min-h-[90px] border-white/10 bg-white/5 text-sm"
             />
             <div>
