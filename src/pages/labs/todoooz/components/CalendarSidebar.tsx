@@ -238,7 +238,7 @@ const CalendarSidebar: React.FC<Props> = ({
   }
 
   return (
-    <aside className="flex w-[320px] shrink-0 flex-col border-l border-white/10">
+    <aside className="flex h-full w-[320px] shrink-0 flex-col overflow-hidden border-l border-white/10">
       <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
         <div className="flex items-center gap-2 text-sm font-semibold text-white/80">
           <CalendarDays className="h-4 w-4" /> Calendar
