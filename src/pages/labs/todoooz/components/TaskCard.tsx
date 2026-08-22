@@ -49,6 +49,7 @@ const TaskCard: React.FC<Props> = ({
   childDone,
   focused,
   isChild,
+  linkedContacts,
   onFocus,
   onOpen,
   onToggleTask,
@@ -66,6 +67,10 @@ const TaskCard: React.FC<Props> = ({
   const all = flattenTaskTree(tasks);
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : card.progress;
+
+  const contacts = linkedContacts ?? [];
+  const shown = contacts.slice(0, 3);
+  const overflow = contacts.length - shown.length;
 
   return (
     <ContextMenu>
