@@ -251,13 +251,8 @@ export const SOLUTION_LAYERS: { label: string; description: string; roles: strin
     roles: ['Experience'],
   },
   {
-    label: 'Distribution',
-    description: 'How the solution reaches the market.',
-    roles: ['Distribution'],
-  },
-  {
-    label: 'Services',
-    description: 'Who advises, deploys and supports it.',
-    roles: ['Services'],
+    label: 'Distribution & Services',
+    description: 'How the solution reaches the market and who advises, deploys and supports it.',
+    roles: ['Distribution', 'Services'],
   },
 ];
