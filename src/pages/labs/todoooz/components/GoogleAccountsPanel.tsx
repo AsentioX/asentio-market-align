@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowLeftRight, Briefcase, CalendarDays, Home, Loader2, Plus, RefreshCw, Unlink, Users } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ArrowLeftRight, Briefcase, CalendarDays, Home, Loader2, Plus, RefreshCw, ShieldAlert, Unlink, Users } from 'lucide-react';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { GoogleIdentity } from '../lib/google';
+import { validateAccountTokens, type GoogleIdentity } from '../lib/google';
 import type { TdzAccountSlot, TdzConnection } from '../lib/types';
 
 interface Props {
@@ -37,11 +38,41 @@ const GoogleAccountsPanel: React.FC<Props> = ({
   onAddAccount,
 }) => {
   const [identities, setIdentities] = useState<GoogleIdentity[]>([]);
+  const [authStatus, setAuthStatus] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refresh = useCallback(
+    async (notify: boolean) => {
+      setRefreshing(true);
+      try {
+        const rows = await loadIdentities();
+        setIdentities(rows);
+        const status = await validateAccountTokens(rows);
+        setAuthStatus(status);
+        if (notify) {
+          const expired = rows.filter((r) => status[r.email.toLowerCase()] === false).length;
+          if (rows.length === 0) toast.info('No Google accounts linked yet');
+          else if (expired > 0)
+            toast.warning(
+              `${rows.length} Google account${rows.length === 1 ? '' : 's'} linked · ${expired} need${
+                expired === 1 ? 's' : ''
+              } re-authorisation`,
+            );
+          else toast.success(`${rows.length} Google account${rows.length === 1 ? '' : 's'} linked`);
+        }
+      } catch (err) {
+        if (notify) toast.error(err instanceof Error ? err.message : 'Could not refresh Google accounts');
+      } finally {
+        setRefreshing(false);
+      }
+    },
+    [loadIdentities],
+  );
 
   useEffect(() => {
-    if (open) loadIdentities().then(setIdentities);
-  }, [open, loadIdentities]);
+    if (open) refresh(false);
+  }, [open, refresh]);
 
   const run = async (key: string, fn: () => Promise<void>) => {
     setBusy(key);
@@ -51,6 +82,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
       setBusy(null);
     }
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
