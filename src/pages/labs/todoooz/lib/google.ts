@@ -336,3 +336,111 @@ export const fetchGooglePeople = async (email?: string | null): Promise<GooglePe
   } while (pageToken);
   return people;
 };
+
+/* ----------------------------------------------------------- Google Tasks */
+
+interface GTaskList {
+  id: string;
+  title?: string;
+}
+
+interface GTask {
+  id: string;
+  title?: string;
+  notes?: string;
+  status?: string;
+  due?: string;
+  position?: string;
+}
+
+/**
+ * Import Google Tasks for one account slot.
+ * Each Google Tasks list becomes a card; each task becomes a subtask.
+ * Re-running updates in place (matched on google_task_id).
+ */
+export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, email?: string | null) => {
+  const lists = ((await gfetch('https://tasks.googleapis.com/tasks/v1/users/@me/lists?maxResults=100', email)) as {
+    items?: GTaskList[];
+  }).items ?? [];
+
+  let imported = 0;
+
+  for (const list of lists) {
+    const listTitle = list.title?.trim() || 'Google Tasks';
+    const json = (await gfetch(
+      `https://tasks.googleapis.com/tasks/v1/lists/${encodeURIComponent(list.id)}/tasks` +
+        '?showCompleted=true&showHidden=false&maxResults=100',
+      email,
+    )) as { items?: GTask[] };
+    const items = (json.items ?? []).filter((t) => (t.title ?? '').trim().length > 0);
+    if (items.length === 0) continue;
+
+    // Find or create the card for this list.
+    const { data: existingCard } = await supabase
+      .from('tdz_projects')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('mode', slot)
+      .eq('context_label', listTitle)
+      .maybeSingle();
+
+    let cardId = existingCard?.id as string | undefined;
+    if (!cardId) {
+      const { data: created, error } = await supabase
+        .from('tdz_projects')
+        .insert({
+          user_id: userId,
+          title: listTitle,
+          mode: slot,
+          context_label: listTitle,
+          description: 'Imported from Google Tasks',
+        } as never)
+        .select('id')
+        .single();
+      if (error) throw error;
+      cardId = (created as { id: string }).id;
+    }
+
+    const { data: existingTasks } = await supabase
+      .from('tdz_tasks')
+      .select('id, google_task_id')
+      .eq('user_id', userId)
+      .eq('project_id', cardId);
+    const byGoogleId = new Map(
+      ((existingTasks ?? []) as { id: string; google_task_id: string | null }[])
+        .filter((t) => t.google_task_id)
+        .map((t) => [t.google_task_id as string, t.id]),
+    );
+
+    for (let i = 0; i < items.length; i++) {
+      const t = items[i];
+      const row = {
+        user_id: userId,
+        project_id: cardId,
+        title: (t.title ?? '').trim(),
+        notes: t.notes ?? null,
+        done: t.status === 'completed',
+        due_date: t.due ? t.due.slice(0, 10) : null,
+        account_slot: slot,
+        google_task_id: t.id,
+        rank: i,
+      };
+      const existingId = byGoogleId.get(t.id);
+      if (existingId) {
+        await supabase.from('tdz_tasks').update(row as never).eq('id', existingId);
+      } else {
+        const { error } = await supabase.from('tdz_tasks').insert(row as never);
+        if (error) throw error;
+      }
+      imported++;
+    }
+  }
+
+  await supabase
+    .from('tdz_google_connections')
+    .update({ last_synced_at: new Date().toISOString() })
+    .eq('user_id', userId)
+    .eq('account_slot', slot);
+
+  return imported;
+};
