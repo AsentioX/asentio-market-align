@@ -162,11 +162,17 @@ export const useToDoooZ = (userId: string | undefined) => {
   );
 
   const addTask = useCallback(
-    async (projectId: string, title: string, due?: string | null) => {
+    async (projectId: string, title: string, due?: string | null, parentTaskId?: string | null) => {
       if (!userId || !title.trim()) return;
       const { data, error } = await supabase
         .from('tdz_tasks')
-        .insert({ user_id: userId, project_id: projectId, title: title.trim(), due_date: due ?? null })
+        .insert({
+          user_id: userId,
+          project_id: projectId,
+          title: title.trim(),
+          due_date: due ?? null,
+          parent_task_id: parentTaskId ?? null,
+        })
         .select()
         .single();
       if (error) return toast.error(error.message);
@@ -188,15 +194,20 @@ export const useToDoooZ = (userId: string | undefined) => {
   const deleteTask = useCallback(
     async (id: string) => {
       const task = tasks.find((t) => t.id === id);
-      setTasks((prev) => prev.filter((t) => t.id !== id));
+      // Children cascade in the database; mirror that locally and on Google.
+      const children = tasks.filter((t) => t.parent_task_id === id);
+      const removed = [task, ...children].filter(Boolean) as TdzTask[];
+      const removedIds = new Set(removed.map((t) => t.id));
+      setTasks((prev) => prev.filter((t) => !removedIds.has(t.id)));
       await supabase.from('tdz_tasks').delete().eq('id', id);
-      if (task?.google_task_id) {
-        const card = cards.find((c) => c.id === task.project_id);
+      for (const t of removed) {
+        if (!t.google_task_id) continue;
+        const card = cards.find((c) => c.id === t.project_id);
         try {
           await deleteGoogleTask(
-            task.project_id,
-            task.google_task_id,
-            emailForSlot(task.account_slot ?? card?.mode),
+            t.project_id,
+            t.google_task_id,
+            emailForSlot(t.account_slot ?? card?.mode),
           );
         } catch (err) {
           if (!(err instanceof GoogleAuthNeeded)) console.error('Google Tasks delete failed', err);
