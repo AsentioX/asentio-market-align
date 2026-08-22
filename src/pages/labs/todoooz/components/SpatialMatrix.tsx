@@ -18,6 +18,7 @@ interface Props {
   onCreate: (bucket: TdzBucket, priority: TdzPriority) => void;
   onAddSub: (parentId: string) => void;
   onDelete: (id: string) => void;
+  onReorder: (ordered: TdzCard[]) => void;
 }
 
 const SpatialMatrix: React.FC<Props> = ({
@@ -33,21 +34,48 @@ const SpatialMatrix: React.FC<Props> = ({
   onCreate,
   onAddSub,
   onDelete,
+  onReorder,
 }) => {
   const tasksFor = (id: string) => tasks.filter((t) => t.project_id === id);
 
   const cellCards = (bucket: TdzBucket, priority: TdzPriority) =>
     sortCards(cards.filter((c) => c.time_bucket === bucket && c.priority === priority));
 
-  const handleDrop = (e: React.DragEvent, bucket: TdzBucket, priority: TdzPriority) => {
-    e.preventDefault();
-    const id = e.dataTransfer.getData('text/tdz-card');
-    if (!id) return;
+  const moveCard = (id: string, bucket: TdzBucket, priority: TdzPriority) => {
     onPatch(id, { time_bucket: bucket, priority });
     const kids = childrenOf.get(id) ?? [];
     const card = cardById.get(id);
     if (card?.collapsed) kids.forEach((k) => onPatch(k.id, { time_bucket: bucket, priority }));
   };
+
+  const handleDrop = (e: React.DragEvent, bucket: TdzBucket, priority: TdzPriority) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData('text/tdz-card');
+    if (!id) return;
+    moveCard(id, bucket, priority);
+  };
+
+  /** Drop directly on a card: reorder within the cell, or move in then place. */
+  const handleCardDrop = (
+    e: React.DragEvent,
+    targetId: string,
+    bucket: TdzBucket,
+    priority: TdzPriority,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = e.dataTransfer.getData('text/tdz-card');
+    if (!id || id === targetId) return;
+    const source = cardById.get(id);
+    if (!source) return;
+    if (source.time_bucket !== bucket || source.priority !== priority) moveCard(id, bucket, priority);
+
+    const list = cellCards(bucket, priority).filter((c) => c.id !== id);
+    const index = list.findIndex((c) => c.id === targetId);
+    if (index < 0) return;
+    onReorder([...list.slice(0, index), source, ...list.slice(index)]);
+  };
+
 
   return (
     <div className="min-w-[900px] [perspective:1400px]">
