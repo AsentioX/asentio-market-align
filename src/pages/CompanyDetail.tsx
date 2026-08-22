@@ -10,7 +10,6 @@ import CompanyUseCases from "@/components/directory/company/CompanyUseCases";
 import CompanyProducts from "@/components/directory/company/CompanyProducts";
 import CompanySolutionFit from "@/components/directory/company/CompanySolutionFit";
 import CompanyCapabilities from "@/components/directory/company/CompanyCapabilities";
-import CompanyEcosystem from "@/components/directory/company/CompanyEcosystem";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import TopographicPattern from "@/components/TopographicPattern";
