@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TdzCard, TdzEvent } from '../lib/types';
+import { resolveTheme } from '../lib/theme';
 
 interface Props {
   events: TdzEvent[];
