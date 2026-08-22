@@ -203,7 +203,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
             onClick={() =>
               run('add', async () => {
                 const identity = await onAddAccount();
-                if (identity) setIdentities(await loadIdentities());
+                if (identity) await refresh(false);
               })
             }
             className="w-full bg-white/10 text-xs text-white hover:bg-white/20"
