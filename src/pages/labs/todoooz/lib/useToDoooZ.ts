@@ -724,6 +724,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     swapAccounts,
 
     linkContactToCard,
+    linkContactToTask,
     setConnections,
   };
 };
