@@ -76,6 +76,7 @@ interface Props {
     updateTask: (id: string, patch: Partial<TdzTask>) => void;
     deleteTask: (id: string) => void;
     reorderTasks: (projectId: string, ordered: TdzTask[], movedId?: string) => void;
+    setTaskParent: (taskId: string, parentTaskId: string | null) => Promise<void> | void;
     addActivity: (projectId: string, summary: string, detail?: string) => void;
     addStakeholder: (projectId: string, payload: Partial<TdzStakeholder>) => void;
     linkContactToCard: (
