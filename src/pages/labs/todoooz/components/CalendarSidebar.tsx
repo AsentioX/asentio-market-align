@@ -1,5 +1,19 @@
-import React, { useMemo, useState } from 'react';
-import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Plus, Trash2, X } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ExternalLink,
+  Loader2,
+  MapPin,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TdzCard, TdzEvent, TdzTask } from '../lib/types';
 import { resolveTheme } from '../lib/theme';
@@ -15,7 +29,15 @@ interface Props {
   onDeleteEvent?: (id: string) => Promise<void> | void;
   onOpenCard?: (id: string) => void;
   onSpawnCard?: (event: TdzEvent) => void;
+  /** Import a date window from Google (used for back-scroll and month jumps). */
+  onLoadRange?: (from: Date, to: Date) => Promise<number | void> | void;
 }
+
+const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
+const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
+const sameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
+const monthKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}`;
+
 
 
 const fmt = (iso: string) =>
