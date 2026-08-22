@@ -80,6 +80,7 @@ interface Props {
     removeDocument: (id: string) => void;
     spawnCard: (task: TdzTask) => void;
     openCard: (id: string) => void;
+    deleteCard: (id: string) => void;
   };
 }
 
@@ -461,6 +462,18 @@ const DetailDrawer: React.FC<Props> = ({
                 ))}
                 {documents.length === 0 && <li className="text-xs text-white/40">No documents linked yet.</li>}
               </ul>
+            </div>
+
+            <div className="pt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => api.deleteCard(card.id)}
+                className="w-full border border-rose-500/30 text-rose-300/80 hover:bg-rose-500/10 hover:text-rose-200"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Card
+              </Button>
             </div>
           </TabsContent>
 

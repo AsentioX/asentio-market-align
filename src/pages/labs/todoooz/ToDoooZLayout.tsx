@@ -430,6 +430,12 @@ const ToDoooZLayout: React.FC = () => {
             if (card) toast.success('Sub-task card created');
           },
           openCard: (id) => setOpenId(id),
+          deleteCard: (id) => {
+            if (window.confirm('Delete this card and its sub-tasks?')) {
+              tdz.deleteCard(id);
+              setOpenId(null);
+            }
+          },
         }}
       />
 
