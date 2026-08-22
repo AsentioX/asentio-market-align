@@ -383,19 +383,37 @@ const DetailDrawer: React.FC<Props> = ({
               {orderedTasks.map(({ task: t, depth }) => (
                 <li
                   key={t.id}
+                  draggable
+                  onDragStart={() => setDragId(t.id)}
+                  onDragEnd={() => {
+                    setDragId(null);
+                    setOverId(null);
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    if (overId !== t.id) setOverId(t.id);
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    dropOn(t.id);
+                  }}
                   style={{ marginLeft: depth ? 20 : 0 }}
-                  className={`flex items-center gap-2 rounded-lg border p-2.5 ${
+                  className={`flex items-center gap-2 rounded-lg border p-2.5 transition ${
                     depth
                       ? 'border-white/[0.06] border-l-2 border-l-white/20 bg-white/[0.02]'
                       : 'border-white/10 bg-white/[0.03]'
+                  } ${dragId === t.id ? 'opacity-40' : ''} ${
+                    overId === t.id && dragId && dragId !== t.id ? 'border-t-2 border-t-[hsl(var(--tdz-accent))]' : ''
                   }`}
                 >
+                  <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-white/25" />
                   <input
                     type="checkbox"
                     checked={t.done}
                     onChange={() => api.toggleTask(t)}
                     className="h-4 w-4 accent-[hsl(var(--tdz-accent))]"
                   />
+
                   <span className={`flex-1 truncate text-sm ${t.done ? 'text-white/35 line-through' : 'text-white/85'}`}>
                     {t.title}
                   </span>
