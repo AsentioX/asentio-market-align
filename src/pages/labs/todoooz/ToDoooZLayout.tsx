@@ -94,7 +94,13 @@ const ToDoooZLayout: React.FC = () => {
     const q = query.trim().toLowerCase();
     return tdz.cards.filter((c) => {
       if (mode !== 'unified' && c.mode !== mode) return false;
-      if (tagFilter.length && !tagFilter.some((t) => (c.tags ?? []).includes(t))) return false;
+      if (tagFilter.length) {
+        const cardTags = (c.context_label ?? '')
+          .split(',')
+          .map((t) => t.trim().toLowerCase())
+          .filter(Boolean);
+        if (!tagFilter.some((t) => cardTags.includes(t.toLowerCase()))) return false;
+      }
       if (!q) return true;
       return (
         c.title.toLowerCase().includes(q) ||
