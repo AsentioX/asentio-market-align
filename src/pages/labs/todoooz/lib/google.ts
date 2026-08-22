@@ -262,13 +262,22 @@ interface GEvent {
   end?: { dateTime?: string; date?: string };
 }
 
-export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot, email?: string | null) => {
-  const timeMin = new Date(Date.now() - 86400000).toISOString();
-  const timeMax = new Date(Date.now() + 21 * 86400000).toISOString();
+/** Import a specific date window from Google Calendar. Only events whose start
+ *  falls inside the window are replaced, so earlier/later imports are kept. */
+export const importGoogleCalendarRange = async (
+  userId: string,
+  slot: TdzAccountSlot,
+  from: Date,
+  to: Date,
+  email?: string | null,
+) => {
+  const timeMin = from.toISOString();
+  const timeMax = to.toISOString();
   const url =
     'https://www.googleapis.com/calendar/v3/calendars/primary/events' +
     `?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}` +
-    '&singleEvents=true&orderBy=startTime&maxResults=250';
+    '&singleEvents=true&orderBy=startTime&maxResults=2500';
+
   const json = (await gfetch(url, email)) as { items?: GEvent[] };
   const items = json.items ?? [];
 
