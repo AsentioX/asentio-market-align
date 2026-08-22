@@ -409,6 +409,7 @@ const ToDoooZLayout: React.FC = () => {
           addTask: tdz.addTask,
           updateTask: tdz.updateTask,
           deleteTask: tdz.deleteTask,
+          reorderTasks: tdz.reorderTasks,
           addActivity: tdz.addActivity,
           addStakeholder: tdz.addStakeholder,
           removeStakeholder: tdz.removeStakeholder,
