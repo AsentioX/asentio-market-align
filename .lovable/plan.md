@@ -15,6 +15,12 @@
 ### Google write-back
 Reordering also syncs to Google Tasks. After a drop, the moved task is sent to Google's Tasks `move` endpoint with its new previous-sibling (and parent, when nested), so the order matches in Google Tasks and other Google clients. Tasks that came from Google are moved in place; tasks with no Google counterpart stay local-only.
 
+## 2. Promoting a subtask into its own card
+
+- When the spawn button turns a subtask into a card, the subtask is removed from the parent card's task list (and deleted from Google Tasks, since the work now lives on the new card). The new card keeps the parent link, so it still shows nested under its parent.
+- The confirmation toast offers "Undo", which restores the subtask on the parent card.
+- Reversing later: setting the new card's Parent back from the Parent picker in the drawer re-attaches it; clearing the parent leaves it standalone. Re-selecting the original parent also restores the subtask entry on that parent's task list.
+
 ## 2. Collapsible sections in card details
 
 Tabs stay as they are. Inside them, each block gets a clickable header with a chevron that expands/collapses:
