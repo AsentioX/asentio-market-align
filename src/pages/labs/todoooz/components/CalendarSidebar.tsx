@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { CalendarDays, ChevronLeft, ChevronRight, ExternalLink, MapPin } from 'lucide-react';
+import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TdzCard, TdzEvent } from '../lib/types';
 
@@ -8,13 +8,57 @@ interface Props {
   cardById: Map<string, TdzCard>;
   collapsed: boolean;
   onToggle: () => void;
+  onUpdateEvent?: (id: string, patch: Partial<TdzEvent>) => Promise<void> | void;
+  onDeleteEvent?: (id: string) => Promise<void> | void;
 }
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 
-const CalendarSidebar: React.FC<Props> = ({ events, cardById, collapsed, onToggle }) => {
+/** yyyy-MM-ddTHH:mm in local time, for <input type="datetime-local"> */
+const toLocalInput = (iso: string) => {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+const CalendarSidebar: React.FC<Props> = ({
+  events,
+  cardById,
+  collapsed,
+  onToggle,
+  onUpdateEvent,
+  onDeleteEvent,
+}) => {
   const [view, setView] = useState<'agenda' | 'time'>('agenda');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<{ title: string; location: string; starts_at: string; ends_at: string }>({
+    title: '',
+    location: '',
+    starts_at: '',
+    ends_at: '',
+  });
+
+  const startEdit = (e: TdzEvent) => {
+    setEditingId(e.id);
+    setDraft({
+      title: e.title,
+      location: e.location ?? '',
+      starts_at: toLocalInput(e.starts_at),
+      ends_at: toLocalInput(e.ends_at),
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editingId || !onUpdateEvent) return setEditingId(null);
+    await onUpdateEvent(editingId, {
+      title: draft.title.trim() || '(no title)',
+      location: draft.location.trim() || null,
+      starts_at: new Date(draft.starts_at).toISOString(),
+      ends_at: new Date(draft.ends_at).toISOString(),
+    });
+    setEditingId(null);
+  };
   const now = new Date();
 
   const upcoming = useMemo(
@@ -85,10 +129,77 @@ const CalendarSidebar: React.FC<Props> = ({ events, cardById, collapsed, onToggl
                 {list.map((e) => {
                   const project = e.project_id ? cardById.get(e.project_id) : null;
                   return (
-                    <div key={e.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5">
+                    <div key={e.id} className="group rounded-lg border border-white/10 bg-white/[0.03] p-2.5">
+                      {editingId === e.id ? (
+                        <div className="space-y-1.5">
+                          <input
+                            value={draft.title}
+                            onChange={(ev) => setDraft((d) => ({ ...d, title: ev.target.value }))}
+                            placeholder="Event title"
+                            className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-sm text-white outline-none"
+                          />
+                          <div className="flex gap-1.5">
+                            <input
+                              type="datetime-local"
+                              value={draft.starts_at}
+                              onChange={(ev) => setDraft((d) => ({ ...d, starts_at: ev.target.value }))}
+                              className="w-full rounded border border-white/15 bg-black/30 px-1.5 py-1 text-[10px] text-white outline-none"
+                            />
+                            <input
+                              type="datetime-local"
+                              value={draft.ends_at}
+                              onChange={(ev) => setDraft((d) => ({ ...d, ends_at: ev.target.value }))}
+                              className="w-full rounded border border-white/15 bg-black/30 px-1.5 py-1 text-[10px] text-white outline-none"
+                            />
+                          </div>
+                          <input
+                            value={draft.location}
+                            onChange={(ev) => setDraft((d) => ({ ...d, location: ev.target.value }))}
+                            placeholder="Location"
+                            className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
+                          />
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={saveEdit}
+                              className="flex items-center gap-1 rounded bg-emerald-500/20 px-2 py-1 text-[10px] text-emerald-200 hover:bg-emerald-500/30"
+                            >
+                              <Check className="h-3 w-3" /> Save to Google
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="flex items-center gap-1 rounded px-2 py-1 text-[10px] text-white/50 hover:text-white"
+                            >
+                              <X className="h-3 w-3" /> Cancel
+                            </button>
+                            {onDeleteEvent && (
+                              <button
+                                onClick={async () => {
+                                  await onDeleteEvent(e.id);
+                                  setEditingId(null);
+                                }}
+                                className="ml-auto flex items-center gap-1 rounded px-2 py-1 text-[10px] text-rose-300 hover:bg-rose-500/15"
+                              >
+                                <Trash2 className="h-3 w-3" /> Delete
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                      <>
                       <div className="flex items-center justify-between gap-2">
                         <span className="truncate text-sm text-white">{e.title}</span>
-                        <span className="shrink-0 text-[10px] text-white/45">{fmt(e.starts_at)}</span>
+                        <div className="flex shrink-0 items-center gap-1">
+                          <span className="text-[10px] text-white/45">{fmt(e.starts_at)}</span>
+                          {onUpdateEvent && (
+                            <button
+                              onClick={() => startEdit(e)}
+                              aria-label="Edit event"
+                              className="opacity-0 transition group-hover:opacity-100 text-white/40 hover:text-white"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-white/45">
                         <span className="rounded-full bg-white/10 px-1.5 py-0.5 capitalize">{e.account_slot}</span>
@@ -109,6 +220,8 @@ const CalendarSidebar: React.FC<Props> = ({ events, cardById, collapsed, onToggl
                         )}
                         {project && <span className="rounded bg-white/10 px-1.5 py-0.5">{project.title}</span>}
                       </div>
+                      </>
+                      )}
                     </div>
                   );
                 })}
