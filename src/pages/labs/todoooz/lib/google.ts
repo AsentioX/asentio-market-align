@@ -372,9 +372,15 @@ interface GTask {
   notes?: string;
   status?: string;
   due?: string;
+  completed?: string;
+  updated?: string;
+  deleted?: boolean;
+  hidden?: boolean;
   position?: string;
   parent?: string;
+  links?: { type?: string; description?: string; link?: string }[];
 }
+
 
 /**
  * Import Google Tasks for one account slot.
