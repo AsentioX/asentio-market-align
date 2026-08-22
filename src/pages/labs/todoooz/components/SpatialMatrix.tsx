@@ -38,6 +38,12 @@ const SpatialMatrix: React.FC<Props> = ({
 }) => {
   const tasksFor = (id: string) => tasks.filter((t) => t.project_id === id);
 
+  /** Where the dragged card would land: null beforeId means "end of the cell". */
+  const [dropTarget, setDropTarget] = useState<
+    { bucket: TdzBucket; priority: TdzPriority; beforeId: string | null } | null
+  >(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+
   const cellCards = (bucket: TdzBucket, priority: TdzPriority) =>
     sortCards(cards.filter((c) => c.time_bucket === bucket && c.priority === priority));
 
@@ -48,11 +54,35 @@ const SpatialMatrix: React.FC<Props> = ({
     if (card?.collapsed) kids.forEach((k) => onPatch(k.id, { time_bucket: bucket, priority }));
   };
 
+  /** Resolve the insertion anchor for a hover over `targetId` in a given cell. */
+  const anchorFor = (
+    e: React.DragEvent,
+    targetId: string,
+    bucket: TdzBucket,
+    priority: TdzPriority,
+  ): string | null => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const after = e.clientY > rect.top + rect.height / 2;
+    if (!after) return targetId;
+    const list = cellCards(bucket, priority).filter((c) => c.id !== draggingId);
+    const idx = list.findIndex((c) => c.id === targetId);
+    return idx >= 0 && idx + 1 < list.length ? list[idx + 1].id : null;
+  };
+
   const handleDrop = (e: React.DragEvent, bucket: TdzBucket, priority: TdzPriority) => {
     e.preventDefault();
     const id = e.dataTransfer.getData('text/tdz-card');
+    const anchor = dropTarget?.bucket === bucket && dropTarget.priority === priority ? dropTarget.beforeId : null;
+    setDropTarget(null);
+    setDraggingId(null);
     if (!id) return;
-    moveCard(id, bucket, priority);
+    const source = cardById.get(id);
+    if (!source) return;
+    if (source.time_bucket !== bucket || source.priority !== priority) moveCard(id, bucket, priority);
+    const list = cellCards(bucket, priority).filter((c) => c.id !== id);
+    const index = anchor ? list.findIndex((c) => c.id === anchor) : -1;
+    if (index < 0) onReorder([...list, source]);
+    else onReorder([...list.slice(0, index), source, ...list.slice(index)]);
   };
 
   /** Drop directly on a card: reorder within the cell, or move in then place. */
@@ -65,16 +95,30 @@ const SpatialMatrix: React.FC<Props> = ({
     e.preventDefault();
     e.stopPropagation();
     const id = e.dataTransfer.getData('text/tdz-card');
+    const anchor = anchorFor(e, targetId, bucket, priority);
+    setDropTarget(null);
+    setDraggingId(null);
     if (!id || id === targetId) return;
     const source = cardById.get(id);
     if (!source) return;
     if (source.time_bucket !== bucket || source.priority !== priority) moveCard(id, bucket, priority);
 
     const list = cellCards(bucket, priority).filter((c) => c.id !== id);
-    const index = list.findIndex((c) => c.id === targetId);
-    if (index < 0) return;
-    onReorder([...list.slice(0, index), source, ...list.slice(index)]);
+    const index = anchor ? list.findIndex((c) => c.id === anchor) : -1;
+    if (index < 0) onReorder([...list, source]);
+    else onReorder([...list.slice(0, index), source, ...list.slice(index)]);
   };
+
+  /** The colored insertion marker rendered between cards. */
+  const DropLine = ({ hsl }: { hsl: string }) => (
+    <div className="relative h-0.5 rounded-full" style={{ background: `hsl(${hsl})` }}>
+      <span
+        className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full"
+        style={{ background: `hsl(${hsl})` }}
+      />
+    </div>
+  );
+
 
 
   return (
