@@ -4,8 +4,6 @@ import {
   Boxes,
   Briefcase,
   Command,
-  Home,
-  Layers,
   Loader2,
   LogOut,
   Search,
@@ -32,6 +30,7 @@ import CalendarSidebar from './components/CalendarSidebar';
 import ChiefOfStaff from './components/ChiefOfStaff';
 import DetailDrawer, { TAB_KEYS, type TabKey } from './components/DetailDrawer';
 import { TagProvider } from './lib/tagContext';
+import TagFilterBar from './components/TagFilterBar';
 import ShortcutOverlay from './components/ShortcutOverlay';
 import ContactsCRM from './components/ContactsCRM';
 import GoogleAccountsPanel from './components/GoogleAccountsPanel';
@@ -76,7 +75,8 @@ const ToDoooZLayout: React.FC = () => {
   const userId = session?.user?.id;
   const tdz = useToDoooZ(userId);
 
-  const [mode, setMode] = useState<TdzViewMode>('work');
+  const [mode, setMode] = useState<TdzViewMode>('unified');
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [environment, setEnvironment] = useState<TdzEnvironment>('slate');
   const [query, setQuery] = useState('');
   const [focusedId, setFocusedId] = useState<string | null>(null);
@@ -94,6 +94,7 @@ const ToDoooZLayout: React.FC = () => {
     const q = query.trim().toLowerCase();
     return tdz.cards.filter((c) => {
       if (mode !== 'unified' && c.mode !== mode) return false;
+      if (tagFilter.length && !tagFilter.some((t) => (c.tags ?? []).includes(t))) return false;
       if (!q) return true;
       return (
         c.title.toLowerCase().includes(q) ||
@@ -101,7 +102,7 @@ const ToDoooZLayout: React.FC = () => {
         (c.context_label ?? '').toLowerCase().includes(q)
       );
     });
-  }, [tdz.cards, mode, query]);
+  }, [tdz.cards, mode, query, tagFilter]);
 
   const visibleEvents = useMemo(
     () => tdz.events.filter((e) => mode === 'unified' || e.account_slot === mode),
@@ -169,7 +170,7 @@ const ToDoooZLayout: React.FC = () => {
       remove: (id) => {
         if (window.confirm('Delete this card and its sub-tasks?')) tdz.deleteCard(id);
       },
-      toggleMode: () => setMode((m) => (m === 'work' ? 'personal' : m === 'personal' ? 'unified' : 'work')),
+      toggleMode: () => setTagFilter([]),
       toggleCalendar: () => setCalCollapsed((v) => !v),
       toggleAssistant: () => setAssistantOpen((v) => !v),
       toggleHelp: () => setHelpOpen((v) => !v),
@@ -190,19 +191,6 @@ const ToDoooZLayout: React.FC = () => {
   }
   if (!session) return <ToDoooZLogin />;
 
-  const modeBtn = (key: TdzViewMode, label: string, Icon: typeof Home) => (
-    <button
-      key={key}
-      onClick={() => setMode(key)}
-      className={cn(
-        'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition',
-        mode === key ? 'bg-white/15 text-white' : 'text-white/45 hover:text-white',
-      )}
-    >
-      <Icon className="h-3.5 w-3.5" /> {label}
-    </button>
-  );
-
   return (
     <TagProvider
       tags={tdz.tags}
@@ -221,10 +209,8 @@ const ToDoooZLayout: React.FC = () => {
           </span>
         </Link>
 
-        <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1">
-          {modeBtn('work', 'Work', Briefcase)}
-          {modeBtn('personal', 'Personal', Home)}
-          {modeBtn('unified', 'Unified', Layers)}
+        <div className="flex items-center">
+          <TagFilterBar value={tagFilter} onChange={setTagFilter} />
         </div>
 
         <div className="relative min-w-[180px] flex-1">
