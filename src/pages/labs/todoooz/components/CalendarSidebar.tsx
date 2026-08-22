@@ -36,7 +36,9 @@ const CalendarSidebar: React.FC<Props> = ({
   onUpdateEvent,
   onDeleteEvent,
   onOpenCard,
+  onSpawnCard,
 }) => {
+
   const [view, setView] = useState<'agenda' | 'time'>('agenda');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<{
