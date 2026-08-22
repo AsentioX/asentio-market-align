@@ -31,6 +31,7 @@ import type {
   TdzStakeholder,
   TdzTask,
 } from '../lib/types';
+import { flattenTaskTree } from '../lib/taskTree';
 
 export const TAB_KEYS = ['said', 'people', 'tasks', 'overview', 'schedule'] as const;
 export type TabKey = (typeof TAB_KEYS)[number];
