@@ -349,8 +349,16 @@ const DetailDrawer: React.FC<Props> = ({
               </Button>
             </div>
             <ul className="space-y-2">
-              {tasks.map((t) => (
-                <li key={t.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-2.5">
+              {orderedTasks.map(({ task: t, depth }) => (
+                <li
+                  key={t.id}
+                  style={{ marginLeft: depth ? 20 : 0 }}
+                  className={`flex items-center gap-2 rounded-lg border p-2.5 ${
+                    depth
+                      ? 'border-white/[0.06] border-l-2 border-l-white/20 bg-white/[0.02]'
+                      : 'border-white/10 bg-white/[0.03]'
+                  }`}
+                >
                   <input
                     type="checkbox"
                     checked={t.done}
