@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Check, ChevronsUpDown, RotateCcw, Search, Sparkles, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Check, ChevronsUpDown, RotateCcw, Sparkles } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Command,
@@ -69,7 +68,7 @@ const ColumnShell = ({
       <span className="text-xs font-semibold uppercase tracking-wider text-foreground">{label}</span>
       {optional && <span className="text-[10px] text-muted-foreground">optional</span>}
     </div>
-    <p className="text-[11px] text-muted-foreground mt-0.5 mb-2 line-clamp-1">{question}</p>
+    <div className="mb-2" />
     {children}
   </div>
 );
@@ -211,13 +210,13 @@ const MultiSelectColumn = ({
 };
 
 interface WidgetProps {
-  onSubmit: (query: PartnerQuery) => void;
-  onReset: () => void;
+  /** Fires live as the user picks I Offer / Building / Need / Market. */
+  onChange: (query: PartnerQuery) => void;
   /** Optional pre-populated selections (e.g. arriving from a use case). */
   initial?: PartnerQuery;
 }
 
-const PartnerFinderWidget = ({ onSubmit, onReset, initial }: WidgetProps) => {
+const PartnerFinderWidget = ({ onChange, initial }: WidgetProps) => {
   const [offer, setOffer] = useState<string | undefined>(initial?.offer);
   const [building, setBuilding] = useState<string | undefined>(initial?.building);
   const [needs, setNeeds] = useState<string[]>(initial?.needs || []);
@@ -231,6 +230,11 @@ const PartnerFinderWidget = ({ onSubmit, onReset, initial }: WidgetProps) => {
     setMarket(initial.market);
   }, [initial]);
 
+  // Live filtering — partner groups update as each option is picked.
+  useEffect(() => {
+    onChange({ offer, building, needs, market });
+  }, [offer, building, needs, market, onChange]);
+
   const offerOpt = optionByValue(OFFER_OPTIONS, offer);
   const buildingOpt = optionByValue(BUILDING_OPTIONS, building);
   const needOpts = needs.map((n) => optionByValue(NEED_MULTI_OPTIONS, n));
@@ -242,7 +246,6 @@ const PartnerFinderWidget = ({ onSubmit, onReset, initial }: WidgetProps) => {
     setBuilding(undefined);
     setNeeds([]);
     setMarket(undefined);
-    onReset();
   };
 
   return (
@@ -291,23 +294,19 @@ const PartnerFinderWidget = ({ onSubmit, onReset, initial }: WidgetProps) => {
       </div>
 
       <div className="mt-5 pt-4 border-t border-border flex items-center justify-between gap-4">
+        <p className="text-xs text-muted-foreground">
+          {hasAny
+            ? 'Partners below update as you refine your selection.'
+            : 'Pick any option to narrow the partners below.'}
+        </p>
         <button
           type="button"
           onClick={reset}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          disabled={!hasAny}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground disabled:opacity-40"
         >
           <RotateCcw className="w-3 h-3" /> Reset
         </button>
-        <Button
-          type="button"
-          disabled={!hasAny}
-          onClick={() => onSubmit({ offer, building, needs, market })}
-          className="bg-asentio-red hover:bg-asentio-red/90 text-white px-6"
-        >
-          <Search className="w-4 h-4 mr-2" />
-          Find Partners
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
       </div>
     </div>
   );

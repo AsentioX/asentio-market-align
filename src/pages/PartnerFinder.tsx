@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Building2, ChevronRight, Loader2 } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { SOLUTION_LAYERS } from '@/lib/haiFramework';
 
 import TopographicPattern from '@/components/TopographicPattern';
 import ARBackground from '@/components/ARBackground';
 import PartnerFinderWidget from '@/components/directory/PartnerFinderWidget';
 import { useSeo } from '@/hooks/useSeo';
-import { useXRCompanies } from '@/hooks/useXRCompanies';
+import { useXRCompanies, XRCompany } from '@/hooks/useXRCompanies';
 import { useHAIUseCases, useHAIUseCase } from '@/hooks/useHAIUseCases';
 import {
   findPartnerMatches,
@@ -64,15 +64,27 @@ const ResultCard = ({ match }: { match: PartnerRecommendation }) => {
         )}
       </dl>
 
-      <p className="mt-3 text-sm text-muted-foreground flex-1">{match.explanation}</p>
+      {match.explanation && <p className="mt-3 text-sm text-muted-foreground flex-1">{match.explanation}</p>}
     </div>
   );
 };
 
+/** Every company as a minimal recommendation, so the no-query state shows the
+ *  full solution stack the same way the Use Case Finder shows all use cases. */
+const allAsRecs = (companies: XRCompany[] | undefined): PartnerRecommendation[] =>
+  (companies || []).map((company) => ({
+    company,
+    score: 0,
+    provides: (company.ai_capabilities || []).slice(0, 2),
+    useCase: undefined,
+    markets: (company.industry_focus || []).slice(0, 2),
+    explanation: '',
+  }));
+
 const PartnerFinder = () => {
   const [searchParams] = useSearchParams();
   const useCaseSlug = searchParams.get('useCase') || undefined;
-  const [query, setQuery] = useState<PartnerQuery | null>(null);
+  const [query, setQuery] = useState<PartnerQuery>({ needs: [] });
 
   const { data: companies, isLoading } = useXRCompanies({});
   const { data: useCases } = useHAIUseCases();
@@ -100,9 +112,28 @@ const PartnerFinder = () => {
     trackPageView('/hai-directory/partner-finder');
   }, []);
 
+  const handleChange = useCallback((q: PartnerQuery) => setQuery(q), []);
+
+  const hasSelection = !!query.offer || !!query.building || query.needs.length > 0 || !!query.market;
+
+  // Debounced analytics for the live finder.
+  const timer = useRef<number>();
+  useEffect(() => {
+    if (!hasSelection) return;
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      trackEvent(
+        'partner_finder_query',
+        { offer: query.offer, building: query.building, needs: query.needs.join('|'), market: query.market },
+        '/hai-directory/partner-finder'
+      );
+    }, 1200);
+    return () => window.clearTimeout(timer.current);
+  }, [query, hasSelection]);
+
   const results = useMemo(
-    () => (query ? findPartnerMatches(companies, query, useCases) : []),
-    [companies, query, useCases]
+    () => (hasSelection ? findPartnerMatches(companies, query, useCases) : allAsRecs(companies)),
+    [companies, query, useCases, hasSelection]
   );
 
   const groups = useMemo(() => {
@@ -120,21 +151,11 @@ const PartnerFinder = () => {
         matches: other,
       });
     }
-    return layers.filter((l) => l.matches.length > 0);
+    return layers;
   }, [results]);
 
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const toggle = (label: string) => setOpen((p) => ({ ...p, [label]: !p[label] }));
-
-
-  const handleSubmit = (q: PartnerQuery) => {
-    setQuery(q);
-    trackEvent(
-      'partner_finder_query',
-      { offer: q.offer, building: q.building, needs: q.needs.join('|'), market: q.market },
-      '/hai-directory/partner-finder'
-    );
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -160,56 +181,50 @@ const PartnerFinder = () => {
       </section>
 
       <section className="container mx-auto px-4 md:px-6 -mt-6 relative z-20 max-w-7xl">
-        <PartnerFinderWidget onSubmit={handleSubmit} onReset={() => setQuery(null)} initial={initial} />
+        <PartnerFinderWidget onChange={handleChange} initial={initial} />
       </section>
 
       <section className="container mx-auto px-4 md:px-6 py-12 max-w-7xl">
-        {!query ? (
-          <p className="text-sm text-muted-foreground text-center py-6">
-            Make a selection above and hit Find Partners to see ranked, complementary matches.
-          </p>
-        ) : isLoading ? (
+        <div className="mb-6" />
+
+        {isLoading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
-        ) : results.length === 0 ? (
-          <div className="text-center py-12">
-            <Building2 className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
-              No strong matches for that combination yet. Try fewer needs or a broader market.
-            </p>
-          </div>
         ) : (
-          <>
-            <div className="w-12 h-1 bg-asentio-red mb-4" />
-            <h2 className="text-2xl font-bold text-foreground mb-1">
-              {results.length} recommended partner{results.length !== 1 ? 's' : ''}
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              Ranked by how well each company completes your solution — complementary, not competing.
-            </p>
-            <div className="space-y-4">
-              {groups.map((group) => (
-                <div key={group.label} className="rounded-2xl border border-border bg-card/40 overflow-hidden">
+          <div className="space-y-4">
+            {groups.map((group) => {
+              const count = group.matches.length;
+              const empty = count === 0;
+              return (
+                <div
+                  key={group.label}
+                  className={`rounded-2xl border border-border bg-card/40 overflow-hidden ${
+                    empty ? 'opacity-50' : ''
+                  }`}
+                >
                   <button
                     type="button"
+                    disabled={empty}
                     onClick={() => toggle(group.label)}
-                    className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/40 transition-colors"
+                    className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/40 transition-colors disabled:cursor-default disabled:hover:bg-transparent"
                   >
                     <ChevronRight
                       className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${
-                        open[group.label] ? 'rotate-90' : ''
+                        open[group.label] && !empty ? 'rotate-90' : ''
                       }`}
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-foreground">{group.label}</h3>
-                        <span className="text-xs font-bold text-asentio-red">{group.matches.length}</span>
+                        <span className="text-xs font-bold text-asentio-red">{count}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-1">{group.description}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {empty ? 'No partners for this selection' : group.description}
+                      </p>
                     </div>
                   </button>
-                  {open[group.label] && (
+                  {open[group.label] && !empty && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-5 pt-0">
                       {group.matches.map((m) => (
                         <ResultCard key={m.company.id} match={m} />
@@ -217,11 +232,10 @@ const PartnerFinder = () => {
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
-          </>
+              );
+            })}
+          </div>
         )}
-
       </section>
     </div>
   );
