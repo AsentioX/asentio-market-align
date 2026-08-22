@@ -132,6 +132,30 @@ const DetailDrawer: React.FC<Props> = ({
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
   const orderedTasks = flattenTaskTree(tasks);
 
+  /** Move the dragged task (and its children, when it is a root) before the drop target. */
+  const dropOn = (targetId: string) => {
+    setOverId(null);
+    const sourceId = dragId;
+    setDragId(null);
+    if (!sourceId || sourceId === targetId) return;
+
+    const flat = orderedTasks.map((f) => f.task);
+    const source = flat.find((t) => t.id === sourceId);
+    const target = flat.find((t) => t.id === targetId);
+    if (!source || !target) return;
+    // Children only reorder among their own siblings.
+    if ((source.parent_task_id ?? null) !== (target.parent_task_id ?? null)) return;
+
+    const block = flat.filter((t) => t.id === sourceId || t.parent_task_id === sourceId);
+    const blockIds = new Set(block.map((t) => t.id));
+    const rest = flat.filter((t) => !blockIds.has(t.id));
+    const targetIndex = rest.findIndex((t) => t.id === targetId);
+    if (targetIndex < 0) return;
+    const next = [...rest.slice(0, targetIndex), ...block, ...rest.slice(targetIndex)];
+    api.reorderTasks(card.id, next, sourceId);
+  };
+
+
   return (
     <Sheet open={!!card} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
