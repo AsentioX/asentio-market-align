@@ -6,6 +6,8 @@ import {
   FileSpreadsheet,
   FileText,
   Folder,
+  ChevronDown,
+  ChevronUp,
   GripVertical,
   Plus,
   Presentation,
