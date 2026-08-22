@@ -43,10 +43,9 @@ The task detail area gets a "People" line: search the master contacts list and a
 
 - Database migration: add `completed_at timestamptz` and `google_updated_at timestamptz` to `tdz_tasks`; add `task_id uuid references tdz_tasks(id) on delete set null` to `tdz_calendar_events` and to `tdz_stakeholders` (documents already carry `task_id`). Keep grants/RLS in line with the existing `tdz_` policy pattern (owner-only via `user_id`).
 - `src/pages/labs/todoooz/lib/types.ts`: extend `TdzTask` (`completed_at`, `google_updated_at`), `TdzEvent` (`task_id`) and `TdzStakeholder` (`task_id`).
-
 - `src/pages/labs/todoooz/lib/google.ts`:
   - `importGoogleTasks` — request `showCompleted=true&showHidden=false`, skip `deleted` items, persist `completed`, `updated`, and upsert `t.links` into `tdz_documents` with `task_id` and `doc_type` derived from `link.type`/host.
   - `pushTaskToGoogle` already sends title/notes/due/status; no change needed beyond passing `completed_at` through.
-- `src/pages/labs/todoooz/lib/useToDoooZ.ts`: `addTask` already accepts `parentTaskId`; expose it through the drawer API, add `linkEventToTask(eventId, taskId)` reusing the existing local-only `updateEvent` path (no Google write, since Google Calendar has no task field), and load task-scoped documents (already loaded per card).
-- `src/pages/labs/todoooz/components/DetailDrawer.tsx`: add subtask button per root task, expandable `TaskDetail` block (notes/due/links/event), event↔task selector in the Schedule tab.
+- `src/pages/labs/todoooz/lib/useToDoooZ.ts`: `addTask` already accepts `parentTaskId`; expose it through the drawer API, add `linkEventToTask(eventId, taskId)` reusing the existing local-only `updateEvent` path (no Google write, since Google Calendar has no task field), extend `addStakeholder`/`linkContactToCard` with an optional `taskId`, and load task-scoped documents (already loaded per card).
+- `src/pages/labs/todoooz/components/DetailDrawer.tsx`: add subtask button per root task, expandable `TaskDetail` block (notes/due/links/event/people), contact search reused from the People tab, event↔task selector in the Schedule tab.
 - `src/pages/labs/todoooz/components/CalendarSidebar.tsx`: task selector shown once a card is linked.
