@@ -150,19 +150,28 @@ const SpatialMatrix: React.FC<Props> = ({
               const list = cellCards(b.key, p.key);
               const roots = list.filter((c) => !c.parent_id || !cardById.has(c.parent_id));
               const orphanChildren = list.filter((c) => c.parent_id && cardById.has(c.parent_id));
+              const active = dropTarget?.bucket === b.key && dropTarget.priority === p.key;
               return (
                 <div
                   key={`${p.key}-${b.key}`}
                   data-cell={`${b.key}:${p.key}`}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    if (!active || dropTarget?.beforeId !== null)
+                      setDropTarget({ bucket: b.key, priority: p.key, beforeId: null });
+                  }}
+                  onDragLeave={(e) => {
+                    if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+                    if (active) setDropTarget(null);
+                  }}
                   onDrop={(e) => handleDrop(e, b.key, p.key)}
                   className={cn(
                     'group/cell min-h-[132px] rounded-xl border p-2',
                     'transition-colors hover:border-white/20 [transform-style:preserve-3d]',
                   )}
                   style={{
-                    borderColor: `hsl(${p.hsl} / 0.12)`,
-                    background: `hsl(${p.hsl} / 0.05)`,
+                    borderColor: `hsl(${p.hsl} / ${active ? 0.55 : 0.12})`,
+                    background: `hsl(${p.hsl} / ${active ? 0.09 : 0.05})`,
                   }}
                 >
                   <div className="space-y-2">
@@ -173,9 +182,17 @@ const SpatialMatrix: React.FC<Props> = ({
                         <div
                           key={card.id}
                           className="space-y-2"
-                          onDragOver={(e) => e.preventDefault()}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const beforeId = anchorFor(e, card.id, b.key, p.key);
+                            if (!active || dropTarget?.beforeId !== beforeId)
+                              setDropTarget({ bucket: b.key, priority: p.key, beforeId });
+                          }}
                           onDrop={(e) => handleCardDrop(e, card.id, b.key, p.key)}
                         >
+                          {active && dropTarget?.beforeId === card.id && <DropLine hsl={p.hsl} />}
+
                           <TaskCard
                             card={card}
                             tasks={tasksFor(card.id)}
