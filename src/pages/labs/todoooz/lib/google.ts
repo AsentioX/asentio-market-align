@@ -532,6 +532,7 @@ export interface TaskPushInput {
   done: boolean;
   due_date: string | null;
   google_task_id: string | null;
+  parent_task_id?: string | null;
 }
 
 /** Create or update a task in Google Tasks to match the local row. */
@@ -553,7 +554,18 @@ export const pushTaskToGoogle = async (
   if (task.google_task_id) {
     await gfetch(`${base}/${encodeURIComponent(task.google_task_id)}`, email, { method: 'PATCH', body });
   } else {
-    const created = (await gfetch(base, email, { method: 'POST', body })) as { id?: string };
+    // Nested tasks are created under their parent so Google keeps the hierarchy.
+    let parentGoogleId: string | null = null;
+    if (task.parent_task_id) {
+      const { data } = await supabase
+        .from('tdz_tasks')
+        .select('google_task_id')
+        .eq('id', task.parent_task_id)
+        .maybeSingle();
+      parentGoogleId = (data as { google_task_id: string | null } | null)?.google_task_id ?? null;
+    }
+    const url = parentGoogleId ? `${base}?parent=${encodeURIComponent(parentGoogleId)}` : base;
+    const created = (await gfetch(url, email, { method: 'POST', body })) as { id?: string };
     if (created.id) {
       await supabase.from('tdz_tasks').update({ google_task_id: created.id }).eq('id', task.id);
     }
