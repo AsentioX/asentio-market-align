@@ -72,10 +72,6 @@ const CompanyDetail = () => {
     () => useCasesForCompany(company, haiUseCases, 8),
     [company, haiUseCases],
   );
-  const partnerGroups = useMemo(
-    () => partnerGroupsForCompany(company, allCompanies, haiUseCases),
-    [company, allCompanies, haiUseCases],
-  );
   const partners = useMemo(
     () => partnersForCompany(company, allCompanies, haiUseCases, 6),
     [company, allCompanies, haiUseCases],
