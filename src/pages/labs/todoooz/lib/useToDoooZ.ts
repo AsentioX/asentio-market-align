@@ -161,12 +161,14 @@ export const useToDoooZ = (userId: string | undefined) => {
 
   const toggleTask = useCallback(
     async (task: TdzTask) => {
-      commitTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done: !t.done } : t)));
-      await supabase.from('tdz_tasks').update({ done: !task.done }).eq('id', task.id);
+      const done = !task.done;
+      const completed_at = done ? new Date().toISOString() : null;
+      commitTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done, completed_at } : t)));
+      await supabase.from('tdz_tasks').update({ done, completed_at }).eq('id', task.id);
       await patchCard(task.project_id, {}, true);
       pushTask(task.id);
     },
-    [patchCard, pushTask],
+    [patchCard, pushTask, commitTasks],
   );
 
   const addTask = useCallback(
