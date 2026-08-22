@@ -57,7 +57,7 @@ const TaskCard: React.FC<Props> = ({
 
   const theme = resolveTheme(card, parent);
   const tier = depthTier(card);
-  const top = flattenTaskTree(tasks).slice(0, 3);
+  const all = flattenTaskTree(tasks);
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : card.progress;
 
@@ -143,9 +143,9 @@ const TaskCard: React.FC<Props> = ({
 
           {expanded && (
             <>
-              {top.length > 0 && (
+              {all.length > 0 && (
                 <ul className="mb-2 space-y-1">
-                  {top.map(({ task: t, depth }) => (
+                  {all.map(({ task: t, depth }) => (
                     <li
                       key={t.id}
                       style={{ marginLeft: depth ? 14 : 0 }}
