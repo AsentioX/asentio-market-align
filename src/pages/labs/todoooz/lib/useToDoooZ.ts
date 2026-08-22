@@ -211,7 +211,10 @@ export const useToDoooZ = (userId: string | undefined) => {
     async (id: string, patch: Partial<TdzEvent>) => {
       setEvents((prev) => prev.map((e) => (e.id === id ? { ...e, ...(patch as TdzEvent) } : e)));
       const { error } = await supabase.from('tdz_calendar_events').update(patch).eq('id', id);
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       const { data } = await supabase.from('tdz_calendar_events').select('*').eq('id', id).maybeSingle();
       const event = data as TdzEvent | null;
       if (!event) return;
