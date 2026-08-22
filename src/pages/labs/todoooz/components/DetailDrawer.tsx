@@ -111,6 +111,8 @@ const DetailDrawer: React.FC<Props> = ({
   const [personName, setPersonName] = useState('');
   const [personRole, setPersonRole] = useState('');
   const [contactQuery, setContactQuery] = useState('');
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
 
   const theme = card ? resolveTheme(card, parent) : null;
   const linkedEvents = useMemo(
