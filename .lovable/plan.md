@@ -31,4 +31,5 @@ Defaults: all sections expanded. Open/closed state is remembered per section in 
 - Subtask order: renumber `rank` sequentially across the flattened sibling group and batch-update via the backend client; `useToDoooZ` gains a `reorderTasks` action.
 - Card order: renumber `sort_order` for the cards in the target bucket/priority cell; extends the existing `handleDrop` with a drop-index computed from the hovered card, plus a thin drop indicator line.
 - Collapsible blocks: a small local `Section` component in the drawer (header + chevron + content), state persisted under a `tdz:drawer-sections` key.
-- Files touched: `components/DetailDrawer.tsx`, `components/SpatialMatrix.tsx`, `components/TaskCard.tsx`, `lib/useToDoooZ.ts`, `lib/taskTree.ts`. No schema changes needed (`rank` and `sort_order` already exist).
+- Google order write-back: new `moveGoogleTask` helper in `lib/google.ts` calling `POST tasks/v1/lists/{listId}/tasks/{taskId}/move` with `previous`/`parent`, invoked from `reorderTasks` for tasks that have a `google_task_id`; failures toast but do not revert local order.
+- Files touched: `components/DetailDrawer.tsx`, `components/SpatialMatrix.tsx`, `components/TaskCard.tsx`, `lib/useToDoooZ.ts`, `lib/google.ts`, `lib/taskTree.ts`. No schema changes needed (`rank` and `sort_order` already exist).
