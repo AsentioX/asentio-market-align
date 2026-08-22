@@ -219,6 +219,58 @@ export const useToDoooZ = (userId: string | undefined) => {
   );
 
   /**
+   * Move tasks (and their descendants) onto another card.
+   * Google-backed tasks are removed from the old list so the next push recreates
+   * them in the target card's list.
+   */
+  const moveTasksToCard = useCallback(
+    async (taskIds: string[], targetProjectId: string) => {
+      const moving = tasks.filter((t) => taskIds.includes(t.id));
+      if (!moving.length) return;
+      const movingIds = new Set(moving.map((t) => t.id));
+      setTasks((prev) =>
+        prev.map((t) =>
+          movingIds.has(t.id)
+            ? {
+                ...t,
+                project_id: targetProjectId,
+                parent_task_id:
+                  t.parent_task_id && movingIds.has(t.parent_task_id) ? t.parent_task_id : null,
+                google_task_id: null,
+              }
+            : t,
+        ),
+      );
+      for (const t of moving) {
+        await supabase
+          .from('tdz_tasks')
+          .update({
+            project_id: targetProjectId,
+            parent_task_id:
+              t.parent_task_id && movingIds.has(t.parent_task_id) ? t.parent_task_id : null,
+            google_task_id: null,
+          })
+          .eq('id', t.id);
+        if (t.google_task_id) {
+          const card = cards.find((c) => c.id === t.project_id);
+          try {
+            await deleteGoogleTask(
+              t.project_id,
+              t.google_task_id,
+              emailForSlot(t.account_slot ?? card?.mode),
+            );
+          } catch (err) {
+            if (!(err instanceof GoogleAuthNeeded)) console.error('Google Tasks move failed', err);
+          }
+        }
+      }
+      for (const t of moving) await pushTask(t.id);
+    },
+    [tasks, cards, emailForSlot, pushTask],
+  );
+
+
+  /**
    * Persist a manual order for a card's tasks.
    * `ordered` is the full display order (roots followed by their children);
    * ranks are renumbered and the moved task is repositioned on Google too.
