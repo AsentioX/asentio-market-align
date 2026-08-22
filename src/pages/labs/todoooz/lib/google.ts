@@ -318,10 +318,12 @@ export interface GooglePerson {
   job_title?: string;
   avatar_url?: string;
   resource_id: string;
+  etag?: string;
 }
 
 interface GConn {
   resourceName?: string;
+  etag?: string;
   names?: { displayName?: string }[];
   emailAddresses?: { value?: string }[];
   phoneNumbers?: { value?: string }[];
@@ -343,6 +345,7 @@ export const fetchGooglePeople = async (email?: string | null): Promise<GooglePe
       if (!email) return;
       people.push({
         resource_id: c.resourceName ?? `people/${email}`,
+        etag: c.etag,
         name: c.names?.[0]?.displayName ?? email,
         email,
         phone: c.phoneNumbers?.[0]?.value,
@@ -399,8 +402,7 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
       .from('tdz_projects')
       .select('id')
       .eq('user_id', userId)
-      .eq('mode', slot)
-      .eq('context_label', listTitle)
+      .eq('google_task_list_id', list.id)
       .maybeSingle();
 
     let cardId = existingCard?.id as string | undefined;
@@ -412,6 +414,7 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
           title: listTitle,
           mode: slot,
           context_label: listTitle,
+          google_task_list_id: list.id,
           description: 'Imported from Google Tasks',
         } as never)
         .select('id')
@@ -462,4 +465,198 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
     .eq('account_slot', slot);
 
   return imported;
+};
+
+/* ------------------------------------------------- Write-back to Google */
+
+/** Resolve the Google Tasks list a card belongs to, creating one if needed. */
+const ensureTaskList = async (
+  cardId: string,
+  cardTitle: string,
+  email?: string | null,
+): Promise<string | null> => {
+  const { data } = await supabase
+    .from('tdz_projects')
+    .select('google_task_list_id')
+    .eq('id', cardId)
+    .maybeSingle();
+  const existing = (data as { google_task_list_id: string | null } | null)?.google_task_list_id;
+  if (existing) return existing;
+
+  const created = (await gfetch('https://tasks.googleapis.com/tasks/v1/users/@me/lists', email, {
+    method: 'POST',
+    body: { title: cardTitle || 'ToDoooZ' },
+  })) as { id?: string };
+  if (!created.id) return null;
+  await supabase.from('tdz_projects').update({ google_task_list_id: created.id }).eq('id', cardId);
+  return created.id;
+};
+
+export interface TaskPushInput {
+  id: string;
+  project_id: string;
+  title: string;
+  notes: string | null;
+  done: boolean;
+  due_date: string | null;
+  google_task_id: string | null;
+}
+
+/** Create or update a task in Google Tasks to match the local row. */
+export const pushTaskToGoogle = async (
+  task: TaskPushInput,
+  cardTitle: string,
+  email?: string | null,
+) => {
+  const listId = await ensureTaskList(task.project_id, cardTitle, email);
+  if (!listId) return;
+  const body = {
+    title: task.title,
+    notes: task.notes ?? '',
+    status: task.done ? 'completed' : 'needsAction',
+    ...(task.due_date ? { due: new Date(`${task.due_date}T00:00:00Z`).toISOString() } : {}),
+    ...(task.done ? {} : { completed: null }),
+  };
+  const base = `https://tasks.googleapis.com/tasks/v1/lists/${encodeURIComponent(listId)}/tasks`;
+  if (task.google_task_id) {
+    await gfetch(`${base}/${encodeURIComponent(task.google_task_id)}`, email, { method: 'PATCH', body });
+  } else {
+    const created = (await gfetch(base, email, { method: 'POST', body })) as { id?: string };
+    if (created.id) {
+      await supabase.from('tdz_tasks').update({ google_task_id: created.id }).eq('id', task.id);
+    }
+  }
+};
+
+export const deleteGoogleTask = async (
+  cardId: string,
+  googleTaskId: string,
+  email?: string | null,
+) => {
+  const { data } = await supabase
+    .from('tdz_projects')
+    .select('google_task_list_id')
+    .eq('id', cardId)
+    .maybeSingle();
+  const listId = (data as { google_task_list_id: string | null } | null)?.google_task_list_id;
+  if (!listId) return;
+  await gfetch(
+    `https://tasks.googleapis.com/tasks/v1/lists/${encodeURIComponent(listId)}/tasks/${encodeURIComponent(googleTaskId)}`,
+    email,
+    { method: 'DELETE' },
+  );
+};
+
+export interface EventPushInput {
+  id: string;
+  google_event_id?: string | null;
+  google_calendar_id?: string | null;
+  title: string;
+  location: string | null;
+  starts_at: string;
+  ends_at: string;
+  all_day: boolean;
+}
+
+/** Push a calendar edit back to Google Calendar. */
+export const pushEventToGoogle = async (event: EventPushInput, email?: string | null) => {
+  const calendarId = event.google_calendar_id || 'primary';
+  const body = {
+    summary: event.title,
+    location: event.location ?? undefined,
+    start: event.all_day
+      ? { date: event.starts_at.slice(0, 10) }
+      : { dateTime: new Date(event.starts_at).toISOString() },
+    end: event.all_day
+      ? { date: event.ends_at.slice(0, 10) }
+      : { dateTime: new Date(event.ends_at).toISOString() },
+  };
+  const base = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`;
+  if (event.google_event_id) {
+    await gfetch(`${base}/${encodeURIComponent(event.google_event_id)}`, email, { method: 'PATCH', body });
+  } else {
+    const created = (await gfetch(base, email, { method: 'POST', body })) as { id?: string };
+    if (created.id) {
+      await supabase
+        .from('tdz_calendar_events')
+        .update({ google_event_id: created.id, google_calendar_id: calendarId })
+        .eq('id', event.id);
+    }
+  }
+};
+
+export const deleteGoogleEvent = async (
+  googleEventId: string,
+  calendarId?: string | null,
+  email?: string | null,
+) => {
+  await gfetch(
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId || 'primary')}/events/${encodeURIComponent(googleEventId)}`,
+    email,
+    { method: 'DELETE' },
+  );
+};
+
+export interface ContactPushInput {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  company: string | null;
+  job_title: string | null;
+  google_resource_id: string | null;
+  google_etag?: string | null;
+}
+
+const contactBody = (c: ContactPushInput) => ({
+  names: [{ givenName: c.name }],
+  ...(c.email ? { emailAddresses: [{ value: c.email }] } : {}),
+  ...(c.phone ? { phoneNumbers: [{ value: c.phone }] } : {}),
+  ...(c.company || c.job_title
+    ? { organizations: [{ name: c.company ?? undefined, title: c.job_title ?? undefined }] }
+    : {}),
+});
+
+const CONTACT_FIELDS = 'names,emailAddresses,phoneNumbers,organizations';
+
+/** Create or update the matching Google contact (People API). */
+export const pushContactToGoogle = async (contact: ContactPushInput, email?: string | null) => {
+  if (contact.google_resource_id) {
+    // People API requires the current etag on update.
+    let etag = contact.google_etag ?? null;
+    if (!etag) {
+      const current = (await gfetch(
+        `https://people.googleapis.com/v1/${contact.google_resource_id}?personFields=names`,
+        email,
+      )) as { etag?: string };
+      etag = current.etag ?? null;
+    }
+    if (!etag) return;
+    const updated = (await gfetch(
+      `https://people.googleapis.com/v1/${contact.google_resource_id}:updateContact` +
+        `?updatePersonFields=${encodeURIComponent(CONTACT_FIELDS)}`,
+      email,
+      { method: 'PATCH', body: { etag, ...contactBody(contact) } },
+    )) as { etag?: string };
+    if (updated.etag) {
+      await supabase.from('tdz_contacts').update({ google_etag: updated.etag }).eq('id', contact.id);
+    }
+  } else {
+    const created = (await gfetch('https://people.googleapis.com/v1/people:createContact', email, {
+      method: 'POST',
+      body: contactBody(contact),
+    })) as { resourceName?: string; etag?: string };
+    if (created.resourceName) {
+      await supabase
+        .from('tdz_contacts')
+        .update({ google_resource_id: created.resourceName, google_etag: created.etag ?? null })
+        .eq('id', contact.id);
+    }
+  }
+};
+
+export const deleteGoogleContact = async (resourceName: string, email?: string | null) => {
+  await gfetch(`https://people.googleapis.com/v1/${resourceName}:deleteContact`, email, {
+    method: 'DELETE',
+  });
 };
