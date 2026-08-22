@@ -268,15 +268,26 @@ const CalendarSidebar: React.FC<Props> = ({
                              );
                            })()
                          ) : (
-                          onUpdateEvent && (
+                          <>
+                          {onUpdateEvent && (
                             <button
                               onClick={() => startEdit(e)}
                               className="rounded border border-dashed border-white/15 px-1.5 py-0.5 text-white/40 hover:text-white"
                             >
                               + Link card
                             </button>
-                          )
+                          )}
+                          {onSpawnCard && (
+                            <button
+                              onClick={() => onSpawnCard(e)}
+                              className="flex items-center gap-1 rounded border border-dashed border-indigo-300/30 px-1.5 py-0.5 text-indigo-200/70 hover:text-indigo-100"
+                            >
+                              <Plus className="h-3 w-3" /> New card
+                            </button>
+                          )}
+                          </>
                         )}
+
                       </div>
                       </>
                       )}
