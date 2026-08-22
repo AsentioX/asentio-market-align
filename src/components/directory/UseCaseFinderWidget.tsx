@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, RotateCcw, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { RotateCcw } from 'lucide-react';
 import { SingleSelectColumn, MultiSelectColumn } from '@/components/directory/FinderColumns';
 import { optionByValue } from '@/lib/partnerFinder';
 import {
@@ -11,11 +10,11 @@ import {
 } from '@/lib/useCaseFinder';
 
 interface Props {
-  onSubmit: (query: UseCaseQuery) => void;
-  onReset: () => void;
+  /** Fires live as the user picks Industry / Role / Jobs. */
+  onChange: (query: UseCaseQuery) => void;
 }
 
-const UseCaseFinderWidget = ({ onSubmit, onReset }: Props) => {
+const UseCaseFinderWidget = ({ onChange }: Props) => {
   const [industry, setIndustry] = useState<string>();
   const [role, setRole] = useState<string>();
   const [jobs, setJobs] = useState<string[]>([]);
@@ -27,6 +26,11 @@ const UseCaseFinderWidget = ({ onSubmit, onReset }: Props) => {
     if (role && !roleOptions.some((r) => r.value === role)) setRole(undefined);
   }, [roleOptions, role]);
 
+  // Live filtering — counts update as each option is picked.
+  useEffect(() => {
+    onChange({ industry, role, jobs });
+  }, [industry, role, jobs, onChange]);
+
   const industryOpt = optionByValue(INDUSTRY_OPTIONS, industry);
   const roleOpt = optionByValue(roleOptions, role);
 
@@ -36,7 +40,6 @@ const UseCaseFinderWidget = ({ onSubmit, onReset }: Props) => {
     setIndustry(undefined);
     setRole(undefined);
     setJobs([]);
-    onReset();
   };
 
   return (
@@ -74,23 +77,19 @@ const UseCaseFinderWidget = ({ onSubmit, onReset }: Props) => {
       </div>
 
       <div className="mt-5 pt-4 border-t border-border flex items-center justify-between gap-4">
+        <p className="text-xs text-muted-foreground">
+          {hasAny
+            ? 'Use cases below update as you refine your selection.'
+            : 'Pick any option to narrow the use cases below.'}
+        </p>
         <button
           type="button"
           onClick={reset}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          disabled={!hasAny}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground disabled:opacity-40"
         >
           <RotateCcw className="w-3 h-3" /> Reset
         </button>
-        <Button
-          type="button"
-          disabled={!hasAny}
-          onClick={() => onSubmit({ industry, role, jobs })}
-          className="bg-asentio-red hover:bg-asentio-red/90 text-white px-6"
-        >
-          <Search className="w-4 h-4 mr-2" />
-          Find Use Cases
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
       </div>
     </div>
   );
