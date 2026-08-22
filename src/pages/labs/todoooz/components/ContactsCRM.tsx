@@ -91,7 +91,7 @@ const ContactsCRM: React.FC<Props> = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full border-white/10 bg-slate-950/95 text-white backdrop-blur-xl sm:max-w-3xl"
+        className="flex h-full w-full flex-col overflow-hidden border-white/10 bg-slate-950/95 text-white backdrop-blur-xl sm:max-w-3xl"
       >
         <SheetHeader>
           <SheetTitle className="text-white">Contacts</SheetTitle>
