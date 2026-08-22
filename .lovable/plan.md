@@ -35,10 +35,15 @@ The importer already brings across title, notes, due date and status. It will ad
 
 Google Tasks exposes attachments as a read-only `links` array (Gmail/Drive references). On import, each link becomes a row in the card's documents list, tagged to the task it came from, so it appears both under the task detail and in "Linked documents". Re-import updates instead of duplicating (matched on task + URL). These links are read-only in Google, so locally added documents stay local — the task detail notes this.
 
+## 6. Link contacts to tasks / subtasks
+
+The task detail area gets a "People" line: search the master contacts list and attach one or more contacts to that specific task (not just the card). Attached contacts show as small avatars/chips on the task row, click to open the contact. Card-level people continue to work as today; task-level people also appear in the card's People tab, labelled with the task they belong to.
+
 ## Technical notes
 
-- Database migration: add `completed_at timestamptz`, `google_updated_at timestamptz`, `event_id uuid` is not needed — instead add `task_id uuid references tdz_tasks(id) on delete set null` to `tdz_calendar_events` (documents already carry `task_id`). Keep grants/RLS in line with the existing `tdz_` policy pattern (owner-only via `user_id`).
-- `src/pages/labs/todoooz/lib/types.ts`: extend `TdzTask` (`completed_at`, `google_updated_at`) and `TdzEvent` (`task_id`).
+- Database migration: add `completed_at timestamptz` and `google_updated_at timestamptz` to `tdz_tasks`; add `task_id uuid references tdz_tasks(id) on delete set null` to `tdz_calendar_events` and to `tdz_stakeholders` (documents already carry `task_id`). Keep grants/RLS in line with the existing `tdz_` policy pattern (owner-only via `user_id`).
+- `src/pages/labs/todoooz/lib/types.ts`: extend `TdzTask` (`completed_at`, `google_updated_at`), `TdzEvent` (`task_id`) and `TdzStakeholder` (`task_id`).
+
 - `src/pages/labs/todoooz/lib/google.ts`:
   - `importGoogleTasks` — request `showCompleted=true&showHidden=false`, skip `deleted` items, persist `completed`, `updated`, and upsert `t.links` into `tdz_documents` with `task_id` and `doc_type` derived from `link.type`/host.
   - `pushTaskToGoogle` already sends title/notes/due/status; no change needed beyond passing `completed_at` through.
