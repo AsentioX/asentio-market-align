@@ -8,13 +8,11 @@ import { useHAIUseCases } from "@/hooks/useHAIUseCases";
 import {
   useCasesForCompany,
   partnersForCompany,
-  partnerGroupsForCompany,
   similarCompanies,
   solutionPartnersForCompany,
 } from "@/lib/haiMatching";
 import CompanyUseCases from "@/components/directory/company/CompanyUseCases";
 import CompanyProducts from "@/components/directory/company/CompanyProducts";
-import CompanyPartners from "@/components/directory/company/CompanyPartners";
 import CompanySolutionFit from "@/components/directory/company/CompanySolutionFit";
 import CompanyCapabilities from "@/components/directory/company/CompanyCapabilities";
 import CompanyEcosystem from "@/components/directory/company/CompanyEcosystem";
@@ -73,10 +71,6 @@ const CompanyDetail = () => {
   const matchedUseCases = useMemo(
     () => useCasesForCompany(company, haiUseCases, 8),
     [company, haiUseCases],
-  );
-  const partnerGroups = useMemo(
-    () => partnerGroupsForCompany(company, allCompanies, haiUseCases),
-    [company, allCompanies, haiUseCases],
   );
   const partners = useMemo(
     () => partnersForCompany(company, allCompanies, haiUseCases, 6),
@@ -241,11 +235,6 @@ const CompanyDetail = () => {
                 </Button>
               </a>
             )}
-            <a href="#partners">
-              <Button variant="outline" className="w-full">
-                Find partner matches
-              </Button>
-            </a>
           </div>
         </div>
       </section>
@@ -258,10 +247,7 @@ const CompanyDetail = () => {
       {/* 3. Products & platforms */}
       <CompanyProducts products={companyProducts} companyName={displayName} />
 
-      {/* 4. Who should they work with? */}
-      <CompanyPartners companyName={displayName} groups={partnerGroups} />
-
-      {/* 5. Human + AI solution fit */}
+      {/* 4. Human + AI solution fit */}
       {company && (
         <CompanySolutionFit company={company} companyName={displayName} useCases={matchedUseCases} />
       )}
