@@ -8,7 +8,6 @@ import { useHAIUseCases } from "@/hooks/useHAIUseCases";
 import {
   useCasesForCompany,
   partnersForCompany,
-  partnerGroupsForCompany,
   similarCompanies,
   solutionPartnersForCompany,
 } from "@/lib/haiMatching";
