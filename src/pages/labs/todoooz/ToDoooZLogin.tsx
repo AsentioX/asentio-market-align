@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Boxes } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { lovable } from '@/integrations/lovable/index';
-import { GOOGLE_SCOPES, rememberProviderToken } from './lib/google';
+import { GOOGLE_SCOPES } from './lib/google';
 
 
 import { Button } from '@/components/ui/button';
