@@ -4624,6 +4624,7 @@ export type Database = {
           google_task_id: string | null
           id: string
           notes: string | null
+          parent_task_id: string | null
           project_id: string
           rank: number
           title: string
@@ -4638,6 +4639,7 @@ export type Database = {
           google_task_id?: string | null
           id?: string
           notes?: string | null
+          parent_task_id?: string | null
           project_id: string
           rank?: number
           title: string
@@ -4652,6 +4654,7 @@ export type Database = {
           google_task_id?: string | null
           id?: string
           notes?: string | null
+          parent_task_id?: string | null
           project_id?: string
           rank?: number
           title?: string
@@ -4659,6 +4662,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tdz_tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_tasks"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tdz_tasks_project_id_fkey"
             columns: ["project_id"]

@@ -1,0 +1,2 @@
+ALTER TABLE public.tdz_tasks ADD COLUMN IF NOT EXISTS parent_task_id uuid NULL REFERENCES public.tdz_tasks(id) ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS tdz_tasks_parent_idx ON public.tdz_tasks(parent_task_id);
