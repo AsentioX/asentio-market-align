@@ -164,9 +164,18 @@ const ContactsCRM: React.FC<Props> = ({
                         : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.07]',
                     )}
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px]">
-                      {c.name.slice(0, 2).toUpperCase()}
-                    </div>
+                    {c.avatar_url ? (
+                      <img
+                        src={c.avatar_url}
+                        alt=""
+                        referrerPolicy="no-referrer"
+                        className="h-8 w-8 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px]">
+                        {c.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm text-white">{c.name}</div>
                       <div className="truncate text-[11px] text-white/45">
