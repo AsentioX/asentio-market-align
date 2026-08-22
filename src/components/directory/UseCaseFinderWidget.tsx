@@ -49,7 +49,7 @@ const UseCaseFinderWidget = ({ onChange }: Props) => {
           index={1}
           label="Industry"
           question="What industry are you in?"
-          placeholder="Select your industry"
+          placeholder="Select an industry"
           options={INDUSTRY_OPTIONS}
           value={industry}
           onChange={setIndustry}
@@ -68,7 +68,7 @@ const UseCaseFinderWidget = ({ onChange }: Props) => {
           index={3}
           label="I need to…"
           question="What are you trying to accomplish?"
-          placeholder="Select what you need to do"
+          placeholder="Select a goal"
           options={JOB_OPTIONS}
           context={[roleOpt, industryOpt]}
           values={jobs}
