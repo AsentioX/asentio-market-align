@@ -107,7 +107,6 @@ const UseCaseExplorer = () => {
       </section>
 
       <section className="container mx-auto px-4 md:px-6 py-12 max-w-7xl">
-        <div className="w-12 h-1 bg-asentio-red mb-4" />
         <h2 className="text-2xl font-bold text-foreground mb-1">Browse all use cases</h2>
         <p className="text-muted-foreground mb-6">
           {hasSelection
