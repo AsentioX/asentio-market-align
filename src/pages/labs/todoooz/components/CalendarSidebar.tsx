@@ -206,6 +206,24 @@ const CalendarSidebar: React.FC<Props> = ({
     }
   }, [grouped]);
 
+  /** On first load (refresh) or when events arrive, jump the agenda to today. */
+  useEffect(() => {
+    if (didInitScroll.current) return;
+    if (view !== 'agenda' || grouped.length === 0) return;
+    didInitScroll.current = true;
+    const todayKey = new Date().toDateString();
+    let targetKey = todayKey;
+    if (!dayRefs.current.has(todayKey)) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const future = grouped.find(([day]) => new Date(day) >= todayStart);
+      targetKey = future ? future[0] : grouped[grouped.length - 1][0];
+    }
+    const node = dayRefs.current.get(targetKey);
+    if (node) node.scrollIntoView({ block: 'start' });
+    else pendingScrollDay.current = targetKey;
+  }, [grouped, view]);
+
   const monthGrid = useMemo(() => {
     const first = startOfMonth(monthCursor);
     const lead = first.getDay();
