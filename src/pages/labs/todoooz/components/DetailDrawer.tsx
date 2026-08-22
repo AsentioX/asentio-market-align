@@ -6,6 +6,7 @@ import {
   FileSpreadsheet,
   FileText,
   Folder,
+  GripVertical,
   Plus,
   Presentation,
   Trash2,
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ColorSwatchRow from './ColorSwatchRow';
 import TagEditor from './TagEditor';
+import CollapsibleSection from './CollapsibleSection';
 
 import { resolveTheme } from '../lib/theme';
 import type {
