@@ -40,6 +40,7 @@ const SpatialMatrix: React.FC<Props> = ({
   onReorder,
 }) => {
   const tasksFor = (id: string) => tasks.filter((t) => t.project_id === id);
+  const contactsFor = (id: string) => cardContacts?.get(id) ?? [];
 
   /** Where the dragged card would land: null beforeId means "end of the cell". */
   const [dropTarget, setDropTarget] = useState<
