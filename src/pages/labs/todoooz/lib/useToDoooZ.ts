@@ -9,6 +9,12 @@ import {
   disconnectAccount,
   importGoogleCalendar,
   importGoogleTasks,
+  pushTaskToGoogle,
+  deleteGoogleTask,
+  pushEventToGoogle,
+  deleteGoogleEvent,
+  pushContactToGoogle,
+  deleteGoogleContact,
   listGoogleIdentities,
   swapSlots,
   type GoogleIdentity,
@@ -119,13 +125,40 @@ export const useToDoooZ = (userId: string | undefined) => {
     if (error) toast.error(error.message);
   }, []);
 
+  /** Email of the Google account backing a slot (falls back to the signed-in one). */
+  const emailForSlot = useCallback(
+    (slot?: string | null) =>
+      connections.find((c) => c.account_slot === (slot ?? 'work'))?.account_email ??
+      connections[0]?.account_email ??
+      null,
+    [connections],
+  );
+
+  /** Mirror a local task into Google Tasks; failures never block the local edit. */
+  const pushTask = useCallback(
+    async (taskId: string) => {
+      const { data } = await supabase.from('tdz_tasks').select('*').eq('id', taskId).maybeSingle();
+      const task = data as TdzTask | null;
+      if (!task) return;
+      const card = cards.find((c) => c.id === task.project_id);
+      try {
+        await pushTaskToGoogle(task, card?.title ?? 'ToDoooZ', emailForSlot(task.account_slot ?? card?.mode));
+      } catch (err) {
+        if (err instanceof GoogleAuthNeeded) return; // stay silent until the user re-authorises
+        console.error('Google Tasks sync failed', err);
+      }
+    },
+    [cards, emailForSlot],
+  );
+
   const toggleTask = useCallback(
     async (task: TdzTask) => {
       setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done: !t.done } : t)));
       await supabase.from('tdz_tasks').update({ done: !task.done }).eq('id', task.id);
       await patchCard(task.project_id, {}, true);
+      pushTask(task.id);
     },
-    [patchCard],
+    [patchCard, pushTask],
   );
 
   const addTask = useCallback(
@@ -138,19 +171,78 @@ export const useToDoooZ = (userId: string | undefined) => {
         .single();
       if (error) return toast.error(error.message);
       setTasks((prev) => [...prev, data as TdzTask]);
+      pushTask((data as TdzTask).id);
     },
-    [userId],
+    [userId, pushTask],
   );
 
-  const updateTask = useCallback(async (id: string, patch: Partial<TdzTask>) => {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...(patch as TdzTask) } : t)));
-    await supabase.from('tdz_tasks').update(patch).eq('id', id);
-  }, []);
+  const updateTask = useCallback(
+    async (id: string, patch: Partial<TdzTask>) => {
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...(patch as TdzTask) } : t)));
+      await supabase.from('tdz_tasks').update(patch).eq('id', id);
+      pushTask(id);
+    },
+    [pushTask],
+  );
 
-  const deleteTask = useCallback(async (id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-    await supabase.from('tdz_tasks').delete().eq('id', id);
-  }, []);
+  const deleteTask = useCallback(
+    async (id: string) => {
+      const task = tasks.find((t) => t.id === id);
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      await supabase.from('tdz_tasks').delete().eq('id', id);
+      if (task?.google_task_id) {
+        const card = cards.find((c) => c.id === task.project_id);
+        try {
+          await deleteGoogleTask(
+            task.project_id,
+            task.google_task_id,
+            emailForSlot(task.account_slot ?? card?.mode),
+          );
+        } catch (err) {
+          if (!(err instanceof GoogleAuthNeeded)) console.error('Google Tasks delete failed', err);
+        }
+      }
+    },
+    [tasks, cards, emailForSlot],
+  );
+
+  /** Edit a calendar event locally and mirror it into Google Calendar. */
+  const updateEvent = useCallback(
+    async (id: string, patch: Partial<TdzEvent>) => {
+      setEvents((prev) => prev.map((e) => (e.id === id ? { ...e, ...(patch as TdzEvent) } : e)));
+      const { error } = await supabase.from('tdz_calendar_events').update(patch).eq('id', id);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      const { data } = await supabase.from('tdz_calendar_events').select('*').eq('id', id).maybeSingle();
+      const event = data as TdzEvent | null;
+      if (!event) return;
+      try {
+        await pushEventToGoogle(event, emailForSlot(event.account_slot));
+      } catch (err) {
+        if (err instanceof GoogleAuthNeeded) toast.error(err.message);
+        else console.error('Google Calendar sync failed', err);
+      }
+    },
+    [emailForSlot],
+  );
+
+  const deleteEvent = useCallback(
+    async (id: string) => {
+      const event = events.find((e) => e.id === id);
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+      await supabase.from('tdz_calendar_events').delete().eq('id', id);
+      if (event?.google_event_id) {
+        try {
+          await deleteGoogleEvent(event.google_event_id, event.google_calendar_id, emailForSlot(event.account_slot));
+        } catch (err) {
+          if (!(err instanceof GoogleAuthNeeded)) console.error('Google Calendar delete failed', err);
+        }
+      }
+    },
+    [events, emailForSlot],
+  );
 
   const addActivity = useCallback(
     async (projectId: string, summary: string, detail?: string, source = 'manual') => {
@@ -210,6 +302,22 @@ export const useToDoooZ = (userId: string | undefined) => {
     await supabase.from('tdz_documents').delete().eq('id', id);
   }, []);
 
+  /** Mirror a local contact into Google Contacts. */
+  const pushContact = useCallback(
+    async (contactId: string) => {
+      const { data } = await supabase.from('tdz_contacts').select('*').eq('id', contactId).maybeSingle();
+      const contact = data as TdzContact | null;
+      if (!contact) return;
+      try {
+        await pushContactToGoogle(contact, emailForSlot(contact.account_slot));
+      } catch (err) {
+        if (err instanceof GoogleAuthNeeded) return;
+        console.error('Google contact sync failed', err);
+      }
+    },
+    [emailForSlot],
+  );
+
   const createContact = useCallback(
     async (payload: Partial<TdzContact>) => {
       if (!userId) return null;
@@ -223,22 +331,38 @@ export const useToDoooZ = (userId: string | undefined) => {
         return null;
       }
       setContacts((prev) => [...prev, data as TdzContact]);
+      pushContact((data as TdzContact).id);
       return data as TdzContact;
     },
-    [userId],
+    [userId, pushContact],
   );
 
-  const updateContact = useCallback(async (id: string, patch: Partial<TdzContact>) => {
-    setContacts((prev) => prev.map((c) => (c.id === id ? { ...c, ...(patch as TdzContact) } : c)));
-    const { error } = await supabase.from('tdz_contacts').update(patch).eq('id', id);
-    if (error) toast.error(error.message);
-  }, []);
+  const updateContact = useCallback(
+    async (id: string, patch: Partial<TdzContact>) => {
+      setContacts((prev) => prev.map((c) => (c.id === id ? { ...c, ...(patch as TdzContact) } : c)));
+      const { error } = await supabase.from('tdz_contacts').update(patch).eq('id', id);
+      if (error) return toast.error(error.message);
+      pushContact(id);
+    },
+    [pushContact],
+  );
 
-  const deleteContact = useCallback(async (id: string) => {
-    setContacts((prev) => prev.filter((c) => c.id !== id));
-    const { error } = await supabase.from('tdz_contacts').delete().eq('id', id);
-    if (error) toast.error(error.message);
-  }, []);
+  const deleteContact = useCallback(
+    async (id: string) => {
+      const contact = contacts.find((c) => c.id === id);
+      setContacts((prev) => prev.filter((c) => c.id !== id));
+      const { error } = await supabase.from('tdz_contacts').delete().eq('id', id);
+      if (error) return toast.error(error.message);
+      if (contact?.google_resource_id) {
+        try {
+          await deleteGoogleContact(contact.google_resource_id, emailForSlot(contact.account_slot));
+        } catch (err) {
+          if (!(err instanceof GoogleAuthNeeded)) console.error('Google contact delete failed', err);
+        }
+      }
+    },
+    [contacts, emailForSlot],
+  );
 
   const handleGoogleError = useCallback((err: unknown) => {
     if (err instanceof GoogleAuthNeeded) toast.error(err.message);
@@ -436,6 +560,8 @@ export const useToDoooZ = (userId: string | undefined) => {
     syncContacts,
     syncCalendar,
     syncTasks,
+    updateEvent,
+    deleteEvent,
     googleIdentities,
     addGoogleAccount,
     setAccountSlot,

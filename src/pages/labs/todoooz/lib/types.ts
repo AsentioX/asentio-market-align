@@ -23,6 +23,7 @@ export interface TdzCard {
   due_date: string | null;
   sort_order: number;
   collapsed: boolean;
+  google_task_list_id?: string | null;
   last_activity_at: string;
   created_at: string;
   updated_at: string;
@@ -83,6 +84,8 @@ export interface TdzEvent {
   starts_at: string;
   ends_at: string;
   all_day: boolean;
+  google_event_id?: string | null;
+  google_calendar_id?: string | null;
 }
 
 export interface TdzConnection {
@@ -111,6 +114,7 @@ export interface TdzContact {
   source: string;
   account_slot: string | null;
   google_resource_id: string | null;
+  google_etag?: string | null;
   last_synced_at: string | null;
   created_at: string;
   updated_at: string;

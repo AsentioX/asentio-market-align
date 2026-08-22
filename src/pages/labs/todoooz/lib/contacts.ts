@@ -41,6 +41,7 @@ export const syncGoogleContacts = async (
           account_slot: match.account_slot ?? slot,
           source: match.source === 'manual' ? slotSource(slot) : match.source,
           google_resource_id: match.google_resource_id ?? person.resource_id,
+          google_etag: person.etag ?? match.google_etag ?? null,
           last_synced_at: now,
         })
         .eq('id', match.id);
@@ -58,6 +59,7 @@ export const syncGoogleContacts = async (
         source: slotSource(slot),
         account_slot: slot,
         google_resource_id: person.resource_id,
+        google_etag: person.etag ?? null,
         last_synced_at: now,
       });
       added += 1;
