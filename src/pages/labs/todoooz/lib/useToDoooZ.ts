@@ -796,6 +796,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     setTaskParent,
     deleteTask,
     moveTasksToCard,
+    importCardAsTask,
     reorderTasks,
     reorderCards,
     addActivity,
