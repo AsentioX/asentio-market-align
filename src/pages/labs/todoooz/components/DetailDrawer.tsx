@@ -518,23 +518,37 @@ const DetailDrawer: React.FC<Props> = ({
                   onDragEnd={() => {
                     setDragId(null);
                     setOverId(null);
+                    setOverNest(false);
                   }}
                   onDragOver={(e) => {
                     e.preventDefault();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const nest = !depth && e.clientX - rect.left > 64;
                     if (overId !== t.id) setOverId(t.id);
+                    if (overNest !== nest) setOverNest(nest);
+                  }}
+                  onDragLeave={() => {
+                    if (overId === t.id) setOverNest(false);
                   }}
                   onDrop={(e) => {
                     e.preventDefault();
-                    dropOn(t.id);
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    dropOn(t.id, !depth && e.clientX - rect.left > 64);
                   }}
+                  title="Drag to reorder — drop on the right half of a task to nest it as a subtask"
                   className={`flex items-center gap-2 rounded-lg border p-2.5 transition ${
                     depth
                       ? 'border-white/[0.06] border-l-2 border-l-white/20 bg-white/[0.02]'
                       : 'border-white/10 bg-white/[0.03]'
                   } ${dragId === t.id ? 'opacity-40' : ''} ${
-                    overId === t.id && dragId && dragId !== t.id ? 'border-t-2 border-t-[hsl(var(--tdz-accent))]' : ''
+                    overId === t.id && dragId && dragId !== t.id
+                      ? overNest
+                        ? 'border-[hsl(var(--tdz-accent))] bg-[hsl(var(--tdz-accent)/0.12)] pl-6'
+                        : 'border-t-2 border-t-[hsl(var(--tdz-accent))]'
+                      : ''
                   }`}
                 >
+
                   <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-white/25" />
                   <div className="flex shrink-0 flex-col">
                     <button
