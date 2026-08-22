@@ -72,6 +72,7 @@ const CalendarSidebar: React.FC<Props> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const dayRefs = useRef(new Map<string, HTMLDivElement>());
   const pendingScrollDay = useRef<string | null>(null);
+  const didInitScroll = useRef(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<{
