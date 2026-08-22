@@ -262,13 +262,22 @@ interface GEvent {
   end?: { dateTime?: string; date?: string };
 }
 
-export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot, email?: string | null) => {
-  const timeMin = new Date(Date.now() - 86400000).toISOString();
-  const timeMax = new Date(Date.now() + 21 * 86400000).toISOString();
+/** Import a specific date window from Google Calendar. Only events whose start
+ *  falls inside the window are replaced, so earlier/later imports are kept. */
+export const importGoogleCalendarRange = async (
+  userId: string,
+  slot: TdzAccountSlot,
+  from: Date,
+  to: Date,
+  email?: string | null,
+) => {
+  const timeMin = from.toISOString();
+  const timeMax = to.toISOString();
   const url =
     'https://www.googleapis.com/calendar/v3/calendars/primary/events' +
     `?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}` +
-    '&singleEvents=true&orderBy=startTime&maxResults=250';
+    '&singleEvents=true&orderBy=startTime&maxResults=2500';
+
   const json = (await gfetch(url, email)) as { items?: GEvent[] };
   const items = json.items ?? [];
 
@@ -286,13 +295,16 @@ export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot,
       ends_at: new Date(e.end?.dateTime ?? `${e.end?.date ?? e.start!.date}T23:59:00`).toISOString(),
     }));
 
-  // Replace this slot's synced events, keep manually created ones.
+  // Replace only this slot's synced events inside the window; keep manual ones
+  // and anything imported for other date ranges.
   await supabase
     .from('tdz_calendar_events')
     .delete()
     .eq('user_id', userId)
     .eq('account_slot', slot)
-    .not('google_event_id', 'is', null);
+    .not('google_event_id', 'is', null)
+    .gte('starts_at', timeMin)
+    .lt('starts_at', timeMax);
 
   if (rows.length) {
     const { error } = await supabase.from('tdz_calendar_events').insert(rows);
@@ -307,6 +319,17 @@ export const importGoogleCalendar = async (userId: string, slot: TdzAccountSlot,
 
   return rows.length;
 };
+
+/** Default sync window: yesterday → three weeks out. */
+export const importGoogleCalendar = (userId: string, slot: TdzAccountSlot, email?: string | null) =>
+  importGoogleCalendarRange(
+    userId,
+    slot,
+    new Date(Date.now() - 86400000),
+    new Date(Date.now() + 21 * 86400000),
+    email,
+  );
+
 
 /* -------------------------------------------------------------- Contacts */
 

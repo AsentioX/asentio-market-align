@@ -8,6 +8,8 @@ import {
   designateAccount,
   disconnectAccount,
   importGoogleCalendar,
+  importGoogleCalendarRange,
+
   importGoogleTasks,
   pushTaskToGoogle,
   deleteGoogleTask,
@@ -631,6 +633,32 @@ export const useToDoooZ = (userId: string | undefined) => {
     [userId, load, connections, handleGoogleError],
   );
 
+  /** Import a specific window (e.g. an earlier month) for every linked account. */
+  const syncCalendarRange = useCallback(
+    async (from: Date, to: Date) => {
+      if (!userId || !connections.length) return 0;
+      let total = 0;
+      try {
+        for (const conn of connections) {
+          total += await importGoogleCalendarRange(
+            userId,
+            conn.account_slot,
+            from,
+            to,
+            conn.account_email,
+          );
+        }
+        const { data } = await supabase.from('tdz_calendar_events').select('*').order('starts_at');
+        setEvents((data ?? []) as TdzEvent[]);
+      } catch (err) {
+        handleGoogleError(err);
+      }
+      return total;
+    },
+    [userId, connections, handleGoogleError],
+  );
+
+
   const syncTasks = useCallback(
     async (slot: TdzAccountSlot) => {
       if (!userId) return;
@@ -810,6 +838,8 @@ export const useToDoooZ = (userId: string | undefined) => {
     deleteContact,
     syncContacts,
     syncCalendar,
+    syncCalendarRange,
+
     syncTasks,
     updateEvent,
     deleteEvent,

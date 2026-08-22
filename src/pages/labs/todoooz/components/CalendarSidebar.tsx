@@ -1,5 +1,19 @@
-import React, { useMemo, useState } from 'react';
-import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Plus, Trash2, X } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ExternalLink,
+  Loader2,
+  MapPin,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TdzCard, TdzEvent, TdzTask } from '../lib/types';
 import { resolveTheme } from '../lib/theme';
@@ -15,7 +29,15 @@ interface Props {
   onDeleteEvent?: (id: string) => Promise<void> | void;
   onOpenCard?: (id: string) => void;
   onSpawnCard?: (event: TdzEvent) => void;
+  /** Import a date window from Google (used for back-scroll and month jumps). */
+  onLoadRange?: (from: Date, to: Date) => Promise<number | void> | void;
 }
+
+const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
+const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
+const sameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
+const monthKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}`;
+
 
 
 const fmt = (iso: string) =>
@@ -39,9 +61,18 @@ const CalendarSidebar: React.FC<Props> = ({
   onDeleteEvent,
   onOpenCard,
   onSpawnCard,
+  onLoadRange,
 }) => {
 
   const [view, setView] = useState<'agenda' | 'time'>('agenda');
+  const [monthOpen, setMonthOpen] = useState(false);
+  const [monthCursor, setMonthCursor] = useState(() => startOfMonth(new Date()));
+  const [loadingRange, setLoadingRange] = useState(false);
+  const loadedMonths = useRef(new Set<string>());
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dayRefs = useRef(new Map<string, HTMLDivElement>());
+  const pendingScrollDay = useRef<string | null>(null);
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<{
     title: string;
@@ -100,7 +131,98 @@ const CalendarSidebar: React.FC<Props> = ({
     return [...map.entries()];
   }, [upcoming]);
 
+  const eventsByDay = useMemo(() => {
+    const m = new Map<string, number>();
+    upcoming.forEach((e) => {
+      const k = new Date(e.starts_at).toDateString();
+      m.set(k, (m.get(k) ?? 0) + 1);
+    });
+    return m;
+  }, [upcoming]);
+
+  /** Earliest month currently pulled in — anything before this needs an import. */
+  const earliestLoaded = useMemo(() => {
+    const first = upcoming[0];
+    const base = first ? new Date(first.starts_at) : new Date();
+    return startOfMonth(base);
+  }, [upcoming]);
+
+  const loadMonth = useCallback(
+    async (month: Date) => {
+      if (!onLoadRange) return;
+      const key = monthKey(month);
+      if (loadedMonths.current.has(key)) return;
+      loadedMonths.current.add(key);
+      setLoadingRange(true);
+      try {
+        await onLoadRange(startOfMonth(month), addMonths(month, 1));
+      } finally {
+        setLoadingRange(false);
+      }
+    },
+    [onLoadRange],
+  );
+
+  /** Pull in earlier events as the user scrolls back through the agenda. */
+  const handleScroll = useCallback(async () => {
+    const el = scrollRef.current;
+    if (!el || view !== 'agenda' || loadingRange || !onLoadRange) return;
+    if (el.scrollTop > 60) return;
+    const target = addMonths(earliestLoaded, -1);
+    if (loadedMonths.current.has(monthKey(target))) return;
+    const prevHeight = el.scrollHeight;
+    await loadMonth(target);
+    requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop += scrollRef.current.scrollHeight - prevHeight;
+      }
+    });
+  }, [view, loadingRange, onLoadRange, earliestLoaded, loadMonth]);
+
+  const jumpToDay = useCallback(
+    async (day: Date) => {
+      setView('agenda');
+      const key = day.toDateString();
+      const node = dayRefs.current.get(key);
+      if (node) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      pendingScrollDay.current = key;
+      await loadMonth(startOfMonth(day));
+    },
+    [loadMonth],
+  );
+
+  // After a month import lands, scroll to the day the user picked.
+  useEffect(() => {
+    const key = pendingScrollDay.current;
+    if (!key) return;
+    const node = dayRefs.current.get(key);
+    if (node) {
+      pendingScrollDay.current = null;
+      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [grouped]);
+
+  const monthGrid = useMemo(() => {
+    const first = startOfMonth(monthCursor);
+    const lead = first.getDay();
+    const days: (Date | null)[] = Array.from({ length: lead }, () => null);
+    const total = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 0).getDate();
+    for (let i = 1; i <= total; i++) days.push(new Date(monthCursor.getFullYear(), monthCursor.getMonth(), i));
+    while (days.length % 7 !== 0) days.push(null);
+    return days;
+  }, [monthCursor]);
+
+  const goMonth = (delta: number) => {
+    const next = addMonths(monthCursor, delta);
+    setMonthCursor(next);
+    void loadMonth(next);
+  };
+
   const nowPct = ((now.getHours() * 60 + now.getMinutes()) / 1440) * 100;
+
 
   if (collapsed) {
     return (
@@ -139,14 +261,110 @@ const CalendarSidebar: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="border-b border-white/10">
+        <button
+          onClick={() => setMonthOpen((v) => !v)}
+          className="flex w-full items-center justify-between px-3 py-1.5 text-[11px] text-white/60 hover:text-white"
+        >
+          <span className="font-medium">
+            {monthCursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+          </span>
+          {monthOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        </button>
+
+        {monthOpen && (
+          <div className="px-3 pb-2">
+            <div className="mb-1 flex items-center justify-between">
+              <button
+                onClick={() => goMonth(-1)}
+                aria-label="Previous month"
+                className="rounded p-1 text-white/45 hover:bg-white/10 hover:text-white"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  const t = startOfMonth(new Date());
+                  setMonthCursor(t);
+                  void jumpToDay(new Date());
+                }}
+                className="rounded px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/45 hover:text-white"
+              >
+                Today
+              </button>
+              <button
+                onClick={() => goMonth(1)}
+                aria-label="Next month"
+                className="rounded p-1 text-white/45 hover:bg-white/10 hover:text-white"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-0.5 text-center text-[9px] text-white/30">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                <div key={i}>{d}</div>
+              ))}
+            </div>
+            <div className="mt-0.5 grid grid-cols-7 gap-0.5">
+              {monthGrid.map((d, i) =>
+                d ? (
+                  <button
+                    key={i}
+                    onClick={() => jumpToDay(d)}
+                    className={cn(
+                      'relative flex h-6 items-center justify-center rounded text-[10px] text-white/60 hover:bg-white/10 hover:text-white',
+                      sameDay(d, now) && 'bg-white/15 font-semibold text-white',
+                    )}
+                  >
+                    {d.getDate()}
+                    {eventsByDay.get(d.toDateString()) ? (
+                      <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-sky-400" />
+                    ) : null}
+                  </button>
+                ) : (
+                  <div key={i} />
+                ),
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-3">
+        {view === 'agenda' && onLoadRange && (
+          <div className="mb-2 flex items-center justify-center">
+            {loadingRange ? (
+              <span className="flex items-center gap-1 text-[10px] text-white/40">
+                <Loader2 className="h-3 w-3 animate-spin" /> Importing earlier events…
+              </span>
+            ) : (
+              <button
+                onClick={() => loadMonth(addMonths(earliestLoaded, -1))}
+                className="rounded border border-white/10 px-2 py-0.5 text-[10px] text-white/40 hover:text-white"
+              >
+                Load earlier events
+              </button>
+            )}
+          </div>
+        )}
+
         {upcoming.length === 0 && (
           <p className="text-xs text-white/40">No events for this mode. Connect a Google account to sync.</p>
         )}
 
         {view === 'agenda' &&
           grouped.map(([day, list]) => (
-            <div key={day} className="mb-4">
+
+            <div
+              key={day}
+              ref={(el) => {
+                if (el) dayRefs.current.set(day, el);
+                else dayRefs.current.delete(day);
+              }}
+              className="mb-4"
+            >
+
               <div className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-white/35">
                 {new Date(day).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
               </div>
