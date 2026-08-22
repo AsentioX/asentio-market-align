@@ -456,7 +456,7 @@ const CalendarSidebar: React.FC<Props> = ({
                             </select>
                           )}
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
                             <button
                               onClick={saveEdit}
                               className="flex items-center gap-1 rounded bg-emerald-500/20 px-2 py-1 text-[10px] text-emerald-200 hover:bg-emerald-500/30"
