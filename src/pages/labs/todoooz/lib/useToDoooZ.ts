@@ -8,6 +8,8 @@ import {
   designateAccount,
   disconnectAccount,
   importGoogleCalendar,
+  importGoogleCalendarRange,
+
   importGoogleTasks,
   pushTaskToGoogle,
   deleteGoogleTask,
