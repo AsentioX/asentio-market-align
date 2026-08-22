@@ -411,6 +411,7 @@ const ToDoooZLayout: React.FC = () => {
         onClose={() => setOpenId(null)}
         api={{
           patchCard: tdz.patchCard,
+          updateEvent: tdz.updateEvent,
           toggleTask: tdz.toggleTask,
           addTask: tdz.addTask,
           updateTask: tdz.updateTask,
