@@ -366,6 +366,13 @@ export const fetchGooglePeople = async (email?: string | null): Promise<GooglePe
     (json.connections ?? []).forEach((c) => {
       const email = c.emailAddresses?.[0]?.value;
       if (!email) return;
+      // Skip Google's generic silhouette placeholders; request a crisp 200px crop.
+      const photo = (c.photos ?? []).find((p) => p.url && !p.default);
+      const avatar = photo?.url
+        ? photo.url.includes('=')
+          ? photo.url.replace(/=s\d+(-c)?$/, '=s200-c')
+          : `${photo.url}=s200-c`
+        : undefined;
       people.push({
         resource_id: c.resourceName ?? `people/${email}`,
         etag: c.etag,
@@ -374,7 +381,7 @@ export const fetchGooglePeople = async (email?: string | null): Promise<GooglePe
         phone: c.phoneNumbers?.[0]?.value,
         company: c.organizations?.[0]?.name,
         job_title: c.organizations?.[0]?.title,
-        avatar_url: c.photos?.[0]?.url,
+        avatar_url: avatar,
       });
     });
     pageToken = json.nextPageToken;
