@@ -13,7 +13,6 @@ import {
 } from "@/lib/haiMatching";
 import CompanyUseCases from "@/components/directory/company/CompanyUseCases";
 import CompanyProducts from "@/components/directory/company/CompanyProducts";
-import CompanyPartners from "@/components/directory/company/CompanyPartners";
 import CompanySolutionFit from "@/components/directory/company/CompanySolutionFit";
 import CompanyCapabilities from "@/components/directory/company/CompanyCapabilities";
 import CompanyEcosystem from "@/components/directory/company/CompanyEcosystem";
