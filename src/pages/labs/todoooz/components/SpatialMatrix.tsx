@@ -11,6 +11,7 @@ interface Props {
   tasks: TdzTask[];
   cardById: Map<string, TdzCard>;
   childrenOf: Map<string, TdzCard[]>;
+  cardContacts?: Map<string, LinkedContact[]>;
   focusedId: string | null;
   onFocus: (id: string) => void;
   onOpen: (id: string) => void;
