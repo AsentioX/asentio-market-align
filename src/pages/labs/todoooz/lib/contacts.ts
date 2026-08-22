@@ -37,7 +37,7 @@ export const syncGoogleContacts = async (
           company: match.company ?? person.company ?? null,
           job_title: match.job_title ?? person.job_title ?? null,
           phone: match.phone ?? person.phone ?? null,
-          avatar_url: match.avatar_url ?? person.avatar_url ?? null,
+          avatar_url: person.avatar_url ?? match.avatar_url ?? null,
           account_slot: match.account_slot ?? slot,
           source: match.source === 'manual' ? slotSource(slot) : match.source,
           google_resource_id: match.google_resource_id ?? person.resource_id,
