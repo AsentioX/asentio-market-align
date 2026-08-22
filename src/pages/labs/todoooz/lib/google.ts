@@ -373,6 +373,7 @@ interface GTask {
   status?: string;
   due?: string;
   position?: string;
+  parent?: string;
 }
 
 /**
