@@ -217,6 +217,61 @@ export const useToDoooZ = (userId: string | undefined) => {
     [tasks, cards, emailForSlot],
   );
 
+  /**
+   * Persist a manual order for a card's tasks.
+   * `ordered` is the full display order (roots followed by their children);
+   * ranks are renumbered and the moved task is repositioned on Google too.
+   */
+  const reorderTasks = useCallback(
+    async (projectId: string, ordered: TdzTask[], movedId?: string) => {
+      const rankById = new Map(ordered.map((t, i) => [t.id, i]));
+      setTasks((prev) =>
+        prev.map((t) => (rankById.has(t.id) ? { ...t, rank: rankById.get(t.id) as number } : t)),
+      );
+      const results = await Promise.all(
+        ordered.map((t, i) => supabase.from('tdz_tasks').update({ rank: i }).eq('id', t.id)),
+      );
+      const failed = results.find((r) => r.error);
+      if (failed?.error) {
+        toast.error(failed.error.message);
+        load();
+        return;
+      }
+
+      const moved = movedId ? ordered.find((t) => t.id === movedId) : undefined;
+      if (!moved?.google_task_id) return;
+      const index = ordered.findIndex((t) => t.id === moved.id);
+      const previous = [...ordered.slice(0, index)]
+        .reverse()
+        .find((t) => (t.parent_task_id ?? null) === (moved.parent_task_id ?? null));
+      const parent = moved.parent_task_id ? ordered.find((t) => t.id === moved.parent_task_id) : undefined;
+      const card = cards.find((c) => c.id === projectId);
+      try {
+        await moveGoogleTask(
+          projectId,
+          moved.google_task_id,
+          previous?.google_task_id ?? null,
+          parent?.google_task_id ?? null,
+          emailForSlot(moved.account_slot ?? card?.mode),
+        );
+      } catch (err) {
+        if (!(err instanceof GoogleAuthNeeded)) console.error('Google Tasks move failed', err);
+      }
+    },
+    [cards, emailForSlot, load],
+  );
+
+  /** Persist a manual order for cards (used by within-cell drag in the matrix). */
+  const reorderCards = useCallback(async (ordered: TdzCard[]) => {
+    const orderById = new Map(ordered.map((c, i) => [c.id, i]));
+    setCards((prev) =>
+      prev.map((c) => (orderById.has(c.id) ? { ...c, sort_order: orderById.get(c.id) as number } : c)),
+    );
+    await Promise.all(
+      ordered.map((c, i) => supabase.from('tdz_projects').update({ sort_order: i }).eq('id', c.id)),
+    );
+  }, []);
+
   /** Edit a calendar event locally and mirror it into Google Calendar. */
   const updateEvent = useCallback(
     async (id: string, patch: Partial<TdzEvent>) => {
