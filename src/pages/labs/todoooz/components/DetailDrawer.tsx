@@ -76,6 +76,7 @@ interface Props {
     updateTask: (id: string, patch: Partial<TdzTask>) => void;
     deleteTask: (id: string) => void;
     reorderTasks: (projectId: string, ordered: TdzTask[], movedId?: string) => void;
+    setTaskParent: (taskId: string, parentTaskId: string | null) => Promise<void> | void;
     addActivity: (projectId: string, summary: string, detail?: string) => void;
     addStakeholder: (projectId: string, payload: Partial<TdzStakeholder>) => void;
     linkContactToCard: (
@@ -123,6 +124,7 @@ const DetailDrawer: React.FC<Props> = ({
   const [contactQuery, setContactQuery] = useState('');
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [overNest, setOverNest] = useState(false);
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [subtaskFor, setSubtaskFor] = useState<string | null>(null);
   const [subtaskTitle, setSubtaskTitle] = useState('');
@@ -167,9 +169,14 @@ const DetailDrawer: React.FC<Props> = ({
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
   const orderedTasks = flattenTaskTree(tasks);
 
-  /** Move the dragged task (and its children, when it is a root) before the drop target. */
-  const dropOn = (targetId: string) => {
+  /**
+   * Drop a dragged task on a row.
+   * `nest` (drop on the right-hand indent zone of a root task) makes it a subtask;
+   * otherwise the task is reordered above the target, re-parenting when needed.
+   */
+  const dropOn = async (targetId: string, nest: boolean) => {
     setOverId(null);
+    setOverNest(false);
     const sourceId = dragId;
     setDragId(null);
     if (!sourceId || sourceId === targetId) return;
@@ -178,8 +185,18 @@ const DetailDrawer: React.FC<Props> = ({
     const source = flat.find((t) => t.id === sourceId);
     const target = flat.find((t) => t.id === targetId);
     if (!source || !target) return;
-    // Children only reorder among their own siblings.
-    if ((source.parent_task_id ?? null) !== (target.parent_task_id ?? null)) return;
+
+    if (nest) {
+      if (target.parent_task_id || source.parent_task_id === target.id) return;
+      await api.setTaskParent(sourceId, target.id);
+      return;
+    }
+
+    const targetParent = target.parent_task_id ?? null;
+    if ((source.parent_task_id ?? null) !== targetParent) {
+      await api.setTaskParent(sourceId, targetParent);
+      source.parent_task_id = targetParent;
+    }
 
     const block = flat.filter((t) => t.id === sourceId || t.parent_task_id === sourceId);
     const blockIds = new Set(block.map((t) => t.id));
@@ -189,6 +206,7 @@ const DetailDrawer: React.FC<Props> = ({
     const next = [...rest.slice(0, targetIndex), ...block, ...rest.slice(targetIndex)];
     api.reorderTasks(card.id, next, sourceId);
   };
+
 
   /** Move a task up/down among its own siblings (children travel with a root). */
   const siblingsOf = (t: TdzTask) =>
@@ -501,23 +519,37 @@ const DetailDrawer: React.FC<Props> = ({
                   onDragEnd={() => {
                     setDragId(null);
                     setOverId(null);
+                    setOverNest(false);
                   }}
                   onDragOver={(e) => {
                     e.preventDefault();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const nest = !depth && e.clientX - rect.left > 64;
                     if (overId !== t.id) setOverId(t.id);
+                    if (overNest !== nest) setOverNest(nest);
+                  }}
+                  onDragLeave={() => {
+                    if (overId === t.id) setOverNest(false);
                   }}
                   onDrop={(e) => {
                     e.preventDefault();
-                    dropOn(t.id);
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    dropOn(t.id, !depth && e.clientX - rect.left > 64);
                   }}
+                  title="Drag to reorder — drop on the right half of a task to nest it as a subtask"
                   className={`flex items-center gap-2 rounded-lg border p-2.5 transition ${
                     depth
                       ? 'border-white/[0.06] border-l-2 border-l-white/20 bg-white/[0.02]'
                       : 'border-white/10 bg-white/[0.03]'
                   } ${dragId === t.id ? 'opacity-40' : ''} ${
-                    overId === t.id && dragId && dragId !== t.id ? 'border-t-2 border-t-[hsl(var(--tdz-accent))]' : ''
+                    overId === t.id && dragId && dragId !== t.id
+                      ? overNest
+                        ? 'border-[hsl(var(--tdz-accent))] bg-[hsl(var(--tdz-accent)/0.12)] pl-6'
+                        : 'border-t-2 border-t-[hsl(var(--tdz-accent))]'
+                      : ''
                   }`}
                 >
+
                   <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-white/25" />
                   <div className="flex shrink-0 flex-col">
                     <button
