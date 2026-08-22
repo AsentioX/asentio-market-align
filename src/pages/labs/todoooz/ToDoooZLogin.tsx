@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Boxes } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { GOOGLE_SCOPES } from './lib/google';
-
+import { lovable } from '@/integrations/lovable/index';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,15 +38,24 @@ const ToDoooZLogin: React.FC = () => {
   };
 
   const google = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/labs/todoooz`,
-        scopes: GOOGLE_SCOPES,
-        queryParams: { access_type: 'offline', prompt: 'consent' },
-      },
-    });
-    if (error) toast.error(error.message ?? 'Google sign-in failed');
+    setBusy(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: `${window.location.origin}/labs/todoooz`,
+      });
+      if (result.error) {
+        toast.error(result.error.message ?? 'Google sign-in failed');
+        return;
+      }
+      // Browser is redirecting to the OAuth provider — let it happen.
+      if (result.redirected) return;
+      // Tokens received and session set in-browser; land in the app.
+      window.location.assign('/labs/todoooz');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Google sign-in failed');
+    } finally {
+      setBusy(false);
+    }
   };
 
 
