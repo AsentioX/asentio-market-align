@@ -467,6 +467,7 @@ const ToDoooZLayout: React.FC = () => {
         onSwap={tdz.swapAccounts}
         onSyncContacts={tdz.syncContacts}
         onSyncCalendar={tdz.syncCalendar}
+        onSyncTasks={tdz.syncTasks}
         onAddAccount={tdz.addGoogleAccount}
       />
 

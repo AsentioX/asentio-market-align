@@ -8,6 +8,7 @@ import {
   designateAccount,
   disconnectAccount,
   importGoogleCalendar,
+  importGoogleTasks,
   listGoogleIdentities,
   swapSlots,
   type GoogleIdentity,
@@ -275,6 +276,24 @@ export const useToDoooZ = (userId: string | undefined) => {
     [userId, load, connections, handleGoogleError],
   );
 
+  const syncTasks = useCallback(
+    async (slot: TdzAccountSlot) => {
+      if (!userId) return;
+      try {
+        const email = connections.find((c) => c.account_slot === slot)?.account_email;
+        const count = await importGoogleTasks(userId, slot, email);
+        await load();
+        toast.success(
+          count ? `${slot} Google Tasks imported — ${count} tasks` : `No Google Tasks found for your ${slot} account`,
+        );
+      } catch (err) {
+        handleGoogleError(err);
+      }
+    },
+    [userId, load, connections, handleGoogleError],
+  );
+
+
   const googleIdentities = useCallback(async (): Promise<GoogleIdentity[]> => listGoogleIdentities(), []);
 
   /** Authorise an additional Google account (e.g. a personal one) via Google's picker. */
@@ -416,6 +435,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     deleteContact,
     syncContacts,
     syncCalendar,
+    syncTasks,
     googleIdentities,
     addGoogleAccount,
     setAccountSlot,

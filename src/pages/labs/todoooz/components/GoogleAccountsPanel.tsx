@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ArrowLeftRight, Briefcase, CalendarDays, ExternalLink, Home, Loader2, Plus, RefreshCw, ShieldAlert, Unlink, Users } from 'lucide-react';
+import { ArrowLeftRight, ListChecks, Briefcase, CalendarDays, ExternalLink, Home, Loader2, Plus, RefreshCw, ShieldAlert, Unlink, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ interface Props {
   onSwap: () => Promise<void>;
   onSyncContacts: (slot: TdzAccountSlot) => Promise<void>;
   onSyncCalendar: (slot: TdzAccountSlot) => Promise<void>;
+  onSyncTasks: (slot: TdzAccountSlot) => Promise<void>;
   onAddAccount: () => Promise<GoogleIdentity | null>;
 }
 
@@ -36,6 +37,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
   onSwap,
   onSyncContacts,
   onSyncCalendar,
+  onSyncTasks,
   onAddAccount,
 }) => {
   const [identities, setIdentities] = useState<GoogleIdentity[]>([]);
@@ -215,6 +217,20 @@ const GoogleAccountsPanel: React.FC<Props> = ({
                         <CalendarDays className="mr-1 h-3 w-3" />
                       )}
                       Import calendar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={busy === `tk-${key}`}
+                      onClick={() => run(`tk-${key}`, () => onSyncTasks(key))}
+                      className="h-7 border-white/15 bg-transparent text-[11px] hover:bg-white/10"
+                    >
+                      {busy === `tk-${key}` ? (
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                      ) : (
+                        <ListChecks className="mr-1 h-3 w-3" />
+                      )}
+                      Import tasks
                     </Button>
                     {conn.last_synced_at && (
                       <span className="text-[10px] text-white/35">
