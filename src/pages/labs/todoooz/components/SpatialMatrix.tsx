@@ -51,7 +51,7 @@ const SpatialMatrix: React.FC<Props> = ({
 
   return (
     <div className="min-w-[900px] [perspective:1400px]">
-      <div className="grid grid-cols-[120px_repeat(4,minmax(0,1fr))] gap-2">
+      <div className="grid grid-cols-[40px_repeat(4,minmax(0,1fr))] gap-2">
         <div />
         {BUCKETS.map((b) => (
           <div key={b.key} className="pb-1 text-center">
@@ -62,12 +62,14 @@ const SpatialMatrix: React.FC<Props> = ({
 
         {PRIORITIES.map((p) => (
           <div key={p.key} style={{ display: 'contents' }}>
-            <div className="flex items-start">
+            <div className="flex h-full items-center justify-center">
               <div
-                className="w-full rounded-lg border px-2 py-3 text-[11px] font-semibold uppercase tracking-wide"
+                className="rounded-lg border px-1.5 py-3 text-[11px] font-semibold uppercase tracking-[0.2em]"
                 style={{
-                  borderColor: `hsl(${p.hsl} / 0.35)`,
-                  background: `hsl(${p.hsl} / 0.08)`,
+                  writingMode: 'vertical-rl',
+                  transform: 'rotate(180deg)',
+                  borderColor: `hsl(${p.hsl} / 0.4)`,
+                  background: `hsl(${p.hsl} / 0.12)`,
                   color: `hsl(${p.hsl})`,
                 }}
               >
@@ -85,9 +87,13 @@ const SpatialMatrix: React.FC<Props> = ({
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, b.key, p.key)}
                   className={cn(
-                    'group/cell min-h-[132px] rounded-xl border border-white/5 bg-white/[0.02] p-2',
-                    'transition-colors hover:border-white/15 [transform-style:preserve-3d]',
+                    'group/cell min-h-[132px] rounded-xl border p-2',
+                    'transition-colors hover:border-white/20 [transform-style:preserve-3d]',
                   )}
+                  style={{
+                    borderColor: `hsl(${p.hsl} / 0.12)`,
+                    background: `hsl(${p.hsl} / 0.05)`,
+                  }}
                 >
                   <div className="space-y-2">
                     {roots.map((card) => {
