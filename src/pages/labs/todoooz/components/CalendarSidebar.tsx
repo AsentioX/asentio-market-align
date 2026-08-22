@@ -381,7 +381,12 @@ const CalendarSidebar: React.FC<Props> = ({
                 if (el) dayRefs.current.set(day, el);
                 else dayRefs.current.delete(day);
               }}
-              className="mb-4"
+              className={cn(
+                'mb-4 rounded-lg',
+                new Date(day) < new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                  ? 'bg-amber-500/[0.04] p-2 opacity-55'
+                  : 'p-0',
+              )}
             >
 
               <div className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-white/35">
