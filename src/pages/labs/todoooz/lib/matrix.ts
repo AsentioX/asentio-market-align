@@ -10,8 +10,8 @@ export const BUCKETS: { key: TdzBucket; label: string; hint: string }[] = [
 export const PRIORITIES: { key: TdzPriority; label: string; hsl: string }[] = [
   { key: 'critical', label: 'Critical', hsl: '0 84% 60%' },
   { key: 'high', label: 'High', hsl: '38 92% 55%' },
-  { key: 'core', label: 'Core Operations', hsl: '217 91% 60%' },
-  { key: 'low', label: 'Low Touch', hsl: '215 16% 55%' },
+  { key: 'core', label: 'MEDIUM', hsl: '217 91% 60%' },
+  { key: 'low', label: 'LOW', hsl: '215 16% 55%' },
 ];
 
 export type DepthTier = 'hot' | 'warm' | 'flat';
