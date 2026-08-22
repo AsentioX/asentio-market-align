@@ -64,12 +64,10 @@ const SpatialMatrix: React.FC<Props> = ({
           <div key={p.key} style={{ display: 'contents' }}>
             <div className="flex h-full items-center justify-center">
               <div
-                className="rounded-lg border px-1.5 py-3 text-[11px] font-semibold uppercase tracking-[0.2em]"
+                className="px-1.5 py-3 text-[11px] font-semibold uppercase tracking-[0.2em]"
                 style={{
                   writingMode: 'vertical-rl',
                   transform: 'rotate(180deg)',
-                  borderColor: `hsl(${p.hsl} / 0.4)`,
-                  background: `hsl(${p.hsl} / 0.12)`,
                   color: `hsl(${p.hsl})`,
                 }}
               >
