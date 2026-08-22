@@ -172,8 +172,13 @@ export const useToDoooZ = (userId: string | undefined) => {
   );
 
   const addTask = useCallback(
-    async (projectId: string, title: string, due?: string | null, parentTaskId?: string | null) => {
-      if (!userId || !title.trim()) return;
+    async (
+      projectId: string,
+      title: string,
+      due?: string | null,
+      parentTaskId?: string | null,
+    ): Promise<TdzTask | undefined> => {
+      if (!userId || !title.trim()) return undefined;
       const { data, error } = await supabase
         .from('tdz_tasks')
         .insert({
@@ -185,9 +190,13 @@ export const useToDoooZ = (userId: string | undefined) => {
         })
         .select()
         .single();
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return undefined;
+      }
       commitTasks((prev) => [...prev, data as TdzTask]);
       pushTask((data as TdzTask).id);
+      return data as TdzTask;
     },
     [userId, pushTask],
   );
@@ -336,6 +345,36 @@ export const useToDoooZ = (userId: string | undefined) => {
       for (const t of moving) await pushTask(t.id);
     },
     [cards, emailForSlot, pushTask, commitTasks],
+  );
+
+  /**
+   * Reverse of `spawnCard`: turn a child card back into a task on its parent.
+   * Creates a top-level task from the child card's title, moves the child card's
+   * tasks onto the parent (preserving any inter-nesting as far as Google's
+   * single level allows), nests them under the new task, then deletes the card.
+   */
+  const importCardAsTask = useCallback(
+    async (childCard: TdzCard, parentCardId: string) => {
+      const created = await addTask(parentCardId, childCard.title, childCard.due_date);
+      if (!created) return;
+
+      const childTasks = tasksRef.current
+        .filter((t) => t.project_id === childCard.id)
+        .sort((a, b) => a.rank - b.rank);
+      // Former top-level tasks (pre-move snapshot, ids are stable across the move).
+      const roots = childTasks.filter((t) => !t.parent_task_id).map((t) => t.id);
+
+      if (childTasks.length) await moveTasksToCard(childTasks.map((t) => t.id), parentCardId);
+
+      // Re-parent the former roots (and their sub-trees) under the new task.
+      for (const rId of roots) {
+        await setTaskParent(rId, created.id);
+      }
+
+      await deleteCard(childCard.id);
+      toast.success('Imported back into task list');
+    },
+    [addTask, moveTasksToCard, setTaskParent, deleteCard],
   );
 
 
@@ -757,6 +796,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     setTaskParent,
     deleteTask,
     moveTasksToCard,
+    importCardAsTask,
     reorderTasks,
     reorderCards,
     addActivity,

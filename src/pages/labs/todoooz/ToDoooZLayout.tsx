@@ -489,6 +489,7 @@ const ToDoooZLayout: React.FC = () => {
               },
             );
           },
+          importCardAsTask: (child, parentId) => tdz.importCardAsTask(child, parentId),
           openCard: (id) => setOpenId(id),
           deleteCard: (id) => {
             if (window.confirm('Delete this card and its sub-tasks?')) {
