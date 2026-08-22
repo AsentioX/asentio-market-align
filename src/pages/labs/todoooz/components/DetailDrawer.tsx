@@ -112,6 +112,19 @@ const DetailDrawer: React.FC<Props> = ({
   );
   if (!card) return null;
 
+  const tags = (card.context_label ?? '')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean);
+  const setTags = (next: string[]) =>
+    api.patchCard(card.id, { context_label: next.length ? next.join(', ') : null });
+  const addTag = () => {
+    const value = tagInput.trim().replace(/,+$/, '').trim();
+    setTagInput('');
+    if (!value || tags.some((t) => t.toLowerCase() === value.toLowerCase())) return;
+    setTags([...tags, value]);
+  };
+
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
 
