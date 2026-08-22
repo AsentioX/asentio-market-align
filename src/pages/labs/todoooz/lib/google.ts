@@ -401,7 +401,9 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
         '?showCompleted=true&showHidden=false&maxResults=100',
       email,
     )) as { items?: GTask[] };
-    const items = (json.items ?? []).filter((t) => (t.title ?? '').trim().length > 0);
+    const items = (json.items ?? []).filter(
+      (t) => (t.title ?? '').trim().length > 0 && !t.deleted,
+    );
     if (items.length === 0) continue;
 
     // Find or create the card for this list.
