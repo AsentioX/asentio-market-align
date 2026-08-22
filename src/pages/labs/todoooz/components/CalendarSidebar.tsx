@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Trash2, X } from 'lucide-react';
+import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TdzCard, TdzEvent } from '../lib/types';
 import { resolveTheme } from '../lib/theme';
@@ -13,7 +13,9 @@ interface Props {
   onUpdateEvent?: (id: string, patch: Partial<TdzEvent>) => Promise<void> | void;
   onDeleteEvent?: (id: string) => Promise<void> | void;
   onOpenCard?: (id: string) => void;
+  onSpawnCard?: (event: TdzEvent) => void;
 }
+
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
@@ -34,7 +36,9 @@ const CalendarSidebar: React.FC<Props> = ({
   onUpdateEvent,
   onDeleteEvent,
   onOpenCard,
+  onSpawnCard,
 }) => {
+
   const [view, setView] = useState<'agenda' | 'time'>('agenda');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<{
@@ -268,15 +272,26 @@ const CalendarSidebar: React.FC<Props> = ({
                              );
                            })()
                          ) : (
-                          onUpdateEvent && (
+                          <>
+                          {onUpdateEvent && (
                             <button
                               onClick={() => startEdit(e)}
                               className="rounded border border-dashed border-white/15 px-1.5 py-0.5 text-white/40 hover:text-white"
                             >
                               + Link card
                             </button>
-                          )
+                          )}
+                          {onSpawnCard && (
+                            <button
+                              onClick={() => onSpawnCard(e)}
+                              className="flex items-center gap-1 rounded border border-dashed border-indigo-300/30 px-1.5 py-0.5 text-indigo-200/70 hover:text-indigo-100"
+                            >
+                              <Plus className="h-3 w-3" /> New card
+                            </button>
+                          )}
+                          </>
                         )}
+
                       </div>
                       </>
                       )}

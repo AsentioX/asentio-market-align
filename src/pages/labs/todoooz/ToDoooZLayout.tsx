@@ -380,6 +380,24 @@ const ToDoooZLayout: React.FC = () => {
             setFocusedId(id);
             setOpenId(id);
           }}
+          onSpawnCard={async (event) => {
+            const card = await tdz.createCard({
+              title: event.title || 'New card',
+              mode: (event.account_slot === 'personal' ? 'personal' : 'work') as 'work' | 'personal',
+              time_bucket: 'today',
+              priority: 'core',
+              parent_id: null,
+              due_date: event.starts_at.slice(0, 10),
+              sort_order: tdz.cards.length,
+            });
+            if (!card) return;
+            await tdz.updateEvent(event.id, { project_id: card.id });
+            setFocusedId(card.id);
+            setOpenId(card.id);
+            setTab('schedule');
+            toast.success('Card created from event');
+          }}
+
         />
       </div>
 
