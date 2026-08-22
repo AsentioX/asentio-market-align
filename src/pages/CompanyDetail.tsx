@@ -3,14 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useXRProducts, XRProduct } from "@/hooks/useXRProducts";
-import { XRCompany, useXRCompanies } from "@/hooks/useXRCompanies";
+import { XRCompany } from "@/hooks/useXRCompanies";
 import { useHAIUseCases } from "@/hooks/useHAIUseCases";
-import {
-  useCasesForCompany,
-  partnersForCompany,
-  similarCompanies,
-  solutionPartnersForCompany,
-} from "@/lib/haiMatching";
+import { useCasesForCompany } from "@/lib/haiMatching";
 import CompanyUseCases from "@/components/directory/company/CompanyUseCases";
 import CompanyProducts from "@/components/directory/company/CompanyProducts";
 import CompanySolutionFit from "@/components/directory/company/CompanySolutionFit";
