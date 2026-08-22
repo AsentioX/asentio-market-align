@@ -331,7 +331,7 @@ const CalendarSidebar: React.FC<Props> = ({
         )}
       </div>
 
-      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-3">
+      <div ref={scrollRef} onScroll={handleScroll} className="min-h-0 flex-1 overflow-y-auto p-3">
         {view === 'agenda' && onLoadRange && (
           <div className="mb-2 flex items-center justify-center">
             {loadingRange ? (
