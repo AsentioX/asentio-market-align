@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import TaskCard from './TaskCard';
+import TaskCard, { type LinkedContact } from './TaskCard';
 import { BUCKETS, PRIORITIES, sortCards } from '../lib/matrix';
 import type { TdzBucket, TdzCard, TdzPriority, TdzTask } from '../lib/types';
 import { resolveTheme } from '../lib/theme';
