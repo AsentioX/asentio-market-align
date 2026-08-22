@@ -65,15 +65,6 @@ const CompanyDetail = () => {
     () => useCasesForCompany(company, haiUseCases, 8),
     [company, haiUseCases],
   );
-  const partners = useMemo(
-    () => partnersForCompany(company, allCompanies, haiUseCases, 6),
-    [company, allCompanies, haiUseCases],
-  );
-  const similar = useMemo(() => similarCompanies(company, allCompanies), [company, allCompanies]);
-  const solutionPartners = useMemo(
-    () => solutionPartnersForCompany(company, allCompanies, haiUseCases),
-    [company, allCompanies, haiUseCases],
-  );
 
   useSeo({
     title: `${displayName} — Company Profile | Asentio HAI Directory`,
