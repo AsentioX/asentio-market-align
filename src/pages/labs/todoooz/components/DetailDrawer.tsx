@@ -168,9 +168,14 @@ const DetailDrawer: React.FC<Props> = ({
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
   const orderedTasks = flattenTaskTree(tasks);
 
-  /** Move the dragged task (and its children, when it is a root) before the drop target. */
-  const dropOn = (targetId: string) => {
+  /**
+   * Drop a dragged task on a row.
+   * `nest` (drop on the right-hand indent zone of a root task) makes it a subtask;
+   * otherwise the task is reordered above the target, re-parenting when needed.
+   */
+  const dropOn = async (targetId: string, nest: boolean) => {
     setOverId(null);
+    setOverNest(false);
     const sourceId = dragId;
     setDragId(null);
     if (!sourceId || sourceId === targetId) return;
@@ -179,8 +184,18 @@ const DetailDrawer: React.FC<Props> = ({
     const source = flat.find((t) => t.id === sourceId);
     const target = flat.find((t) => t.id === targetId);
     if (!source || !target) return;
-    // Children only reorder among their own siblings.
-    if ((source.parent_task_id ?? null) !== (target.parent_task_id ?? null)) return;
+
+    if (nest) {
+      if (target.parent_task_id || source.parent_task_id === target.id) return;
+      await api.setTaskParent(sourceId, target.id);
+      return;
+    }
+
+    const targetParent = target.parent_task_id ?? null;
+    if ((source.parent_task_id ?? null) !== targetParent) {
+      await api.setTaskParent(sourceId, targetParent);
+      source.parent_task_id = targetParent;
+    }
 
     const block = flat.filter((t) => t.id === sourceId || t.parent_task_id === sourceId);
     const blockIds = new Set(block.map((t) => t.id));
@@ -190,6 +205,7 @@ const DetailDrawer: React.FC<Props> = ({
     const next = [...rest.slice(0, targetIndex), ...block, ...rest.slice(targetIndex)];
     api.reorderTasks(card.id, next, sourceId);
   };
+
 
   /** Move a task up/down among its own siblings (children travel with a root). */
   const siblingsOf = (t: TdzTask) =>
