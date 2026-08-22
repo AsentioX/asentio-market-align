@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
+import { TDZ_THEMES } from './theme';
 import type { TdzTag } from './types';
 
 export const DEFAULT_TAG_COLOR = '#2A6FDB';
