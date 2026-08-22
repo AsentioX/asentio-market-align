@@ -14,6 +14,7 @@ import ColorSwatchRow from './ColorSwatchRow';
 import { depthStyle, depthTier } from '../lib/matrix';
 import { resolveTheme, themeVars } from '../lib/theme';
 import type { TdzCard, TdzTask } from '../lib/types';
+import { flattenTaskTree } from '../lib/taskTree';
 import { useTagLibrary } from '../lib/tagContext';
 
 interface Props {
