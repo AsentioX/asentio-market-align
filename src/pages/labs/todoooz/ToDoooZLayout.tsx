@@ -372,6 +372,7 @@ const ToDoooZLayout: React.FC = () => {
           events={visibleEvents}
           cardById={tdz.cardById}
           cards={visibleCards}
+          tasks={tdz.tasks}
           collapsed={calCollapsed}
           onToggle={() => setCalCollapsed((v) => !v)}
           onUpdateEvent={tdz.updateEvent}
