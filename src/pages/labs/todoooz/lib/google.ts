@@ -350,7 +350,7 @@ interface GConn {
   names?: { displayName?: string }[];
   emailAddresses?: { value?: string }[];
   phoneNumbers?: { value?: string }[];
-  photos?: { url?: string }[];
+  photos?: { url?: string; default?: boolean }[];
   organizations?: { name?: string; title?: string }[];
 }
 
