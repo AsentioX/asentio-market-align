@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ArrowLeftRight, Briefcase, CalendarDays, Home, Loader2, Plus, RefreshCw, ShieldAlert, Unlink, Users } from 'lucide-react';
+import { ArrowLeftRight, Briefcase, CalendarDays, ExternalLink, Home, Loader2, Plus, RefreshCw, ShieldAlert, Unlink, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { validateAccountTokens, type GoogleIdentity } from '../lib/google';
+import { isEmbedded } from '../lib/gis';
 import type { TdzAccountSlot, TdzConnection } from '../lib/types';
 
 interface Props {
@@ -41,6 +42,7 @@ const GoogleAccountsPanel: React.FC<Props> = ({
   const [authStatus, setAuthStatus] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const embedded = isEmbedded();
 
   const refresh = useCallback(
     async (notify: boolean) => {
