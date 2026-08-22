@@ -4270,6 +4270,7 @@ export type Database = {
           meeting_link: string | null
           project_id: string | null
           starts_at: string
+          task_id: string | null
           title: string
           user_id: string
         }
@@ -4285,6 +4286,7 @@ export type Database = {
           meeting_link?: string | null
           project_id?: string | null
           starts_at: string
+          task_id?: string | null
           title: string
           user_id: string
         }
@@ -4300,6 +4302,7 @@ export type Database = {
           meeting_link?: string | null
           project_id?: string | null
           starts_at?: string
+          task_id?: string | null
           title?: string
           user_id?: string
         }
@@ -4309,6 +4312,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tdz_calendar_events_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -4546,8 +4556,9 @@ export type Database = {
           id: string
           name: string
           notes: string | null
-          project_id: string
+          project_id: string | null
           role: string | null
+          task_id: string | null
           user_id: string
         }
         Insert: {
@@ -4558,8 +4569,9 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
-          project_id: string
+          project_id?: string | null
           role?: string | null
+          task_id?: string | null
           user_id: string
         }
         Update: {
@@ -4570,8 +4582,9 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
-          project_id?: string
+          project_id?: string | null
           role?: string | null
+          task_id?: string | null
           user_id?: string
         }
         Relationships: [
@@ -4587,6 +4600,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "tdz_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tdz_stakeholders_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tdz_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -4618,10 +4638,12 @@ export type Database = {
       tdz_tasks: {
         Row: {
           account_slot: string | null
+          completed_at: string | null
           created_at: string
           done: boolean
           due_date: string | null
           google_task_id: string | null
+          google_updated_at: string | null
           id: string
           notes: string | null
           parent_task_id: string | null
@@ -4633,10 +4655,12 @@ export type Database = {
         }
         Insert: {
           account_slot?: string | null
+          completed_at?: string | null
           created_at?: string
           done?: boolean
           due_date?: string | null
           google_task_id?: string | null
+          google_updated_at?: string | null
           id?: string
           notes?: string | null
           parent_task_id?: string | null
@@ -4648,10 +4672,12 @@ export type Database = {
         }
         Update: {
           account_slot?: string | null
+          completed_at?: string | null
           created_at?: string
           done?: boolean
           due_date?: string | null
           google_task_id?: string | null
+          google_updated_at?: string | null
           id?: string
           notes?: string | null
           parent_task_id?: string | null
