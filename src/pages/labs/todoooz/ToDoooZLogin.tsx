@@ -40,18 +40,15 @@ const ToDoooZLogin: React.FC = () => {
   };
 
   const google = async () => {
-    const result = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: window.location.origin,
-      extraParams: { scope: `openid email profile ${GOOGLE_SCOPES}`, access_type: 'online', prompt: 'consent' },
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/labs/todoooz`,
+        scopes: GOOGLE_SCOPES,
+        queryParams: { access_type: 'offline', prompt: 'consent' },
+      },
     });
-    if (result.error) {
-      toast.error(result.error.message ?? 'Google sign-in failed');
-      return;
-    }
-    if (result.redirected) return;
-    const { data } = await supabase.auth.getSession();
-    rememberProviderToken(data.session?.provider_token);
-    window.location.href = '/labs/todoooz';
+    if (error) toast.error(error.message ?? 'Google sign-in failed');
   };
 
 
