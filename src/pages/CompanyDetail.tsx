@@ -235,11 +235,6 @@ const CompanyDetail = () => {
                 </Button>
               </a>
             )}
-            <a href="#partners">
-              <Button variant="outline" className="w-full">
-                Find partner matches
-              </Button>
-            </a>
           </div>
         </div>
       </section>
