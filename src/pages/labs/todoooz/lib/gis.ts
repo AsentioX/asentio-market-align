@@ -62,12 +62,26 @@ const fetchUserInfo = async (token: string): Promise<GoogleIdentity> => {
  * for whichever account the user selects. Returns the identity and caches its
  * access token for later imports.
  */
+export const isEmbedded = (): boolean => {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+};
+
 export const authorizeGoogleAccount = async (): Promise<GoogleIdentity> => {
+  if (isEmbedded()) {
+    throw new Error(
+      'Google blocks account authorisation inside an embedded preview. Open ToDoooZ in its own browser tab and try again.',
+    );
+  }
   const clientId = await getGoogleClientId();
   if (!clientId) {
     throw new Error('Google client ID is not configured yet. Add GOOGLE_OAUTH_CLIENT_ID and try again.');
   }
   await loadGis();
+
 
   const token = await new Promise<string>((resolve, reject) => {
     const client = window.google.accounts.oauth2.initTokenClient({
