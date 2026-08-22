@@ -14,6 +14,7 @@ import ColorSwatchRow from './ColorSwatchRow';
 import { depthStyle, depthTier } from '../lib/matrix';
 import { resolveTheme, themeVars } from '../lib/theme';
 import type { TdzCard, TdzTask } from '../lib/types';
+import { useTagLibrary } from '../lib/tagContext';
 
 interface Props {
   card: TdzCard;
@@ -51,6 +52,8 @@ const TaskCard: React.FC<Props> = ({
   onDragStart,
 }) => {
   const [expanded, setExpanded] = useState(true);
+  const { colorFor } = useTagLibrary();
+
   const theme = resolveTheme(card, parent);
   const tier = depthTier(card);
   const top = tasks.slice(0, 3);
@@ -167,7 +170,12 @@ const TaskCard: React.FC<Props> = ({
                     .map((tag) => (
                       <span
                         key={tag}
-                        className="inline-block rounded-full bg-white/10 px-2 py-0.5 uppercase tracking-wide text-white/60"
+                        className="inline-block rounded-full px-2 py-0.5 uppercase tracking-wide"
+                        style={{
+                          backgroundColor: `${colorFor(tag)}26`,
+                          color: colorFor(tag),
+                          border: `1px solid ${colorFor(tag)}59`,
+                        }}
                       >
                         {tag}
                       </span>

@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ColorSwatchRow from './ColorSwatchRow';
+import TagEditor from './TagEditor';
 
 import { resolveTheme } from '../lib/theme';
 import type {
@@ -105,7 +106,6 @@ const DetailDrawer: React.FC<Props> = ({
   const [personName, setPersonName] = useState('');
   const [personRole, setPersonRole] = useState('');
   const [contactQuery, setContactQuery] = useState('');
-  const [tagInput, setTagInput] = useState('');
 
   const theme = card ? resolveTheme(card, parent) : null;
   const linkedEvents = useMemo(
@@ -120,12 +120,6 @@ const DetailDrawer: React.FC<Props> = ({
     .filter(Boolean);
   const setTags = (next: string[]) =>
     api.patchCard(card.id, { context_label: next.length ? next.join(', ') : null });
-  const addTag = () => {
-    const value = tagInput.trim().replace(/,+$/, '').trim();
-    setTagInput('');
-    if (!value || tags.some((t) => t.toLowerCase() === value.toLowerCase())) return;
-    setTags([...tags, value]);
-  };
 
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
@@ -407,43 +401,8 @@ const DetailDrawer: React.FC<Props> = ({
                 ))}
               </div>
             </div>
-            <div>
+            <TagEditor value={tags} onChange={setTags} />
 
-              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Tags</div>
-              {tags.length > 0 && (
-                <div className="mb-2 flex flex-wrap gap-1.5">
-                  {tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] text-white/75"
-                    >
-                      {tag}
-                      <button
-                        onClick={() => setTags(tags.filter((t) => t !== tag))}
-                        className="text-white/40 hover:text-rose-300"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-              <Input
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ',') {
-                    e.preventDefault();
-                    addTag();
-                  } else if (e.key === 'Backspace' && !tagInput && tags.length) {
-                    setTags(tags.slice(0, -1));
-                  }
-                }}
-                onBlur={addTag}
-                placeholder="Add a tag and press Enter"
-                className="border-white/10 bg-white/5 text-sm"
-              />
-            </div>
             <Textarea
               value={card.description ?? ''}
               onChange={(e) => api.patchCard(card.id, { description: e.target.value })}

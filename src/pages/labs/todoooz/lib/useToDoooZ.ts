@@ -22,6 +22,7 @@ import type {
   TdzDocument,
   TdzEvent,
   TdzStakeholder,
+  TdzTag,
   TdzTask,
 } from './types';
 
@@ -34,11 +35,12 @@ export const useToDoooZ = (userId: string | undefined) => {
   const [documents, setDocuments] = useState<TdzDocument[]>([]);
   const [connections, setConnections] = useState<TdzConnection[]>([]);
   const [contacts, setContacts] = useState<TdzContact[]>([]);
+  const [tags, setTags] = useState<TdzTag[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!userId) return;
-    const [c, t, e, a, s, d, g, ct] = await Promise.all([
+    const [c, t, e, a, s, d, g, ct, tg] = await Promise.all([
       supabase.from('tdz_projects').select('*').order('sort_order'),
       supabase.from('tdz_tasks').select('*').order('rank'),
       supabase.from('tdz_calendar_events').select('*').order('starts_at'),
@@ -47,6 +49,7 @@ export const useToDoooZ = (userId: string | undefined) => {
       supabase.from('tdz_documents').select('*').order('added_at'),
       supabase.from('tdz_google_connections').select('*'),
       supabase.from('tdz_contacts').select('*').order('name'),
+      supabase.from('tdz_tags').select('*').order('name'),
     ]);
     setCards((c.data ?? []) as TdzCard[]);
     setTasks((t.data ?? []) as TdzTask[]);
@@ -56,6 +59,7 @@ export const useToDoooZ = (userId: string | undefined) => {
     setDocuments((d.data ?? []) as TdzDocument[]);
     setConnections((g.data ?? []) as TdzConnection[]);
     setContacts((ct.data ?? []) as TdzContact[]);
+    setTags((tg.data ?? []) as TdzTag[]);
     setLoading(false);
     return (c.data ?? []).length;
   }, [userId]);
@@ -343,6 +347,40 @@ export const useToDoooZ = (userId: string | undefined) => {
     [userId, stakeholders],
   );
 
+  const createTag = useCallback(
+    async (name: string, color = '#6366f1') => {
+      if (!userId) return null;
+      const clean = name.trim();
+      if (!clean) return null;
+      const existing = tags.find((t) => t.name.toLowerCase() === clean.toLowerCase());
+      if (existing) return existing;
+      const { data, error } = await supabase
+        .from('tdz_tags')
+        .insert({ user_id: userId, name: clean, color } as never)
+        .select()
+        .single();
+      if (error) {
+        toast.error(error.message);
+        return null;
+      }
+      setTags((prev) => [...prev, data as TdzTag].sort((a, b) => a.name.localeCompare(b.name)));
+      return data as TdzTag;
+    },
+    [userId, tags],
+  );
+
+  const updateTag = useCallback(async (id: string, patch: Partial<TdzTag>) => {
+    setTags((prev) => prev.map((t) => (t.id === id ? { ...t, ...(patch as TdzTag) } : t)));
+    const { error } = await supabase.from('tdz_tags').update(patch).eq('id', id);
+    if (error) toast.error(error.message);
+  }, []);
+
+  const deleteTag = useCallback(async (id: string) => {
+    setTags((prev) => prev.filter((t) => t.id !== id));
+    const { error } = await supabase.from('tdz_tags').delete().eq('id', id);
+    if (error) toast.error(error.message);
+  }, []);
+
   return {
     loading,
     cards,
@@ -353,6 +391,10 @@ export const useToDoooZ = (userId: string | undefined) => {
     documents,
     connections,
     contacts,
+    tags,
+    createTag,
+    updateTag,
+    deleteTag,
     cardById,
     childrenOf,
     reload: load,
