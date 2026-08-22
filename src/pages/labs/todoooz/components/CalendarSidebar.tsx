@@ -261,13 +261,101 @@ const CalendarSidebar: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="border-b border-white/10">
+        <button
+          onClick={() => setMonthOpen((v) => !v)}
+          className="flex w-full items-center justify-between px-3 py-1.5 text-[11px] text-white/60 hover:text-white"
+        >
+          <span className="font-medium">
+            {monthCursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+          </span>
+          {monthOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        </button>
+
+        {monthOpen && (
+          <div className="px-3 pb-2">
+            <div className="mb-1 flex items-center justify-between">
+              <button
+                onClick={() => goMonth(-1)}
+                aria-label="Previous month"
+                className="rounded p-1 text-white/45 hover:bg-white/10 hover:text-white"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  const t = startOfMonth(new Date());
+                  setMonthCursor(t);
+                  void jumpToDay(new Date());
+                }}
+                className="rounded px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/45 hover:text-white"
+              >
+                Today
+              </button>
+              <button
+                onClick={() => goMonth(1)}
+                aria-label="Next month"
+                className="rounded p-1 text-white/45 hover:bg-white/10 hover:text-white"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-0.5 text-center text-[9px] text-white/30">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                <div key={i}>{d}</div>
+              ))}
+            </div>
+            <div className="mt-0.5 grid grid-cols-7 gap-0.5">
+              {monthGrid.map((d, i) =>
+                d ? (
+                  <button
+                    key={i}
+                    onClick={() => jumpToDay(d)}
+                    className={cn(
+                      'relative flex h-6 items-center justify-center rounded text-[10px] text-white/60 hover:bg-white/10 hover:text-white',
+                      sameDay(d, now) && 'bg-white/15 font-semibold text-white',
+                    )}
+                  >
+                    {d.getDate()}
+                    {eventsByDay.get(d.toDateString()) ? (
+                      <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-sky-400" />
+                    ) : null}
+                  </button>
+                ) : (
+                  <div key={i} />
+                ),
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-3">
+        {view === 'agenda' && onLoadRange && (
+          <div className="mb-2 flex items-center justify-center">
+            {loadingRange ? (
+              <span className="flex items-center gap-1 text-[10px] text-white/40">
+                <Loader2 className="h-3 w-3 animate-spin" /> Importing earlier events…
+              </span>
+            ) : (
+              <button
+                onClick={() => loadMonth(addMonths(earliestLoaded, -1))}
+                className="rounded border border-white/10 px-2 py-0.5 text-[10px] text-white/40 hover:text-white"
+              >
+                Load earlier events
+              </button>
+            )}
+          </div>
+        )}
+
         {upcoming.length === 0 && (
           <p className="text-xs text-white/40">No events for this mode. Connect a Google account to sync.</p>
         )}
 
         {view === 'agenda' &&
           grouped.map(([day, list]) => (
+
             <div key={day} className="mb-4">
               <div className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-white/35">
                 {new Date(day).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
