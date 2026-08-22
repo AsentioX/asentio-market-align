@@ -1,4 +1,4 @@
-# ToDoooZ: manual reordering + collapsible detail sections
+# ToDoooZ: manual reordering, collapsible detail sections, subtask promotion
 
 ## 1. Manual reorder
 
