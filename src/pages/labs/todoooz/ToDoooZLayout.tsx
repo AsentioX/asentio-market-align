@@ -432,17 +432,35 @@ const ToDoooZLayout: React.FC = () => {
               sort_order: tdz.cards.length,
             });
             if (!card) return;
+            // Carry the whole sub-tree across: descendants become the new card's tasks.
+            const descendants: string[] = [];
+            const collect = (id: string) => {
+              for (const t of tdz.tasks) {
+                if (t.parent_task_id === id) {
+                  descendants.push(t.id);
+                  collect(t.id);
+                }
+              }
+            };
+            collect(task.id);
+            if (descendants.length) await tdz.moveTasksToCard(descendants, card.id);
             // The task now lives on as its own card, so it leaves the parent list.
-            tdz.deleteTask(task.id);
-            toast.success('Sub-task card created', {
-              action: {
-                label: 'Undo',
-                onClick: () => {
-                  tdz.deleteCard(card.id);
-                  tdz.addTask(parent.id, task.title, task.due_date);
+            await tdz.deleteTask(task.id);
+            toast.success(
+              descendants.length
+                ? `Card created with ${descendants.length} sub-task${descendants.length > 1 ? 's' : ''}`
+                : 'Sub-task card created',
+              {
+                action: {
+                  label: 'Undo',
+                  onClick: async () => {
+                    if (descendants.length) await tdz.moveTasksToCard(descendants, parent.id);
+                    await tdz.deleteCard(card.id);
+                    await tdz.addTask(parent.id, task.title, task.due_date);
+                  },
                 },
               },
-            });
+            );
           },
           openCard: (id) => setOpenId(id),
           deleteCard: (id) => {
