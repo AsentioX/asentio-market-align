@@ -410,13 +410,13 @@ const CalendarSidebar: React.FC<Props> = ({
                               type="datetime-local"
                               value={draft.starts_at}
                               onChange={(ev) => setDraft((d) => ({ ...d, starts_at: ev.target.value }))}
-                              className="w-full rounded border border-white/15 bg-black/30 px-1.5 py-1 text-[10px] text-white outline-none"
+                              className="min-w-0 flex-1 rounded border border-white/15 bg-black/30 px-1.5 py-1 text-[10px] text-white outline-none"
                             />
                             <input
                               type="datetime-local"
                               value={draft.ends_at}
                               onChange={(ev) => setDraft((d) => ({ ...d, ends_at: ev.target.value }))}
-                              className="w-full rounded border border-white/15 bg-black/30 px-1.5 py-1 text-[10px] text-white outline-none"
+                              className="min-w-0 flex-1 rounded border border-white/15 bg-black/30 px-1.5 py-1 text-[10px] text-white outline-none"
                             />
                           </div>
                           <input
@@ -456,7 +456,7 @@ const CalendarSidebar: React.FC<Props> = ({
                             </select>
                           )}
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
                             <button
                               onClick={saveEdit}
                               className="flex items-center gap-1 rounded bg-emerald-500/20 px-2 py-1 text-[10px] text-emerald-200 hover:bg-emerald-500/30"
