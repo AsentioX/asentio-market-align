@@ -276,7 +276,7 @@ const SpatialMatrix: React.FC<Props> = ({
                         );
                       })}
 
-                    {active && dropTarget?.beforeId === null && <DropLine hsl={p.hsl} />}
+                    {active && dropTarget?.beforeId === null && <DropLine hsl={draggedHsl ?? p.hsl} />}
                   </div>
 
 
