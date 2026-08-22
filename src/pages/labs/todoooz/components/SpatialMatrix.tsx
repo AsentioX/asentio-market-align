@@ -270,7 +270,10 @@ const SpatialMatrix: React.FC<Props> = ({
                           />
                         );
                       })}
+
+                    {active && dropTarget?.beforeId === null && <DropLine hsl={p.hsl} />}
                   </div>
+
 
                   <button
                     onClick={() => onCreate(b.key, p.key)}
