@@ -3,19 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useXRProducts, XRProduct } from "@/hooks/useXRProducts";
-import { XRCompany, useXRCompanies } from "@/hooks/useXRCompanies";
+import { XRCompany } from "@/hooks/useXRCompanies";
 import { useHAIUseCases } from "@/hooks/useHAIUseCases";
-import {
-  useCasesForCompany,
-  partnersForCompany,
-  similarCompanies,
-  solutionPartnersForCompany,
-} from "@/lib/haiMatching";
+import { useCasesForCompany } from "@/lib/haiMatching";
 import CompanyUseCases from "@/components/directory/company/CompanyUseCases";
 import CompanyProducts from "@/components/directory/company/CompanyProducts";
 import CompanySolutionFit from "@/components/directory/company/CompanySolutionFit";
 import CompanyCapabilities from "@/components/directory/company/CompanyCapabilities";
-import CompanyEcosystem from "@/components/directory/company/CompanyEcosystem";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import TopographicPattern from "@/components/TopographicPattern";
@@ -40,7 +34,6 @@ const CompanyDetail = () => {
   const { companyName } = useParams<{ companyName: string }>();
   const key = decodeURIComponent(companyName || "");
   const { data: allProducts, isLoading: productsLoading } = useXRProducts({});
-  const { data: allCompanies } = useXRCompanies({});
   const { data: haiUseCases } = useHAIUseCases();
 
   const { data: company, isLoading: companyLoading } = useQuery({
@@ -71,15 +64,6 @@ const CompanyDetail = () => {
   const matchedUseCases = useMemo(
     () => useCasesForCompany(company, haiUseCases, 8),
     [company, haiUseCases],
-  );
-  const partners = useMemo(
-    () => partnersForCompany(company, allCompanies, haiUseCases, 6),
-    [company, allCompanies, haiUseCases],
-  );
-  const similar = useMemo(() => similarCompanies(company, allCompanies), [company, allCompanies]);
-  const solutionPartners = useMemo(
-    () => solutionPartnersForCompany(company, allCompanies, haiUseCases),
-    [company, allCompanies, haiUseCases],
   );
 
   useSeo({
@@ -267,14 +251,6 @@ const CompanyDetail = () => {
 
       {/* 6. Detailed capabilities & taxonomy */}
       {company && <CompanyCapabilities company={company} />}
-
-      {/* 7. Explore the ecosystem */}
-      <CompanyEcosystem
-        companyName={displayName}
-        partners={partners}
-        similar={similar}
-        solutionPartners={solutionPartners}
-      />
     </div>
   );
 };
