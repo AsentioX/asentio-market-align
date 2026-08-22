@@ -185,7 +185,7 @@ const ContactsCRM: React.FC<Props> = ({
             </ul>
           </div>
 
-          <div className="overflow-y-auto rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="min-h-0 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.02] p-4">
             {!selected ? (
               <p className="text-xs text-white/40">Select a contact to edit their details.</p>
             ) : (
