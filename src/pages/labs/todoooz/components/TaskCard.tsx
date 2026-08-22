@@ -143,9 +143,9 @@ const TaskCard: React.FC<Props> = ({
 
           {expanded && (
             <>
-              {top.length > 0 && (
+              {all.length > 0 && (
                 <ul className="mb-2 space-y-1">
-                  {top.map(({ task: t, depth }) => (
+                  {all.map(({ task: t, depth }) => (
                     <li
                       key={t.id}
                       style={{ marginLeft: depth ? 14 : 0 }}
