@@ -441,9 +441,8 @@ const DetailDrawer: React.FC<Props> = ({
             </ul>
           </TabsContent>
 
-          <TabsContent value="overview" className="space-y-4 pt-4">
-            <div>
-              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Mode</div>
+          <TabsContent value="overview" className="space-y-3 pt-4">
+            <CollapsibleSection id="overview-mode" title="Mode & tags">
               <div className="inline-flex rounded-lg border border-white/10 bg-white/5 p-1">
                 {(['work', 'personal'] as const).map((m) => (
                   <button
@@ -458,17 +457,24 @@ const DetailDrawer: React.FC<Props> = ({
                   </button>
                 ))}
               </div>
-            </div>
-            <TagEditor value={tags} onChange={setTags} />
+              <TagEditor value={tags} onChange={setTags} />
+            </CollapsibleSection>
 
-            <Textarea
-              value={card.description ?? ''}
-              onChange={(e) => api.patchCard(card.id, { description: e.target.value })}
-              placeholder="Notes"
-              className="min-h-[90px] border-white/10 bg-white/5 text-sm"
-            />
-            <div>
-              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Linked documents</div>
+            <CollapsibleSection id="overview-notes" title="Notes">
+              <Textarea
+                value={card.description ?? ''}
+                onChange={(e) => api.patchCard(card.id, { description: e.target.value })}
+                placeholder="Notes"
+                className="min-h-[90px] border-white/10 bg-white/5 text-sm"
+              />
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              id="overview-docs"
+              title="Linked documents"
+              meta={documents.length || null}
+              defaultOpen={false}
+            >
               <div className="flex gap-2">
                 <Input
                   value={docUrl}
@@ -519,7 +525,7 @@ const DetailDrawer: React.FC<Props> = ({
                 ))}
                 {documents.length === 0 && <li className="text-xs text-white/40">No documents linked yet.</li>}
               </ul>
-            </div>
+            </CollapsibleSection>
 
             <div className="pt-2">
               <Button
@@ -536,8 +542,7 @@ const DetailDrawer: React.FC<Props> = ({
 
 
           <TabsContent value="schedule" className="space-y-3 pt-4">
-            <label className="block text-xs text-white/50">
-              Due date
+            <CollapsibleSection id="schedule-due" title="Due date">
               <input
                 type="date"
                 value={card.due_date ? card.due_date.slice(0, 10) : ''}
@@ -546,21 +551,23 @@ const DetailDrawer: React.FC<Props> = ({
                 }
                 className="mt-1 block w-full rounded-md border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
               />
-            </label>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-white/40">Linked events</div>
-            {linkedEvents.length === 0 && <p className="text-xs text-white/40">No calendar events linked.</p>}
-            {linkedEvents.map((e) => (
-              <div key={e.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-2.5 text-xs">
-                <CalendarDays className="h-4 w-4 text-white/40" />
-                <span className="flex-1 truncate text-white/80">{e.title}</span>
-                <span className="text-white/40">{new Date(e.starts_at).toLocaleString()}</span>
+            </CollapsibleSection>
+            <CollapsibleSection id="schedule-events" title="Linked events" meta={linkedEvents.length || null}>
+              {linkedEvents.length === 0 && <p className="text-xs text-white/40">No calendar events linked.</p>}
+              {linkedEvents.map((e) => (
+                <div key={e.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-2.5 text-xs">
+                  <CalendarDays className="h-4 w-4 text-white/40" />
+                  <span className="flex-1 truncate text-white/80">{e.title}</span>
+                  <span className="text-white/40">{new Date(e.starts_at).toLocaleString()}</span>
+                </div>
+              ))}
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-white/60">
+                Checkpoints: {tasks.filter((t) => t.due_date).length} dated task
+                {tasks.filter((t) => t.due_date).length === 1 ? '' : 's'} · {done}/{tasks.length} complete
               </div>
-            ))}
-            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-white/60">
-              Checkpoints: {tasks.filter((t) => t.due_date).length} dated task
-              {tasks.filter((t) => t.due_date).length === 1 ? '' : 's'} · {done}/{tasks.length} complete
-            </div>
+            </CollapsibleSection>
           </TabsContent>
+
         </Tabs>
       </SheetContent>
     </Sheet>
