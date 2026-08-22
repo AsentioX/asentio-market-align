@@ -391,6 +391,24 @@ const DetailDrawer: React.FC<Props> = ({
 
           <TabsContent value="overview" className="space-y-4 pt-4">
             <div>
+              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Mode</div>
+              <div className="inline-flex rounded-lg border border-white/10 bg-white/5 p-1">
+                {(['work', 'personal'] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => api.patchCard(card.id, { mode: m })}
+                    className={
+                      'rounded-md px-3 py-1.5 text-xs capitalize transition ' +
+                      (card.mode === m ? 'bg-white/15 text-white' : 'text-white/45 hover:text-white')
+                    }
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+
               <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Tags</div>
               {tags.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-1.5">
