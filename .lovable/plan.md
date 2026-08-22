@@ -12,8 +12,8 @@
 - Cards already drag between matrix cells. Adds within-cell ordering: dropping a card onto another card in the same cell places it before/after that card and rewrites `sort_order` for the affected cell.
 - Cross-cell drops keep working as today, and the card lands at the drop position rather than always at the end.
 
-### Google sync note
-Local subtask order is stored in ToDoooZ. Google Tasks ordering uses its own `move` endpoint; the plan keeps ordering local-only for now (imports still respect Google's order on first import) unless you want the extra write-back.
+### Google write-back
+Reordering also syncs to Google Tasks. After a drop, the moved task is sent to Google's Tasks `move` endpoint with its new previous-sibling (and parent, when nested), so the order matches in Google Tasks and other Google clients. Tasks that came from Google are moved in place; tasks with no Google counterpart stay local-only.
 
 ## 2. Collapsible sections in card details
 
