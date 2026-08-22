@@ -80,6 +80,7 @@ interface Props {
     removeDocument: (id: string) => void;
     spawnCard: (task: TdzTask) => void;
     openCard: (id: string) => void;
+    deleteCard: (id: string) => void;
   };
 }
 
