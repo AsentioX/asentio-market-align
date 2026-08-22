@@ -172,6 +172,20 @@ const CalendarSidebar: React.FC<Props> = ({
                             placeholder="Location"
                             className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
                           />
+                          <select
+                            value={draft.project_id}
+                            onChange={(ev) => setDraft((d) => ({ ...d, project_id: ev.target.value }))}
+                            aria-label="Linked card"
+                            className="w-full rounded border border-white/15 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
+                          >
+                            <option value="">No linked card</option>
+                            {cards.map((c) => (
+                              <option key={c.id} value={c.id} className="bg-neutral-900">
+                                {c.title}
+                              </option>
+                            ))}
+                          </select>
+
                           <div className="flex items-center gap-1.5">
                             <button
                               onClick={saveEdit}
