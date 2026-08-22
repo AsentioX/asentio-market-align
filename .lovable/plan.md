@@ -1,4 +1,4 @@
-# ToDoooZ: manual reordering + collapsible detail sections
+# ToDoooZ: manual reordering, collapsible detail sections, subtask promotion
 
 ## 1. Manual reorder
 
@@ -15,7 +15,13 @@
 ### Google write-back
 Reordering also syncs to Google Tasks. After a drop, the moved task is sent to Google's Tasks `move` endpoint with its new previous-sibling (and parent, when nested), so the order matches in Google Tasks and other Google clients. Tasks that came from Google are moved in place; tasks with no Google counterpart stay local-only.
 
-## 2. Collapsible sections in card details
+## 2. Promoting a subtask into its own card
+
+- When the spawn button turns a subtask into a card, the subtask is removed from the parent card's task list (and deleted from Google Tasks, since the work now lives on the new card). The new card keeps the parent link, so it still shows nested under its parent.
+- The confirmation toast offers "Undo", which restores the subtask on the parent card.
+- Reversing later: setting the new card's Parent back from the Parent picker in the drawer re-attaches it; clearing the parent leaves it standalone. Re-selecting the original parent also restores the subtask entry on that parent's task list.
+
+## 3. Collapsible sections in card details
 
 Tabs stay as they are. Inside them, each block gets a clickable header with a chevron that expands/collapses:
 - Overview: Mode, Tags, Notes, Linked documents (Delete Card stays always visible at the bottom)
@@ -32,4 +38,5 @@ Defaults: all sections expanded. Open/closed state is remembered per section in 
 - Card order: renumber `sort_order` for the cards in the target bucket/priority cell; extends the existing `handleDrop` with a drop-index computed from the hovered card, plus a thin drop indicator line.
 - Collapsible blocks: a small local `Section` component in the drawer (header + chevron + content), state persisted under a `tdz:drawer-sections` key.
 - Google order write-back: new `moveGoogleTask` helper in `lib/google.ts` calling `POST tasks/v1/lists/{listId}/tasks/{taskId}/move` with `previous`/`parent`, invoked from `reorderTasks` for tasks that have a `google_task_id`; failures toast but do not revert local order.
-- Files touched: `components/DetailDrawer.tsx`, `components/SpatialMatrix.tsx`, `components/TaskCard.tsx`, `lib/useToDoooZ.ts`, `lib/google.ts`, `lib/taskTree.ts`. No schema changes needed (`rank` and `sort_order` already exist).
+- Subtask promotion: `spawnCard` in `ToDoooZLayout.tsx` deletes the source task after creating the card (reusing `deleteTask`, which already handles Google deletion) and stashes it for undo; re-selecting a parent in the drawer's Parent picker recreates a task row on that parent from the card title.
+- Files touched: `ToDoooZLayout.tsx`, `components/DetailDrawer.tsx`, `components/SpatialMatrix.tsx`, `components/TaskCard.tsx`, `lib/useToDoooZ.ts`, `lib/google.ts`, `lib/taskTree.ts`. No schema changes needed (`rank` and `sort_order` already exist).
