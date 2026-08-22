@@ -308,8 +308,9 @@ const ToDoooZLayout: React.FC = () => {
         </DropdownMenu>
       </header>
 
-      <div className="flex min-h-[calc(100vh-57px)]">
-        <main className="flex-1 overflow-x-auto p-4">
+      <div className="flex h-[calc(100vh-57px)] overflow-hidden">
+        <main className="flex-1 overflow-auto p-4">
+
           {tdz.loading ? (
             <div className="flex h-64 items-center justify-center text-white/40">
               <Loader2 className="h-5 w-5 animate-spin" />
