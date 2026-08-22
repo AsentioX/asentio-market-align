@@ -368,7 +368,9 @@ const ToDoooZLayout: React.FC = () => {
           collapsed={calCollapsed}
           onToggle={() => setCalCollapsed((v) => !v)}
           onUpdateEvent={tdz.updateEvent}
+          onLoadRange={tdz.syncCalendarRange}
           onDeleteEvent={tdz.deleteEvent}
+
           onOpenCard={(id) => {
             setFocusedId(id);
             setOpenId(id);
