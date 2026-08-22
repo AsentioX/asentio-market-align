@@ -149,8 +149,8 @@ const ContactsCRM: React.FC<Props> = ({
           </div>
         </div>
 
-        <div className="mt-4 grid max-h-[calc(100vh-220px)] grid-cols-1 gap-4 overflow-hidden md:grid-cols-[1fr_1fr]">
-          <div className="overflow-y-auto pr-1">
+        <div className="mt-4 grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden md:grid-cols-[1fr_1fr]">
+          <div className="min-h-0 overflow-y-auto pr-1">
             <div className="mb-2 text-[11px] text-white/40">{filtered.length} contacts</div>
             <ul className="space-y-1.5">
               {filtered.map((c) => (
