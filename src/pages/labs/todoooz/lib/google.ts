@@ -435,8 +435,32 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
         .map((t) => [t.google_task_id as string, t.id]),
     );
 
-    for (let i = 0; i < items.length; i++) {
-      const t = items[i];
+    // Rebuild Google's one-level hierarchy: roots in position order, each
+    // followed immediately by its children (also in position order).
+    const byPosition = (a: GTask, b: GTask) => (a.position ?? '').localeCompare(b.position ?? '');
+    const present = new Set(items.map((t) => t.id));
+    const childrenOf = new Map<string, GTask[]>();
+    const roots: GTask[] = [];
+    for (const t of items) {
+      if (t.parent && present.has(t.parent)) {
+        childrenOf.set(t.parent, [...(childrenOf.get(t.parent) ?? []), t]);
+      } else {
+        roots.push(t);
+      }
+    }
+    roots.sort(byPosition);
+    const ordered: { task: GTask; parentGoogleId: string | null }[] = [];
+    for (const root of roots) {
+      ordered.push({ task: root, parentGoogleId: null });
+      for (const child of (childrenOf.get(root.id) ?? []).sort(byPosition)) {
+        ordered.push({ task: child, parentGoogleId: root.id });
+      }
+    }
+
+    // Parents are written before children so the local parent id is resolvable.
+    const localIdByGoogleId = new Map(byGoogleId);
+    for (let i = 0; i < ordered.length; i++) {
+      const { task: t, parentGoogleId } = ordered[i];
       const row = {
         user_id: userId,
         project_id: cardId,
@@ -446,14 +470,21 @@ export const importGoogleTasks = async (userId: string, slot: TdzAccountSlot, em
         due_date: t.due ? t.due.slice(0, 10) : null,
         account_slot: slot,
         google_task_id: t.id,
+        parent_task_id: parentGoogleId ? (localIdByGoogleId.get(parentGoogleId) ?? null) : null,
         rank: i,
       };
       const existingId = byGoogleId.get(t.id);
       if (existingId) {
         await supabase.from('tdz_tasks').update(row as never).eq('id', existingId);
+        localIdByGoogleId.set(t.id, existingId);
       } else {
-        const { error } = await supabase.from('tdz_tasks').insert(row as never);
+        const { data: inserted, error } = await supabase
+          .from('tdz_tasks')
+          .insert(row as never)
+          .select('id')
+          .single();
         if (error) throw error;
+        localIdByGoogleId.set(t.id, (inserted as { id: string }).id);
       }
       imported++;
     }
