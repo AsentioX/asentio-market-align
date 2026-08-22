@@ -182,12 +182,11 @@ const CompanyDetail = () => {
             )}
 
             {perspective && (
-              <div className="mt-6 rounded-2xl bg-asentio-blue/5 border border-asentio-red/30 border-l-4 border-l-asentio-red p-6 md:p-8">
-                <p className="text-xs uppercase tracking-[0.2em] text-asentio-red font-semibold mb-3 flex items-center gap-1.5">
+              <div className="mt-4 rounded-xl bg-asentio-blue/5 border border-asentio-red/30 border-l-4 border-l-asentio-red p-4 md:p-5">
+                <p className="text-xs uppercase tracking-[0.2em] text-asentio-red font-semibold mb-1.5 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" /> Asentio Perspective
                 </p>
-                <p className="text-foreground text-lg leading-relaxed whitespace-pre-line font-light">{perspective}</p>
-                <p className="text-xs text-muted-foreground mt-4">Proprietary analysis by Asentio.</p>
+                <p className="text-foreground text-base md:text-lg leading-relaxed whitespace-pre-line font-light">{perspective}</p>
               </div>
             )}
 
