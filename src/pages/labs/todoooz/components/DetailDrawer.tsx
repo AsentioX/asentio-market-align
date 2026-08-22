@@ -92,6 +92,7 @@ interface Props {
     updateDocument: (id: string, patch: Partial<TdzDocument>) => void;
     removeDocument: (id: string) => void;
     spawnCard: (task: TdzTask) => void;
+    importCardAsTask: (child: TdzCard, parentId: string) => void;
     openCard: (id: string) => void;
     deleteCard: (id: string) => void;
     updateEvent: (id: string, patch: Partial<TdzEvent>) => void;
