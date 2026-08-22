@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, MapPin, Pencil, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TdzCard, TdzEvent } from '../lib/types';
+import { resolveTheme } from '../lib/theme';
 
 interface Props {
   events: TdzEvent[];
@@ -246,14 +247,27 @@ const CalendarSidebar: React.FC<Props> = ({
                             <ExternalLink className="h-3 w-3" /> Join
                           </a>
                         )}
-                        {project ? (
-                          <button
-                            onClick={() => onOpenCard?.(project.id)}
-                            className="rounded bg-white/10 px-1.5 py-0.5 text-white/70 hover:bg-white/20 hover:text-white"
-                          >
-                            {project.title}
-                          </button>
-                        ) : (
+                         {project ? (
+                           (() => {
+                             const hsl = resolveTheme(
+                               project,
+                               project.parent_id ? cardById.get(project.parent_id) : null,
+                             ).hsl;
+                             return (
+                               <button
+                                 onClick={() => onOpenCard?.(project.id)}
+                                 className="rounded border px-1.5 py-0.5 transition-colors"
+                                 style={{
+                                   color: `hsl(${hsl})`,
+                                   borderColor: `hsl(${hsl} / 0.4)`,
+                                   background: `hsl(${hsl} / 0.14)`,
+                                 }}
+                               >
+                                 {project.title}
+                               </button>
+                             );
+                           })()
+                         ) : (
                           onUpdateEvent && (
                             <button
                               onClick={() => startEdit(e)}

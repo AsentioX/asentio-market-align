@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import TaskCard from './TaskCard';
 import { BUCKETS, PRIORITIES, sortCards } from '../lib/matrix';
 import type { TdzBucket, TdzCard, TdzPriority, TdzTask } from '../lib/types';
+import { resolveTheme } from '../lib/theme';
 
 interface Props {
   cards: TdzCard[];
@@ -113,8 +114,11 @@ const SpatialMatrix: React.FC<Props> = ({
   const hslForPriority = (key: TdzPriority) =>
     PRIORITIES.find((p) => p.key === key)?.hsl ?? '0 0% 70%';
 
-  /** The colored insertion marker rendered between cards, matching the dragged card's priority. */
-  const draggedHsl = draggingId ? hslForPriority(cardById.get(draggingId)?.priority ?? 'core') : null;
+  /** The colored insertion marker rendered between cards, matching the dragged card's own color theme. */
+  const draggedCard = draggingId ? cardById.get(draggingId) : null;
+  const draggedHsl = draggedCard
+    ? resolveTheme(draggedCard, draggedCard.parent_id ? cardById.get(draggedCard.parent_id) : null).hsl
+    : null;
   const DropLine = ({ hsl }: { hsl: string }) => (
     <div className="relative h-0.5 rounded-full" style={{ background: `hsl(${hsl})` }}>
       <span
