@@ -6,6 +6,7 @@ import {
   FileSpreadsheet,
   FileText,
   Folder,
+  GripVertical,
   Plus,
   Presentation,
   Trash2,
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ColorSwatchRow from './ColorSwatchRow';
 import TagEditor from './TagEditor';
+import CollapsibleSection from './CollapsibleSection';
 
 import { resolveTheme } from '../lib/theme';
 import type {
@@ -71,6 +73,7 @@ interface Props {
     addTask: (projectId: string, title: string, due?: string | null) => void;
     updateTask: (id: string, patch: Partial<TdzTask>) => void;
     deleteTask: (id: string) => void;
+    reorderTasks: (projectId: string, ordered: TdzTask[], movedId?: string) => void;
     addActivity: (projectId: string, summary: string, detail?: string) => void;
     addStakeholder: (projectId: string, payload: Partial<TdzStakeholder>) => void;
     linkContactToCard: (projectId: string, contact: TdzContact, role?: string | null) => void;
@@ -108,6 +111,8 @@ const DetailDrawer: React.FC<Props> = ({
   const [personName, setPersonName] = useState('');
   const [personRole, setPersonRole] = useState('');
   const [contactQuery, setContactQuery] = useState('');
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
 
   const theme = card ? resolveTheme(card, parent) : null;
   const linkedEvents = useMemo(
@@ -126,6 +131,30 @@ const DetailDrawer: React.FC<Props> = ({
   const done = tasks.filter((t) => t.done).length;
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
   const orderedTasks = flattenTaskTree(tasks);
+
+  /** Move the dragged task (and its children, when it is a root) before the drop target. */
+  const dropOn = (targetId: string) => {
+    setOverId(null);
+    const sourceId = dragId;
+    setDragId(null);
+    if (!sourceId || sourceId === targetId) return;
+
+    const flat = orderedTasks.map((f) => f.task);
+    const source = flat.find((t) => t.id === sourceId);
+    const target = flat.find((t) => t.id === targetId);
+    if (!source || !target) return;
+    // Children only reorder among their own siblings.
+    if ((source.parent_task_id ?? null) !== (target.parent_task_id ?? null)) return;
+
+    const block = flat.filter((t) => t.id === sourceId || t.parent_task_id === sourceId);
+    const blockIds = new Set(block.map((t) => t.id));
+    const rest = flat.filter((t) => !blockIds.has(t.id));
+    const targetIndex = rest.findIndex((t) => t.id === targetId);
+    if (targetIndex < 0) return;
+    const next = [...rest.slice(0, targetIndex), ...block, ...rest.slice(targetIndex)];
+    api.reorderTasks(card.id, next, sourceId);
+  };
+
 
   return (
     <Sheet open={!!card} onOpenChange={(v) => !v && onClose()}>
@@ -354,19 +383,37 @@ const DetailDrawer: React.FC<Props> = ({
               {orderedTasks.map(({ task: t, depth }) => (
                 <li
                   key={t.id}
+                  draggable
+                  onDragStart={() => setDragId(t.id)}
+                  onDragEnd={() => {
+                    setDragId(null);
+                    setOverId(null);
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    if (overId !== t.id) setOverId(t.id);
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    dropOn(t.id);
+                  }}
                   style={{ marginLeft: depth ? 20 : 0 }}
-                  className={`flex items-center gap-2 rounded-lg border p-2.5 ${
+                  className={`flex items-center gap-2 rounded-lg border p-2.5 transition ${
                     depth
                       ? 'border-white/[0.06] border-l-2 border-l-white/20 bg-white/[0.02]'
                       : 'border-white/10 bg-white/[0.03]'
+                  } ${dragId === t.id ? 'opacity-40' : ''} ${
+                    overId === t.id && dragId && dragId !== t.id ? 'border-t-2 border-t-[hsl(var(--tdz-accent))]' : ''
                   }`}
                 >
+                  <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-white/25" />
                   <input
                     type="checkbox"
                     checked={t.done}
                     onChange={() => api.toggleTask(t)}
                     className="h-4 w-4 accent-[hsl(var(--tdz-accent))]"
                   />
+
                   <span className={`flex-1 truncate text-sm ${t.done ? 'text-white/35 line-through' : 'text-white/85'}`}>
                     {t.title}
                   </span>
@@ -394,9 +441,8 @@ const DetailDrawer: React.FC<Props> = ({
             </ul>
           </TabsContent>
 
-          <TabsContent value="overview" className="space-y-4 pt-4">
-            <div>
-              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Mode</div>
+          <TabsContent value="overview" className="space-y-3 pt-4">
+            <CollapsibleSection id="overview-mode" title="Mode & tags">
               <div className="inline-flex rounded-lg border border-white/10 bg-white/5 p-1">
                 {(['work', 'personal'] as const).map((m) => (
                   <button
@@ -411,17 +457,24 @@ const DetailDrawer: React.FC<Props> = ({
                   </button>
                 ))}
               </div>
-            </div>
-            <TagEditor value={tags} onChange={setTags} />
+              <TagEditor value={tags} onChange={setTags} />
+            </CollapsibleSection>
 
-            <Textarea
-              value={card.description ?? ''}
-              onChange={(e) => api.patchCard(card.id, { description: e.target.value })}
-              placeholder="Notes"
-              className="min-h-[90px] border-white/10 bg-white/5 text-sm"
-            />
-            <div>
-              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40">Linked documents</div>
+            <CollapsibleSection id="overview-notes" title="Notes">
+              <Textarea
+                value={card.description ?? ''}
+                onChange={(e) => api.patchCard(card.id, { description: e.target.value })}
+                placeholder="Notes"
+                className="min-h-[90px] border-white/10 bg-white/5 text-sm"
+              />
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              id="overview-docs"
+              title="Linked documents"
+              meta={documents.length || null}
+              defaultOpen={false}
+            >
               <div className="flex gap-2">
                 <Input
                   value={docUrl}
@@ -472,7 +525,7 @@ const DetailDrawer: React.FC<Props> = ({
                 ))}
                 {documents.length === 0 && <li className="text-xs text-white/40">No documents linked yet.</li>}
               </ul>
-            </div>
+            </CollapsibleSection>
 
             <div className="pt-2">
               <Button
@@ -489,8 +542,7 @@ const DetailDrawer: React.FC<Props> = ({
 
 
           <TabsContent value="schedule" className="space-y-3 pt-4">
-            <label className="block text-xs text-white/50">
-              Due date
+            <CollapsibleSection id="schedule-due" title="Due date">
               <input
                 type="date"
                 value={card.due_date ? card.due_date.slice(0, 10) : ''}
@@ -499,21 +551,23 @@ const DetailDrawer: React.FC<Props> = ({
                 }
                 className="mt-1 block w-full rounded-md border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
               />
-            </label>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-white/40">Linked events</div>
-            {linkedEvents.length === 0 && <p className="text-xs text-white/40">No calendar events linked.</p>}
-            {linkedEvents.map((e) => (
-              <div key={e.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-2.5 text-xs">
-                <CalendarDays className="h-4 w-4 text-white/40" />
-                <span className="flex-1 truncate text-white/80">{e.title}</span>
-                <span className="text-white/40">{new Date(e.starts_at).toLocaleString()}</span>
+            </CollapsibleSection>
+            <CollapsibleSection id="schedule-events" title="Linked events" meta={linkedEvents.length || null}>
+              {linkedEvents.length === 0 && <p className="text-xs text-white/40">No calendar events linked.</p>}
+              {linkedEvents.map((e) => (
+                <div key={e.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-2.5 text-xs">
+                  <CalendarDays className="h-4 w-4 text-white/40" />
+                  <span className="flex-1 truncate text-white/80">{e.title}</span>
+                  <span className="text-white/40">{new Date(e.starts_at).toLocaleString()}</span>
+                </div>
+              ))}
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-white/60">
+                Checkpoints: {tasks.filter((t) => t.due_date).length} dated task
+                {tasks.filter((t) => t.due_date).length === 1 ? '' : 's'} · {done}/{tasks.length} complete
               </div>
-            ))}
-            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-white/60">
-              Checkpoints: {tasks.filter((t) => t.due_date).length} dated task
-              {tasks.filter((t) => t.due_date).length === 1 ? '' : 's'} · {done}/{tasks.length} complete
-            </div>
+            </CollapsibleSection>
           </TabsContent>
+
         </Tabs>
       </SheetContent>
     </Sheet>

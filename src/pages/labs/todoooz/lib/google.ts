@@ -591,6 +591,37 @@ export const deleteGoogleTask = async (
   );
 };
 
+/**
+ * Reposition a task inside its Google Tasks list.
+ * `previousGoogleId` is the sibling it should sit after (null = first).
+ */
+export const moveGoogleTask = async (
+  cardId: string,
+  googleTaskId: string,
+  previousGoogleId: string | null,
+  parentGoogleId: string | null,
+  email?: string | null,
+) => {
+  const { data } = await supabase
+    .from('tdz_projects')
+    .select('google_task_list_id')
+    .eq('id', cardId)
+    .maybeSingle();
+  const listId = (data as { google_task_list_id: string | null } | null)?.google_task_list_id;
+  if (!listId) return;
+  const params = new URLSearchParams();
+  if (previousGoogleId) params.set('previous', previousGoogleId);
+  if (parentGoogleId) params.set('parent', parentGoogleId);
+  const qs = params.toString();
+  await gfetch(
+    `https://tasks.googleapis.com/tasks/v1/lists/${encodeURIComponent(listId)}/tasks/${encodeURIComponent(
+      googleTaskId,
+    )}/move${qs ? `?${qs}` : ''}`,
+    email,
+    { method: 'POST' },
+  );
+};
+
 export interface EventPushInput {
   id: string;
   google_event_id?: string | null;
