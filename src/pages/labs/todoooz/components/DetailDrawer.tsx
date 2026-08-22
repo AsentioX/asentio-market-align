@@ -404,7 +404,14 @@ const DetailDrawer: React.FC<Props> = ({
                     </div>
                     <div>
                       <div className="text-sm text-white">{s.name}</div>
-                      <div className="text-[11px] text-white/45">{s.role ?? '—'}</div>
+                      <div className="text-[11px] text-white/45">
+                        {s.role ?? '—'}
+                        {s.task_id && (
+                          <span className="ml-1 rounded bg-white/10 px-1 text-[9px] text-white/55">
+                            {tasks.find((t) => t.id === s.task_id)?.title ?? 'task'}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <button onClick={() => api.removeStakeholder(s.id)} className="text-white/30 hover:text-rose-300">
