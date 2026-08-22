@@ -252,10 +252,7 @@ const CompanyDetail = () => {
       {/* 3. Products & platforms */}
       <CompanyProducts products={companyProducts} companyName={displayName} />
 
-      {/* 4. Who should they work with? */}
-      <CompanyPartners companyName={displayName} groups={partnerGroups} />
-
-      {/* 5. Human + AI solution fit */}
+      {/* 4. Human + AI solution fit */}
       {company && (
         <CompanySolutionFit company={company} companyName={displayName} useCases={matchedUseCases} />
       )}
