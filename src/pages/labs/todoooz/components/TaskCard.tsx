@@ -17,6 +17,11 @@ import type { TdzCard, TdzTask } from '../lib/types';
 import { flattenTaskTree } from '../lib/taskTree';
 import { useTagLibrary } from '../lib/tagContext';
 
+export interface LinkedContact {
+  name: string;
+  avatar_url: string | null;
+}
+
 interface Props {
   card: TdzCard;
   parent?: TdzCard | null;
@@ -25,6 +30,7 @@ interface Props {
   childDone: number;
   focused: boolean;
   isChild: boolean;
+  linkedContacts?: LinkedContact[];
   onFocus: () => void;
   onOpen: () => void;
   onToggleTask: (task: TdzTask) => void;
