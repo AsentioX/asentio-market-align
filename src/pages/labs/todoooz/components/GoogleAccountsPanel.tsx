@@ -233,10 +233,16 @@ const GoogleAccountsPanel: React.FC<Props> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => loadIdentities().then(setIdentities)}
+            disabled={refreshing}
+            onClick={() => refresh(true)}
             className="w-full text-[11px] text-white/35 hover:text-white"
           >
-            <RefreshCw className="mr-1 h-3 w-3" /> Refresh linked Google accounts
+            {refreshing ? (
+              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-1 h-3 w-3" />
+            )}
+            Refresh linked Google accounts
           </Button>
         </div>
       </DialogContent>
